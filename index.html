@@ -32,7 +32,7 @@
   .cap{font-size:12px;font-weight:600;color:#5A5648;text-align:center;margin-bottom:14px;line-height:1.6;}
 
   /* ===== 端末フレーム ===== */
-  .phone{width:390px;max-width:100%;background:#0E0E0C;border-radius:48px;padding:12px;
+  .phone{width:414px;max-width:100%;background:#0E0E0C;border-radius:48px;padding:12px;
     box-shadow:0 30px 70px rgba(20,25,18,.42),0 6px 16px rgba(0,0,0,.3);}
   .screen{background:var(--paper);border-radius:38px;overflow:hidden;height:800px;
     display:flex;flex-direction:column;position:relative;}
@@ -42,14 +42,13 @@
     body{padding:0;background:var(--paper);display:block;min-height:100dvh;}
     .phone{width:100%;max-width:100%;background:transparent;border-radius:0;padding:0;box-shadow:none;}
     .screen{border-radius:0;height:100dvh;height:100vh;}
-    /* iPhoneの時計と重ならないよう、アプリ内の疑似ステータスバーは隠す */
-    .statusbar{display:none;}
-    /* ノッチ/ホームバーのセーフエリアを確保 */
-    .body{padding-top:env(safe-area-inset-top);}
+    /* iPhoneの時計と重ならないよう、上部の固定ヘッダーにセーフエリア余白を足す */
+    .homehead{padding-top:calc(env(safe-area-inset-top) + 8px);}
+    .navhead{padding-top:calc(env(safe-area-inset-top) + 12px);}
+    /* 下部タブバーはホームバー分の余白を確保して固定 */
     .tabbar{padding-bottom:calc(env(safe-area-inset-bottom) + 6px);}
   }
-  .statusbar{display:flex;justify-content:space-between;align-items:center;
-    font-size:14px;font-weight:700;color:var(--ink);padding:15px 26px 6px;flex-shrink:0;}
+  .statusbar{display:none;}
   .body{flex:1;overflow-y:auto;overflow-x:hidden;}
   .body::-webkit-scrollbar{display:none;}
   .page{display:none;flex-direction:column;min-height:100%;}
@@ -89,7 +88,7 @@
     opacity:.55;padding:2px;}
 
   /* ===== ホーム本体 ===== */
-  .homebody{padding:12px 18px 8px;display:flex;flex-direction:column;gap:12px;}
+  .homebody{padding:12px 14px 8px;display:flex;flex-direction:column;gap:12px;}
   .gps{display:flex;align-items:center;justify-content:center;gap:8px;
     background:var(--green-soft);border:1.5px solid #CBD9CC;border-radius:14px;padding:10px;
     font-size:15px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;}
