@@ -63,13 +63,13 @@
   /* ===== 固定タブバー ===== */
   .tabbar{display:flex;background:#fff;flex-shrink:0;border-top:1px solid var(--line);
     padding-bottom:16px;box-shadow:0 -2px 8px rgba(35,40,33,.04);}
-  .tab{flex:1;text-align:center;padding:10px 0 4px;font-size:12px;font-weight:800;
+  .tab{flex:1;text-align:center;padding:12px 0 8px;font-size:13px;font-weight:800;
     color:#A19C8B;background:none;border:none;cursor:pointer;letter-spacing:.04em;}
-  .tab .ic{display:block;font-size:22px;margin-bottom:2px;filter:grayscale(.3);}
+  .tab .ic{display:block;font-size:27px;margin-bottom:4px;filter:grayscale(.3);}
   .tab.on{color:var(--green);} .tab.on .ic{filter:none;}
 
-  /* ===== ホーム:固定ヘッダー(明朝タイトル+天気) ===== */
-  .homehead{position:sticky;top:0;z-index:20;flex-shrink:0;background:var(--paper);
+  /* ===== ホーム:ヘッダー(明朝タイトル+天気) スクロールで流れる ===== */
+  .homehead{position:relative;flex-shrink:0;background:var(--paper);
     padding:8px 20px 9px;display:flex;justify-content:space-between;align-items:flex-start;
     border-bottom:1px solid var(--line);}
   .brand{position:relative;}
