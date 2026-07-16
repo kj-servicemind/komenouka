@@ -328,6 +328,7 @@
   .drugcard .row2{font-size:15px;font-weight:800;margin-top:8px;line-height:1.6;color:#4A4638;}
   .drugcard .use{background:var(--orange);color:#fff;border:none;border-radius:12px;padding:11px;
     font-size:16px;font-weight:800;text-align:center;margin-top:10px;cursor:pointer;}
+  .dbbtn{display:block;background:var(--orange);color:#fff;text-align:center;border-radius:12px;padding:13px;font-weight:700;margin:0 0 14px;}
   .dbnote{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 14px;
     font-size:14px;font-weight:800;color:var(--green-deep);line-height:1.6;}
 
@@ -476,7 +477,8 @@
     <div class="page" id="p-drug">
       <div class="sc">
         <div class="searchbox" onclick="toast('キーボードで農薬名を入力')">🔍 農薬名か病害虫名を入力(例:カメムシ)</div>
-        <div class="dbnote">✅ 農林水産省の農薬登録データベース(無料・公式)から、稲に使えるものだけを表示します。</div>
+        <div class="dbnote">✅ よく使う稲用農薬の見本です。<b>最新の登録内容(希釈・時期・回数)は必ず製品ラベルか公式データベースで確認</b>してください。</div>
+        <div class="dbbtn" onclick="openSite('https://pesticide.maff.go.jp/')">🏛️ 農水省の公式データベースで最新を調べる(無料)</div>
         <div class="drugcard">
           <div class="nm">スタークル液剤10</div>
           <span class="tag">稲</span><span class="tag">カメムシ類</span><span class="tag">ウンカ類</span>
@@ -759,6 +761,7 @@
     document.getElementById(pages[n]).classList.add('on');
     renderHeader(n);
     if(typeof applyDates==='function')applyDates();
+    if(n==='home'&&typeof applyWeather==='function')applyWeather();
     document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
     if(tabOf[n])document.getElementById(tabOf[n]).classList.add('on');
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
@@ -1180,19 +1183,26 @@
           });
           for(var k in byDate)tmax[k]=byDate[k];
         }catch(e){}
-        /* 画面に反映(今日・明日) */
-        var cs=document.querySelectorAll('.wx .c');
-        if(cs[0]&&wToday){
-          cs[0].querySelector('.ic').textContent=wxEmoji(wToday);
-          if(tmax[today]!=null)cs[0].querySelector('.tp').textContent=tmax[today]+'℃';
-        }
-        if(cs[1]&&wTomo){
-          cs[1].querySelector('.ic').textContent=wxEmoji(wTomo);
-          if(tmax[tomo]!=null)cs[1].querySelector('.tp').textContent=tmax[tomo]+'℃';
-        }
+        /* v2.5.1:直接DOMに書かず一旦キャッシュ→反映関数経由にする
+           (固定ヘッダーは画面遷移のたびに作り直されるため、直書きだと見本値に戻ってしまう) */
+        WX_CACHE={wToday:wToday,wTomo:wTomo,tToday:tmax[today],tTomo:tmax[tomo]};
+        applyWeather();
         renderAiTip(); /* 実際の予報にあわせて「本日の提案」も更新 */
       })
       .catch(function(){ /* 圏外・オフライン時は見本値のまま */ });
+  }
+  var WX_CACHE=null;
+  function applyWeather(){
+    if(!WX_CACHE)return;
+    var cs=document.querySelectorAll('.wx .c');
+    if(cs[0]&&WX_CACHE.wToday){
+      cs[0].querySelector('.ic').textContent=wxEmoji(WX_CACHE.wToday);
+      if(WX_CACHE.tToday!=null)cs[0].querySelector('.tp').textContent=WX_CACHE.tToday+'℃';
+    }
+    if(cs[1]&&WX_CACHE.wTomo){
+      cs[1].querySelector('.ic').textContent=wxEmoji(WX_CACHE.wTomo);
+      if(WX_CACHE.tTomo!=null)cs[1].querySelector('.tp').textContent=WX_CACHE.tTomo+'℃';
+    }
   }
   fetchWeather();
 
