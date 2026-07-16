@@ -40,9 +40,11 @@
   /* === ホーム画面から起動(PWA)時は枠を外して全画面 ===
      JSが html に .pwa クラスを付与したときだけ適用 */
   html.pwa,html.pwa body{margin:0;padding:0;height:100%;background:var(--paper);
-    overflow:hidden;overscroll-behavior:none;}
-  html.pwa .phone{width:100%;max-width:100%;height:100dvh;height:100vh;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:hidden;}
-  html.pwa .screen{border-radius:0;height:100dvh;height:100vh;overflow:hidden;}
+    overflow:hidden;overscroll-behavior:none;position:fixed;inset:0;width:100%;}
+  html.pwa .phone{width:100%;max-width:100%;height:100%;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:hidden;}
+  html.pwa .screen{border-radius:0;height:100%;overflow:hidden;}
+  /* スクロールするのは中央の.bodyだけ。跳ね返り(ラバーバンド)も封じる */
+  html.pwa .body{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
   /* PWA時、中の.pageは自然高さ。スクロールは親の.bodyが担当 */
   html.pwa .page{min-height:0;}
   html.pwa .homehead{padding-top:calc(env(safe-area-inset-top) + 8px);}
@@ -716,7 +718,15 @@
 (function(){
   var isPwa = window.navigator.standalone === true
            || window.matchMedia('(display-mode: standalone)').matches;
-  if(isPwa) document.documentElement.classList.add('pwa');
+  if(isPwa){
+    document.documentElement.classList.add('pwa');
+    /* PWAで、スクロール領域(.body)以外を指で動かしたときの
+       画面全体の跳ね返り(ラバーバンド)を止める保険 */
+    document.addEventListener('touchmove', function(e){
+      var scroller = e.target.closest ? e.target.closest('.body') : null;
+      if(!scroller) e.preventDefault();
+    }, {passive:false});
+  }
 })();
   var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu'};
   var tabOf={home:'t-home',fields:'t-menu',rec:'t-rec',pest:'t-menu',voice:'t-rec',cal:'t-menu',cost:'t-menu',team:'t-menu',diag:'t-home',drug:'t-menu',set:'t-menu',drone:'t-home',ai:'t-ai',map:'t-map',menu:'t-menu'};
