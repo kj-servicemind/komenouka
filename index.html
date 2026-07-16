@@ -41,13 +41,13 @@
      JSが html に .pwa クラスを付与したときだけ適用 */
   html.pwa,html.pwa body{margin:0;padding:0;height:100%;background:var(--paper);
     overflow:hidden;overscroll-behavior:none;}
-  html.pwa .phone{width:100%;max-width:100%;height:100dvh;height:100vh;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:hidden;}
-  html.pwa .screen{border-radius:0;height:100dvh;height:100vh;overflow:hidden;}
+  html.pwa .phone{width:100%;max-width:100%;height:100vh;height:100dvh;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:hidden;}
+  html.pwa .screen{border-radius:0;height:100vh;height:100dvh;overflow:hidden;}
   /* PWA時、中の.pageは自然高さ。スクロールは親の.bodyが担当 */
   html.pwa .page{min-height:0;}
   html.pwa .homehead{padding-top:calc(env(safe-area-inset-top) + 8px);}
   html.pwa .navhead{padding-top:calc(env(safe-area-inset-top) + 12px);}
-  html.pwa .tabbar{padding-bottom:calc(env(safe-area-inset-bottom) + 6px);}
+  html.pwa .tabbar{padding-bottom:calc(env(safe-area-inset-bottom) + 10px);}
   .statusbar{display:none;}
   .body{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:0;}
   .body::-webkit-scrollbar{display:none;}
@@ -55,7 +55,7 @@
   .page.on{display:flex;}
 
   /* ===== 下層画面ナビ(‹戻る + タイトル) ===== */
-  .navhead{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:12px 16px 12px;
+  .navhead{position:sticky;top:0;z-index:20;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:12px 16px 12px;
     background:#fff;border-bottom:1px solid var(--line);}
   .navhead .back{font-size:16px;font-weight:800;color:var(--green-deep);background:none;border:none;cursor:pointer;letter-spacing:.02em;}
   .navhead .title{font-size:19px;font-weight:800;flex:1;text-align:center;margin-right:44px;letter-spacing:.03em;}
@@ -69,7 +69,7 @@
   .tab.on{color:var(--green);} .tab.on .ic{filter:none;}
 
   /* ===== ホーム:ヘッダー(明朝タイトル+天気) スクロールで流れる ===== */
-  .homehead{position:relative;flex-shrink:0;background:var(--paper);
+  .homehead{position:sticky;top:0;z-index:20;flex-shrink:0;background:var(--paper);
     padding:8px 20px 9px;display:flex;justify-content:space-between;align-items:flex-start;
     border-bottom:1px solid var(--line);}
   .brand{position:relative;}
