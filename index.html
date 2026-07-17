@@ -98,7 +98,23 @@
   .wx .lb{font-size:10.5px;font-weight:800;color:var(--ink);letter-spacing:.06em;}
   .wx .ic{font-size:19px;line-height:1;margin:1px 0;}
   .wx .tp{font-size:12.5px;font-weight:800;color:var(--ink);}
+  .wx .pp{font-size:9.5px;font-weight:800;color:#2E7DB0;letter-spacing:.02em;margin-top:1px;}
   .wx .sep{width:1px;background:var(--line);margin:3px 0;}
+  /* オフライン時に「いつ時点の予報か」を小さく出す帯 */
+  .wxstale{display:none;font-size:10px;font-weight:800;color:#8A8472;background:#F1EEE4;
+           border-radius:8px;padding:3px 8px;margin:0 14px 0;text-align:center;}
+  .wxstale.on{display:block;}
+  /* 警報・注意報バナー(発表中のみ表示) */
+  .alertbar{display:none;}
+  .alertbar.on{display:flex;align-items:center;gap:10px;
+    background:#FFF4E0;border:1.5px solid rgba(178,94,9,.35);border-radius:14px;
+    padding:11px 13px;}
+  .alertbar.danger{background:#FDECEC;border-color:rgba(197,48,48,.4);}
+  .alertbar .ai{font-size:22px;line-height:1;flex-shrink:0;}
+  .alertbar .atx b{display:block;font-size:15px;font-weight:900;color:#B25E09;}
+  .alertbar.danger .atx b{color:#C53030;}
+  .alertbar .atx span{display:block;font-size:11.5px;font-weight:700;color:#B25E09;opacity:.9;margin-top:1px;}
+  .alertbar.danger .atx span{color:#C53030;}
   .gearbtn{position:absolute;top:0;right:0;background:none;border:none;font-size:21px;cursor:pointer;
     opacity:.55;padding:2px;}
 
@@ -372,6 +388,8 @@
     <!-- ===== ① ホーム ===== -->
     <div class="page on" id="p-home">
       <div class="homebody">
+        <div class="alertbar" id="alertBar"><!-- v2.6:警報・注意報が発表中のときだけJSで表示 --></div>
+        <div class="wxstale" id="wxStale"><!-- v2.6:オフライン復元時のみ「◯時点の予報」を表示 --></div>
         <div class="todo">
           <div class="th"><span>🗓️</span>今日のやること<span class="src">予定表から自動</span></div>
           <div id="todoList"><!-- v2.5:カレンダー予定から自動生成(JS) --></div>
@@ -586,7 +604,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v2.5(試作)</span></div>
+          <div class="setrow">バージョン<span class="sv">v2.6(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -723,9 +741,9 @@
       '</div>'+
       '<button class="gearbtn" onclick="go(\'set\')" aria-label="設定">⚙️</button>'+
       '<div class="wx">'+
-        '<div class="c"><span class="lb">今日</span><span class="ic">☀️</span><span class="tp">28℃</span></div>'+
+        '<div class="c"><span class="lb">今日</span><span class="ic">☀️</span><span class="tp">28℃</span><span class="pp">降水10%</span></div>'+
         '<div class="sep"></div>'+
-        '<div class="c"><span class="lb">明日</span><span class="ic">🌧️</span><span class="tp">23℃</span></div>'+
+        '<div class="c"><span class="lb">明日</span><span class="ic">🌧️</span><span class="tp">23℃</span><span class="pp">降水60%</span></div>'+
       '</div>'+
     '</div>';
   function navHdr(back,label,title){
@@ -1138,19 +1156,46 @@
   }
   renderAiTip();
 
-  /* ===== v2.5 天気を実データ化(気象庁・完全無料・APIキー不要・登録不要) =====
+  /* ===== v2.6 天気を実データ化(気象庁・完全無料・APIキー不要・登録不要) =====
      エリアコード:120000=千葉県(行徳=市川市は「北西部」= areas[0])
      他県に変える時はこの6桁だけ変更(例:130000=東京都、110000=埼玉県)
-     オフラインや取得失敗時は、画面の見本値のまま静かに動き続けます。 */
+     v2.6の追加:
+       ① 警報・注意報バナー(大雨・洪水など発表中はホームに⚠️表示)
+       ② 天気のオフライン記憶(最後の予報をlocalStorageに保存。圏外時は
+          「◯日◯時時点の予報」として復元。見本値のままにしない)
+       ③ 降水確率の表示(取得済みJSONのpopsを使うだけ。追加通信なし) */
   var WX_AREA='120000';
+  var WX_LS_KEY='gyotoku_wx_v1';
+  var WX_ALERT_LS_KEY='gyotoku_alert_v1';
   function wxEmoji(txt){
     if(/雪/.test(txt))return '❄️';
     if(/雨/.test(txt))return (/晴/.test(txt)?'🌦️':'🌧️');
     if(/晴/.test(txt))return (/くもり|曇/.test(txt)?'⛅':'☀️');
     return '☁️';
   }
+  /* pop(降水確率)は6時間ブロックの配列。その日ぶんの最大値を代表値にする */
+  function popOfDate(ts,dateStr){
+    if(!ts||!ts.timeDefines)return null;
+    var pops=(ts.areas&&ts.areas[0]&&ts.areas[0].pops)||[];
+    var best=null;
+    ts.timeDefines.forEach(function(t,i){
+      if(t.slice(0,10)!==dateStr)return;
+      var v=parseInt(pops[i],10);
+      if(!isNaN(v)&&(best==null||v>best))best=v;
+    });
+    return best;
+  }
+  /* 「昨日18時時点」のように、いつ取得したかを短く言う */
+  function staleLabel(ts){
+    var d=new Date(ts), now=new Date();
+    var h=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+    var sameDay=ymd(d)===ymd(now);
+    var y=new Date(now); y.setDate(y.getDate()-1);
+    var day=sameDay?'今日':(ymd(d)===ymd(y)?'昨日':(d.getMonth()+1)+'月'+d.getDate()+'日');
+    return day+' '+h+'時点の予報';
+  }
   function fetchWeather(){
-    if(!window.fetch)return; /* 古い環境では見本値のまま */
+    if(!window.fetch){ applyWeather(); return; }
     fetch('https://www.jma.go.jp/bosai/forecast/data/forecast/'+WX_AREA+'.json')
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       .then(function(j){
@@ -1165,6 +1210,13 @@
           if(ds===today&&ws[i])wToday=ws[i];
           if(ds===tomo&&ws[i])wTomo=ws[i];
         });
+        /* 降水確率:shortFのpops(6時間ごと)から当日・翌日の最大を取る */
+        var pToday=null,pTomo=null;
+        try{
+          var tsP=shortF.timeSeries[1];
+          pToday=popOfDate(tsP,today);
+          pTomo=popOfDate(tsP,tomo);
+        }catch(e){}
         /* 最高気温:週間予報→当日詳細の順で日付ごとに拾う */
         var tmax={};
         try{
@@ -1185,26 +1237,92 @@
         }catch(e){}
         /* v2.5.1:直接DOMに書かず一旦キャッシュ→反映関数経由にする
            (固定ヘッダーは画面遷移のたびに作り直されるため、直書きだと見本値に戻ってしまう) */
-        WX_CACHE={wToday:wToday,wTomo:wTomo,tToday:tmax[today],tTomo:tmax[tomo]};
+        WX_CACHE={wToday:wToday,wTomo:wTomo,tToday:tmax[today],tTomo:tmax[tomo],
+                  pToday:pToday,pTomo:pTomo,ts:Date.now(),stale:false};
+        try{ localStorage.setItem(WX_LS_KEY,JSON.stringify(WX_CACHE)); }catch(e){}
         applyWeather();
         renderAiTip(); /* 実際の予報にあわせて「本日の提案」も更新 */
       })
-      .catch(function(){ /* 圏外・オフライン時は見本値のまま */ });
+      .catch(function(){ applyWeather(); }); /* 圏外:保存済み予報を復元(なければ見本値) */
   }
   var WX_CACHE=null;
+  function loadWxFromStore(){
+    try{
+      var s=localStorage.getItem(WX_LS_KEY); if(!s)return null;
+      var o=JSON.parse(s); o.stale=true; return o;
+    }catch(e){ return null; }
+  }
   function applyWeather(){
-    if(!WX_CACHE)return;
+    if(!WX_CACHE)WX_CACHE=loadWxFromStore();
+    if(!WX_CACHE)return; /* 保存も無ければ見本値のまま */
     var cs=document.querySelectorAll('.wx .c');
-    if(cs[0]&&WX_CACHE.wToday){
-      cs[0].querySelector('.ic').textContent=wxEmoji(WX_CACHE.wToday);
-      if(WX_CACHE.tToday!=null)cs[0].querySelector('.tp').textContent=WX_CACHE.tToday+'℃';
+    function setC(c,w,t,p){
+      if(!c)return;
+      if(w)c.querySelector('.ic').textContent=wxEmoji(w);
+      if(t!=null)c.querySelector('.tp').textContent=t+'℃';
+      var pp=c.querySelector('.pp'); if(pp)pp.textContent=(p!=null?'降水'+p+'%':'降水−');
     }
-    if(cs[1]&&WX_CACHE.wTomo){
-      cs[1].querySelector('.ic').textContent=wxEmoji(WX_CACHE.wTomo);
-      if(WX_CACHE.tTomo!=null)cs[1].querySelector('.tp').textContent=WX_CACHE.tTomo+'℃';
+    setC(cs[0],WX_CACHE.wToday,WX_CACHE.tToday,WX_CACHE.pToday);
+    setC(cs[1],WX_CACHE.wTomo,WX_CACHE.tTomo,WX_CACHE.pTomo);
+    var st=document.getElementById('wxStale');
+    if(st){
+      if(WX_CACHE.stale&&WX_CACHE.ts){ st.textContent='📡 '+staleLabel(WX_CACHE.ts); st.classList.add('on'); }
+      else st.classList.remove('on');
+    }
+  }
+
+  /* ===== ① 警報・注意報バナー(気象庁 warning JSON・無料) ===== */
+  var WX_ALERT=null;
+  function fetchAlerts(){
+    if(!window.fetch){ applyAlerts(); return; }
+    fetch('https://www.jma.go.jp/bosai/warning/data/warning/'+WX_AREA+'.json')
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(j){
+        var names=[]; var seen={};
+        (j.areaTypes||[]).forEach(function(at){
+          (at.areas||[]).forEach(function(a){
+            (a.warnings||[]).forEach(function(w){
+              if(!w||!w.status)return;
+              if(/解除|なし/.test(w.status))return;
+              var nm=WARN_NAME[w.code]; if(!nm||seen[nm])return;
+              seen[nm]=1; names.push(nm);
+            });
+          });
+        });
+        WX_ALERT={names:names,ts:Date.now(),stale:false};
+        try{ localStorage.setItem(WX_ALERT_LS_KEY,JSON.stringify(WX_ALERT)); }catch(e){}
+        applyAlerts();
+      })
+      .catch(function(){ applyAlerts(); });
+  }
+  var WARN_NAME={
+    '02':'暴風雪警報','03':'大雨警報','04':'洪水警報','05':'暴風警報',
+    '06':'大雪警報','07':'波浪警報','08':'高潮警報',
+    '10':'大雨注意報','12':'大雪注意報','13':'風雪注意報','14':'雷注意報',
+    '15':'風注意報','16':'波浪注意報','18':'洪水注意報','19':'高潮注意報',
+    '20':'濃霧注意報','22':'乾燥注意報','23':'なだれ注意報','24':'低温注意報',
+    '25':'霜注意報','26':'着雪注意報','27':'着氷注意報','32':'高潮警報'
+  };
+  function loadAlertsFromStore(){
+    try{ var s=localStorage.getItem(WX_ALERT_LS_KEY); if(!s)return null;
+      var o=JSON.parse(s); o.stale=true; return o; }catch(e){ return null; }
+  }
+  function applyAlerts(){
+    if(!WX_ALERT)WX_ALERT=loadAlertsFromStore();
+    var el=document.getElementById('alertBar'); if(!el)return;
+    if(WX_ALERT&&WX_ALERT.names&&WX_ALERT.names.length){
+      var warn=WX_ALERT.names.some(function(n){return /警報/.test(n);});
+      el.className='alertbar on'+(warn?' danger':'');
+      el.innerHTML='<span class="ai">⚠️</span>'+
+        '<div class="atx"><b>'+WX_ALERT.names.join('・')+' 発表中</b>'+
+        '<span>千葉県北西部 ・ 田の水位や周りの様子を確認してください'+
+        (WX_ALERT.stale?'(前回取得時点)':'')+'</span></div>';
+    }else{
+      el.className='alertbar'; el.innerHTML='';
     }
   }
   fetchWeather();
+  fetchAlerts();
 
   /* ===== v2.4 AI相談(A×Bミックス・完全無料) ===== */
   function setQ(el){ document.getElementById('aiQ').value=el.textContent; }
