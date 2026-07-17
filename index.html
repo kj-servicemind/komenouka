@@ -81,6 +81,7 @@
     text-align:center;padding:8px 0 4px;font-size:12px;line-height:1.2;font-weight:800;
     color:#A19C8B;background:none;border:none;cursor:pointer;letter-spacing:.02em;}
   .tab .ic{display:block;font-size:24px;margin-bottom:0;filter:grayscale(.3);}
+  .tab .ic img{width:23px;height:23px;object-fit:cover;border-radius:6px;vertical-align:middle;display:inline-block;}
   .tab.on{color:var(--green);} .tab.on .ic{filter:none;}
 
   /* ===== ホーム:ヘッダー(明朝タイトル+天気) スクロールで流れる ===== */
@@ -145,6 +146,7 @@
   /* v2.4 新tile色:ドローン=青緑 / AI相談=緑 */
   .t-teal{border-color:#BFDCDC;} .t-teal .tx{color:var(--teal);}
   .t-green2{border-color:#C2D6C5;} .t-green2 .tx{color:var(--green);}
+  .t-gray{border-color:#DAD6CC;} .t-gray .tx{color:#6B6656;}
   .tile .ic img{width:44px;height:44px;border-radius:10px;display:block;}
 
   /* ===== v2.4 ホーム:今日のやること(TODO)===== */
@@ -203,6 +205,19 @@
   .site .ar{font-size:20px;color:#C9C3B2;font-weight:800;}
   .e-naro{background:#E7F0FB;color:#2E6E8E;} .e-maff{background:#FDF0E4;color:#C56A24;}
   .e-boujo{background:#FBE9E7;color:#B34A3E;} .e-genno{background:#EAF3EA;color:#2F5D3A;}
+  /* 農研機構レポート(アコーディオン) */
+  .site.acc .ar{transition:transform .18s;}
+  .site.acc.open .ar{transform:rotate(90deg);}
+  .pdflist{display:none;flex-direction:column;gap:8px;margin:-4px 0 2px;padding-left:8px;}
+  .pdflist.open{display:flex;}
+  .pdfitem{display:flex;align-items:center;gap:11px;padding:12px 14px;border:1.5px solid var(--line);
+    border-radius:14px;background:#F7F5EF;cursor:pointer;box-shadow:0 2px 5px rgba(35,40,33,.04);}
+  .pdfitem .pn{width:27px;height:27px;border-radius:8px;background:#E7F0FB;color:#2E6E8E;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+  .pdfitem .pt{flex:1;}
+  .pdfitem .ptt{font-size:14.5px;font-weight:800;line-height:1.35;}
+  .pdfitem .pts{font-size:11.5px;font-weight:600;color:#8A8472;margin-top:2px;}
+  .pdfitem .pd{font-size:19px;color:#C9C3B2;font-weight:800;}
 
   /* ===== v2.4 ドローン散布 ===== */
   .dronehero{border:1.5px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 2px 5px rgba(35,40,33,.05);}
@@ -586,6 +601,13 @@
           <div class="setrow" onclick="cycleSlot(5)">ボタン6<span class="sv" id="slotv5">圃場マップ ›</span></div>
           <div class="setrow" onclick="resetTiles()">最初の並びに戻す<span class="sv">リセット ›</span></div>
         </div>
+        <div class="sethead">🔁 下のタブ(真ん中3つを入替・ホームとメニューは固定)</div>
+        <div class="setcard">
+          <div class="setrow" onclick="cycleTab(0)">左のタブ<span class="sv" id="tabv0">話して記録 ›</span></div>
+          <div class="setrow" onclick="cycleTab(1)">真ん中のタブ<span class="sv" id="tabv1">AI相談 ›</span></div>
+          <div class="setrow" onclick="cycleTab(2)">右のタブ<span class="sv" id="tabv2">圃場マップ ›</span></div>
+          <div class="setrow" onclick="resetTabs()">最初の並びに戻す<span class="sv">リセット ›</span></div>
+        </div>
         <div class="sethead">🎤 音声入力</div>
         <div class="setcard">
           <div class="setrow" onclick="toast('Safariでこのページを開きます')">うまく聞き取れない時<span class="sv">Safariで開く ›</span></div>
@@ -666,10 +688,24 @@
           <div class="tx"><div class="nm">「勘と経験の農業ではいけない」</div><div class="ds">創業12年で150haへ。記録・数値化と省力化で伸ばした米経営(マイナビ農業)</div></div>
           <div class="ar">›</div>
         </div>
-        <div class="site" onclick="openSite('https://agri.mynavi.jp/category/news/')">
-          <div class="emo e-naro">💰</div>
-          <div class="tx"><div class="nm">米農家の経営・最新ニュース</div><div class="ds">就農・設備投資・猛暑&カメムシ対策など、米農家の実話記事(マイナビ農業)</div></div>
+        <div class="site acc" id="naroCard" onclick="toggleNaro()">
+          <div class="emo e-genno">📚</div>
+          <div class="tx"><div class="nm">水田スマート農業 実証レポート(農研機構)</div><div class="ds">農研機構のスマート農業実証プロジェクト・水田作のレポート6本。タップで一覧が開きます</div></div>
           <div class="ar">›</div>
+        </div>
+        <div class="pdflist" id="naroList">
+          <div class="pdfitem" onclick="openSite('https://www.naro.go.jp/smart-nogyo/r2/files/r2_suiden-H10.pdf')">
+            <div class="pn">1</div><div class="pt"><div class="ptt">令和2年度 水田作</div><div class="pts">実証レポート ①・PDF</div></div><div class="pd">›</div></div>
+          <div class="pdfitem" onclick="openSite('https://www.naro.go.jp/smart-nogyo/r1/files/r1_suiden_DAI-H14.pdf')">
+            <div class="pn">2</div><div class="pt"><div class="ptt">令和元年度 水田作(大規模)</div><div class="pts">実証レポート ②・PDF</div></div><div class="pd">›</div></div>
+          <div class="pdfitem" onclick="openSite('https://www.naro.go.jp/smart-nogyo/r2/files/r2_suiden-H08.pdf')">
+            <div class="pn">3</div><div class="pt"><div class="ptt">令和2年度 水田作</div><div class="pts">実証レポート ③・PDF</div></div><div class="pd">›</div></div>
+          <div class="pdfitem" onclick="openSite('https://www.naro.go.jp/smart-nogyo/kaisho/files/kaisho_SU-wH01.pdf')">
+            <div class="pn">4</div><div class="pt"><div class="ptt">課題解消型 水田作</div><div class="pts">実証レポート ④・PDF</div></div><div class="pd">›</div></div>
+          <div class="pdfitem" onclick="openSite('https://www.naro.go.jp/smart-nogyo/r2/files/r2_suiden-H09.pdf')">
+            <div class="pn">5</div><div class="pt"><div class="ptt">令和2年度 水田作</div><div class="pts">実証レポート ⑤・PDF</div></div><div class="pd">›</div></div>
+          <div class="pdfitem" onclick="openSite('https://www.naro.go.jp/smart-nogyo/r1/files/r1_CHU-H12.pdf')">
+            <div class="pn">6</div><div class="pt"><div class="ptt">令和元年度</div><div class="pts">実証レポート ⑥・PDF</div></div><div class="pd">›</div></div>
         </div>
         <div class="site" onclick="openSite('https://www.maff.go.jp/j/syouan/syokubo/gaicyu/yosatu/index.html')">
           <div class="emo e-boujo">🐛</div>
@@ -711,9 +747,9 @@
 
   <div class="tabbar">
     <button class="tab on" id="t-home" onclick="go('home')"><span class="ic">🏠</span>ホーム</button>
-    <button class="tab" id="t-rec" onclick="go('voice')"><span class="ic">🎤</span>記録</button>
-    <button class="tab" id="t-ai" onclick="go('ai')"><span class="ic">💬</span>相談</button>
-    <button class="tab" id="t-map" onclick="go('map')"><span class="ic">🗺️</span>マップ</button>
+    <button class="tab" id="tabm0" onclick="goTab(0)"><span class="ic">🎤</span>記録</button>
+    <button class="tab" id="tabm1" onclick="goTab(1)"><span class="ic">💬</span>相談</button>
+    <button class="tab" id="tabm2" onclick="goTab(2)"><span class="ic">🗺️</span>マップ</button>
     <button class="tab" id="t-menu" onclick="go('menu')"><span class="ic">☰</span>メニュー</button>
   </div>
   <div class="toast" id="toast"></div>
@@ -729,7 +765,7 @@
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
   var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu'};
-  var tabOf={home:'t-home',fields:'t-menu',rec:'t-rec',pest:'t-menu',voice:'t-rec',cal:'t-menu',cost:'t-menu',team:'t-menu',diag:'t-home',drug:'t-menu',set:'t-menu',drone:'t-home',ai:'t-ai',map:'t-map',menu:'t-menu'};
+  var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
      ホームだけ明朝ロゴ+天気、他は「‹戻る + タイトル」。go(n)で#hdrに差し替える。 */
@@ -775,13 +811,13 @@
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
     for(var i=0;i<3;i++){document.getElementById('fs'+i).classList.toggle('on',i===n);}
     toast(n===0?'標準の文字にしました':(n===1?'文字を大きくしました':'文字を特大にしました'));}
-  function go(n){for(var k in pages){document.getElementById(pages[k]).classList.remove('on');}
+  var curScreen='home';
+  function go(n){curScreen=n;for(var k in pages){document.getElementById(pages[k]).classList.remove('on');}
     document.getElementById(pages[n]).classList.add('on');
     renderHeader(n);
     if(typeof applyDates==='function')applyDates();
     if(n==='home'&&typeof applyWeather==='function')applyWeather();
-    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
-    if(tabOf[n])document.getElementById(tabOf[n]).classList.add('on');
+    highlightTab(n);
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
   var lastMemo='';
   function saveWork(){toast('✅ 保存しました(みんなに共有)');setTimeout(function(){go('cal');},900);}
@@ -906,9 +942,12 @@
     map:  {cls:'t-purple',ic:'🗺️', tx:'圃場マップ'},
     pest: {cls:'t-gold',  ic:'🧪', tx:'農薬を計算'},
     fields:{cls:'t-purple',ic:'🌾', tx:'田んぼ一覧'},
-    team: {cls:'t-orange',ic:'👥', tx:'みんなと共有'}
+    team: {cls:'t-orange',ic:'👥', tx:'みんなと共有'},
+    cal:  {cls:'t-blue',  ic:'📅', tx:'カレンダー'},
+    cost: {cls:'t-red',   ic:'📊', tx:'生産原価'},
+    set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'}
   };
-  var TILE_POOL=['rec','voice','drone','diag','ai','map','pest','fields','team'];
+  var TILE_POOL=['rec','voice','drone','diag','ai','map','pest','fields','team','cal','cost','set'];
   var TILE_DEFAULT=['rec','voice','drone','diag','ai','map'];
   var TILE_LS_KEY='gyotokuHomeTiles_v1';
   function loadTiles(){
@@ -961,7 +1000,71 @@
     homeTiles=TILE_DEFAULT.slice(); saveTiles(); renderHomeGrid(); renderSlotRows();
     toast('ホームのボタンを最初の並びに戻しました');
   }
-  renderHomeGrid(); renderSlotRows();
+
+  /* ===== 下部タブバー(真ん中3つを入替・ホーム/メニューは固定) ===== */
+  var TAB_SHORT={rec:'作業',voice:'記録',drone:'ドローン',diag:'診断',ai:'相談',map:'マップ',
+                 pest:'農薬',fields:'田んぼ',team:'共有',cal:'予定',cost:'原価',set:'設定'};
+  var TAB_ALIAS={rec:'voice', voice:'rec'}; /* 記録系はどちらでも同じタブを点灯 */
+  var TAB_DEFAULT=['voice','ai','map'];
+  var TAB_LS_KEY='gyotokuTabs_v1';
+  function loadTabs(){
+    try{
+      var raw=localStorage.getItem(TAB_LS_KEY);
+      if(!raw)return TAB_DEFAULT.slice();
+      var arr=JSON.parse(raw);
+      if(!(arr instanceof Array)||arr.length!==3)return TAB_DEFAULT.slice();
+      for(var i=0;i<3;i++){
+        if(TILE_POOL.indexOf(arr[i])<0)return TAB_DEFAULT.slice();
+        if(arr.indexOf(arr[i])!==i)return TAB_DEFAULT.slice();
+      }
+      return arr;
+    }catch(e){return TAB_DEFAULT.slice();}
+  }
+  var midTabs=loadTabs();
+  function saveTabs(){try{localStorage.setItem(TAB_LS_KEY,JSON.stringify(midTabs));}catch(e){}}
+  function tabIcon(k){var d=TILE_DEFS[k];return d.img?droneImgTag():d.ic;}
+  function renderTabBar(){
+    for(var i=0;i<3;i++){
+      var b=document.getElementById('tabm'+i); if(!b)continue;
+      var k=midTabs[i];
+      b.innerHTML='<span class="ic">'+tabIcon(k)+'</span>'+TAB_SHORT[k];
+    }
+  }
+  function goTab(i){go(midTabs[i]);}
+  function highlightTab(n){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+    var el=null;
+    if(n==='home'){ el=document.getElementById('t-home'); }
+    else if(n==='menu'){ el=document.getElementById('t-menu'); }
+    else{
+      for(var i=0;i<3;i++){ if(midTabs[i]===n){ el=document.getElementById('tabm'+i); break; } }
+      if(!el){ var al=TAB_ALIAS[n];
+        if(al){ for(var j=0;j<3;j++){ if(midTabs[j]===al){ el=document.getElementById('tabm'+j); break; } } } }
+      if(!el){ el=document.getElementById('t-menu'); }
+    }
+    if(el)el.classList.add('on');
+  }
+  function renderTabRows(){
+    for(var i=0;i<3;i++){
+      var el=document.getElementById('tabv'+i);
+      if(el)el.textContent=TILE_DEFS[midTabs[i]].tx+' ›';
+    }
+  }
+  function cycleTab(i){
+    var cur=TILE_POOL.indexOf(midTabs[i]);
+    for(var step=1;step<=TILE_POOL.length;step++){
+      var cand=TILE_POOL[(cur+step)%TILE_POOL.length];
+      if(midTabs.indexOf(cand)<0){ midTabs[i]=cand; break; }
+    }
+    saveTabs(); renderTabBar(); renderTabRows(); highlightTab(curScreen);
+    toast('下の'+['左','真ん中','右'][i]+'のタブを「'+TILE_DEFS[midTabs[i]].tx+'」にしました');
+  }
+  function resetTabs(){
+    midTabs=TAB_DEFAULT.slice(); saveTabs(); renderTabBar(); renderTabRows(); highlightTab(curScreen);
+    toast('下のタブを最初の並びに戻しました');
+  }
+
+  renderHomeGrid(); renderSlotRows(); renderTabBar(); renderTabRows();
 
   /* ===== v2.5 予定データ(ホームTODO・カレンダー共通/localStorageに保存) ===== */
   var PLAN_LS_KEY='gyotoku.plans.v1';
@@ -1349,6 +1452,12 @@
     }
   })();
   function openSite(u){ window.open(u,'_blank'); }
+  function toggleNaro(){
+    var c=document.getElementById('naroCard'), l=document.getElementById('naroList');
+    if(!c||!l) return;
+    var open=l.classList.toggle('open');
+    c.classList.toggle('open', open);
+  }
   function tick(){var d=new Date();document.getElementById('clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
   tick();setInterval(tick,10000);
 
