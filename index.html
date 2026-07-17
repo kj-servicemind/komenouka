@@ -125,6 +125,14 @@
     background:var(--green-soft);border:1.5px solid #CBD9CC;border-radius:14px;padding:10px;
     font-size:15px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;}
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  /* 横スワイプで2ページ(全12機能) */
+  .gridpager{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .gridpager::-webkit-scrollbar{display:none;}
+  .gridpage{flex:0 0 100%;scroll-snap-align:start;box-sizing:border-box;padding:4px 3px 8px;}
+  .dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:10px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:#D6D0C2;transition:all .2s;}
+  .dot.on{background:var(--green);width:22px;border-radius:4px;}
   .tile{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:20px;
     aspect-ratio:1/1.04;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
     box-shadow:0 2px 5px rgba(35,40,33,.05);cursor:pointer;transition:transform .08s;}
@@ -414,7 +422,11 @@
           <div class="ah"><span class="bot">🤖</span>本日のAIからの提案<span class="tag">AI</span></div>
           <div class="atxt" id="aiTip">読み込み中…</div>
         </div>
-        <div class="grid" id="homeGrid"></div>
+        <div class="gridpager" id="homePager">
+          <div class="gridpage"><div class="grid" id="homeGrid"></div></div>
+          <div class="gridpage"><div class="grid" id="homeGrid2"></div></div>
+        </div>
+        <div class="dots" id="homeDots"><span class="dot on"></span><span class="dot"></span></div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -971,15 +983,18 @@
     var src=document.getElementById('droneSrc');
     return '<img src="'+(src?src.getAttribute('src'):'')+'" alt="ドローン">';
   }
+  function tileHtml(k){
+    var d=TILE_DEFS[k];
+    return '<div class="tile '+d.cls+'" onclick="go(\''+k+'\')"><span class="ic">'
+      +(d.img?droneImgTag():d.ic)+'</span><span class="tx">'+d.tx+'</span></div>';
+  }
   function renderHomeGrid(){
-    var g=document.getElementById('homeGrid'); if(!g)return;
-    var html='';
-    for(var i=0;i<homeTiles.length;i++){
-      var k=homeTiles[i], d=TILE_DEFS[k];
-      html+='<div class="tile '+d.cls+'" onclick="go(\''+k+'\')"><span class="ic">'
-        +(d.img?droneImgTag():d.ic)+'</span><span class="tx">'+d.tx+'</span></div>';
-    }
-    g.innerHTML=html;
+    var g=document.getElementById('homeGrid');
+    if(g){ var h=''; for(var i=0;i<homeTiles.length;i++)h+=tileHtml(homeTiles[i]); g.innerHTML=h; }
+    /* 2ページ目 = ホームの6ボタンに入っていない残り全機能 */
+    var g2=document.getElementById('homeGrid2');
+    if(g2){ var h2=''; for(var j=0;j<TILE_POOL.length;j++){ var k=TILE_POOL[j];
+      if(homeTiles.indexOf(k)<0)h2+=tileHtml(k); } g2.innerHTML=h2; }
   }
   function renderSlotRows(){
     for(var i=0;i<6;i++){
@@ -1065,6 +1080,14 @@
   }
 
   renderHomeGrid(); renderSlotRows(); renderTabBar(); renderTabRows();
+  (function(){
+    var pager=document.getElementById('homePager'); if(!pager)return;
+    pager.addEventListener('scroll',function(){
+      var idx=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));
+      var dots=document.querySelectorAll('#homeDots .dot');
+      for(var i=0;i<dots.length;i++)dots[i].classList.toggle('on',i===idx);
+    },{passive:true});
+  })();
 
   /* ===== v2.5 予定データ(ホームTODO・カレンダー共通/localStorageに保存) ===== */
   var PLAN_LS_KEY='gyotoku.plans.v1';
@@ -1260,14 +1283,17 @@
   renderAiTip();
 
   /* ===== v2.6 天気を実データ化(気象庁・完全無料・APIキー不要・登録不要) =====
-     エリアコード:120000=千葉県(行徳=市川市は「北西部」= areas[0])
-     他県に変える時はこの6桁だけ変更(例:130000=東京都、110000=埼玉県)
-     v2.6の追加:
-       ① 警報・注意報バナー(大雨・洪水など発表中はホームに⚠️表示)
-       ② 天気のオフライン記憶(最後の予報をlocalStorageに保存。圏外時は
-          「◯日◯時時点の予報」として復元。見本値のままにしない)
-       ③ 降水確率の表示(取得済みJSONのpopsを使うだけ。追加通信なし) */
-  var WX_AREA='120000';
+     WX_AREA=府県予報区コード。400000=福岡県(大刀洗町の県)。
+     大刀洗町(三井郡)は一次細分「筑後地方(400040)」・最寄り気温観測点「久留米」。
+     エリアはインデックス直指定ではなくコード/名称で探すので、JSONの並び順が変わっても安全。
+     他地域へ変える時は WX_AREA と WX_REGION_* / WX_TEMP_* / WX_AREA_LABEL を合わせて変更。
+     v2.6:①警報バナー ②天気のオフライン記憶 ③降水確率(pops) */
+  var WX_AREA='400000';             /* 福岡県(府県予報区) */
+  var WX_REGION_CODE='400040';      /* 筑後地方(大刀洗町の一次細分) */
+  var WX_REGION_NAME='筑後';         /* コード不一致時の名称フォールバック */
+  var WX_TEMP_CODE='82141';         /* 久留米(最寄りの気温観測点) */
+  var WX_TEMP_NAME='久留米';
+  var WX_AREA_LABEL='福岡県大刀洗町'; /* 警報バナーの地域表示 */
   var WX_LS_KEY='gyotoku_wx_v1';
   var WX_ALERT_LS_KEY='gyotoku_alert_v1';
   function wxEmoji(txt){
@@ -1276,10 +1302,21 @@
     if(/晴/.test(txt))return (/くもり|曇/.test(txt)?'⛅':'☀️');
     return '☁️';
   }
+  /* エリアをインデックス固定ではなくコード/名称で選ぶ(JSONの並び順変化に強い) */
+  function pickAreaIdx(ts, code, name){
+    if(!ts||!ts.areas)return 0;
+    for(var i=0;i<ts.areas.length;i++){
+      var meta=(ts.areas[i]||{}).area||{};
+      if(code&&meta.code===code)return i;
+      if(name&&meta.name&&meta.name.indexOf(name)>=0)return i;
+    }
+    return 0;
+  }
   /* pop(降水確率)は6時間ブロックの配列。その日ぶんの最大値を代表値にする */
-  function popOfDate(ts,dateStr){
+  function popOfDate(ts,dateStr,idx){
     if(!ts||!ts.timeDefines)return null;
-    var pops=(ts.areas&&ts.areas[0]&&ts.areas[0].pops)||[];
+    idx=idx||0;
+    var pops=(ts.areas&&ts.areas[idx]&&ts.areas[idx].pops)||[];
     var best=null;
     ts.timeDefines.forEach(function(t,i){
       if(t.slice(0,10)!==dateStr)return;
@@ -1307,7 +1344,9 @@
         var td=new Date(); td.setDate(td.getDate()+1); var tomo=ymd(td);
         /* 天気文(「くもり時々雨」等)を日付で拾う */
         var wToday='',wTomo='';
-        var ts0=shortF.timeSeries[0], ws=(ts0.areas[0]||{}).weathers||[];
+        var ts0=shortF.timeSeries[0];
+        var wi=pickAreaIdx(ts0,WX_REGION_CODE,WX_REGION_NAME);
+        var ws=(ts0.areas[wi]||{}).weathers||[];
         ts0.timeDefines.forEach(function(t,i){
           var ds=t.slice(0,10);
           if(ds===today&&ws[i])wToday=ws[i];
@@ -1317,23 +1356,26 @@
         var pToday=null,pTomo=null;
         try{
           var tsP=shortF.timeSeries[1];
-          pToday=popOfDate(tsP,today);
-          pTomo=popOfDate(tsP,tomo);
+          var pi=pickAreaIdx(tsP,WX_REGION_CODE,WX_REGION_NAME);
+          pToday=popOfDate(tsP,today,pi);
+          pTomo=popOfDate(tsP,tomo,pi);
         }catch(e){}
         /* 最高気温:週間予報→当日詳細の順で日付ごとに拾う */
         var tmax={};
         try{
           var wt=weekF.timeSeries[1];
+          var wti=pickAreaIdx(wt,WX_TEMP_CODE,WX_TEMP_NAME);
           wt.timeDefines.forEach(function(t,i){
-            var v=(wt.areas[0].tempsMax||[])[i];
+            var v=((wt.areas[wti]||{}).tempsMax||[])[i];
             if(v!==''&&v!=null)tmax[t.slice(0,10)]=parseInt(v,10);
           });
         }catch(e){}
         try{
           var st=shortF.timeSeries[2];
+          var si=pickAreaIdx(st,WX_TEMP_CODE,WX_TEMP_NAME);
           var byDate={};
           st.timeDefines.forEach(function(t,i){
-            var ds=t.slice(0,10), v=parseInt((st.areas[0].temps||[])[i],10);
+            var ds=t.slice(0,10), v=parseInt(((st.areas[si]||{}).temps||[])[i],10);
             if(!isNaN(v)&&(byDate[ds]==null||v>byDate[ds]))byDate[ds]=v;
           });
           for(var k in byDate)tmax[k]=byDate[k];
@@ -1375,24 +1417,34 @@
   }
 
   /* ===== ① 警報・注意報バナー(気象庁 warning JSON・無料) ===== */
+  /* 大刀洗町ピンポイント:筑後地方(一次細分400040)の警報・注意報だけを拾う。
+     ※さらに細かい二次細分コードが分かれば WX_WARN_AREA_CODES に追加できる。
+     想定コードがJSONに1つも無い時だけ、見逃し防止で県全体を走査する保険付き。 */
+  var WX_WARN_AREA_CODES=['400040'];
   var WX_ALERT=null;
+  function collectWarnings(j, filterCodes){
+    var names=[], seen={}, matched=false;
+    (j.areaTypes||[]).forEach(function(at){
+      (at.areas||[]).forEach(function(a){
+        if(filterCodes){ if(filterCodes.indexOf(a.code)<0)return; matched=true; }
+        (a.warnings||[]).forEach(function(w){
+          if(!w||!w.status)return;
+          if(/解除|なし/.test(w.status))return;
+          var nm=WARN_NAME[w.code]; if(!nm||seen[nm])return;
+          seen[nm]=1; names.push(nm);
+        });
+      });
+    });
+    return {names:names, matched:matched};
+  }
   function fetchAlerts(){
     if(!window.fetch){ applyAlerts(); return; }
     fetch('https://www.jma.go.jp/bosai/warning/data/warning/'+WX_AREA+'.json')
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       .then(function(j){
-        var names=[]; var seen={};
-        (j.areaTypes||[]).forEach(function(at){
-          (at.areas||[]).forEach(function(a){
-            (a.warnings||[]).forEach(function(w){
-              if(!w||!w.status)return;
-              if(/解除|なし/.test(w.status))return;
-              var nm=WARN_NAME[w.code]; if(!nm||seen[nm])return;
-              seen[nm]=1; names.push(nm);
-            });
-          });
-        });
-        WX_ALERT={names:names,ts:Date.now(),stale:false};
+        var res=collectWarnings(j, WX_WARN_AREA_CODES);
+        if(!res.matched) res=collectWarnings(j, null); /* 保険:想定エリアが無ければ県全体 */
+        WX_ALERT={names:res.names,ts:Date.now(),stale:false};
         try{ localStorage.setItem(WX_ALERT_LS_KEY,JSON.stringify(WX_ALERT)); }catch(e){}
         applyAlerts();
       })
@@ -1418,7 +1470,7 @@
       el.className='alertbar on'+(warn?' danger':'');
       el.innerHTML='<span class="ai">⚠️</span>'+
         '<div class="atx"><b>'+WX_ALERT.names.join('・')+' 発表中</b>'+
-        '<span>千葉県北西部 ・ 田の水位や周りの様子を確認してください'+
+        '<span>'+WX_AREA_LABEL+' ・ 田の水位や周りの様子を確認してください'+
         (WX_ALERT.stale?'(前回取得時点)':'')+'</span></div>';
     }else{
       el.className='alertbar'; el.innerHTML='';
