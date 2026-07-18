@@ -399,6 +399,72 @@
   .freebar{margin-top:14px;font-size:13px;font-weight:800;color:var(--green-deep);text-align:center;
     background:var(--green-soft);border:1px solid #BDCFC0;border-radius:10px;padding:8px 12px;max-width:390px;}
   .hint{font-size:12px;color:#77725F;margin-top:8px;text-align:center;max-width:390px;line-height:1.6;}
+
+  /* ===== 稲作先生 ===== */
+  .tile.inasaku{background:linear-gradient(140deg,#3A7048,#213F29);border-color:#213F29;}
+  .tile.inasaku .tx{color:#fff;}
+  .ina-wrap{padding:14px 14px 18px;}
+  .ina-form-lbl{text-align:center;font-family:var(--mincho);font-size:17px;font-weight:800;margin:14px 0 8px;letter-spacing:.03em;}
+  .ina-sel{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:14px 16px;
+    font-size:17px;font-weight:700;color:var(--ink);-webkit-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239A9584' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 16px center;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .ina-date{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:13px 16px;
+    font-size:17px;font-weight:700;color:var(--ink);-webkit-appearance:none;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .ina-next{width:100%;margin-top:22px;background:linear-gradient(180deg,#8DC63F,#6FA82E);border:none;
+    border-radius:999px;padding:16px;font-size:18px;font-weight:800;color:#fff;
+    box-shadow:0 6px 16px rgba(111,168,46,.4);letter-spacing:.06em;cursor:pointer;}
+  .ina-trust{margin-top:18px;background:var(--blue-soft);border:1px solid #CBDEE6;border-radius:13px;padding:12px 13px;font-size:12.5px;line-height:1.7;color:#2A4A57;}
+  .ina-trust b{color:var(--blue);}
+  .ina-link{display:block;text-align:center;margin-top:12px;font-size:13.5px;font-weight:800;color:var(--blue);text-decoration:underline;cursor:pointer;}
+
+  .ina-now{background:linear-gradient(135deg,var(--green) 0%,var(--green-deep) 100%);color:#fff;
+    border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 6px 18px rgba(33,63,41,.28);}
+  .ina-now .lbl{font-size:11px;font-weight:700;opacity:.85;letter-spacing:.06em;margin-bottom:2px;}
+  .ina-now .stg{font-family:var(--mincho);font-size:21px;font-weight:800;letter-spacing:.03em;}
+  .ina-now .pred{font-size:11.5px;opacity:.92;margin-top:3px;font-weight:600;}
+  .ina-now .wxtip{margin-top:10px;background:rgba(255,255,255,.16);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.5;font-weight:600;}
+
+  .ina-seclbl{font-size:11px;font-weight:800;color:#7A7565;letter-spacing:.06em;margin:4px 3px 7px;}
+  .ina-stg{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px;
+    display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;}
+  .ina-stg.done{opacity:.62;}
+  .ina-stg.now{border:2px solid var(--green);background:var(--green-soft);box-shadow:0 4px 12px rgba(47,93,58,.16);}
+  .ina-stg .no{font-family:var(--mincho);font-size:18px;font-weight:800;color:var(--green-deep);width:22px;text-align:center;}
+  .ina-stg .nmw{flex:1;}
+  .ina-stg .nm{font-size:15.5px;font-weight:700;}
+  .ina-stg .dt{font-size:11px;color:#9A9584;font-weight:600;margin-top:1px;}
+  .ina-stg .st{font-size:12.5px;font-weight:700;}
+  .ina-stg.done .st{color:var(--green);}
+  .ina-stg.now .st,.ina-stg.now .nm{color:var(--green-deep);font-weight:800;}
+  .ina-stg.todo .st{color:#B0AC9E;}
+
+  .ina-why{background:#fff;border:1.5px solid #CBDEE6;border-radius:16px;padding:14px 15px;margin-top:14px;box-shadow:0 2px 6px rgba(46,110,142,.1);}
+  .ina-why .wt{display:flex;align-items:center;gap:8px;font-family:var(--mincho);font-size:15px;font-weight:800;color:var(--blue);margin-bottom:10px;}
+  .ina-why .item{display:flex;gap:9px;padding:8px 0;border-top:1px solid #EEF2F0;}
+  .ina-why .item:first-of-type{border-top:none;}
+  .ina-why .num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .ina-why .wtx{font-size:12.5px;line-height:1.55;color:#33403A;}
+  .ina-why .wtx b{color:#fff;background:var(--blue);padding:0 4px;border-radius:4px;font-weight:700;}
+  .ina-fix{width:100%;background:var(--gold-soft);border:1.5px solid #E6D6B8;border-radius:12px;padding:12px;text-align:center;font-size:13.5px;font-weight:800;color:var(--gold);margin-top:10px;cursor:pointer;}
+  .ina-fix small{display:block;font-size:11px;font-weight:600;color:#A89463;margin-top:2px;}
+
+  .ina-hero{text-align:center;padding:4px 0 12px;border-bottom:1px dashed var(--line);margin-bottom:12px;}
+  .ina-hero .no{font-family:var(--mincho);font-size:13px;font-weight:800;color:var(--green);letter-spacing:.1em;}
+  .ina-hero .nm{font-family:var(--mincho);font-size:24px;font-weight:800;letter-spacing:.04em;margin-top:2px;}
+  .ina-hero .badge{display:inline-block;margin-top:7px;background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;}
+  .ina-info{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:9px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .ina-info .hd{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+  .ina-info .ic{font-size:19px;}
+  .ina-info .tt{font-family:var(--mincho);font-size:15px;font-weight:800;letter-spacing:.02em;}
+  .ina-info .tx{font-size:13.5px;line-height:1.6;color:#3A362C;}
+  .ina-info.wx{background:var(--blue-soft);border-color:#CBDEE6;}
+  .ina-info.wx .tt{color:var(--blue);}
+  .ina-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 9px;}
+  .ina-act{background:var(--green-soft);border:1px solid #C2D6C5;border-radius:12px;padding:11px 8px;text-align:center;font-size:13px;font-weight:800;color:var(--green-deep);cursor:pointer;}
+  .ina-act .ic{font-size:17px;display:block;margin-bottom:2px;}
+  .ina-ksas{width:100%;background:#EDEBE4;border:1px dashed #C9C5B6;border-radius:12px;padding:12px;text-align:center;font-size:13px;font-weight:800;color:#9A9584;margin-top:3px;cursor:pointer;}
+  .ina-ksas small{display:block;font-size:10.5px;font-weight:600;margin-top:2px;color:#B0AC9E;}
 </style>
 </head>
 <body>
@@ -422,11 +488,8 @@
           <div class="ah"><span class="bot">🤖</span>本日のAIからの提案<span class="tag">AI</span></div>
           <div class="atxt" id="aiTip">読み込み中…</div>
         </div>
-        <div class="gridpager" id="homePager">
-          <div class="gridpage"><div class="grid" id="homeGrid"></div></div>
-          <div class="gridpage"><div class="grid" id="homeGrid2"></div></div>
-        </div>
-        <div class="dots" id="homeDots"><span class="dot on"></span><span class="dot"></span></div>
+        <div class="gridpager" id="homePager"></div>
+        <div class="dots" id="homeDots"></div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -755,6 +818,46 @@
       </div>
     </div>
 
+    <!-- ===== ⑯ 稲作先生 ===== -->
+    <div class="page" id="p-inasaku">
+      <div class="sc">
+        <div class="ina-wrap">
+          <!-- view A: 入力 -->
+          <div id="inaViewInput">
+            <div class="ina-form-lbl">品種</div>
+            <select class="ina-sel" id="inaVariety"></select>
+            <div class="ina-form-lbl">移植日（田植えした日）</div>
+            <input class="ina-date" type="date" id="inaDate">
+            <button class="ina-next" onclick="inaCalc()">計算する ▶</button>
+            <div class="ina-trust">
+              <b>🔬 なぜ当たるの？</b><br>
+              大刀洗町の気温をもとに、今どの時期かを毎日計算します。田や県が使う予測と同じしくみ。
+            </div>
+            <span class="ina-link" onclick="inaShowWhy()">▷ 予想のしくみをくわしく見る</span>
+          </div>
+
+          <!-- view B: しくみ -->
+          <div id="inaViewWhy" style="display:none;">
+            <div class="ina-why">
+              <div class="wt"><span>🔬</span>この予想は、こうして出しています</div>
+              <div class="item"><span class="num">1</span><div class="wtx"><b>根拠つきで表示</b>します。「8月22日ごろ 出穂予想」のように、当てずっぽうではなく気温をもとに計算した予想を、理由つきでお見せします。</div></div>
+              <div class="item"><span class="num">2</span><div class="wtx"><b>毎日、計算しなおし</b>ます。大刀洗町の気温データが新しくなるたびに、予想も自動で見直します。ほうっておいても最新に保たれます。</div></div>
+              <div class="item"><span class="num">3</span><div class="wtx"><b>実際とズレたら直せます</b>。予想と本当の出穂日が違ったら、実際の日を入れてください。以後はその日を基準に計算するので、どんどん正確になります。</div></div>
+              <div class="item"><span class="num">4</span><div class="wtx"><b>日が近づくほど当たります</b>。先の予想は「これまでの平年の気温＋天気予報」で出し、その日が近づくほど精度が上がります。</div></div>
+            </div>
+            <button class="ina-next" style="margin-top:16px;" onclick="inaBackToList()">わかりました ▶</button>
+          </div>
+
+          <!-- view C: ステージ一覧 -->
+          <div id="inaViewList" style="display:none;"></div>
+
+          <!-- view D: ステージ詳細 -->
+          <div id="inaViewDetail" style="display:none;"></div>
+        </div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+
   </div>
 
   <div class="tabbar">
@@ -776,7 +879,7 @@
            || window.matchMedia('(display-mode: standalone)').matches;
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
-  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu'};
+  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',inasaku:'p-inasaku'};
   var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
@@ -815,7 +918,8 @@
     drone: navHdr('home','ホーム','ドローン散布'),
     ai:    navHdr('home','戻る','AIに相談する'),
     map:   navHdr('home','ホーム','圃場マップ'),
-    menu:  navHdr(null,null,'メニュー')
+    menu:  navHdr(null,null,'メニュー'),
+    inasaku: navHdr('home','ホーム','稲作先生')
   };
   function renderHeader(n){ document.getElementById('hdr').innerHTML = HEADERS[n]||''; }
   function symTap(el){el.classList.toggle('on');}
@@ -829,9 +933,259 @@
     renderHeader(n);
     if(typeof applyDates==='function')applyDates();
     if(n==='home'&&typeof applyWeather==='function')applyWeather();
+    if(n==='inasaku'&&typeof inaEnter==='function')inaEnter();
     highlightTab(n);
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
   var lastMemo='';
+
+  /* =========================================================
+     稲作先生：積算気温モデルで生育ステージを自動計算
+     - 大刀洗町(久留米)の月別平年平均気温を内蔵(無料・オフラインでも計算可)
+     - 直近は気象庁予報(WX_CACHE)で補正 → 日が近いほど精度UP
+     - 出穂/収穫は農研機構・県試験場データ準拠のしきい値
+     ========================================================= */
+  /* 久留米(大刀洗の代表観測点)の月別平年平均気温(℃)。気象庁平年値に基づく概数。 */
+  var INA_NORMAL_TEMP=[6.4,7.3,10.6,15.4,19.9,23.4,27.3,28.0,24.4,18.6,12.9,8.0];
+  /* 品種テーブル。head=移植→出穂までの必要積算平均気温(℃日),
+     ripen=出穂→収穫の必要積算(℃日)。熟期(早晩性)を反映。
+     ヒノヒカリ(中生)を基準に、農研機構/県データで裏取りした値。 */
+  var INA_VARIETIES=[
+    {g:'福岡県の代表米', items:[
+      {k:'yumetsukushi', n:'夢つくし（極早生）',   head:1560, ripen:950},
+      {k:'genkitsukushi',n:'元気つくし（早生）',   head:1680, ripen:1000},
+      {k:'hinohikari',   n:'ヒノヒカリ（中生）',   head:1820, ripen:1000},
+      {k:'tsukushiroman',n:'つくしろまん',         head:1780, ripen:1000},
+      {k:'nikomaru',     n:'にこまる',             head:1880, ripen:1050},
+      {k:'milky',        n:'ミルキークイーン',     head:1720, ripen:1000},
+      {k:'nijinokira',   n:'にじのきらめき',       head:1800, ripen:1000},
+      {k:'tsuyakirari',  n:'つやきらり',           head:1680, ripen:1000},
+      {k:'tsuyaotome',   n:'つやおとめ',           head:1720, ripen:1000},
+      {k:'hiyokumochi',  n:'ヒヨクモチ（もち米）', head:1820, ripen:1000}
+    ]},
+    {g:'全国の主な品種', items:[
+      {k:'koshihikari',  n:'コシヒカリ',           head:1600, ripen:1000},
+      {k:'akitakomachi', n:'あきたこまち',         head:1520, ripen:1000},
+      {k:'hitomebore',   n:'ひとめぼれ',           head:1580, ripen:1000}
+    ]}
+  ];
+  var INA_VMAP={};
+  (function(){ for(var i=0;i<INA_VARIETIES.length;i++){var it=INA_VARIETIES[i].items;
+    for(var j=0;j<it.length;j++)INA_VMAP[it[j].k]=it[j];} })();
+  /* ステージ定義。frac=出穂までの積算に対する到達割合で境界を決める(育苗〜幼穂形成)。
+     出穂以降は積算で判定。 */
+  var INA_STAGES=[
+    {no:'①', nm:'育苗',              ic:'🌱'},
+    {no:'②', nm:'田植え',            ic:'🚜'},
+    {no:'③', nm:'活着・分げつ',      ic:'🌿'},
+    {no:'④', nm:'分げつ盛期・中干し',ic:'💧'},
+    {no:'⑤', nm:'幼穂形成期',        ic:'🌾'},
+    {no:'⑥', nm:'出穂',              ic:'🌼'},
+    {no:'⑦', nm:'登熟',              ic:'☀️'},
+    {no:'⑧', nm:'収穫・乾燥',        ic:'🌾'}
+  ];
+  /* 各ステージの中身(やること等)。ヒノヒカリ基準の一般的な内容。 */
+  var INA_DETAIL={
+    '①':{do:'健苗づくり。芽出し・緑化・硬化を丁寧に。',water:'苗が乾かないよう水を切らさない。',fert:'育苗箱の元肥。徒長させない。',pest:'苗立枯病に注意。風通しよく。',tip:'細植え・薄まきで丈夫な苗に。'},
+    '②':{do:'田植え。株間・植付株数を守る。',water:'植え付け後は浅水で活着を促す。',fert:'基肥を施用。',pest:'ジャンボタニシの食害に注意。',tip:'浅植え・浅水で活着を早める。'},
+    '③':{do:'分げつを確保する時期。',water:'浅水〜間断で分げつを促す。',fert:'必要なら分げつ肥。',pest:'イネミズゾウムシ等に注意。',tip:'水温を上げて分げつを増やす。'},
+    '④':{do:'有効茎が確保できたら中干し(5〜7日)。',water:'落水して土を乾かし、無効分げつを抑える。',fert:'中干し中は追肥を控える。',pest:'紋枯病の発生前チェック。',tip:'中干しのやりすぎに注意。ひび割れ程度で。'},
+    '⑤':{do:'中干しを終え、間断灌漑へ。',water:'穂ができ始める大事な時期。落水させすぎない。',fert:'穂肥のタイミング。幼穂の長さ(1〜2mm)で判断。',pest:'いもち病・カメムシの発生前チェック。',tip:'カメムシ対策は出穂10日前までに畦畔の草刈り。'},
+    '⑥':{do:'出穂期。開花・受粉の大切な時期。',water:'深水気味にして穂を守る。',fert:'原則追肥はしない。',pest:'穂いもち・カメムシに最警戒。',tip:'高温なら深水で高温障害を防ぐ。'},
+    '⑦':{do:'登熟期。籾を充実させる。',water:'間断灌漑。落水は早すぎない。',fert:'施肥はしない。',pest:'カメムシ・トビイロウンカに注意。',tip:'早期落水は胴割れ・品質低下のもと。'},
+    '⑧':{do:'刈取適期の見極めと収穫・乾燥。',water:'収穫直前まで間断灌水。',fert:'—',pest:'刈り遅れによる胴割れに注意。',tip:'出穂後およそ40日・積算約1000℃が目安。籾水分25%前後で刈取。'}
+  };
+
+  var INA_LS='gyotoku.inasaku.v1';
+  var inaState=null; /* {variety, transplant(ISO), actualHead(ISO|null), viewStage} */
+
+  function inaLoad(){
+    try{var s=localStorage.getItem(INA_LS); if(s)inaState=JSON.parse(s);}catch(e){inaState=null;}
+  }
+  function inaSave(){ try{localStorage.setItem(INA_LS,JSON.stringify(inaState));}catch(e){} }
+
+  /* ある日付の平均気温を返す。直近は予報(WX_CACHE)、それ以外は月別平年値。 */
+  function inaTempOn(d){
+    var today=new Date(); today.setHours(0,0,0,0);
+    var diff=Math.round((d-today)/86400000);
+    if(WX_CACHE&&!WX_CACHE.stale){
+      /* 予報は最高気温しか持たないため、平均≒最高-4℃で近似(夏場の概算) */
+      if(diff===0&&WX_CACHE.tToday!=null)return WX_CACHE.tToday-4;
+      if(diff===1&&WX_CACHE.tTomo!=null)return WX_CACHE.tTomo-4;
+    }
+    return INA_NORMAL_TEMP[d.getMonth()];
+  }
+  /* 移植日(or実出穂日)から今日までの積算平均気温 */
+  function inaAccum(fromISO,toDate){
+    var from=new Date(fromISO); from.setHours(0,0,0,0);
+    var sum=0, cur=new Date(from);
+    while(cur<=toDate){ sum+=inaTempOn(cur); cur.setDate(cur.getDate()+1); }
+    return sum;
+  }
+  /* 指定積算に達する日付を、開始日から気温を積み上げて求める */
+  function inaDateAtAccum(fromISO,targetAccum){
+    var from=new Date(fromISO); from.setHours(0,0,0,0);
+    var sum=0, cur=new Date(from), guard=0;
+    while(sum<targetAccum&&guard<400){ sum+=inaTempOn(cur); if(sum>=targetAccum)break; cur.setDate(cur.getDate()+1); guard++; }
+    return cur;
+  }
+  function inaFmt(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
+  function inaFmtFull(d){var m=d.getMonth()+1,dd=d.getDate();return d.getFullYear()+'/'+(m<10?'0':'')+m+'/'+(dd<10?'0':'')+dd;}
+
+  /* 生育計算の中核。今のステージ番号(0..7)と各ステージ予想日・出穂/収穫予想を返す */
+  function inaCompute(){
+    var v=INA_VMAP[inaState.variety]; if(!v)return null;
+    var today=new Date(); today.setHours(0,0,0,0);
+    var base=inaState.transplant;
+    /* 出穂予想日：実出穂日があればそれを採用(精度UP)、なければ積算headから予測 */
+    var headDate = inaState.actualHead ? new Date(inaState.actualHead)
+                                       : inaDateAtAccum(base, v.head);
+    headDate.setHours(0,0,0,0);
+    /* 収穫予想：出穂日から積算ripen */
+    var harvestDate=inaDateAtAccum(inaFmtFull(headDate), v.ripen);
+    /* 出穂までの積算(実測 or 予測) */
+    var headAccum=v.head;
+    var nowAccum=inaAccum(base, today);
+    /* ステージ境界(移植後の積算割合)。②田植え=0, ③活着=8%, ④分げつ盛期=45%,
+       ⑤幼穂形成=78%, ⑥出穂=100%。①育苗は移植前。 */
+    var bnd=[0,0.08,0.45,0.78,1.0];
+    var stageDates=[];
+    stageDates.push({no:'①', date:null}); /* 育苗(移植前) */
+    stageDates.push({no:'②', date:new Date(base)});
+    for(var s=1;s<bnd.length;s++){
+      var dt=(inaState.actualHead&&s===bnd.length-1)?headDate:inaDateAtAccum(base, headAccum*bnd[s]);
+      stageDates.push({no:INA_STAGES[s+1].no, date:dt});
+    }
+    /* ⑦登熟=出穂翌日〜, ⑧収穫=harvest */
+    var toujuku=new Date(headDate); toujuku.setDate(toujuku.getDate()+1);
+    stageDates.push({no:'⑦', date:toujuku});
+    stageDates.push({no:'⑧', date:harvestDate});
+    /* 今どのステージか：今日が各ステージ開始日を過ぎた最後のもの */
+    var curIdx=0;
+    for(var i=1;i<stageDates.length;i++){
+      if(stageDates[i].date&&today>=stageDates[i].date)curIdx=i;
+    }
+    if(today<new Date(base))curIdx=0; /* 移植前は育苗 */
+    return {v:v, curIdx:curIdx, stageDates:stageDates, headDate:headDate, harvestDate:harvestDate};
+  }
+
+  /* ==== 画面制御 ==== */
+  function inaShowOnly(id){
+    var ids=['inaViewInput','inaViewWhy','inaViewList','inaViewDetail'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]); if(el)el.style.display=(ids[i]===id)?'block':'none';}
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+  function inaInitInput(){
+    var sel=document.getElementById('inaVariety');
+    if(sel&&!sel._built){
+      var h='';
+      for(var g=0;g<INA_VARIETIES.length;g++){
+        h+='<optgroup label="'+INA_VARIETIES[g].g+'">';
+        var it=INA_VARIETIES[g].items;
+        for(var j=0;j<it.length;j++)h+='<option value="'+it[j].k+'">'+it[j].n+'</option>';
+        h+='</optgroup>';
+      }
+      sel.innerHTML=h; sel._built=true;
+    }
+    var dt=document.getElementById('inaDate');
+    if(inaState){ if(sel)sel.value=inaState.variety; if(dt)dt.value=inaState.transplant; }
+    else if(dt&&!dt.value){ var t=new Date(); dt.value=inaFmtFull(t); }
+  }
+  /* ホームや設定から稲作先生を開くときの入口 */
+  function inaEnter(){
+    inaInitInput();
+    if(inaState){ inaRenderList(); inaShowOnly('inaViewList'); }
+    else { inaShowOnly('inaViewInput'); }
+  }
+  function inaCalc(){
+    var sel=document.getElementById('inaVariety'), dt=document.getElementById('inaDate');
+    if(!dt.value){ toast('田植えした日を選んでください'); return; }
+    inaState={variety:sel.value, transplant:dt.value, actualHead:(inaState&&inaState.transplant===dt.value?inaState.actualHead:null), viewStage:null};
+    inaSave(); inaRenderList(); inaShowOnly('inaViewList');
+  }
+  function inaShowWhy(){ inaShowOnly('inaViewWhy'); }
+  function inaBackToList(){ if(inaState){inaRenderList(); inaShowOnly('inaViewList');} else inaShowOnly('inaViewInput'); }
+
+  function inaRenderList(){
+    var c=inaCompute(); if(!c){inaShowOnly('inaViewInput');return;}
+    var el=document.getElementById('inaViewList'); if(!el)return;
+    var cur=INA_STAGES[c.curIdx];
+    /* 天気ひとこと(既存のWX_CACHEから簡易生成) */
+    var wxLine='生育の状況を見ながら管理しましょう。';
+    if(WX_CACHE&&!WX_CACHE.stale){
+      if(WX_CACHE.pTomo!=null&&WX_CACHE.pTomo>=50)wxLine='明日は雨の予報。中干し中なら排水路をチェック。';
+      else if(WX_CACHE.tTomo!=null&&WX_CACHE.tTomo>=35)wxLine='明日は高温の予報。深水で高温障害を防ぎましょう。';
+    }
+    var h='';
+    h+='<div class="ina-now">'
+      +'<div class="lbl">📍 いまはここ（気温から計算）</div>'
+      +'<div class="stg">'+cur.no+' '+cur.nm+'</div>'
+      +'<div class="pred">出穂予想 '+inaFmt(c.headDate)+'ごろ ／ 収穫予想 '+inaFmt(c.harvestDate)+'ごろ</div>'
+      +'<div class="wxtip">💡 '+wxLine+'</div>'
+      +'</div>';
+    h+='<div class="ina-seclbl">生育の流れ（'+c.v.n+'・'+inaFmt(new Date(inaState.transplant))+'移植）</div>';
+    for(var i=0;i<INA_STAGES.length;i++){
+      var st=INA_STAGES[i], cls=(i<c.curIdx?'done':(i===c.curIdx?'now':'todo'));
+      var stx=(i<c.curIdx?'✅ 済み':(i===c.curIdx?'📍今ここ ›':'これから'));
+      var sd=c.stageDates[i]&&c.stageDates[i].date?inaFmt(c.stageDates[i].date)+(i>=5?'予想':'ごろ'):'';
+      h+='<div class="ina-stg '+cls+'" onclick="inaOpenStage('+i+')">'
+        +'<span class="no">'+st.no+'</span>'
+        +'<div class="nmw"><div class="nm">'+st.nm+'</div>'+(sd?'<div class="dt">'+sd+'</div>':'')+'</div>'
+        +'<span class="st">'+stx+'</span></div>';
+    }
+    /* 予想のしくみ(常設) */
+    h+='<div class="ina-why"><div class="wt"><span>🔬</span>この予想のしくみ</div>'
+      +'<div class="item"><span class="num">1</span><div class="wtx">「◯月◯日ごろ 出穂予想」と<b>根拠つき</b>で表示。断定しません。</div></div>'
+      +'<div class="item"><span class="num">2</span><div class="wtx">気温データが更新されるたびに<b>毎日 自動で計算し直し</b>。</div></div>'
+      +'<div class="item"><span class="num">3</span><div class="wtx">予想と実際がズレたら<b>実際の出穂日を手入力</b>→以後その実績日を基準に再計算（精度が上がる）。</div></div>'
+      +'<div class="item"><span class="num">4</span><div class="wtx">未来は<b>予報＋平年気温</b>で予測し、日が近づくほど精度向上。</div></div></div>';
+    h+='<div class="ina-fix" onclick="inaFixHead()">📝 実際の出穂日を入れて直す<small>ズレたと思ったらここから修正</small></div>';
+    h+='<div class="ina-link" onclick="inaShowOnly(\'inaViewInput\')" style="margin-top:14px;">▷ 品種・移植日を選び直す</div>';
+    el.innerHTML=h;
+  }
+
+  function inaOpenStage(i){
+    var c=inaCompute(); if(!c)return;
+    var st=INA_STAGES[i], d=INA_DETAIL[st.no]||{};
+    var el=document.getElementById('inaViewDetail'); if(!el)return;
+    var isNow=(i===c.curIdx);
+    var sd=c.stageDates[i]&&c.stageDates[i].date?inaFmt(c.stageDates[i].date):'';
+    var wxTx='大刀洗町の天気に合わせて確認しましょう。（気象庁データ連動）';
+    if(WX_CACHE&&!WX_CACHE.stale){
+      if(WX_CACHE.pTomo!=null&&WX_CACHE.pTomo>=50)wxTx='明日は大刀洗町で雨。排水路を確認。（気象庁データ連動）';
+      else if(WX_CACHE.tTomo!=null&&WX_CACHE.tTomo>=35)wxTx='明日は高温。深水で高温障害を防ぐ。（気象庁データ連動）';
+    }
+    var h='';
+    h+='<div class="ina-hero"><div class="no">STAGE '+st.no+'</div><div class="nm">'+st.nm+'</div>'
+      +'<div class="badge">'+(isNow?'📍 今この時期です'+(sd?'（'+sd+'〜）':''):(i<c.curIdx?'済み':'これから')+(sd?'（'+sd+'〜）':''))+'</div></div>';
+    h+='<div class="ina-info"><div class="hd"><span class="ic">🚜</span><span class="tt">やること</span></div><div class="tx">'+(d.do||'')+'</div></div>';
+    h+='<div class="ina-info"><div class="hd"><span class="ic">💧</span><span class="tt">水管理</span></div><div class="tx">'+(d.water||'')+'</div></div>';
+    h+='<div class="ina-info"><div class="hd"><span class="ic">🌱</span><span class="tt">肥料</span></div><div class="tx">'+(d.fert||'')+'</div></div>';
+    h+='<div class="ina-info"><div class="hd"><span class="ic">⚠️</span><span class="tt">注意する病害虫</span></div><div class="tx">'+(d.pest||'')+'</div></div>';
+    h+='<div class="ina-info"><div class="hd"><span class="ic">💡</span><span class="tt">失敗しないコツ</span></div><div class="tx">'+(d.tip||'')+'</div></div>';
+    if(isNow)h+='<div class="ina-info wx"><div class="hd"><span class="ic">🌤️</span><span class="tt">今日の天気アドバイス</span></div><div class="tx">'+wxTx+'</div></div>';
+    h+='<div class="ina-acts">'
+      +'<div class="ina-act" onclick="go(\'rec\')"><span class="ic">🎤</span>この作業を記録</div>'
+      +'<div class="ina-act" onclick="go(\'diag\')"><span class="ic">📷</span>病害虫を診断</div>'
+      +'<div class="ina-act" onclick="go(\'drug\')"><span class="ic">🔍</span>農薬を検索</div>'
+      +'<div class="ina-act" onclick="go(\'ai\')"><span class="ic">🤖</span>AIに相談</div>'
+      +'</div>';
+    h+='<div class="ina-ksas" onclick="toast(\'KSAS連携は準備中です\')">◆ KSASへ記録<small>連携の準備ができ次第つかえます</small></div>';
+    h+='<div class="ina-link" onclick="inaBackToList()" style="margin-top:14px;">‹ ステージ一覧へ戻る</div>';
+    el.innerHTML=h;
+    inaShowOnly('inaViewDetail');
+  }
+
+  function inaFixHead(){
+    var c=inaCompute(); var def=c?inaFmtFull(c.headDate):'';
+    var v=prompt('実際に出穂した日を入れてください（例 2026-08-22）。\nわかる範囲でOK。空欄で予想に戻します。', inaState.actualHead||def);
+    if(v===null)return;
+    v=v.trim();
+    if(v===''){ inaState.actualHead=null; toast('予想の計算に戻しました'); }
+    else if(/^\d{4}-\d{2}-\d{2}$/.test(v)){ inaState.actualHead=v; toast('実際の出穂日を反映しました'); }
+    else { toast('日付は 2026-08-22 の形で入れてください'); return; }
+    inaSave(); inaRenderList(); inaShowOnly('inaViewList');
+  }
+
   function saveWork(){toast('✅ 保存しました(みんなに共有)');setTimeout(function(){go('cal');},900);}
 
   /* ===== 本物の音声認識(Web Speech API) ===== */
@@ -957,10 +1311,11 @@
     team: {cls:'t-orange',ic:'👥', tx:'みんなと共有'},
     cal:  {cls:'t-blue',  ic:'📅', tx:'カレンダー'},
     cost: {cls:'t-red',   ic:'📊', tx:'生産原価'},
-    set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'}
+    set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
+    inasaku:{cls:'inasaku',ic:'🌾', tx:'稲作先生'}
   };
-  var TILE_POOL=['rec','voice','drone','diag','ai','map','pest','fields','team','cal','cost','set'];
-  var TILE_DEFAULT=['rec','voice','drone','diag','ai','map'];
+  var TILE_POOL=['rec','voice','drone','diag','ai','map','pest','fields','team','cal','cost','set','inasaku'];
+  var TILE_DEFAULT=['rec','voice','drone','diag','ai','inasaku'];
   var TILE_LS_KEY='gyotokuHomeTiles_v1';
   function loadTiles(){
     try{
@@ -989,12 +1344,28 @@
       +(d.img?droneImgTag():d.ic)+'</span><span class="tx">'+d.tx+'</span></div>';
   }
   function renderHomeGrid(){
-    var g=document.getElementById('homeGrid');
-    if(g){ var h=''; for(var i=0;i<homeTiles.length;i++)h+=tileHtml(homeTiles[i]); g.innerHTML=h; }
-    /* 2ページ目 = ホームの6ボタンに入っていない残り全機能 */
-    var g2=document.getElementById('homeGrid2');
-    if(g2){ var h2=''; for(var j=0;j<TILE_POOL.length;j++){ var k=TILE_POOL[j];
-      if(homeTiles.indexOf(k)<0)h2+=tileHtml(k); } g2.innerHTML=h2; }
+    /* 1ページ目=ホームで選んだ6つ、2ページ目以降=残り全機能を6個ずつ。
+       機能が増えるほどページが自動で増える(6個ごとに新ページ+ページ点も自動)。 */
+    var order=[];
+    for(var a=0;a<homeTiles.length;a++)order.push(homeTiles[a]);
+    for(var b=0;b<TILE_POOL.length;b++){ if(order.indexOf(TILE_POOL[b])<0)order.push(TILE_POOL[b]); }
+    var pager=document.getElementById('homePager');
+    if(pager){
+      var html='';
+      for(var p=0;p<order.length;p+=6){
+        html+='<div class="gridpage"><div class="grid">';
+        for(var q=p;q<p+6&&q<order.length;q++)html+=tileHtml(order[q]);
+        html+='</div></div>';
+      }
+      pager.innerHTML=html;
+    }
+    var pageCount=Math.ceil(order.length/6);
+    var dots=document.getElementById('homeDots');
+    if(dots){
+      var dh='';
+      for(var d=0;d<pageCount;d++)dh+='<span class="dot'+(d===0?' on':'')+'"></span>';
+      dots.innerHTML=dh;
+    }
   }
   function renderSlotRows(){
     for(var i=0;i<6;i++){
@@ -1088,6 +1459,7 @@
       for(var i=0;i<dots.length;i++)dots[i].classList.toggle('on',i===idx);
     },{passive:true});
   })();
+  if(typeof inaLoad==='function')inaLoad();
 
   /* ===== v2.5 予定データ(ホームTODO・カレンダー共通/localStorageに保存) ===== */
   var PLAN_LS_KEY='gyotoku.plans.v1';
