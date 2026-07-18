@@ -416,7 +416,7 @@
     box-shadow:0 6px 16px rgba(111,168,46,.4);letter-spacing:.06em;cursor:pointer;}
   .ina-trust{margin-top:18px;background:var(--blue-soft);border:1px solid #CBDEE6;border-radius:13px;padding:12px 13px;font-size:12.5px;line-height:1.7;color:#2A4A57;}
   .ina-trust b{color:var(--blue);}
-  .ina-link{display:block;text-align:center;margin-top:12px;font-size:13.5px;font-weight:800;color:var(--blue);text-decoration:underline;cursor:pointer;}
+  .ina-link{display:block;text-align:center;margin-top:12px;font-size:15.5px;font-weight:800;color:var(--blue);text-decoration:underline;cursor:pointer;}
 
   .ina-now{background:linear-gradient(135deg,var(--green) 0%,var(--green-deep) 100%);color:#fff;
     border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 6px 18px rgba(33,63,41,.28);}
@@ -440,14 +440,14 @@
   .ina-stg.todo .st{color:#B0AC9E;}
 
   .ina-why{background:#fff;border:1.5px solid #CBDEE6;border-radius:16px;padding:14px 15px;margin-top:14px;box-shadow:0 2px 6px rgba(46,110,142,.1);}
-  .ina-why .wt{display:flex;align-items:center;gap:8px;font-family:var(--mincho);font-size:15px;font-weight:800;color:var(--blue);margin-bottom:10px;}
-  .ina-why .item{display:flex;gap:9px;padding:8px 0;border-top:1px solid #EEF2F0;}
+  .ina-why .wt{display:flex;align-items:center;gap:8px;font-family:var(--mincho);font-size:17px;font-weight:800;color:var(--blue);margin-bottom:10px;}
+  .ina-why .item{display:flex;gap:9px;padding:10px 0;border-top:1px solid #EEF2F0;}
   .ina-why .item:first-of-type{border-top:none;}
-  .ina-why .num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-  .ina-why .wtx{font-size:12.5px;line-height:1.55;color:#33403A;}
-  .ina-why .wtx b{color:#fff;background:var(--blue);padding:0 4px;border-radius:4px;font-weight:700;}
-  .ina-fix{width:100%;background:var(--gold-soft);border:1.5px solid #E6D6B8;border-radius:12px;padding:12px;text-align:center;font-size:13.5px;font-weight:800;color:var(--gold);margin-top:10px;cursor:pointer;}
-  .ina-fix small{display:block;font-size:11px;font-weight:600;color:#A89463;margin-top:2px;}
+  .ina-why .num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .ina-why .wtx{font-size:15.5px;line-height:1.7;color:#16211B;font-weight:600;}
+  .ina-why .wtx b{color:#fff;background:var(--blue);padding:1px 5px;border-radius:4px;font-weight:800;}
+  .ina-fix{width:100%;background:var(--gold-soft);border:1.5px solid #E6D6B8;border-radius:12px;padding:12px;text-align:center;font-size:15.5px;font-weight:800;color:#8A611C;margin-top:10px;cursor:pointer;}
+  .ina-fix small{display:block;font-size:13px;font-weight:700;color:#7A6A44;margin-top:3px;}
 
   .ina-hero{text-align:center;padding:4px 0 12px;border-bottom:1px dashed var(--line);margin-bottom:12px;}
   .ina-hero .no{font-family:var(--mincho);font-size:13px;font-weight:800;color:var(--green);letter-spacing:.1em;}
@@ -922,6 +922,9 @@
     inasaku: navHdr('home','ホーム','稲作先生')
   };
   function renderHeader(n){ document.getElementById('hdr').innerHTML = HEADERS[n]||''; }
+  /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
+  var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
+    cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',inasaku:'home'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
@@ -1884,6 +1887,26 @@
   }
   function tick(){var d=new Date();document.getElementById('clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
   tick();setInterval(tick,10000);
+
+  /* ===== 横スワイプで前画面に戻る（全プロジェクト共通仕様） =====
+     ホーム画面は6ボタンの横スワイプページ送りと衝突するため対象外(BACK_MAPに'home'が無いので自然に無効化)。
+     右方向(指を左→右)へ十分な距離をすばやく動かした時だけ、その画面の「戻る」と同じ遷移を行う。 */
+  (function(){
+    var sx=0, sy=0, st=0, tracking=false;
+    var body=document.getElementById('body');
+    if(!body) return;
+    body.addEventListener('touchstart',function(e){
+      if(e.touches.length!==1) { tracking=false; return; }
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now(); tracking=true;
+    },{passive:true});
+    body.addEventListener('touchend',function(e){
+      if(!tracking) return; tracking=false;
+      var back=BACK_MAP[curScreen]; if(!back) return;
+      var t=e.changedTouches[0]; if(!t) return;
+      var dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
+      if(dx>70 && Math.abs(dy)<60 && dt<700){ go(back); }
+    },{passive:true});
+  })();
 
   /* ===== PWA:Service Worker登録(オフライン対応) ===== */
   if('serviceWorker' in navigator){
