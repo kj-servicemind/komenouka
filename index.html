@@ -485,6 +485,8 @@
   .cost-gh{display:flex;align-items:center;gap:8px;padding:12px 14px;font-size:16px;font-weight:900;color:var(--green-deep);cursor:pointer;}
   .cost-gh .cg-dot{width:12px;height:12px;border-radius:50%;flex:none;}
   .cost-gh .cg-n{margin-left:auto;font-weight:900;}
+  .cost-gh .cg-auto{margin-left:auto;font-size:12px;font-weight:800;color:var(--green);background:var(--green-soft);border-radius:999px;padding:3px 10px;}
+  .cost-gh .cg-auto + .cg-n{margin-left:8px;}
   .cost-gh .cg-chv{color:#B9B3A2;font-size:16px;margin-left:8px;transition:transform .2s;}
   .cost-gh.open .cg-chv{transform:rotate(90deg);}
   .cost-sub{display:none;padding:2px 14px 6px 34px;}
@@ -829,9 +831,9 @@
     <!-- ===== ⑤ 農薬を計算 ===== -->
     <div class="page" id="p-pest">
       <div class="sc">
-        <div class="fld"><div class="lb">農薬をえらぶ</div><div class="v" onclick="go('drug')">スタークル液剤<span class="chv">›</span></div></div>
+        <div class="fld"><div class="lb">農薬をえらぶ</div><div class="v" onclick="go('drug')"><span id="pestChemName">スタークル液剤</span><span class="chv">›</span></div></div>
         <div class="fld"><div class="lb">面積</div><div class="v">三島008 60.17a<span class="chv">›</span></div></div>
-        <div class="fld"><div class="lb">希釈倍率(自動)</div><div class="v">1000倍</div></div>
+        <div class="fld"><div class="lb">希釈倍率(自動)</div><div class="v"><span id="pestBai">1000</span>倍</div></div>
         <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big">602 L</span><br>入れる農薬の量:<span class="big">602 mL</span><br><span style="font-size:13px;color:#8A6A2E;">※適用病害虫・使用回数もOK(農水省DB)</span></div>
         <div id="mbBox"><!-- 🛡見張り番(JS) --></div>
         <div class="save" onclick="pestRecord()">✅ この内容で記録する</div>
@@ -869,20 +871,20 @@
         <div class="drugcard">
           <div class="nm">スタークル液剤10</div>
           <span class="tag">稲</span><span class="tag">カメムシ類</span><span class="tag">ウンカ類</span>
-          <div class="row2">希釈:1000倍|使用時期:収穫21日前まで|回数:2回以内</div>
-          <div class="use" onclick="toast('この農薬をセットしました');setTimeout(function(){go('pest');},700)">🧪 この農薬で計算する</div>
+          <div class="row2">希釈:1000倍|使用時期:収穫7日前まで|回数:3回以内</div>
+          <div class="use" onclick="setChem('スタークル液剤10',1000)">🧪 この農薬で計算する</div>
         </div>
         <div class="drugcard">
           <div class="nm">ブラシンフロアブル</div>
           <span class="tag">稲</span><span class="tag">いもち病</span>
-          <div class="row2">希釈:1000倍|使用時期:収穫14日前まで|回数:3回以内</div>
-          <div class="use" onclick="toast('この農薬をセットしました');setTimeout(function(){go('pest');},700)">🧪 この農薬で計算する</div>
+          <div class="row2">希釈:1000倍|使用時期:収穫21日前まで|回数:3回以内</div>
+          <div class="use" onclick="setChem('ブラシンフロアブル',1000)">🧪 この農薬で計算する</div>
         </div>
         <div class="drugcard">
           <div class="nm">アミスタートレボンSE</div>
           <span class="tag">稲</span><span class="tag">いもち病</span><span class="tag">カメムシ類</span>
-          <div class="row2">希釈:1000倍|使用時期:収穫14日前まで|回数:2回以内</div>
-          <div class="use" onclick="toast('この農薬をセットしました');setTimeout(function(){go('pest');},700)">🧪 この農薬で計算する</div>
+          <div class="row2">希釈:1000倍|使用時期:収穫7日前まで|回数:3回以内</div>
+          <div class="use" onclick="setChem('アミスタートレボンSE',1000)">🧪 この農薬で計算する</div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2187,6 +2189,18 @@
     }catch(e){}
     return null;
   }
+  /* v21 農薬選択→農薬名・希釈倍率・見張り番を連動 */
+  function mbKeyOf(name){
+    for(var i=0;i<NG_CHEMS.length;i++){ if(name.indexOf(NG_CHEMS[i])>=0) return NG_CHEMS[i]; }
+    return name;
+  }
+  function setChem(name, bai){
+    mbCurChem = mbKeyOf(name);
+    var nm=document.getElementById('pestChemName'); if(nm)nm.textContent=name;
+    if(bai){ var b=document.getElementById('pestBai'); if(b)b.textContent=bai; }
+    toast('この農薬をセットしました');
+    setTimeout(function(){ go('pest'); }, 700);
+  }
   function mbEnter(){
     var box=document.getElementById('mbBox'); if(!box)return;
     var lim=NG_LIMIT[mbCurChem];
@@ -2307,8 +2321,10 @@
     var h='';
     for(var i=0;i<COST_CATS.length;i++){
       var cat=COST_CATS[i], ct=costCatTotal(cat);
+      var allAuto=true; for(var a=0;a<cat.subs.length;a++){ if(cat.subs[a].type!=='auto'){ allAuto=false; break; } }
       h+='<div class="cost-grp"><div class="cost-gh" onclick="costToggle('+i+')" id="cgh'+i+'">'
         +'<span class="cg-dot" style="background:'+cat.dot+'"></span>'+cat.nm
+        +(allAuto?'<span class="cg-auto">自動</span>':'')
         +'<span class="cg-n">'+kiYen(ct)+'</span><span class="cg-chv">›</span></div>';
       h+='<div class="cost-sub" id="csub'+i+'">';
       for(var j=0;j<cat.subs.length;j++){ var sub=cat.subs[j];
