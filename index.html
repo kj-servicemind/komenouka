@@ -259,6 +259,25 @@
   .badge{font-size:14px;font-weight:800;padding:6px 12px;border-radius:10px;color:#fff;white-space:nowrap;}
   .b-done{background:var(--green);} .b-doing{background:var(--blue);} .b-warn{background:var(--red);}
   .b-here{background:var(--gold);color:#fff;}
+  /* ===== v20 田んぼ詳細(土メモ・今年まいたもの) ===== */
+  .fld-wrap{margin-bottom:9px;}
+  .fld-detail{display:none;background:#fff;border:1.5px solid var(--line);border-top:none;
+    border-radius:0 0 15px 15px;margin-top:-9px;padding:12px 16px 14px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
+  .fld-detail.open{display:block;}
+  .fld-wrap.open .rowcard{border-radius:15px 15px 0 0;}
+  .fld-soil-ttl{font-size:14px;font-weight:900;color:var(--green-deep);margin-bottom:6px;}
+  .fld-soil-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px;}
+  .fld-soil-tag{background:var(--green-soft);border:1.5px solid #C4D6C7;border-radius:999px;padding:6px 13px;
+    font-size:14px;font-weight:800;color:var(--green-deep);}
+  .fld-soil-tag.add{background:#fff;border-style:dashed;color:#8A8570;}
+  .fld-soil-memo{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;font-size:15px;
+    font-weight:700;color:#16211B;font-family:var(--mincho);outline:none;min-height:44px;box-sizing:border-box;}
+  .fld-mat-ttl{font-size:14px;font-weight:900;color:var(--green-deep);margin:11px 0 5px;}
+  .fld-mat{font-size:14px;font-weight:700;color:#16211B;line-height:1.7;}
+  .fld-mat .fm-row{display:flex;padding:4px 0;border-top:1px solid #F0ECE2;}
+  .fld-mat .fm-row:first-child{border-top:none;}
+  .fld-mat .fm-d{color:#8A8570;font-weight:800;min-width:48px;}
+  .fld-mat-empty{color:#9A9584;font-size:13.5px;font-weight:700;}
 
   /* 農薬計算 */
   .calcbox{background:var(--gold-soft);border:1.5px solid #E3D2AC;border-radius:14px;padding:14px;
@@ -318,6 +337,77 @@
     font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:1px;}
   .kroku-why .wtx{font-size:15px;font-weight:600;line-height:1.7;color:#16211B;}
   .kroku-why .wtx b{color:#111;font-weight:900;}
+
+  /* ===== v20 🌾肥料の栄養バランス ===== */
+  .hy-lead{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 13px;
+    font-size:15px;font-weight:700;color:#16211B;line-height:1.65;margin-bottom:10px;}
+  .hy-lead b{color:var(--green-deep);font-weight:900;}
+  .hy-graphcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 14px 12px;margin:10px 0;}
+  .hy-gt{font-size:15px;font-weight:900;color:var(--green-deep);margin-bottom:10px;}
+  .hy-graph{display:flex;gap:14px;align-items:flex-end;height:150px;padding:0 6px;}
+  .hy-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+  .hy-bar{width:74%;border-radius:8px 8px 0 0;min-height:4px;transition:height .3s;}
+  .hy-bar.n{background:#5C9A3E;} .hy-bar.p{background:#C99A2E;} .hy-bar.k{background:#4C82A8;}
+  .hy-amtlab{font-size:15px;font-weight:900;color:#16211B;margin-bottom:4px;}
+  .hy-lab{font-size:15px;font-weight:800;color:var(--green-deep);margin-top:6px;}
+  .hy-sub{font-size:12.5px;color:#8A8570;}
+  .hy-gnote{font-size:13.5px;color:#6B6656;font-weight:700;margin-top:10px;line-height:1.6;}
+  .hy-addttl{font-size:15px;font-weight:900;color:var(--green-deep);margin:14px 2px 6px;}
+  .hy-amtrow{display:flex;gap:9px;align-items:stretch;margin-top:8px;}
+  .hy-amt{flex:1;}
+  .hy-inp{width:100%;border:none;outline:none;font-size:20px;font-weight:900;color:#111;font-family:var(--gothic);background:transparent;padding:0;}
+  .hy-addbtn{background:var(--green);color:#fff;border-radius:14px;font-size:16px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;padding:0 18px;white-space:nowrap;}
+  .hy-list{margin-top:12px;}
+  .hy-item{display:flex;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:12px;
+    padding:10px 13px;margin-bottom:7px;font-size:15px;font-weight:700;color:#16211B;}
+  .hy-item .hy-inm{font-weight:900;}
+  .hy-item .hy-ikg{margin-left:auto;color:var(--green-deep);font-weight:900;}
+  .hy-item .hy-del{margin-left:12px;color:#B76A5A;font-size:20px;font-weight:900;padding:0 4px;}
+  .hy-empty{text-align:center;color:#9A9584;font-size:14px;font-weight:700;padding:14px 0;}
+
+  /* ===== v20 🚜機械の維持費 ===== */
+  .ki-tabs{display:flex;gap:8px;margin:2px 0 10px;flex-wrap:wrap;}
+  .ki-tab{flex:1;min-width:88px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 6px;
+    text-align:center;font-size:15px;font-weight:800;color:#6B6656;}
+  .ki-tab.on{background:var(--green);border-color:var(--green);color:#fff;}
+  .ki-tab .ke{font-size:22px;display:block;margin-bottom:2px;}
+  .ki-sumcard{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:14px;padding:13px 15px;margin-bottom:10px;}
+  .ki-sum{display:flex;align-items:baseline;}
+  .ki-sum.sub{margin-top:5px;}
+  .ki-suml{font-size:15px;font-weight:800;color:#8A7318;}
+  .ki-sumn{margin-left:auto;font-size:24px;font-weight:900;color:var(--green-deep);}
+  .ki-sumn2{margin-left:auto;font-size:16px;font-weight:800;color:#8A7318;}
+  .ki-list{margin-bottom:6px;}
+  .ki-item{display:flex;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:12px;
+    padding:10px 13px;margin-bottom:7px;font-size:15px;font-weight:700;color:#16211B;}
+  .ki-item .ki-d{color:#8A8570;font-weight:800;min-width:52px;}
+  .ki-item .ki-c{font-weight:900;margin-left:6px;}
+  .ki-item .ki-y{margin-left:auto;color:var(--green-deep);font-weight:900;}
+  .ki-item .ki-del{margin-left:12px;color:#B76A5A;font-size:20px;font-weight:900;padding:0 4px;}
+  .ki-empty{text-align:center;color:#9A9584;font-size:14px;font-weight:700;padding:14px 0;}
+  .ki-kinds{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
+  .ki-kind{background:var(--green-soft);border:1.5px solid #C4D6C7;border-radius:999px;padding:7px 14px;
+    font-size:14px;font-weight:800;color:var(--green-deep);}
+  .ki-kind.on{background:var(--green);border-color:var(--green);color:#fff;}
+  .ki-note{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 13px;
+    font-size:14px;font-weight:700;color:#16211B;line-height:1.6;margin-top:12px;}
+
+  /* ===== v20 🛡見張り番(農薬計算内) ===== */
+  .mb-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;margin:10px 0;}
+  .mb-ttl{font-size:16px;font-weight:900;color:var(--green-deep);margin-bottom:2px;}
+  .mb-meter{margin:11px 0 4px;}
+  .mb-top{display:flex;align-items:baseline;font-size:15px;font-weight:800;color:#16211B;margin-bottom:5px;}
+  .mb-top .mb-r{margin-left:auto;font-weight:900;color:var(--green);}
+  .mb-bar{height:15px;border-radius:8px;background:#EDEAE0;overflow:hidden;}
+  .mb-fill{height:100%;background:var(--green);border-radius:8px;}
+  .mb-cap{font-size:13px;font-weight:700;color:#6B6656;margin-top:5px;line-height:1.55;}
+  .mb-meter.warn .mb-r{color:var(--red);} .mb-meter.warn .mb-fill{background:var(--red);} .mb-meter.warn .mb-cap{color:var(--red);}
+  .mb-unreg{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:12px;padding:11px 13px;
+    font-size:14px;font-weight:700;color:#8A6A2E;line-height:1.6;}
+  .screen.fs-big .hy-inp,.screen.fs-big .hy-amtlab{font-size:22px;} .screen.fs-big .hy-lead,.screen.fs-big .hy-item,.screen.fs-big .ki-item{font-size:17px;}
+  .screen.fs-huge .hy-inp,.screen.fs-huge .hy-amtlab{font-size:24px;} .screen.fs-huge .hy-lead,.screen.fs-huge .hy-item,.screen.fs-huge .ki-item{font-size:19px;}
+
   .safari-tip{background:var(--orange-soft);border:1.5px solid #E0B98F;border-radius:12px;padding:11px 13px;
     font-size:14px;font-weight:800;color:#8A4A14;line-height:1.5;display:none;}
 
@@ -338,6 +428,22 @@
     font-size:19px;font-weight:800;text-align:center;cursor:pointer;box-shadow:0 6px 14px rgba(197,106,36,.22);letter-spacing:.02em;}
 
   /* カレンダー */
+  /* ===== v20 カレンダー・去年へ/検索 ===== */
+  .cal-tools{display:flex;gap:9px;margin-bottom:10px;}
+  .cal-tbtn{flex:1;background:#fff;border:1.5px solid var(--green);border-radius:12px;padding:11px 6px;
+    text-align:center;font-size:15px;font-weight:800;color:var(--green);}
+  .cal-tbtn.on{background:var(--green);color:#fff;}
+  .cal-searchbox{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:10px;}
+  .cal-sinp{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:16px;
+    font-weight:700;color:#111;font-family:var(--gothic);outline:none;}
+  .cal-sresult{margin-top:8px;}
+  .cal-sitem{display:flex;align-items:baseline;padding:8px 2px;font-size:14.5px;font-weight:700;color:#16211B;border-top:1px solid #F0ECE2;}
+  .cal-sitem:first-child{border-top:none;}
+  .cal-sitem .cal-sd{color:var(--green-deep);font-weight:900;min-width:78px;}
+  .cal-sitem .cal-sf{color:#8A8570;margin-left:6px;font-weight:800;}
+  .cal-sempty{color:#9A9584;font-size:14px;font-weight:700;padding:8px 2px;}
+  .cal-lastyear{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:10px;padding:8px 12px;
+    font-size:13.5px;font-weight:800;color:#8A6A2E;margin-bottom:10px;text-align:center;}
   .cal{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
   .calnav{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;margin-bottom:8px;}
   .calnav .ar{color:var(--green-deep);font-size:20px;padding:0 6px;cursor:pointer;}
@@ -367,6 +473,29 @@
   .costtable{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 5px rgba(35,40,33,.05);}
   .crow{display:flex;justify-content:space-between;padding:11px 16px;font-size:17px;font-weight:800;border-bottom:1px solid #EDE9DE;}
   .crow:last-child{border-bottom:none;} .crow.total{background:var(--gold-soft);font-size:19px;}
+  /* ===== v20 生産原価・詳細版 ===== */
+  .cost-lead{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:10px 13px;
+    font-size:14px;font-weight:700;color:#16211B;line-height:1.6;margin:10px 0;}
+  .cost-lead b{color:var(--green-deep);font-weight:900;}
+  .cost-total{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:14px;padding:13px 16px;
+    display:flex;align-items:baseline;margin-bottom:10px;}
+  .cost-total .t{font-size:16px;font-weight:800;color:#8A7318;}
+  .cost-total .n{margin-left:auto;font-size:24px;font-weight:900;color:var(--green-deep);}
+  .cost-grp{background:#fff;border:1.5px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:9px;box-shadow:0 1px 3px rgba(35,40,33,.04);}
+  .cost-gh{display:flex;align-items:center;gap:8px;padding:12px 14px;font-size:16px;font-weight:900;color:var(--green-deep);cursor:pointer;}
+  .cost-gh .cg-dot{width:12px;height:12px;border-radius:50%;flex:none;}
+  .cost-gh .cg-n{margin-left:auto;font-weight:900;}
+  .cost-gh .cg-chv{color:#B9B3A2;font-size:16px;margin-left:8px;transition:transform .2s;}
+  .cost-gh.open .cg-chv{transform:rotate(90deg);}
+  .cost-sub{display:none;padding:2px 14px 6px 34px;}
+  .cost-sub.open{display:block;}
+  .cost-srow{display:flex;align-items:center;padding:8px 0;font-size:14.5px;font-weight:700;color:#4a5048;border-top:1px solid #F0ECE2;}
+  .cost-srow:first-child{border-top:none;}
+  .cost-srow .cs-n{margin-left:auto;color:#16211B;font-weight:800;}
+  .cost-srow .cs-in{width:96px;text-align:right;border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;
+    font-size:15px;font-weight:800;color:#111;font-family:var(--gothic);}
+  .cost-srow .cs-auto{margin-left:auto;font-size:12.5px;font-weight:800;color:var(--green);background:var(--green-soft);border-radius:999px;padding:3px 9px;}
+  .cost-cmp{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;margin-top:8px;font-size:14.5px;font-weight:700;color:#16211B;line-height:1.7;}
 
   /* 共有 */
   .sharenote{background:var(--blue-soft);border:1.5px solid #B3CEDB;border-radius:14px;padding:12px 14px;
@@ -581,11 +710,7 @@
     <!-- ===== ② 田んぼ一覧 ===== -->
     <div class="page" id="p-fields">
       <div class="sc">
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">三島008</div><div class="ar">60.17a・コシヒカリ</div></div><span class="badge b-here">📍今ここ</span></div>
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">三島009</div><div class="ar">58.40a・コシヒカリ</div></div><span class="badge b-done">✅済み</span></div>
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">三島006</div><div class="ar">51.30a・にこまる</div></div><span class="badge b-doing">💧作業中</span></div>
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">三島005</div><div class="ar">35.00a・コシヒカリ</div></div><span class="badge b-warn">⚠️注意</span></div>
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">三島002</div><div class="ar">38.55a・コシヒカリ</div></div><span class="badge b-done">✅済み</span></div>
+        <div id="fieldsBody"><!-- 田んぼ(JS) --></div>
         <div class="ksasbtn" onclick="openKsas('航空写真マップを表示します(無料)')">🗺️ 航空写真の地図で見る(KSASを開く)</div>
         <div class="spacer"></div>
       </div>
@@ -651,6 +776,56 @@
       </div>
     </div>
 
+    <!-- ===== 🌾 肥料の栄養バランス(新) ===== -->
+    <div class="page" id="p-hiryo">
+      <div class="sc">
+        <div class="hy-lead">🎤で「三島008に化成を20キロあげた」と話すか、下から肥料を選んで量を入れるだけ。<b>窒素・りん酸・カリ</b>に自動で分けて、今年あげた栄養がひと目でわかります。</div>
+        <div class="fld" onclick="hyPickField()"><div class="lb">田んぼ</div><div class="v"><span id="hyFieldName">三島008</span><span class="chv">›</span></div></div>
+        <div class="hy-graphcard">
+          <div class="hy-gt">今年あげた栄養（合計）</div>
+          <div class="hy-graph" id="hyGraph"></div>
+          <div class="hy-gnote" id="hyGnote"></div>
+        </div>
+        <div class="hy-addttl">➕ 肥料を足す</div>
+        <div class="fld" onclick="hyPickFert()"><div class="lb">肥料をえらぶ</div><div class="v"><span id="hyFertName">化成14-14-14</span><span class="chv">›</span></div></div>
+        <div class="hy-amtrow">
+          <div class="fld hy-amt"><div class="lb">量（kg）</div><input class="hy-inp" id="hyKg" type="number" inputmode="decimal" placeholder="20" enterkeyhint="done"></div>
+          <div class="hy-addbtn" onclick="hyAdd()">＋ 記録する</div>
+        </div>
+        <div class="hy-list" id="hyList"></div>
+        <div class="kroku-why">
+          <div class="wt">🔎 なぜ栄養がわかるの？（しくみ）</div>
+          <div class="item"><span class="num">1</span><span class="wtx"><b>肥料の名前</b>…登録ずみの肥料の成分表（窒素・りん酸・カリの％）と照らし合わせます</span></div>
+          <div class="item"><span class="num">2</span><span class="wtx"><b>あげた量</b>…「◯kg × 成分％」で、窒素◯kg…を自動で計算します</span></div>
+          <div class="item"><span class="num">3</span><span class="wtx">インターネットの有料AIは使いません（アプリの中だけで計算＝無料）</span></div>
+        </div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+
+    <!-- ===== 🚜 機械の維持費(新) ===== -->
+    <div class="page" id="p-kikai">
+      <div class="sc">
+        <div class="hy-lead">トラクター・軽トラごとに、軽油やオイル交換などのお金を記録します。<b>年間いくらかかったか</b>がわかり、「買う・借りる」の判断に役立ちます。</div>
+        <div class="ki-tabs" id="kiTabs"></div>
+        <div class="ki-sumcard">
+          <div class="ki-sum"><span class="ki-suml">今年の合計</span><span class="ki-sumn" id="kiSumNow">0円</span></div>
+          <div class="ki-sum sub"><span class="ki-suml">去年</span><span class="ki-sumn2" id="kiSumPrev">—</span></div>
+        </div>
+        <div class="ki-list" id="kiList"></div>
+        <div class="hy-addttl">➕ 給油・整備を記録する</div>
+        <div class="fld"><div class="lb">内容をえらぶ</div>
+          <div class="ki-kinds" id="kiKinds"></div>
+        </div>
+        <div class="hy-amtrow">
+          <div class="fld hy-amt"><div class="lb">金額（円）</div><input class="hy-inp" id="kiYen" type="number" inputmode="numeric" placeholder="6400" enterkeyhint="done"></div>
+          <div class="hy-addbtn" onclick="kiAdd()">＋ 記録する</div>
+        </div>
+        <div class="ki-note">💡 記録がたまると、この機械が1年でいくらかかっているかがわかります。維持費が高いなら、次はレンタルやリースの方が安いかもしれません。</div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+
     <!-- ===== ⑤ 農薬を計算 ===== -->
     <div class="page" id="p-pest">
       <div class="sc">
@@ -658,7 +833,8 @@
         <div class="fld"><div class="lb">面積</div><div class="v">三島008 60.17a<span class="chv">›</span></div></div>
         <div class="fld"><div class="lb">希釈倍率(自動)</div><div class="v">1000倍</div></div>
         <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big">602 L</span><br>入れる農薬の量:<span class="big">602 mL</span><br><span style="font-size:13px;color:#8A6A2E;">※適用病害虫・使用回数もOK(農水省DB)</span></div>
-        <div class="save" onclick="toast('計算結果を記録しました')">✅ この内容で記録する</div>
+        <div id="mbBox"><!-- 🛡見張り番(JS) --></div>
+        <div class="save" onclick="pestRecord()">✅ この内容で記録する</div>
         <div class="wide" onclick="go('drug')">🔍 ほかの農薬をさがす(農水省DB・無料)</div>
         <div class="spacer"></div>
       </div>
@@ -715,6 +891,14 @@
     <!-- ===== ⑧ カレンダー ===== -->
     <div class="page" id="p-cal">
       <div class="sc">
+        <div class="cal-tools">
+          <div class="cal-tbtn" onclick="calLastYear()">🔙 去年の同じ月へ</div>
+          <div class="cal-tbtn" onclick="calSearchToggle()">🔍 メモを探す</div>
+        </div>
+        <div class="cal-searchbox" id="calSearchBox" style="display:none;">
+          <input class="cal-sinp" id="calSearchInp" type="search" placeholder="「種まき」「病気」などで探す" enterkeyhint="search" oninput="calSearch(this.value)">
+          <div class="cal-sresult" id="calSearchResult"></div>
+        </div>
         <div class="cal">
           <div class="calnav"><span class="ar" onclick="calMove(-1)">« ‹</span><span id="calTitle">…</span><span class="ar" onclick="calMove(1)">› »</span></div>
           <div class="calgrid" id="calGrid"><!-- v2.5:予定データから自動生成(JS) --></div>
@@ -729,17 +913,11 @@
     <div class="page" id="p-cost">
       <div class="sc">
         <div class="fld"><div class="lb">作付名</div><div class="v" style="font-size:16px;">コシヒカリ_三島008_2026<span class="chv">›</span></div></div>
-        <div class="donutwrap"><div class="donut"><div class="hole"><span class="t">合計</span><span class="n">608,658円</span></div></div></div>
-        <div class="leg2">
-          <span><span class="dot" style="background:#43A047;"></span>種苗費</span><span><span class="dot" style="background:var(--blue);"></span>農薬費</span>
-          <span><span class="dot" style="background:var(--purple);"></span>肥料費</span><span><span class="dot" style="background:var(--red);"></span>床土費</span><span><span class="dot" style="background:var(--gold);"></span>資材費</span>
-        </div>
-        <div class="costtable">
-          <div class="crow total"><span>合計</span><span>608,658円</span></div>
-          <div class="crow"><span>種苗費</span><span>20,116円</span></div><div class="crow"><span>農薬費</span><span>53,247円</span></div>
-          <div class="crow"><span>肥料費</span><span>345,294円</span></div><div class="crow"><span>床土費</span><span>100,000円</span></div><div class="crow"><span>資材費</span><span>90,000円</span></div>
-        </div>
-        <div class="wide" onclick="toast('去年 625,000円 → 今年 608,658円(-2.6%)')">📊 去年と比べる</div>
+        <div class="cost-lead">農水省の「米・生産費」と同じ費目にそろえました。<b>分からない費目は空欄でOK</b>（空欄は0円として合計に入りません）。肥料・農薬・燃料は他の画面の記録から自動で入ります。</div>
+        <div class="cost-total"><span class="t">物財費 合計</span><span class="n" id="costTotal">0円</span></div>
+        <div id="costBody"><!-- 費目(JS) --></div>
+        <div class="wide" onclick="costCompare()">📊 去年と比べる</div>
+        <div class="cost-lead" style="margin-top:10px;">※ 労働費（人の作業代）は入れていません。物にかかったお金だけを見る画面です。</div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -973,7 +1151,7 @@
            || window.matchMedia('(display-mode: standalone)').matches;
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
-  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku'};
+  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai'};
   var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
@@ -1013,13 +1191,16 @@
     ai:    navHdr('home','戻る','AIに相談する'),
     map:   navHdr('home','ホーム','圃場マップ'),
     kroku: navHdr('voice','話して記録','栽培管理記録簿'),
+    hiryo: navHdr('home','ホーム','肥料の栄養バランス'),
+    kikai: navHdr('home','ホーム','機械の維持費'),
     menu:  navHdr(null,null,'メニュー'),
     koutei: navHdr('home','ホーム','米づくり工程表')
   };
   function renderHeader(n){ document.getElementById('hdr').innerHTML = HEADERS[n]||''; }
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
-    cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home',kroku:'voice'};
+    cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home',kroku:'voice',
+    hiryo:'home',kikai:'home'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
@@ -1032,6 +1213,12 @@
     if(typeof applyDates==='function')applyDates();
     if(n==='home'&&typeof applyWeather==='function')applyWeather();
     if(n==='koutei'&&typeof ktEnter==='function')ktEnter();
+    if(n==='fields'&&typeof fieldsEnter==='function')fieldsEnter();
+    if(n==='hiryo'&&typeof hyEnter==='function')hyEnter();
+    if(n==='kikai'&&typeof kiEnter==='function')kiEnter();
+    if(n==='pest'&&typeof mbEnter==='function')mbEnter();
+    if(n==='cost'&&typeof costEnter==='function')costEnter();
+    if(n==='cal'&&typeof calEnter==='function')calEnter();
     highlightTab(n);
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
   var lastMemo='';
@@ -1176,12 +1363,20 @@
      ========================================================= */
   /* 圃場マスタ(田んぼ一覧と同じ) */
   var KT_FIELDS=[
-    {n:'三島008', a:'60.17a'},
-    {n:'三島009', a:'58.40a'},
-    {n:'三島006', a:'51.30a'},
-    {n:'三島005', a:'35.00a'},
-    {n:'三島002', a:'38.55a'}
+    {n:'三島008', a:'60.17a', crop:'コシヒカリ', badge:'here'},
+    {n:'三島009', a:'58.40a', crop:'コシヒカリ', badge:'done'},
+    {n:'三島006', a:'51.30a', crop:'にこまる',   badge:'doing'},
+    {n:'三島005', a:'35.00a', crop:'コシヒカリ', badge:'warn'},
+    {n:'三島002', a:'38.55a', crop:'コシヒカリ', badge:'done'}
   ];
+  var FIELD_BADGE={here:{c:'b-here',t:'📍今ここ'},done:{c:'b-done',t:'✅済み'},doing:{c:'b-doing',t:'💧作業中'},warn:{c:'b-warn',t:'⚠️注意'}};
+  /* 土のメモ（田んぼ別）localStorage */
+  var SOIL_LS='gyotoku.soil.v1';
+  var soilData={};   /* {田んぼ名:{tags:[...],memo:'...'}} */
+  var SOIL_TAG_POOL=['酸性ぎみ','中性','アルカリぎみ','水はけ良い','水はけ悪い','粘土質','砂質','肥えている','やせ気味'];
+  function soilLoad(){ try{var s=localStorage.getItem(SOIL_LS); soilData=s?JSON.parse(s):{};}catch(e){soilData={};}
+    if(!soilData||typeof soilData!=='object')soilData={}; }
+  function soilSave(){ try{localStorage.setItem(SOIL_LS,JSON.stringify(soilData));}catch(e){} }
   /* 全12工程。type:'rec'=記録から判定 / 'grow'=積算気温の計算から日付予想。
      ina は inaCompute().stageDates の添字(生育系のみ)。dtl は栽培アドバイス(INA_DETAIL)のキー。 */
   var KT_STEPS=[
@@ -1556,6 +1751,39 @@
     'ブラシン','コラトップ','オリゼメート','ラブサイド','ビーム',
     'バリダシン','モンカット','ジャンボ','ラウンドアップ','バスタ','プリグロックス',
     'ロータム','フェニックス','パダン','トレボン','アプロード'];
+  /* ===== v20 🛡見張り番：農薬の成分別ルール（年◯回まで・収穫◯日前まで） =====
+     ※御農園でよく使う代表だけ内蔵。ここに無い農薬は「未登録」と表示し、勝手に判定しない。
+        max=年間使用回数の上限 / phi=収穫前日数(この日数前までしか使えない)。名前は成分の代表商品名。
+        使う農薬が増えたら1行足すだけ（農水省DBの登録内容に合わせて調整）。 */
+  var NG_LIMIT={
+    'スタークル':{max:3, phi:7,  seibun:'ジノテフラン'},
+    'アドマイヤー':{max:3, phi:14, seibun:'イミダクロプリド'},
+    'ダントツ':{max:3, phi:7,  seibun:'クロチアニジン'},
+    'キラップ':{max:2, phi:14, seibun:'フィプロニル'},
+    'ブラシン':{max:3, phi:21, seibun:'フサライド・イソプロチオラン'},
+    'コラトップ':{max:3, phi:14, seibun:'イソプロチオラン等'},
+    'ビーム':{max:3, phi:21, seibun:'トリシクラゾール'},
+    'トレボン':{max:3, phi:7,  seibun:'エトフェンプロックス'},
+    'アプロード':{max:2, phi:14, seibun:'ブプロフェジン'}
+  };
+  /* ===== v20 🌾肥料の栄養バランス：肥料名→成分％(N窒素/P りん酸/K カリ) =====
+     ※代表的な肥料だけ内蔵。無い肥料は成分不明として扱い、勝手に数値を作らない。
+        「◯kg使った」×％で、窒素◯kg…を自動計算する。使う肥料が増えたら1行足すだけ。 */
+  var NG_FERT={
+    '尿素':{n:46,p:0,k:0},
+    '硫安':{n:21,p:0,k:0},
+    '過リン酸石灰':{n:0,p:17,k:0},
+    '塩化カリ':{n:0,p:0,k:60},
+    '化成8-8-8':{n:8,p:8,k:8},
+    '化成14-14-14':{n:14,p:14,k:14},
+    'CDU化成':{n:15,p:15,k:15},
+    'BB肥料':{n:14,p:14,k:14},
+    '苦土石灰':{n:0,p:0,k:0},
+    'ケイ酸':{n:0,p:0,k:0},
+    '穂肥':{n:12,p:0,k:12},
+    '元肥':{n:14,p:14,k:14}
+  };
+  var NG_FERT_NAMES=['化成14-14-14','化成8-8-8','過リン酸石灰','苦土石灰','塩化カリ','CDU化成','BB肥料','ケイ酸','尿素','硫安','穂肥','元肥'];
   /* 作業の辞書 */
   var NG_WORKS=[
     {re:/粗起|荒起|耕起/,w:'耕起'},{re:/代掻|しろかき|代かき/,w:'代かき'},
@@ -1691,6 +1919,434 @@
     document.body.removeChild(ta);
   }
 
+  /* ============================================================
+     🌾 田んぼ一覧(p-fields)：土のメモ＋今年まいたもの
+     ============================================================ */
+  function fieldsEnter(){ soilLoad(); ktLoad(); fieldsRender(); }
+  function fieldMaterials(field){
+    /* 台帳から、この田んぼの農薬・肥料の記録を新しい順で */
+    var out=[];
+    for(var i=0;i<ktLog.length;i++){ var e=ktLog[i];
+      if(e.field!==field) continue;
+      if(!e.chem && !e.mass) continue;
+      var label=e.chem||''; if(e.rate)label+=(label?' ':'')+e.rate+'倍'; if(e.vol)label+=' '+e.vol+'L'; if(e.mass)label+=' '+e.mass+'kg';
+      if(!label) label=e.text||'';
+      out.push({d:krMd(e.d), label:label});
+    }
+    out.reverse();
+    return out;
+  }
+  function fieldsRender(){
+    var body=document.getElementById('fieldsBody'); if(!body)return;
+    var h='';
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var f=KT_FIELDS[i], bd=FIELD_BADGE[f.badge]||FIELD_BADGE.done;
+      var sd=soilData[f.n]||{tags:[],memo:''};
+      h+='<div class="fld-wrap" id="fw'+i+'">';
+      h+='<div class="rowcard" onclick="fieldToggle('+i+')"><div><div class="nm">'+f.n+'</div>'
+        +'<div class="ar">'+f.a+'・'+f.crop+'</div></div><span class="badge '+bd.c+'">'+bd.t+'</span></div>';
+      h+='<div class="fld-detail" id="fd'+i+'">';
+      /* 土のメモ */
+      h+='<div class="fld-soil-ttl">🌱 土のメモ</div><div class="fld-soil-tags">';
+      var tags=sd.tags||[];
+      for(var t=0;t<tags.length;t++){ h+='<span class="fld-soil-tag" onclick="soilTagRemove(\''+f.n+'\',\''+tags[t]+'\')">'+tags[t]+' ×</span>'; }
+      h+='<span class="fld-soil-tag add" onclick="soilTagAdd(\''+f.n+'\')">＋ 特徴を足す</span></div>';
+      h+='<textarea class="fld-soil-memo" placeholder="例）日当たり良い。梅雨に水がたまりやすい。" '
+        +'onchange="soilMemoSet(\''+f.n+'\',this.value)">'+(sd.memo||'')+'</textarea>';
+      /* 今年まいたもの */
+      h+='<div class="fld-mat-ttl">🧪 今年この田んぼにまいたもの</div><div class="fld-mat">';
+      var mats=fieldMaterials(f.n);
+      if(!mats.length){ h+='<div class="fld-mat-empty">まだ記録はありません（🎤話して記録や農薬計算から自動でたまります）</div>'; }
+      else{ for(var m=0;m<mats.length && m<12;m++){ h+='<div class="fm-row"><span class="fm-d">'+mats[m].d+'</span><span>'+mats[m].label+'</span></div>'; } }
+      h+='</div></div></div>';
+    }
+    body.innerHTML=h;
+  }
+  function fieldToggle(i){
+    var wrap=document.getElementById('fw'+i), det=document.getElementById('fd'+i);
+    if(wrap)wrap.classList.toggle('open'); if(det)det.classList.toggle('open');
+  }
+  function soilTagAdd(field){
+    if(!soilData[field])soilData[field]={tags:[],memo:''};
+    var cur=soilData[field].tags||[];
+    /* 未使用のタグから次を1つ足す（シンプル：プールを順に） */
+    for(var i=0;i<SOIL_TAG_POOL.length;i++){ if(cur.indexOf(SOIL_TAG_POOL[i])<0){ cur.push(SOIL_TAG_POOL[i]); break; } }
+    soilData[field].tags=cur; soilSave(); fieldsRerenderOpen(field);
+  }
+  function soilTagRemove(field,tag){
+    if(!soilData[field])return; var cur=soilData[field].tags||[];
+    var idx=cur.indexOf(tag); if(idx>=0)cur.splice(idx,1); soilData[field].tags=cur; soilSave(); fieldsRerenderOpen(field);
+  }
+  function soilMemoSet(field,v){ if(!soilData[field])soilData[field]={tags:[],memo:''}; soilData[field].memo=v; soilSave(); }
+  function fieldsRerenderOpen(field){
+    /* タグ変更後、開いていた田んぼを開いたまま再描画 */
+    var openIdx=-1;
+    for(var i=0;i<KT_FIELDS.length;i++){ var w=document.getElementById('fw'+i); if(w&&w.classList.contains('open'))openIdx=i; }
+    fieldsRender();
+    if(openIdx>=0){ var w=document.getElementById('fw'+openIdx),d=document.getElementById('fd'+openIdx);
+      if(w)w.classList.add('open'); if(d)d.classList.add('open'); }
+    toast('土のメモを更新しました');
+  }
+
+  /* ============================================================
+     🌾 肥料の栄養バランス(p-hiryo)
+     ・専用の保存キー gyotoku.hiryo.v1（田んぼ別の肥料記録）
+     ・NG_FERT の成分％で 窒素/りん酸/カリ を自動計算
+     ・🎤話して記録で肥料+kgが台帳に入っていれば、それも合算して表示
+     ============================================================ */
+  var HY_LS='gyotoku.hiryo.v1';
+  var hyLog=[];              /* [{d,field,fert,kg}] */
+  var hyField='三島008';
+  var hyFert='化成14-14-14';
+  function hyLoad(){ try{var s=localStorage.getItem(HY_LS); hyLog=s?JSON.parse(s):[];}catch(e){hyLog=[];}
+    if(!(hyLog instanceof Array))hyLog=[]; }
+  function hySave(){ try{localStorage.setItem(HY_LS,JSON.stringify(hyLog));}catch(e){} }
+  /* 台帳(worklog)から、この田んぼの肥料記録も拾う（二重入力を防ぐ） */
+  function hyFromWorklog(field){
+    var out=[];
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i];
+      if(e.field!==field) continue;
+      if(!e.mass) continue;                 /* kg(mass)が無ければ肥料量ではない */
+      var name=e.chem||'';                  /* ながら記録は肥料名もchemに入る場合がある */
+      if(!NG_FERT[name]){                    /* 成分表に無い名前は「その他肥料」扱いで成分0 */
+        name=name||'肥料';
+      }
+      out.push({d:e.d, field:field, fert:name, kg:parseFloat(e.mass)||0, fromWl:true});
+    }
+    return out;
+  }
+  function hyRows(field){
+    var rows=[];
+    for(var i=0;i<hyLog.length;i++){ if(hyLog[i].field===field) rows.push(hyLog[i]); }
+    return rows.concat(hyFromWorklog(field));
+  }
+  function hyTotals(field){
+    var t={n:0,p:0,k:0}, rows=hyRows(field);
+    for(var i=0;i<rows.length;i++){
+      var f=NG_FERT[rows[i].fert], kg=rows[i].kg||0;
+      if(!f) continue;
+      t.n+=kg*f.n/100; t.p+=kg*f.p/100; t.k+=kg*f.k/100;
+    }
+    return t;
+  }
+  function hyR1(x){ return Math.round(x*10)/10; }
+  function hyEnter(){
+    hyLoad();
+    var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=hyField;
+    var ft=document.getElementById('hyFertName'); if(ft)ft.textContent=hyFert;
+    hyRender();
+  }
+  function hyRender(){
+    var t=hyTotals(hyField);
+    var max=Math.max(t.n,t.p,t.k,0.001);
+    var g=document.getElementById('hyGraph');
+    function bar(cls,val,lab){
+      var h=Math.round(val/max*130)+4;
+      return '<div class="hy-col"><div class="hy-amtlab">'+hyR1(val)+'</div>'
+        +'<div class="hy-bar '+cls+'" style="height:'+h+'px"></div>'
+        +'<div class="hy-lab">'+lab+'</div><div class="hy-sub">kg</div></div>';
+    }
+    if(g)g.innerHTML=bar('n',t.n,'窒素')+bar('p',t.p,'りん酸')+bar('k',t.k,'カリ');
+    var note=document.getElementById('hyGnote');
+    if(note){
+      if(t.n+t.p+t.k<=0){ note.innerHTML='まだ記録がありません。下から肥料を選んで量を入れると、栄養が自動で計算されます。'; }
+      else{ note.innerHTML='📗 '+hyField+' に今年あげた栄養：窒素 '+hyR1(t.n)+'kg・りん酸 '+hyR1(t.p)+'kg・カリ '+hyR1(t.k)+'kg'; }
+    }
+    /* 記録リスト */
+    var rows=hyRows(hyField), lh='';
+    for(var i=rows.length-1;i>=0;i--){
+      var r=rows[i], comp=NG_FERT[r.fert];
+      var sub=comp?('N'+comp.n+'・P'+comp.p+'・K'+comp.k):'成分不明';
+      lh+='<div class="hy-item"><span class="hy-inm">'+r.fert+'</span>'
+        +'<span class="hy-sub" style="margin-left:8px;">'+sub+'</span>'
+        +'<span class="hy-ikg">'+ (r.kg||0) +' kg</span>';
+      if(r.fromWl){ lh+='<span class="hy-sub" style="margin-left:8px;">🎤記録</span>'; }
+      else{ lh+='<span class="hy-del" onclick="hyDel('+i+')">×</span>'; }
+      lh+='</div>';
+    }
+    var list=document.getElementById('hyList');
+    if(list)list.innerHTML=lh||'<div class="hy-empty">まだ記録はありません</div>';
+  }
+  function hyAdd(){
+    var kgEl=document.getElementById('hyKg');
+    var kg=parseFloat(kgEl&&kgEl.value);
+    if(!kg||kg<=0){ toast('量（kg）を入れてください'); return; }
+    hyLog.push({d:inaFmtFull(new Date()), field:hyField, fert:hyFert, kg:kg});
+    hySave();
+    /* 台帳にも肥料として残す（生産原価・記録簿と連携。作業=追肥） */
+    if(typeof wlAdd==='function'){ wlAdd('hogoe', hyField, hyFert+' '+kg+'kg', 'hiryo', {work:'追肥', chem:hyFert, mass:kg}); }
+    if(kgEl)kgEl.value='';
+    hyRender();
+    toast(hyField+' に '+hyFert+' '+kg+'kg を記録しました');
+  }
+  function hyDel(i){
+    /* iは hyRows の並び。専用ログ分のみ削除可（🎤記録は台帳側なので消さない） */
+    var localRows=[]; for(var j=0;j<hyLog.length;j++){ if(hyLog[j].field===hyField) localRows.push(j); }
+    if(i<localRows.length){ hyLog.splice(localRows[i],1); hySave(); hyRender(); toast('削除しました'); }
+  }
+  function hyPickField(){
+    var names=[]; for(var i=0;i<KT_FIELDS.length;i++)names.push(KT_FIELDS[i].n);
+    var cur=names.indexOf(hyField); hyField=names[(cur+1)%names.length];
+    var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=hyField;
+    hyRender(); toast('田んぼ：'+hyField);
+  }
+  function hyPickFert(){
+    var cur=NG_FERT_NAMES.indexOf(hyFert); hyFert=NG_FERT_NAMES[(cur+1)%NG_FERT_NAMES.length];
+    var ft=document.getElementById('hyFertName'); if(ft)ft.textContent=hyFert;
+    toast('肥料：'+hyFert);
+  }
+
+  /* ============================================================
+     🚜 機械の維持費(p-kikai)
+     ・専用の保存キー gyotoku.kikai.v1（機械別の給油・整備記録）
+     ・台帳とは別建て（作物の作業ではないため）
+     ============================================================ */
+  var KI_LS='gyotoku.kikai.v1';
+  var kiLog=[];             /* [{d,mac,kind,yen}] */
+  var KI_MACS=[{k:'tractor',nm:'トラクター',e:'🚜'},{k:'combine',nm:'コンバイン',e:'🌾'},{k:'truck',nm:'軽トラ',e:'🚙'}];
+  var KI_KINDS=['軽油','ガソリン','オイル交換','整備・修理','部品交換','その他'];
+  var kiMac='tractor';
+  var kiKind='軽油';
+  function kiLoad(){ try{var s=localStorage.getItem(KI_LS); kiLog=s?JSON.parse(s):[];}catch(e){kiLog=[];}
+    if(!(kiLog instanceof Array))kiLog=[]; }
+  function kiSave(){ try{localStorage.setItem(KI_LS,JSON.stringify(kiLog));}catch(e){} }
+  function kiYear(dstr){ var m=dstr&&dstr.match(/^(\d{4})/); return m?parseInt(m[1],10):null; }
+  function kiSum(mac,year){
+    var s=0; for(var i=0;i<kiLog.length;i++){ if(kiLog[i].mac===mac&&kiYear(kiLog[i].d)===year)s+=kiLog[i].yen||0; }
+    return s;
+  }
+  function kiYen(n){ return (n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',')+'円'; }
+  function kiEnter(){ kiLoad(); kiRender(); }
+  function kiRender(){
+    /* 機械タブ */
+    var tb=document.getElementById('kiTabs'), th='';
+    for(var i=0;i<KI_MACS.length;i++){ var m=KI_MACS[i];
+      th+='<div class="ki-tab'+(m.k===kiMac?' on':'')+'" onclick="kiPick(\''+m.k+'\')"><span class="ke">'+m.e+'</span>'+m.nm+'</div>'; }
+    if(tb)tb.innerHTML=th;
+    /* 種類ボタン */
+    var kk=document.getElementById('kiKinds'), kh='';
+    for(var j=0;j<KI_KINDS.length;j++){ kh+='<div class="ki-kind'+(KI_KINDS[j]===kiKind?' on':'')+'" onclick="kiPickKind(\''+KI_KINDS[j]+'\')">'+KI_KINDS[j]+'</div>'; }
+    if(kk)kk.innerHTML=kh;
+    /* 合計 */
+    var y=new Date().getFullYear();
+    var now=kiSum(kiMac,y), prev=kiSum(kiMac,y-1);
+    var sn=document.getElementById('kiSumNow'); if(sn)sn.textContent=kiYen(now);
+    var sp=document.getElementById('kiSumPrev'); if(sp)sp.textContent=prev>0?kiYen(prev):'—';
+    /* 記録リスト(この機械) */
+    var rows=[]; for(var k=0;k<kiLog.length;k++){ if(kiLog[k].mac===kiMac)rows.push({i:k,e:kiLog[k]}); }
+    rows.sort(function(a,b){ return a.e.d<b.e.d?1:-1; });
+    var lh='';
+    for(var r=0;r<rows.length;r++){ var e=rows[r].e;
+      lh+='<div class="ki-item"><span class="ki-d">'+krMd(e.d)+'</span><span class="ki-c">'+e.kind+'</span>'
+        +'<span class="ki-y">'+kiYen(e.yen)+'</span>'
+        +'<span class="ki-del" onclick="kiDel('+rows[r].i+')">×</span></div>';
+    }
+    var list=document.getElementById('kiList');
+    if(list)list.innerHTML=lh||'<div class="ki-empty">まだ記録はありません</div>';
+  }
+  function kiPick(m){ kiMac=m; kiRender(); }
+  function kiPickKind(k){ kiKind=k; kiRender(); }
+  function kiAdd(){
+    var yEl=document.getElementById('kiYen');
+    var yen=parseInt(yEl&&yEl.value,10);
+    if(!yen||yen<=0){ toast('金額（円）を入れてください'); return; }
+    kiLog.push({d:inaFmtFull(new Date()), mac:kiMac, kind:kiKind, yen:yen});
+    kiSave();
+    if(yEl)yEl.value='';
+    kiRender();
+    var macNm=''; for(var i=0;i<KI_MACS.length;i++)if(KI_MACS[i].k===kiMac)macNm=KI_MACS[i].nm;
+    toast(macNm+'：'+kiKind+' '+kiYen(yen)+' を記録しました');
+  }
+  function kiDel(i){ kiLog.splice(i,1); kiSave(); kiRender(); toast('削除しました'); }
+
+  /* ============================================================
+     🛡 見張り番(農薬計算 p-pest 内)
+     ・台帳(worklog)の chem を成分別に数え、NG_LIMIT の年間回数・収穫前日数と照合
+     ・NG_LIMIT に無い農薬は「未登録」と表示し、勝手に判定しない（年配UX：ウソを出さない）
+     ============================================================ */
+  var mbCurChem='スタークル';   /* いま選んでいる農薬（本来は農薬選択と連動。当面は代表値） */
+  var mbHarvest=null;           /* 収穫予定日(Date)。工程表の予想があれば使う */
+  function mbCountChem(name){
+    /* 今年、その農薬名を含む記録が台帳に何回あるか（成分の代表名で前方一致） */
+    var y=new Date().getFullYear(), n=0;
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i]; if(kiYear(e.d)!==y) continue;
+      var c=e.chem||''; if(!c && e.text) c=e.text;
+      if(c.indexOf(name)>=0) n++;
+    }
+    return n;
+  }
+  function mbHarvestDate(){
+    /* 工程表の予想（稲刈り）があれば収穫日として使う */
+    try{
+      if(typeof inaCompute==='function' && inaState){
+        var c=inaCompute();
+        if(c&&c.stageDates&&c.stageDates[7]&&c.stageDates[7].date) return c.stageDates[7].date;
+      }
+    }catch(e){}
+    return null;
+  }
+  function mbEnter(){
+    var box=document.getElementById('mbBox'); if(!box)return;
+    var lim=NG_LIMIT[mbCurChem];
+    if(!lim){
+      box.innerHTML='<div class="mb-card"><div class="mb-ttl">🛡 見張り番</div>'
+        +'<div class="mb-unreg">この農薬はまだ見張り番に登録されていません。使用回数・収穫前日数はチェックできません。'
+        +'農水省の農薬DBで確認してください。（よく使う農薬は登録できます）</div></div>';
+      return;
+    }
+    var used=mbCountChem(mbCurChem);
+    var left=lim.max-used;
+    var pct=Math.max(0,Math.min(100, Math.round(left/lim.max*100)));
+    var cntWarn = left<=0;
+    var h='<div class="mb-card"><div class="mb-ttl">🛡 見張り番（'+mbCurChem+'｜成分：'+lim.seibun+'）</div>';
+    /* 回数メーター */
+    h+='<div class="mb-meter'+(cntWarn?' warn':'')+'">'
+      +'<div class="mb-top"><span>年間の使用回数</span><span class="mb-r">'+(left>0?('あと '+left+' 回'):'上限に達しました')+'</span></div>'
+      +'<div class="mb-bar"><div class="mb-fill" style="width:'+pct+'%"></div></div>'
+      +'<div class="mb-cap">この成分は年 '+lim.max+' 回まで。今年すでに '+used+' 回。'+(cntWarn?'これ以上まくと基準を超えます。':'')+'</div></div>';
+    /* 収穫前日数メーター */
+    var hd=mbHarvestDate();
+    if(hd){
+      var today=new Date(); today.setHours(0,0,0,0);
+      var days=Math.ceil((hd-today)/86400000);
+      var phiWarn = days < lim.phi;
+      var ppct=Math.max(0,Math.min(100, Math.round((days-lim.phi)/Math.max(lim.phi,1)*50)+50));
+      if(phiWarn)ppct=Math.max(6,Math.round(days/Math.max(lim.phi,1)*30));
+      h+='<div class="mb-meter'+(phiWarn?' warn':'')+'">'
+        +'<div class="mb-top"><span>収穫まで</span><span class="mb-r">あと '+days+' 日'+(phiWarn?'（危険）':'')+'</span></div>'
+        +'<div class="mb-bar"><div class="mb-fill" style="width:'+ppct+'%"></div></div>'
+        +'<div class="mb-cap">この農薬は収穫 '+lim.phi+' 日前まで。'+(phiWarn?'今まくと収穫までに間に合いません。':'今ならまだ使えます。')+'</div></div>';
+    }else{
+      h+='<div class="mb-cap" style="margin-top:8px;">📋 収穫予定日が未設定です。工程表で品種・移植日を入れると、収穫前チェックも出せます。（この農薬は収穫 '+lim.phi+' 日前まで）</div>';
+    }
+    h+='</div>';
+    box.innerHTML=h;
+  }
+  function pestRecord(){
+    /* 記録：台帳に散布として残す→見張り番のカウントに反映 */
+    if(typeof wlAdd==='function'){ wlAdd('shussui','三島008', mbCurChem+' 散布(農薬計算)', 'pest', {work:'散布', chem:mbCurChem}); }
+    mbEnter();
+    toast('計算結果を記録しました（見張り番に反映）');
+  }
+
+  /* ============================================================
+     📊 生産原価・詳細版(p-cost)
+     ・農水省「米・生産費」の12費目に準拠。肥料費/農薬費/燃料費などは内訳あり
+     ・肥料費 ← 🌾肥料の記録、農薬費 ← 農薬DB概算、燃料/自動車/農機具 ← 🚜機械の記録 を自動集計
+     ・自動で埋まらない費目は手入力（gyotoku.cost.v1 に保存）。空欄=0円で合計に入れない
+     ・労働費（人件費）は入れない
+     ============================================================ */
+  var COST_LS='gyotoku.cost.v1';
+  var costManual={};        /* {費目キー:金額} 手入力ぶん */
+  function costLoad(){ try{var s=localStorage.getItem(COST_LS); costManual=s?JSON.parse(s):{};}catch(e){costManual={};}
+    if(!costManual||typeof costManual!=='object')costManual={}; }
+  function costSave(){ try{localStorage.setItem(COST_LS,JSON.stringify(costManual));}catch(e){} }
+  /* 費目定義。auto=自動集計関数キー / manual=手入力 */
+  var COST_CATS=[
+    {k:'tane', nm:'種苗費', dot:'#43A047', subs:[{k:'tane_nae',nm:'苗代',type:'manual'}]},
+    {k:'hi', nm:'肥料費', dot:'#6A5A8C', subs:[
+      {k:'hi_n',nm:'窒素質肥料',type:'auto',auto:'fert_n'},
+      {k:'hi_p',nm:'りん酸質肥料',type:'auto',auto:'fert_p'},
+      {k:'hi_k',nm:'カリ質肥料',type:'auto',auto:'fert_k'},
+      {k:'hi_etc',nm:'石灰・複合・土壌改良など',type:'manual'}
+    ]},
+    {k:'yaku', nm:'農業薬剤費', dot:'#2E6E8E', subs:[
+      {k:'yaku_mushi',nm:'殺虫剤',type:'manual'},
+      {k:'yaku_kin',nm:'殺菌剤',type:'manual'},
+      {k:'yaku_josou',nm:'除草剤',type:'manual'}
+    ]},
+    {k:'nen', nm:'光熱動力費', dot:'#C4772E', subs:[
+      {k:'nen_fuel',nm:'軽油・ガソリン・灯油(機械)',type:'auto',auto:'kikai_fuel'},
+      {k:'nen_den',nm:'電気料',type:'manual'}
+    ]},
+    {k:'zai', nm:'その他の諸材料費', dot:'#8FA31E', subs:[{k:'zai_box',nm:'育苗箱・シート等',type:'manual'}]},
+    {k:'suiri', nm:'土地改良・水利費', dot:'#5B8AA0', subs:[{k:'suiri_v',nm:'水利費・賦課金',type:'manual'}]},
+    {k:'chin', nm:'賃借料・料金', dot:'#B07A3E', subs:[{k:'chin_v',nm:'委託料・借り賃',type:'manual'}]},
+    {k:'zei', nm:'税・公課負担', dot:'#9C6B5A', subs:[{k:'zei_v',nm:'固定資産税・共済等',type:'manual'}]},
+    {k:'tate', nm:'建物費', dot:'#7A6E8C', subs:[{k:'tate_v',nm:'倉庫・作業場',type:'manual'}]},
+    {k:'car', nm:'自動車費', dot:'#C62828', subs:[{k:'car_v',nm:'軽トラ 燃料・整備',type:'auto',auto:'kikai_truck'}]},
+    {k:'noki', nm:'農機具費', dot:'#4C6B57', subs:[{k:'noki_v',nm:'トラクター等 整備・部品',type:'auto',auto:'kikai_mac'}]},
+    {k:'kanri', nm:'生産管理費', dot:'#A19C8B', subs:[{k:'kanri_v',nm:'通信・事務・研修',type:'manual'}]}
+  ];
+  /* 肥料の栄養→円は難しいので、ここでは肥料代の目安=各田んぼ合計kg×概算単価。
+     厳密な金額は手入力の「石灰・複合など」で調整可能。窒素/りん酸/カリの成分量から概算する。 */
+  function costFertKg(){
+    /* 全田んぼの肥料記録から成分別kg合計 */
+    var tot={n:0,p:0,k:0};
+    hyLoad();
+    var fields={}; for(var i=0;i<KT_FIELDS.length;i++)fields[KT_FIELDS[i].n]=1;
+    for(var f in fields){ var t=hyTotals(f); tot.n+=t.n; tot.p+=t.p; tot.k+=t.k; }
+    return tot;
+  }
+  var COST_FERT_YEN={n:250,p:200,k:180}; /* 成分1kgあたりの概算円(目安) */
+  function costAuto(key){
+    if(key==='fert_n'){ return Math.round(costFertKg().n*COST_FERT_YEN.n); }
+    if(key==='fert_p'){ return Math.round(costFertKg().p*COST_FERT_YEN.p); }
+    if(key==='fert_k'){ return Math.round(costFertKg().k*COST_FERT_YEN.k); }
+    if(key==='kikai_fuel'){ return kiSumKindYear(['tractor','combine'],['軽油','ガソリン','オイル交換']); }
+    if(key==='kikai_truck'){ return kiSumMacYear('truck'); }
+    if(key==='kikai_mac'){ return kiSumKindYear(['tractor','combine'],['整備・修理','部品交換','その他']); }
+    return 0;
+  }
+  function kiSumMacYear(mac){ kiLoad(); var y=new Date().getFullYear(),s=0;
+    for(var i=0;i<kiLog.length;i++){ if(kiLog[i].mac===mac&&kiYear(kiLog[i].d)===y)s+=kiLog[i].yen||0; } return s; }
+  function kiSumKindYear(macs,kinds){ kiLoad(); var y=new Date().getFullYear(),s=0;
+    for(var i=0;i<kiLog.length;i++){ var e=kiLog[i];
+      if(macs.indexOf(e.mac)>=0&&kinds.indexOf(e.kind)>=0&&kiYear(e.d)===y)s+=e.yen||0; } return s; }
+  function costSubVal(sub){
+    if(sub.type==='auto') return costAuto(sub.auto);
+    return parseInt(costManual[sub.k],10)||0;
+  }
+  function costCatTotal(cat){ var s=0; for(var i=0;i<cat.subs.length;i++)s+=costSubVal(cat.subs[i]); return s; }
+  function costGrand(){ var s=0; for(var i=0;i<COST_CATS.length;i++)s+=costCatTotal(COST_CATS[i]); return s; }
+  function costEnter(){ costLoad(); costRender(); }
+  function costRender(){
+    var body=document.getElementById('costBody'); if(!body)return;
+    var h='';
+    for(var i=0;i<COST_CATS.length;i++){
+      var cat=COST_CATS[i], ct=costCatTotal(cat);
+      h+='<div class="cost-grp"><div class="cost-gh" onclick="costToggle('+i+')" id="cgh'+i+'">'
+        +'<span class="cg-dot" style="background:'+cat.dot+'"></span>'+cat.nm
+        +'<span class="cg-n">'+kiYen(ct)+'</span><span class="cg-chv">›</span></div>';
+      h+='<div class="cost-sub" id="csub'+i+'">';
+      for(var j=0;j<cat.subs.length;j++){ var sub=cat.subs[j];
+        h+='<div class="cost-srow"><span>'+sub.nm+'</span>';
+        if(sub.type==='auto'){
+          h+='<span class="cs-auto">自動 '+kiYen(costAuto(sub.auto))+'</span>';
+        }else{
+          var v=costManual[sub.k]||'';
+          h+='<input class="cs-in" type="number" inputmode="numeric" placeholder="0" value="'+v+'" '
+            +'onchange="costSet(\''+sub.k+'\',this.value)" enterkeyhint="done">';
+        }
+        h+='</div>';
+      }
+      h+='</div></div>';
+    }
+    body.innerHTML=h;
+    var tot=document.getElementById('costTotal'); if(tot)tot.textContent=kiYen(costGrand());
+  }
+  function costToggle(i){
+    var gh=document.getElementById('cgh'+i), sb=document.getElementById('csub'+i);
+    if(gh)gh.classList.toggle('open'); if(sb)sb.classList.toggle('open');
+  }
+  function costSet(k,v){ var n=parseInt(v,10); if(!n||n<0){ delete costManual[k]; } else { costManual[k]=n; }
+    costSave();
+    var tot=document.getElementById('costTotal'); if(tot)tot.textContent=kiYen(costGrand());
+    /* 該当費目の見出し金額も更新 */
+    for(var i=0;i<COST_CATS.length;i++){ var found=false;
+      for(var j=0;j<COST_CATS[i].subs.length;j++)if(COST_CATS[i].subs[j].k===k)found=true;
+      if(found){ var gh=document.getElementById('cgh'+i);
+        if(gh){var nn=gh.querySelector('.cg-n'); if(nn)nn.textContent=kiYen(costCatTotal(COST_CATS[i]));} }
+    }
+  }
+  function costCompare(){
+    var g=costGrand();
+    if(g<=0){ toast('まだ金額が入っていません。費目を開いて入力すると比べられます'); return; }
+    toast('今年の物財費 合計：'+kiYen(g)+'（去年との比較は来年データがそろうと出ます）');
+  }
+
   /* ===== 写真:撮って、みんなに共有(KSAS) ===== */
   var photoURL=null, photoShared=false;
   function onPhotoPicked(ev){
@@ -1762,10 +2418,12 @@
     team: {cls:'t-orange',ic:'👥', tx:'みんなと共有'},
     cal:  {cls:'t-blue',  ic:'📅', tx:'カレンダー'},
     cost: {cls:'t-red',   ic:'📊', tx:'生産原価'},
+    hiryo:{cls:'t-green2',ic:'🌾', tx:'肥料の栄養'},
+    kikai:{cls:'t-teal',  ic:'🚜', tx:'機械の維持費'},
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'}
   };
-  var TILE_POOL=['rec','voice','drone','diag','ai','map','pest','fields','team','cal','cost','set','koutei'];
+  var TILE_POOL=['rec','voice','drone','diag','ai','map','pest','fields','team','cal','cost','hiryo','kikai','set','koutei'];
   var TILE_DEFAULT=['rec','voice','drone','diag','ai','koutei'];
   var TILE_LS_KEY='gyotokuHomeTiles_v1';
   function loadTiles(){
@@ -1969,7 +2627,51 @@
   /* ===== v2.5 カレンダー(動的・予定データと双方向連動) ===== */
   var calY,calM,calSel;
   (function(){var d=new Date();calY=d.getFullYear();calM=d.getMonth();calSel=ymd(d);})();
-  function calMove(n){calM+=n; if(calM<0){calM=11;calY--;} if(calM>11){calM=0;calY++;} renderCal();}
+  function calMove(n){calM+=n; if(calM<0){calM=11;calY--;} if(calM>11){calM=0;calY++;} renderCal(); calMarkLastYear();}
+  /* v20：去年の同じ月へ */
+  var calThisY=(new Date()).getFullYear();
+  function calLastYear(){
+    calY=(calY===calThisY-1)?calThisY:calThisY-1;   /* 押すたびに今年↔去年を行き来 */
+    renderCal(); calMarkLastYear();
+    toast(calY+'年'+(calM+1)+'月を表示中'+(calY<calThisY?'（去年）':''));
+  }
+  function calMarkLastYear(){
+    var box=document.getElementById('p-cal'); if(!box)return;
+    var old=document.getElementById('calLastYearNote'); if(old)old.remove();
+    if(calY<calThisY){
+      var cal=box.querySelector('.cal');
+      if(cal){ var d=document.createElement('div'); d.id='calLastYearNote'; d.className='cal-lastyear';
+        d.textContent='🔙 去年（'+calY+'年）を表示中。「去年の同じ月へ」でいつでも戻れます'; cal.parentNode.insertBefore(d,cal); }
+    }
+  }
+  function calEnter(){ /* 開くたび今年に戻す */ if(calY!==calThisY){calY=calThisY;} renderCal(); calMarkLastYear(); }
+  /* v20：メモ検索（台帳のtext/work/chem/fieldを文字で探す） */
+  function calSearchToggle(){
+    var b=document.getElementById('calSearchBox'); if(!b)return;
+    var show=(b.style.display==='none'); b.style.display=show?'block':'none';
+    if(show){ var inp=document.getElementById('calSearchInp'); if(inp)inp.focus(); }
+  }
+  function calSearch(q){
+    var res=document.getElementById('calSearchResult'); if(!res)return;
+    q=(q||'').trim();
+    if(!q){ res.innerHTML=''; return; }
+    ktLoad();
+    var hits=[];
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i];
+      var hay=[e.text,e.work,e.chem,e.field].join(' ');
+      if(hay.indexOf(q)>=0) hits.push(e);
+    }
+    hits.sort(function(a,b){return a.d<b.d?1:-1;});
+    if(!hits.length){ res.innerHTML='<div class="cal-sempty">「'+q+'」の記録は見つかりませんでした</div>'; return; }
+    var h='';
+    for(var j=0;j<hits.length && j<40;j++){ var e=hits[j];
+      var label=e.text||((e.work||'')+(e.chem?(' '+e.chem):''));
+      h+='<div class="cal-sitem"><span class="cal-sd">'+e.d+'</span><span class="cal-sf">'+(e.field||'')+'</span>'
+        +'<span style="margin-left:8px;">'+label+'</span></div>';
+    }
+    res.innerHTML=h;
+  }
   function calPick(ds){calSel=ds; renderCal(); renderDayList();}
   function renderCal(){
     var g=document.getElementById('calGrid'),ttl=document.getElementById('calTitle'); if(!g)return;
