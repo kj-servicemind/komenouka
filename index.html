@@ -277,6 +277,47 @@
     font-size:18px;font-weight:800;line-height:1.55;min-height:90px;} .transcript .live{color:var(--blue);}
   .parsed{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:14px;padding:12px 14px;
     font-size:15px;font-weight:800;line-height:1.6;color:var(--green-deep);}
+  /* ながら記録：分解結果の欄 */
+  .parsed .lb2{font-size:14px;font-weight:800;color:#4A5248;margin-bottom:6px;}
+  .parsed .heardtx{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+    font-size:15.5px;font-weight:700;color:#222;line-height:1.6;margin-bottom:12px;}
+  .slot{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #CFE0D2;border-radius:12px;
+    padding:11px 12px;margin-bottom:9px;}
+  .slot .em{font-size:22px;line-height:1;}
+  .slot .stx{flex:1;min-width:0;}
+  .slot .k{display:block;font-size:13px;font-weight:800;color:#5A6358;}
+  .slot .v{font-size:17px;font-weight:900;color:#1B2A1F;line-height:1.4;margin-top:2px;}
+  .slot .v.gold{color:#8A611C;font-size:15px;}
+  .slot .auto{font-size:12px;font-weight:800;color:#2F7A46;white-space:nowrap;
+    background:#E6F2E8;border-radius:8px;padding:4px 8px;}
+  .slot.miss{border-color:var(--gold);background:#FDF7EA;}
+  .slot .fix{font-size:14px;font-weight:900;color:#fff;background:var(--badge-red,#C62828);
+    border-radius:8px;padding:6px 11px;white-space:nowrap;}
+  .parsed .ngnote{margin-top:4px;background:#F1EDE2;border-radius:10px;padding:10px 12px;
+    font-size:14px;font-weight:700;color:#333;line-height:1.7;}
+  /* 記録簿への入口ボタン(声画面) */
+  .kroku-enter{margin-top:14px;background:var(--gold-deep,#8A611C);color:#fff;border-radius:14px;
+    padding:14px;text-align:center;font-size:17px;font-weight:900;line-height:1.4;cursor:pointer;}
+  .kroku-enter small{display:block;font-size:12.5px;font-weight:700;opacity:.92;margin-top:3px;}
+  /* 記録簿画面 */
+  .kroku-lead{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 13px;
+    font-size:15px;font-weight:700;color:var(--green-deep);line-height:1.7;margin-bottom:14px;}
+  .krtit{font-family:var(--mincho,serif);font-size:18px;font-weight:900;color:var(--green-deep);
+    margin:14px 0 7px;}
+  .krtbl{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:6px;}
+  .krtbl table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .krtbl th{background:var(--green);color:#fff;font-size:13.5px;font-weight:800;padding:8px 6px;white-space:nowrap;}
+  .krtbl td{border-bottom:1px solid var(--line);padding:9px 7px;font-size:14.5px;font-weight:700;
+    color:#222;text-align:center;line-height:1.4;}
+  .krtbl tr:last-child td{border-bottom:none;}
+  .kroku-why{margin-top:16px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;}
+  .kroku-why .wt{font-size:16px;font-weight:900;color:var(--green-deep);margin-bottom:10px;}
+  .kroku-why .item{display:flex;gap:9px;margin-bottom:8px;align-items:flex-start;}
+  .kroku-why .num{min-width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;
+    font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .kroku-why .wtx{font-size:15px;font-weight:600;line-height:1.7;color:#16211B;}
+  .kroku-why .wtx b{color:#111;font-weight:900;}
   .safari-tip{background:var(--orange-soft);border:1.5px solid #E0B98F;border-radius:12px;padding:11px 13px;
     font-size:14px;font-weight:800;color:#8A4A14;line-height:1.5;display:none;}
 
@@ -587,6 +628,25 @@
         <div class="share-team" id="shareTeam" style="display:none;" onclick="sharePhotoToTeam()">👥 この写真をみんなに送る(KSASを開く)</div>
 
         <div class="save" id="vsave" style="display:none;" onclick="saveVoice()">✅ これで保存する</div>
+
+        <!-- 📄 栽培管理記録簿への入口 -->
+        <div class="kroku-enter" onclick="krokuOpen()">📄 記録簿を出す<small>いつ・どこで・何を・どれだけ が表になります（JA提出用）</small></div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+
+    <!-- ===== 📄 栽培管理記録簿(JA提出用) ===== -->
+    <div class="page" id="p-kroku">
+      <div class="sc">
+        <div class="kroku-lead">🎤で話した記録が、そのままこの表に並びます。手書きのノートはもう要りません。</div>
+        <div id="krokuBody"></div>
+        <div class="save" onclick="krokuCopy()">① 表をコピーする<small>次に ② LINEやメールでJAへ送る／KSASに貼る</small></div>
+        <div class="kroku-why">
+          <div class="wt">🔎 なぜ言葉が分かるの？（しくみ）</div>
+          <div class="item"><span class="num">1</span><span class="wtx"><b>田んぼの名前</b>…このアプリに登録ずみの5枚の名前と照らし合わせます</span></div>
+          <div class="item"><span class="num">2</span><span class="wtx"><b>農薬の名前</b>…農水省の農薬DBの名前と照らし合わせます</span></div>
+          <div class="item"><span class="num">3</span><span class="wtx"><b>倍率・量</b>…「◯◯倍」「◯リットル」「◯キロ」の言い方を数字にします</span></div>
+        </div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -913,7 +973,7 @@
            || window.matchMedia('(display-mode: standalone)').matches;
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
-  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei'};
+  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku'};
   var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
@@ -952,13 +1012,14 @@
     drone: navHdr('home','ホーム','ドローン散布'),
     ai:    navHdr('home','戻る','AIに相談する'),
     map:   navHdr('home','ホーム','圃場マップ'),
+    kroku: navHdr('voice','話して記録','栽培管理記録簿'),
     menu:  navHdr(null,null,'メニュー'),
     koutei: navHdr('home','ホーム','米づくり工程表')
   };
   function renderHeader(n){ document.getElementById('hdr').innerHTML = HEADERS[n]||''; }
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
-    cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home'};
+    cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home',kroku:'voice'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
@@ -1155,8 +1216,11 @@
     if(!(ktLog instanceof Array))ktLog=[]; }
   function ktSave(){ try{localStorage.setItem(KT_LS,JSON.stringify(ktLog));}catch(e){} }
   /* 全機能はこの1関数で台帳に書き込む(連携連動の背骨) */
-  function wlAdd(stepK, fieldN, text, src){
-    ktLog.push({d:inaFmtFull(new Date()), step:stepK, field:fieldN, text:text||'', src:src||'rec', ksas:false});
+  function wlAdd(stepK, fieldN, text, src, extra){
+    var e={d:inaFmtFull(new Date()), step:stepK, field:fieldN, text:text||'', src:src||'rec', ksas:false};
+    if(extra){ if(extra.work)e.work=extra.work; if(extra.chem)e.chem=extra.chem;
+      if(extra.rate)e.rate=extra.rate; if(extra.vol)e.vol=extra.vol; if(extra.mass)e.mass=extra.mass; }
+    ktLog.push(e);
     ktSave();
   }
   function ktDoneFields(stepK){
@@ -1484,19 +1548,148 @@
     if(SR&&recog){try{recog.stop();}catch(e){}} if(demoTimer){clearInterval(demoTimer);}
     if(fullText.trim()){ parseText(fullText); }
   }
-  function parseText(t){
-    var field='(自動)',work='(自動)';
-    var fm=t.match(/三島\s*0*\d+/); if(fm)field=fm[0].replace(/\s/g,'');
-    if(/粗起|荒起/.test(t))work='粗起こし'; else if(/田植/.test(t))work='田植え';
-    else if(/代掻|しろかき/.test(t))work='代掻き'; else if(/施肥|肥料/.test(t))work='施肥';
-    else if(/防除|農薬|散布/.test(t))work='防除'; else if(/収穫|稲刈/.test(t))work='収穫';
-    var p=document.getElementById('parsed');p.style.display='block';
-    p.innerHTML='🤖 自動で仕分けました:<br>📅 日付:'+todayStr()+'<br>🌾 田んぼ:'+field+'<br>🚜 作業:'+work;
-    lastMemo=t; document.getElementById('vsave').style.display='block';
+  /* ===== ながら記録：話した言葉を「田んぼ・作業・農薬・倍率・量」の欄に分解 =====
+     聞き取り＝Web Speech API(無料)。意味の分解＝アプリ内蔵の辞書照合＋数量パターン。
+     ★AIのAPIは使わない・課金ゼロ。分からない欄は勝手に埋めず金色で示す(年配UX)。 */
+  /* 農薬名の辞書(農水省DBの代表名。実機で必要に応じ追記) */
+  var NG_CHEMS=['スタークル顆粒水溶剤','スタークル','アドマイヤー','ダントツ','キラップ',
+    'ブラシン','コラトップ','オリゼメート','ラブサイド','ビーム',
+    'バリダシン','モンカット','ジャンボ','ラウンドアップ','バスタ','プリグロックス',
+    'ロータム','フェニックス','パダン','トレボン','アプロード'];
+  /* 作業の辞書 */
+  var NG_WORKS=[
+    {re:/粗起|荒起|耕起/,w:'耕起'},{re:/代掻|しろかき|代かき/,w:'代かき'},
+    {re:/田植/,w:'田植え'},{re:/除草/,w:'除草剤散布'},
+    {re:/中干/,w:'中干し'},{re:/追肥|穂肥|施肥|肥料/,w:'追肥'},
+    {re:/防除|農薬|散布|まい|撒/,w:'散布'},{re:/収穫|稲刈|刈っ|刈り/,w:'収穫'},
+    {re:/水/,w:'水管理'}
+  ];
+  /* 最後に分解した結果(保存・記録簿でそのまま使う) */
+  var lastParse=null;
+  function ngNum(t,unit){
+    /* 「1000倍」「100リットル/100L」「20キロ/20kg」等を数字にする */
+    var m;
+    if(unit==='倍'){ m=t.match(/([0-9０-９]+)\s*倍/); }
+    else if(unit==='L'){ m=t.match(/([0-9０-９]+(?:\.[0-9]+)?)\s*(?:リットル|ﾘｯﾄﾙ|Ｌ|L|l)/); }
+    else if(unit==='kg'){ m=t.match(/([0-9０-９]+(?:\.[0-9]+)?)\s*(?:キロ|ｷﾛ|kg|ｋｇ|㎏|Kg)/); }
+    if(!m)return null;
+    var z=m[1].replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
+    return z;
   }
-  function saveVoice(){ document.getElementById('recmemo').innerHTML=(lastMemo||'(空欄)');
-    wlAdd(ktGuessStep(), '三島008', (lastMemo||'音声記録'), 'voice');
-    toast('✅ 保存しました(みんなに共有・工程表にも反映)'); setTimeout(function(){go('cal');},900); }
+  function nagaraParse(t){
+    var r={field:null,chem:null,rate:null,vol:null,mass:null,work:null,raw:t};
+    /* ① 田んぼ：登録済みの5枚の名前と照合(「三島8」「三島008」どちらでもOK) */
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var name=KT_FIELDS[i].n, num=name.replace(/[^0-9]/g,'');
+      var short=String(parseInt(num,10));
+      var re=new RegExp('三島\\s*0*'+short+'(?![0-9])');
+      if(re.test(t)){ r.field=name; break; }
+    }
+    /* ② 農薬：辞書と照合(長い名前を先に見て最長一致) */
+    for(var c=0;c<NG_CHEMS.length;c++){ if(t.indexOf(NG_CHEMS[c])>=0){ r.chem=NG_CHEMS[c]; break; } }
+    /* ③ 倍率・量 */
+    r.rate=ngNum(t,'倍'); r.vol=ngNum(t,'L'); r.mass=ngNum(t,'kg');
+    /* ④ 作業 */
+    for(var w=0;w<NG_WORKS.length;w++){ if(NG_WORKS[w].re.test(t)){ r.work=NG_WORKS[w].w; break; } }
+    /* 農薬があるのに作業が未判定なら「散布」とみなす */
+    if(r.chem&&!r.work)r.work='散布';
+    return r;
+  }
+  function ngSlot(em,label,val,hint){
+    if(val){
+      return '<div class="slot"><span class="em">'+em+'</span>'+
+        '<span class="stx"><span class="k">'+label+'</span><div class="v">'+val+'</div></span>'+
+        '<span class="auto">入りました</span></div>';
+    }
+    return '<div class="slot miss"><span class="em">'+em+'</span>'+
+      '<span class="stx"><span class="k">'+label+'</span>'+
+      '<div class="v gold">'+(hint||'聞き取れませんでした')+'</div></span>'+
+      '<span class="fix">選ぶ ›</span></div>';
+  }
+  function parseText(t){
+    var r=nagaraParse(t); lastParse=r; lastMemo=t;
+    var volTxt=r.vol?(r.vol+'L'):(r.mass?(r.mass+'kg'):null);
+    var miss=[];
+    if(!r.field)miss.push('田んぼ'); if(!r.chem&&!r.mass)miss.push('農薬・肥料');
+    var html2='<div class="lb2">🗣 あなたが話した言葉</div><div class="heardtx">「'+t+'」</div>';
+    html2+=ngSlot('📍','どこで（田んぼ）', r.field?(r.field):null, '聞き取れませんでした');
+    html2+=ngSlot('🧪','なにを（農薬・肥料）', r.chem||(r.mass?'肥料':null), '「薬」だけでは分かりません');
+    html2+=ngSlot('💧','どのくらいに薄めて', r.rate?(r.rate+'倍'):null, '倍率が聞き取れません');
+    html2+=ngSlot('🚿','どれだけの量', volTxt, '量が聞き取れません');
+    if(miss.length){
+      html2+='<div class="ngnote">💡 分からない欄を勝手に想像して埋めることはしません。金色の欄だけ指で選ぶか、もう一度🎤で話し直してください。</div>';
+    }
+    var p=document.getElementById('parsed');p.style.display='block';p.innerHTML=html2;
+    document.getElementById('vsave').style.display='block';
+    /* 欄を指で選び直す導線(足りない欄) */
+    var fixes=p.querySelectorAll('.slot.miss .fix');
+    for(var i=0;i<fixes.length;i++){ fixes[i].onclick=function(){ toast('もう一度🎤で話すか、田んぼ・農薬の画面から選べます'); }; }
+  }
+  function saveVoice(){
+    var r=lastParse||{field:null,chem:null,rate:null,vol:null,mass:null,work:null};
+    var fld=r.field||'三島008';
+    var text=(lastMemo||'音声記録');
+    var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML=(lastMemo||'(空欄)');
+    wlAdd(ktGuessStep(), fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''});
+    toast('✅ 保存しました(記録簿・工程表・みんなに反映)'); setTimeout(function(){go('cal');},900);
+  }
+
+  /* ===== 📄 栽培管理記録簿(JA提出用)：台帳を田んぼ別・日付順に表へ並べるだけ ===== */
+  function krokuOpen(){ go('kroku'); krokuRender(); }
+  function krokuRender(){
+    if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
+    var byField={};
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i], f=e.field||'（田んぼ不明）';
+      (byField[f]=byField[f]||[]).push(e);
+    }
+    var order=[]; for(var k=0;k<KT_FIELDS.length;k++)if(byField[KT_FIELDS[k].n])order.push(KT_FIELDS[k].n);
+    for(var f2 in byField)if(order.indexOf(f2)<0)order.push(f2);
+    var box=document.getElementById('krokuBody'); if(!box)return;
+    if(!order.length){ box.innerHTML='<div class="ngnote" style="margin:0;">まだ記録がありません。🎤話して記録から作業を話すと、ここに表がたまっていきます。</div>'; return; }
+    var html2='';
+    for(var o=0;o<order.length;o++){
+      var name=order[o], rows=byField[name].slice();
+      rows.sort(function(a,b){return (a.d||'')<(b.d||'')?-1:1;});
+      html2+='<div class="krtit">🌾 '+name+'</div>';
+      html2+='<div class="krtbl"><table><tr><th>月日</th><th>作業</th><th>農薬・肥料</th><th>倍率</th><th>量</th></tr>';
+      for(var rr=0;rr<rows.length;rr++){
+        var e2=rows[rr];
+        var vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'—');
+        html2+='<tr><td>'+krMd(e2.d)+'</td><td>'+(e2.work||'—')+'</td><td>'+(e2.chem||'—')+
+          '</td><td>'+(e2.rate?e2.rate+'倍':'—')+'</td><td>'+vol+'</td></tr>';
+      }
+      html2+='</table></div>';
+    }
+    box.innerHTML=html2;
+  }
+  function krMd(d){ if(!d)return '—'; var m=d.match(/\d+\/(\d+)\/(\d+)/); return m?(parseInt(m[1],10)+'/'+parseInt(m[2],10)):d; }
+  function krokuText(){
+    var lines=['【栽培管理記録簿】'];
+    var byField={};
+    for(var i=0;i<ktLog.length;i++){ var e=ktLog[i],f=e.field||'（不明）'; (byField[f]=byField[f]||[]).push(e); }
+    for(var f in byField){
+      lines.push(''); lines.push('◆'+f);
+      var rows=byField[f].slice().sort(function(a,b){return (a.d||'')<(b.d||'')?-1:1;});
+      for(var r=0;r<rows.length;r++){
+        var e2=rows[r], vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'');
+        lines.push([krMd(e2.d),e2.work||'',e2.chem||'',e2.rate?e2.rate+'倍':'',vol].filter(Boolean).join(' / '));
+      }
+    }
+    return lines.join('\n');
+  }
+  function krokuCopy(){
+    var t=krokuText();
+    var ok=function(){toast('📋 コピーしました。次にLINEやメールでJAへ／KSASに貼れます');};
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(ok,function(){krokuCopyFB(t,ok);});
+    } else { krokuCopyFB(t,ok); }
+  }
+  function krokuCopyFB(t,ok){
+    var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta);
+    ta.select(); try{document.execCommand('copy'); ok();}catch(e){toast('コピーできませんでした。文を長押しでコピーしてください');}
+    document.body.removeChild(ta);
+  }
 
   /* ===== 写真:撮って、みんなに共有(KSAS) ===== */
   var photoURL=null, photoShared=false;
