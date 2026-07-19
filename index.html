@@ -424,6 +424,11 @@
   .ina-now .stg{font-family:var(--mincho);font-size:23px;font-weight:800;letter-spacing:.03em;}
   .ina-now .pred{font-size:14px;opacity:.96;margin-top:5px;font-weight:700;}
   .ina-now .wxtip{margin-top:10px;background:rgba(255,255,255,.18);border-radius:12px;padding:11px 13px;font-size:15px;line-height:1.6;font-weight:600;}
+  /* 【v18】緑カード見出しの改行修正:途中で折り返らないよう明示的に2行構成にする */
+  .ina-now .stg-meta{font-size:13.5px;font-weight:700;opacity:.92;letter-spacing:.03em;}
+  .ina-now .stg-name{font-family:var(--mincho);font-size:24px;font-weight:800;letter-spacing:.03em;margin-top:2px;}
+  .ina-now .pred-rows{margin-top:8px;display:flex;flex-direction:column;gap:3px;}
+  .ina-now .pred-row{font-size:14.5px;font-weight:700;opacity:.97;}
 
   .ina-seclbl{font-size:13.5px;font-weight:800;color:#5F5B4E;letter-spacing:.04em;margin:4px 3px 8px;}
   .ina-stg{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 14px;margin-bottom:8px;
@@ -1207,8 +1212,9 @@
     var h='';
     h+='<div class="ina-now">'
       +'<div class="lbl">🌾 '+(new Date()).getFullYear()+'年の米づくり</div>'
-      +'<div class="stg">いま '+(s.nowIdx>=0?(s.nowIdx+1):Math.max(1,s.doneCount))+'/'+KT_STEPS.length+' 工程め「'+nowNm+'」</div>'
-      +(c?'<div class="pred">🌡 出穂予想 '+inaFmt(c.headDate)+'ごろ ／ 収穫予想 '+inaFmt(c.harvestDate)+'ごろ</div>':'')
+      +'<div class="stg-meta">いま '+(s.nowIdx>=0?(s.nowIdx+1):Math.max(1,s.doneCount))+'/'+KT_STEPS.length+' 工程め</div>'
+      +'<div class="stg-name">「'+nowNm+'」</div>'
+      +(c?'<div class="pred-rows"><div class="pred-row">🌡 出穂予想　'+inaFmt(c.headDate)+'ごろ</div><div class="pred-row">🌾 収穫予想　'+inaFmt(c.harvestDate)+'ごろ</div></div>':'')
       +(wxLine?'<div class="wxtip">💡 '+wxLine+'</div>':'')
       +'<div class="kt-bar"><div class="in" style="width:'+s.pct+'%;"></div></div>'
       +'<div class="kt-bar-lbl"><span>種まき</span><span>今年の進み '+s.pct+'%</span><span>稲刈り</span></div>'
@@ -1218,7 +1224,7 @@
       h+='<div class="kt-setup" onclick="ktShowSetup()">'
         +'<span class="ic">🌱</span>'
         +'<span class="tx">品種 <b>'+c.v.n+'</b>・移植日 <b>'+inaFmt(new Date(inaState.transplant))+'</b></span>'
-        +'<span class="edit">直す ›</span></div>';
+        +'<span class="edit">日付変更 ›</span></div>';
     }else{
       h+='<div class="kt-setup warn" onclick="ktShowSetup()">'
         +'<span class="ic">🌱</span>'
