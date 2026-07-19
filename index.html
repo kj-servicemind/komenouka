@@ -499,7 +499,12 @@
   .kt-setup .ic{font-size:19px;}
   .kt-setup .tx{flex:1;font-size:14.5px;font-weight:700;color:#33403A;}
   .kt-setup .tx b{color:var(--green-deep);}
+  /* 【v18続き】品種・移植日の帯:「・」区切りの1行連結だと途中で折り返るため、2行構成に固定 */
+  .kt-setup .tx{display:flex;flex-direction:column;gap:2px;}
+  .kt-setup .tx-line{display:block;}
   .kt-setup .edit{font-size:13.5px;font-weight:800;color:var(--blue);text-decoration:underline;flex-shrink:0;}
+  /* 「日付変更›」「入れる›」共通:赤背景×白文字のバッジ表示(本人指定色 #C62828) */
+  .kt-setup .edit.dchg{color:#fff;background:#C62828;text-decoration:none;border-radius:8px;padding:6px 11px;white-space:nowrap;}
   .kt-setup.warn{background:#FBF4E4;border-color:#E6D6B8;}
   .kt-setup.warn .tx b{color:#8A611C;}
   .kt-growbadge{display:inline-block;font-size:11.5px;font-weight:800;color:#fff;background:#5B8A9E;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:1px;}
@@ -1216,13 +1221,13 @@
     if(c){
       h+='<div class="kt-setup" onclick="ktShowSetup()">'
         +'<span class="ic">🌱</span>'
-        +'<span class="tx">品種 <b>'+c.v.n+'</b>・移植日 <b>'+inaFmt(new Date(inaState.transplant))+'</b></span>'
-        +'<span class="edit">日付変更 ›</span></div>';
+        +'<span class="tx"><span class="tx-line">品種 <b>'+c.v.n+'</b></span><span class="tx-line">移植日 <b>'+inaFmt(new Date(inaState.transplant))+'</b></span></span>'
+        +'<span class="edit dchg">日付変更 ›</span></div>';
     }else{
       h+='<div class="kt-setup warn" onclick="ktShowSetup()">'
         +'<span class="ic">🌱</span>'
         +'<span class="tx"><b>品種と移植日を入れる</b>と、出穂・収穫の予想が出ます</span>'
-        +'<span class="edit">入れる ›</span></div>';
+        +'<span class="edit dchg">入れる ›</span></div>';
     }
     h+='<div class="ina-seclbl">全'+KT_STEPS.length+'工程（記録・気温の計算から自動反映）</div>';
     for(var i=0;i<s.list.length;i++){
