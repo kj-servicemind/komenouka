@@ -935,7 +935,7 @@
     pest:  navHdr('home','ホーム','農薬を計算'),
     diag:  navHdr('home','ホーム','病害虫を診断'),
     drug:  navHdr('pest','農薬計算','農薬を検索'),
-    cal:   navHdr(null,null,'カレンダー'),
+    cal:   navHdr('home','ホーム','カレンダー'),
     cost:  navHdr('home','ホーム','生産原価'),
     team:  navHdr('home','ホーム','みんなと共有'),
     set:   navHdr('home','ホーム','設定'),
@@ -948,7 +948,7 @@
   function renderHeader(n){ document.getElementById('hdr').innerHTML = HEADERS[n]||''; }
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
-    cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home'};
+    cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
