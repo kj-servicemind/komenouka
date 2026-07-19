@@ -1203,19 +1203,12 @@
     var el=document.getElementById('ktViewBoard'); if(!el)return;
     var s=ktStatus(), c=s.c;
     var nowNm=s.nowIdx>=0?KT_STEPS[s.nowIdx].nm:(s.doneCount>=KT_STEPS.length?'すべて完了':'記録を待っています');
-    /* 天気ひとこと(WX_CACHEから簡易生成) */
-    var wxLine='';
-    if(c&&WX_CACHE&&!WX_CACHE.stale){
-      if(WX_CACHE.pTomo!=null&&WX_CACHE.pTomo>=50)wxLine='明日は雨の予報。中干し中なら排水路をチェック。';
-      else if(WX_CACHE.tTomo!=null&&WX_CACHE.tTomo>=35)wxLine='明日は高温の予報。深水で高温障害を防ぎましょう。';
-    }
     var h='';
     h+='<div class="ina-now">'
       +'<div class="lbl">🌾 '+(new Date()).getFullYear()+'年の米づくり</div>'
       +'<div class="stg-meta">いま '+(s.nowIdx>=0?(s.nowIdx+1):Math.max(1,s.doneCount))+'/'+KT_STEPS.length+' 工程め</div>'
       +'<div class="stg-name">「'+nowNm+'」</div>'
       +(c?'<div class="pred-rows"><div class="pred-row">🌡 出穂予想　'+inaFmt(c.headDate)+'ごろ</div><div class="pred-row">🌾 収穫予想　'+inaFmt(c.harvestDate)+'ごろ</div></div>':'')
-      +(wxLine?'<div class="wxtip">💡 '+wxLine+'</div>':'')
       +'<div class="kt-bar"><div class="in" style="width:'+s.pct+'%;"></div></div>'
       +'<div class="kt-bar-lbl"><span>種まき</span><span>今年の進み '+s.pct+'%</span><span>稲刈り</span></div>'
       +'</div>';
