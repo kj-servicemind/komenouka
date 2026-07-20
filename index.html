@@ -734,6 +734,80 @@
   .kyo-msub{font-size:13px;color:#5c7060;margin-top:4px;}
   .kyo-empty{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:14px;font-size:15px;color:#6b6f66;margin-bottom:8px;line-height:1.6;}
   .fld-geo{background:var(--blue-soft);border:1px solid #CADDE8;border-radius:10px;padding:10px;text-align:center;font-weight:700;font-size:15px;margin:8px 0;color:var(--blue);}
+  /* ===== v22 実用化2.0 ===== */
+  /* ① 肥料一覧シート */
+  .fsheet{border:1px solid #E7E3D8;border-radius:14px;overflow:hidden;margin:0 0 10px;background:#fff;display:none;}
+  .fsheet.on{display:block;}
+  .fsheet .sh{background:#E9F0EA;padding:11px 14px;font-weight:800;color:#213F29;font-size:15.5px;display:flex;align-items:center;}
+  .fsheet .sh .x{margin-left:auto;color:#6b6f66;font-size:19px;padding:0 4px;}
+  .fsheet .fsearch{display:block;width:calc(100% - 24px);margin:10px 12px;border:1px solid #E7E3D8;border-radius:10px;padding:11px 12px;font-size:16px;background:#fafafa;box-sizing:border-box;}
+  .fsheet .fopt{padding:13px 14px;border-top:1px solid #E7E3D8;display:flex;align-items:center;gap:8px;font-size:17.5px;font-weight:700;color:#232821;}
+  .fsheet .fopt .np{font-size:13.5px;color:#8a8f84;margin-left:auto;font-weight:600;}
+  .fsheet .fopt.sel{background:#F5EEDF;}
+  .fsheet .fopt.sel::after{content:"✔";margin-left:8px;color:#B8893B;font-weight:800;}
+  .fsheet .fempty{padding:14px;text-align:center;color:#8a8f84;font-size:15px;}
+  /* ③ 話して記録:カンペ+手入力 */
+  .cheat{background:#F5EEDF;border:1px solid #E8D9B8;border-radius:12px;padding:12px;margin:10px 0;}
+  .cheat .ct{font-weight:800;color:#8a6a2a;margin-bottom:6px;font-size:15px;}
+  .cheat .ex{background:#fff;border-radius:8px;padding:8px 10px;margin:5px 0;font-size:15.5px;color:#232821;}
+  .cheat .ex b{color:#2F5D3A;}
+  .cheat .cn{font-size:14px;color:#6b6f66;margin-top:5px;}
+  .vmanual{border:1.5px dashed #2F5D3A;border-radius:14px;padding:11px 12px;color:#2F5D3A;font-weight:800;text-align:center;margin:10px 0 8px;font-size:15.5px;}
+  .vmanual-box{display:none;margin-bottom:10px;}
+  .vmanual-box.on{display:block;}
+  .vmanual-box .vin{display:block;width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:12px;padding:12px;font-size:17px;background:#fff;}
+  .vmanual-box .vgo{margin-top:8px;background:#2F5D3A;color:#fff;border-radius:12px;text-align:center;font-weight:800;padding:12px;font-size:16.5px;}
+  /* ⑤ 天気の信頼性 */
+  .wxloc{background:#EAF1F5;border:1px solid #CADDE8;border-radius:12px;padding:10px 12px;font-size:14px;color:#274b5c;margin-bottom:10px;line-height:1.55;}
+  .wxloc b{color:#1d3947;}
+  .wxloc .go{color:#2E6E8E;font-weight:800;}
+  .wx .c .tp .mx{color:#B34A3E;}
+  .wx .c .tp .mn{color:#2E6E8E;font-size:.86em;}
+  /* ⑥ 変更・削除 */
+  .editrow{display:flex;gap:8px;margin-top:8px;}
+  .editrow .eb{flex:1;text-align:center;border-radius:10px;padding:10px;font-weight:800;font-size:15px;}
+  .eb.mod{background:#EAF1F5;color:#2E6E8E;border:1px solid #CADDE8;}
+  .eb.del{background:#F6EAE7;color:#B34A3E;border:1px solid #EBCFC9;}
+  .rowbtn{display:inline-block;border-radius:8px;padding:3px 9px;font-size:14px;font-weight:800;margin-left:6px;}
+  .rowbtn.mod{background:#EAF1F5;color:#2E6E8E;border:1px solid #CADDE8;}
+  .rowbtn.del{background:#F6EAE7;color:#B34A3E;border:1px solid #EBCFC9;}
+  .krtbl td.krops{white-space:nowrap;}
+  .kredit{border:2px solid #B8893B;border-radius:14px;padding:12px;margin:10px 0;background:#FDFBF4;display:none;}
+  .kredit.on{display:block;}
+  .kredit .ket{font-weight:800;color:#8a6a2a;font-size:15.5px;margin-bottom:8px;}
+  .kredit .kef{display:flex;align-items:center;gap:8px;margin:6px 0;}
+  .kredit .kef .kl{width:6.5em;font-size:14.5px;color:#6b6f66;font-weight:700;}
+  .kredit .kef input{flex:1;border:1px solid #E7E3D8;border-radius:10px;padding:10px;font-size:16.5px;min-width:0;}
+  /* ===== v22② カレンダー2.0 ===== */
+  .day .cw{display:block;font-size:13px;line-height:1.15;font-weight:400;}
+  .day .ct2{display:block;font-size:9.5px;line-height:1.2;font-weight:700;color:#8A8472;}
+  .day .ct2 .h{color:#B34A3E;} .day .ct2 .l{color:#2E6E8E;}
+  .cal-wxnote{font-size:13px;color:#6b6f66;margin:6px 2px 0;line-height:1.5;}
+  .addplan{border:1.5px dashed var(--green);color:var(--green);border-radius:12px;text-align:center;padding:12px;font-weight:800;margin-top:10px;font-size:15.5px;}
+  .planform{border:2px solid var(--green);border-radius:14px;padding:12px;margin-top:10px;background:#fff;display:none;}
+  .planform.on{display:block;}
+  .planform .pft{font-weight:800;color:var(--green-deep);font-size:15.5px;margin-bottom:8px;}
+  .planform input{display:block;width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:10px;padding:11px;font-size:17px;margin-bottom:8px;}
+  .planform .pfrow{display:flex;gap:8px;}
+  .planform .pfb{flex:1;text-align:center;border-radius:10px;padding:11px;font-weight:800;font-size:15.5px;}
+  .pfb.ok{background:var(--green);color:#fff;}
+  .pfb.no{background:#EEECE4;color:#6b6f66;}
+  .planform .pffld{border:1px solid #E7E3D8;border-radius:10px;padding:11px;font-size:16px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;}
+  .planform .pffld .chv2{margin-left:auto;color:#c3bdae;}
+  /* ===== v22④ 作業を記録2.0 ===== */
+  .fld.datefld{position:relative;overflow:hidden;}
+  .fld.datefld input[type=date]{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;}
+  .recmemo-box{display:none;margin-bottom:10px;}
+  .recmemo-box.on{display:block;}
+  .recmemo-box textarea{display:block;width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:12px;padding:12px;font-size:16.5px;min-height:74px;background:#fff;font-family:inherit;}
+  .usesheet-amt{display:none;border:1px solid #E7E3D8;border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff;}
+  .usesheet-amt.on{display:block;}
+  .usesheet-amt .uat{font-weight:800;font-size:14.5px;color:#6b6f66;margin-bottom:6px;}
+  .usesheet-amt .uarow{display:flex;gap:8px;}
+  .usesheet-amt .ua{flex:1;min-width:0;}
+  .usesheet-amt .ua .ual{font-size:13px;color:#8A8472;font-weight:700;margin-bottom:2px;}
+  .usesheet-amt .ua input{width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:10px;padding:10px;font-size:16.5px;}
+  .fgroup{padding:9px 14px 4px;font-size:13.5px;font-weight:800;color:#8a6a2a;background:#FBF7EC;border-top:1px solid #E7E3D8;}
   </style>
 </head>
 <body>
@@ -747,6 +821,7 @@
     <div class="page on" id="p-home">
       <div class="homebody">
         <div class="alertbar" id="alertBar"><!-- v2.6:警報・注意報が発表中のときだけJSで表示 --></div>
+        <div class="wxloc" onclick="wxOpenJma()">📍 右上の天気は <b>福岡県大刀洗町（筑後地方・気温は久留米観測点）</b> の気象庁データです。<span class="go">タップで気象庁の元ページを開いて確かめられます ›</span></div>
         <div class="wxstale" id="wxStale"><!-- v2.6:オフライン復元時のみ「◯時点の予報」を表示 --></div>
         <div class="todo">
           <div class="th"><span>🗓️</span>今日のやること<span class="src">予定表から自動</span></div>
@@ -776,10 +851,29 @@
     <div class="page" id="p-rec">
       <div class="sc">
         <div class="banner" id="recGeoBanner" onclick="recNearField(false)">📍 近くの田んぼをさがす（タップ）</div>
-        <div class="fld"><div class="lb">① いつ?</div><div class="v"><span id="recDate">今日 7月14日(月)</span><span class="chv">›</span></div></div>
+        <div class="fld datefld"><div class="lb">① いつ?（押すと日付を選べます）</div><div class="v"><span id="recDateV">今日</span><span class="chv">›</span></div><input type="date" id="recDateIn" onchange="recDateSet(this.value)"></div>
         <div class="fld" onclick="recPickField()"><div class="lb">② どの田んぼ?（📍か、押して変更）</div><div class="v"><span id="recFieldV">三島008 60.17a</span><span class="chv">›</span></div></div>
-        <div class="fld"><div class="lb">③ 何をした?</div><div class="v"><span onclick="toast('作業を選ぶ')">粗起こし</span><span class="chv">›</span></div></div>
-        <div class="fld"><div class="lb">メモ</div><div class="v" id="recmemo" style="font-size:16px;color:#8A8472;">(空欄)<span class="chv">›</span></div></div>
+        <div class="fld" onclick="recWorkOpen()"><div class="lb">③ 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#8A8472;">押して作業をえらぶ</span><span class="chv">›</span></div></div>
+        <div class="fsheet" id="recWorkSheet">
+          <div class="sh">作業をえらんでください<span class="x" onclick="recWorkClose()">✕</span></div>
+          <div id="recWorkOpts"></div>
+        </div>
+        <div class="fld" onclick="recUseOpen()"><div class="lb">④ 使ったもの・量（追肥・散布のとき）</div><div class="v" style="font-size:17px;"><span id="recUseV" style="color:#8A8472;">🧪農薬・🌾肥料をえらぶ（無しでもOK）</span><span class="chv">›</span></div></div>
+        <div class="fsheet" id="recUseSheet">
+          <div class="sh">使ったものをえらんでください<span class="x" onclick="recUseClose()">✕</span></div>
+          <div id="recUseOpts"></div>
+        </div>
+        <div class="usesheet-amt" id="recAmtBox">
+          <div class="uat">💧 どれだけ使った?（分かる欄だけでOK）</div>
+          <div class="uarow">
+            <div class="ua"><div class="ual">倍率（倍）</div><input id="recRate" type="number" inputmode="numeric" placeholder="1000"></div>
+            <div class="ua"><div class="ual">量（L）</div><input id="recVol" type="number" inputmode="decimal" placeholder="100"></div>
+            <div class="ua"><div class="ual">量（kg）</div><input id="recMass" type="number" inputmode="decimal" placeholder="20"></div>
+          </div>
+          <div class="uat" style="margin:6px 0 0;font-weight:700;">入れた量は 🛡見張り番・📊生産原価・🌾肥料の栄養にも自動で回ります（二重入力なし）</div>
+        </div>
+        <div class="fld" onclick="recMemoToggle()"><div class="lb">メモ（押すと書けます）</div><div class="v" id="recmemo" style="font-size:16px;color:#8A8472;">(空欄)<span class="chv">›</span></div></div>
+        <div class="recmemo-box" id="recMemoBox"><textarea id="recMemoIn" placeholder="例：北側だけ生育が遅い。水口を少し開けた。"></textarea></div>
         <div class="ghost" onclick="go('voice')">🎤 話して入力 ／ 📷 写真を追加</div>
         <div class="primary-btn" onclick="saveWork()">✅ 保存する</div>
         <div class="spacer"></div>
@@ -792,6 +886,18 @@
         <div class="banner" onclick="recNearField(true)">📍 近くの田んぼをさがす（話す前にどうぞ）</div>
         <div class="micbig" id="mic" onclick="toggleRec()">🎤</div>
         <div class="miclabel" id="miclabel">押して話す(手が汚れててもOK)</div>
+        <div class="cheat">
+          <div class="ct">🗒 こんなふうに話せばOK（カンペ）</div>
+          <div class="ex"><b>「三島008に</b> スタークルを <b>1000倍で</b> まいた」</div>
+          <div class="ex"><b>「三島009の</b> 草刈りをした」</div>
+          <div class="ex"><b>「三島006に</b> 化成を <b>20キロ</b> まいた」</div>
+          <div class="cn">田んぼ名 → した作業 →（農薬・肥料と量）の順が聞き取りやすいです。</div>
+        </div>
+        <div class="vmanual" onclick="vmToggle()">⌨️ うまく聞き取れない時は「手で入力」</div>
+        <div class="vmanual-box" id="vmBox">
+          <input class="vin" id="vmIn" type="text" placeholder="例：三島008 スタークル散布 1000倍" enterkeyhint="done">
+          <div class="vgo" onclick="vmParse()">↓ この文で振り分ける</div>
+        </div>
         <div class="transcript" id="tr">ここに話した言葉が出ます</div>
         <div class="safari-tip" id="safaritip">⚠️ うまく聞き取れない時は、Safariでこのページを開くと安定します。</div>
         <div class="parsed" id="parsed" style="display:none;"></div>
@@ -820,7 +926,20 @@
     <!-- ===== 📄 栽培管理記録簿(JA提出用) ===== -->
     <div class="page" id="p-kroku">
       <div class="sc">
-        <div class="kroku-lead">🎤で話した記録が、そのままこの表に並びます。手書きのノートはもう要りません。</div>
+        <div class="kroku-lead">🎤で話した記録が、そのままこの表に並びます。手書きのノートはもう要りません。<b>間違えた行は ✏️直す・🗑消す で見直せます。</b></div>
+        <div class="kredit" id="krEditCard">
+          <div class="ket" id="krEditTitle">✏️ この記録を直す</div>
+          <div class="kef"><span class="kl">月日</span><input id="krEd" type="text" inputmode="numeric" placeholder="2026/07/20"></div>
+          <div class="kef"><span class="kl">作業</span><input id="krEw" type="text" placeholder="散布・追肥など"></div>
+          <div class="kef"><span class="kl">農薬・肥料</span><input id="krEc" type="text" placeholder="スタークルなど"></div>
+          <div class="kef"><span class="kl">倍率（倍）</span><input id="krEr" type="number" inputmode="numeric" placeholder="1000"></div>
+          <div class="kef"><span class="kl">量（L）</span><input id="krEv" type="number" inputmode="decimal" placeholder="100"></div>
+          <div class="kef"><span class="kl">量（kg）</span><input id="krEm" type="number" inputmode="decimal" placeholder="20"></div>
+          <div class="editrow">
+            <div class="eb mod" onclick="krEditSave()">✅ これで直す</div>
+            <div class="eb del" onclick="krEditCancel()">やめる</div>
+          </div>
+        </div>
         <div id="krokuBody"></div>
         <div class="save" onclick="krokuCopy()">① 表をコピーする<small>次に ② LINEやメールでJAへ送る／KSASに貼る</small></div>
         <div class="kroku-why">
@@ -845,7 +964,12 @@
         </div>
         <div class="hy-goalcard" id="hyGoalCard"><!-- 🎯目標(JS) --></div>
         <div class="hy-addttl">➕ 肥料を足す</div>
-        <div class="fld" onclick="hyPickFert()"><div class="lb">肥料をえらぶ</div><div class="v"><span id="hyFertName">化成14-14-14</span><span class="chv">›</span></div></div>
+        <div class="fld" onclick="hyPickFert()"><div class="lb">肥料をえらぶ（押すと一覧が出ます）</div><div class="v"><span id="hyFertName">化成14-14-14</span><span class="chv">›</span></div></div>
+        <div class="fsheet" id="hyFertSheet">
+          <div class="sh">肥料をえらんでください<span class="x" onclick="hyFertSheetClose()">✕</span></div>
+          <input class="fsearch" id="hyFertSearch" type="text" placeholder="🔍 肥料の名前でしぼる（例：化成／尿素）" oninput="hyFertSheetRender()">
+          <div id="hyFertOpts"></div>
+        </div>
         <div class="hy-amtrow">
           <div class="fld hy-amt"><div class="lb">量（kg）</div><input class="hy-inp" id="hyKg" type="number" inputmode="decimal" placeholder="20" enterkeyhint="done"></div>
           <div class="hy-addbtn" onclick="hyAdd()">＋ 記録する</div>
@@ -993,9 +1117,21 @@
         <div class="cal">
           <div class="calnav"><span class="ar" onclick="calMove(-1)">« ‹</span><span id="calTitle">…</span><span class="ar" onclick="calMove(1)">› »</span></div>
           <div class="calgrid" id="calGrid"><!-- v2.5:予定データから自動生成(JS) --></div>
+          <div class="cal-wxnote">☀️天気と <span style="color:#B34A3E;font-weight:800;">最高</span>/<span style="color:#2E6E8E;font-weight:800;">最低</span>気温は、気象庁の予報が出ている約1週間ぶんだけ自動で入ります。先の日は空欄のまま（無い予報は作りません）。</div>
         </div>
         <div class="dayhead" id="dayTitle">…</div>
         <div id="dayList"><!-- v2.5:選んだ日の予定(JS) --></div>
+        <div class="addplan" onclick="planFormToggle()">＋ この日に予定を書く（手入力）</div>
+        <div class="planform" id="planForm">
+          <div class="pft" id="planFormTitle">📝 予定を書く</div>
+          <input id="planTitleIn" type="text" placeholder="例：畦畔の草刈り" enterkeyhint="done">
+          <div class="pffld" onclick="planFieldPick()">🌾 <span id="planFieldV" style="margin-left:6px;">三島008</span><span class="chv2">›（押して変更）</span></div>
+          <div class="pfrow">
+            <div class="pfb ok" onclick="planAdd()">✅ この日に入れる</div>
+            <div class="pfb no" onclick="planFormToggle()">やめる</div>
+          </div>
+          <div class="cal-wxnote" style="margin-top:8px;">ここで書いた予定は、その日になると<b>ホームの「🗓️今日のやること」に自動で出ます</b>。</div>
+        </div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -1508,7 +1644,8 @@
   /* 全機能はこの1関数で台帳に書き込む(連携連動の背骨) */
   function wlAdd(stepK, fieldN, text, src, extra){
     var e={d:inaFmtFull(new Date()), step:stepK, field:fieldN, text:text||'', src:src||'rec', ksas:false};
-    if(extra){ if(extra.work)e.work=extra.work; if(extra.chem)e.chem=extra.chem;
+    if(extra){ if(extra.d)e.d=extra.d; /* v22④:過去日にさかのぼって記録できる */
+      if(extra.work)e.work=extra.work; if(extra.chem)e.chem=extra.chem;
       if(extra.rate)e.rate=extra.rate; if(extra.vol)e.vol=extra.vol; if(extra.mass)e.mass=extra.mass; }
     ktLog.push(e);
     ktSave();
@@ -1784,12 +1921,144 @@
     inaSave(); ktBackToBoard();
   }
 
+  /* ============================================================
+     v22④ 作業を記録2.0(いつ・何をした・使ったもの量・メモを全部本物に)
+     ============================================================ */
+  var recDateSel=null;   /* 'YYYY/MM/DD'。nullなら今日 */
+  var recWorkSel='';     /* えらんだ作業名 */
+  var recUseSel='';      /* えらんだ農薬・肥料名('なし'含む) */
+  var REC_WORKS=[
+    {e:'🌱',n:'種まき・育苗',step:'tane'},
+    {e:'🚜',n:'耕起（粗起こし）',step:'kouki'},
+    {e:'💧',n:'代かき',step:'kouki'},
+    {e:'🌾',n:'田植え',step:'taue'},
+    {e:'🌿',n:'除草剤散布',step:'josou'},
+    {e:'💧',n:'水管理・中干し',step:'nakaboshi'},
+    {e:'🧪',n:'追肥・穂肥',step:'hogoe'},
+    {e:'🐛',n:'防除・散布',step:'shussui'},
+    {e:'🚜',n:'畦畔の草刈り',step:''},
+    {e:'🌾',n:'収穫・稲刈り',step:'inekari'}
+  ];
+  function recStepOf(workName){
+    /* えらんだ作業→工程キー。該当が無い/工程表に無いキーは今の生育推定に任せる */
+    for(var i=0;i<REC_WORKS.length;i++){
+      if(REC_WORKS[i].n===workName&&REC_WORKS[i].step){
+        for(var j=0;j<KT_STEPS.length;j++)if(KT_STEPS[j].k===REC_WORKS[i].step)return REC_WORKS[i].step;
+      }
+    }
+    return (typeof ktGuessStep==='function')?ktGuessStep():'taue';
+  }
+  function recDateSet(v){
+    /* input type=date は 'YYYY-MM-DD' */
+    if(!v){ recDateSel=null; var e0=document.getElementById('recDateV'); if(e0)e0.textContent=todayStr(); return; }
+    recDateSel=v.replace(/-/g,'/');
+    var p=v.split('-'), d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10));
+    var el=document.getElementById('recDateV');
+    if(el)el.textContent=parseInt(p[1],10)+'月'+parseInt(p[2],10)+'日('+WD[d.getDay()]+')';
+  }
+  function recWorkOpen(){
+    var sh=document.getElementById('recWorkSheet'); if(!sh)return;
+    if(sh.classList.contains('on')){ recWorkClose(); return; }
+    var h='';
+    for(var i=0;i<REC_WORKS.length;i++){
+      var w=REC_WORKS[i];
+      h+='<div class="fopt'+(w.n===recWorkSel?' sel':'')+'" onclick="recWorkSet(\''+w.n+'\')">'+w.e+' '+w.n+'</div>';
+    }
+    h+='<div class="fopt" style="color:#8a6a2a;" onclick="recWorkOther()">＋ その他（自由に書く）</div>';
+    document.getElementById('recWorkOpts').innerHTML=h;
+    sh.classList.add('on');
+  }
+  function recWorkClose(){ var sh=document.getElementById('recWorkSheet'); if(sh)sh.classList.remove('on'); }
+  function recWorkSet(n){
+    recWorkSel=n;
+    var v=document.getElementById('recWorkV'); if(v){ v.textContent=n; v.style.color=''; }
+    recWorkClose();
+    /* 追肥・散布系をえらんだら「使ったもの」欄へ自然に誘導 */
+    if(/追肥|散布|防除/.test(n)&&!recUseSel)toast('④で使った農薬・肥料もえらべます');
+  }
+  function recWorkOther(){
+    var t=prompt('した作業を書いてください','');
+    if(t==null)return;
+    t=t.replace(/^\s+|\s+$/g,'');
+    if(!t){ toast('作業名を入れてください'); return; }
+    recWorkSet(t);
+  }
+  function recUseOpen(){
+    var sh=document.getElementById('recUseSheet'); if(!sh)return;
+    if(sh.classList.contains('on')){ recUseClose(); return; }
+    var h='<div class="fopt'+(recUseSel==='なし'?' sel':'')+'" onclick="recUseSet(\'なし\')">─ 使っていない（なし）</div>';
+    h+='<div class="fgroup">🧪 農薬（🛡見張り番と連動）</div>';
+    for(var k in NG_LIMIT){
+      h+='<div class="fopt'+(k===recUseSel?' sel':'')+'" onclick="recUseSet(\''+k+'\')">🧪 '+k+'<span class="np">'+NG_LIMIT[k].seibun+'</span></div>';
+    }
+    h+='<div class="fgroup">🌾 肥料（栄養バランスと連動）</div>';
+    for(var i=0;i<NG_FERT_NAMES.length;i++){
+      var n=NG_FERT_NAMES[i];
+      h+='<div class="fopt'+(n===recUseSel?' sel':'')+'" onclick="recUseSet(\''+n+'\')">🌱 '+n+'<span class="np">'+hyFertNP(n)+'</span></div>';
+    }
+    h+='<div class="fopt" style="color:#8a6a2a;" onclick="recUseOther()">＋ その他（自由に書く）</div>';
+    document.getElementById('recUseOpts').innerHTML=h;
+    sh.classList.add('on');
+  }
+  function recUseClose(){ var sh=document.getElementById('recUseSheet'); if(sh)sh.classList.remove('on'); }
+  function recUseSet(n){
+    recUseSel=n;
+    var v=document.getElementById('recUseV');
+    var amt=document.getElementById('recAmtBox');
+    if(n==='なし'){
+      if(v){ v.textContent='─ 使っていない（なし）'; v.style.color=''; }
+      if(amt)amt.classList.remove('on');
+    }else{
+      if(v){ v.textContent=(NG_LIMIT[n]?'🧪 ':'🌱 ')+n; v.style.color=''; }
+      if(amt)amt.classList.add('on');
+    }
+    recUseClose();
+  }
+  function recUseOther(){
+    var t=prompt('使った農薬・肥料の名前を書いてください','');
+    if(t==null)return;
+    t=t.replace(/^\s+|\s+$/g,'');
+    if(!t){ toast('名前を入れてください'); return; }
+    recUseSet(t);
+  }
+  function recMemoToggle(){
+    var b=document.getElementById('recMemoBox'); if(!b)return;
+    b.classList.toggle('on');
+    if(b.classList.contains('on')){ var i=document.getElementById('recMemoIn'); if(i)i.focus(); }
+  }
+  function recFormReset(){
+    recDateSel=null; recWorkSel=''; recUseSel='';
+    recDateSet('');
+    var di=document.getElementById('recDateIn'); if(di)di.value='';
+    var wv=document.getElementById('recWorkV'); if(wv){ wv.textContent='押して作業をえらぶ'; wv.style.color='#8A8472'; }
+    var uv=document.getElementById('recUseV'); if(uv){ uv.textContent='🧪農薬・🌾肥料をえらぶ（無しでもOK）'; uv.style.color='#8A8472'; }
+    var amt=document.getElementById('recAmtBox'); if(amt)amt.classList.remove('on');
+    ['recRate','recVol','recMass','recMemoIn'].forEach(function(id){ var e=document.getElementById(id); if(e)e.value=''; });
+    var mb=document.getElementById('recMemoBox'); if(mb)mb.classList.remove('on');
+    var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML='(空欄)<span class="chv">›</span>';
+    recWorkClose(); recUseClose();
+  }
   /* 保存時に共通の作業台帳(工程表)へも書き込む(連携連動) */
   function saveWork(){
     var src=(curScreen==='drone')?'drone':'rec';
-    var stepK=(curScreen==='drone')?'josou':(ktGuessStep?ktGuessStep():'taue');
-    wlAdd(stepK, (src==='rec'?recField:'三島008'), (src==='drone'?'ドローン散布':'作業記録'), src);
-    toast('✅ 保存しました(みんなに共有・工程表にも反映)');setTimeout(function(){go('cal');},900);}
+    if(src==='drone'){
+      wlAdd('josou','三島008','ドローン散布','drone');
+      toast('✅ 保存しました(みんなに共有・工程表にも反映)');setTimeout(function(){go('cal');},900);
+      return;
+    }
+    /* v22④:作業を記録2.0 */
+    if(!recWorkSel){ toast('③で「何をした?」をえらんでください'); recWorkOpen(); return; }
+    var gv=function(id){ var e=document.getElementById(id); return e?e.value.replace(/^\s+|\s+$/g,''):''; };
+    var chem=(recUseSel&&recUseSel!=='なし')?recUseSel:'';
+    var rate=chem?gv('recRate'):'', vol=chem?gv('recVol'):'', mass=chem?gv('recMass'):'';
+    var memo=gv('recMemoIn');
+    var text=recWorkSel+(chem?('：'+chem+(rate?' '+rate+'倍':'')+(vol?' '+vol+'L':'')+(mass?' '+mass+'kg':'')):'')+(memo?('。'+memo):'');
+    wlAdd(recStepOf(recWorkSel), recField, text, 'rec',
+      {d:(recDateSel||null), work:recWorkSel, chem:chem, rate:rate, vol:vol, mass:mass});
+    toast('✅ 保存しました(記録簿・工程表・見張り番・原価にも反映)');
+    recFormReset();
+    setTimeout(function(){go('cal');},900);
+  }
   /* いま生育上どの工程かを推定(稲作先生の計算があればそれ、無ければ田植え扱い) */
   function ktGuessStep(){
     var s=ktStatus();
@@ -1948,6 +2217,19 @@
     var fixes=p.querySelectorAll('.slot.miss .fix');
     for(var i=0;i<fixes.length;i++){ fixes[i].onclick=function(){ toast('もう一度🎤で話すか、田んぼ・農薬の画面から選べます'); }; }
   }
+  /* ===== v22③ 手で入力(音声と同じ振り分け・同じ保存経路) ===== */
+  function vmToggle(){
+    var b=document.getElementById('vmBox'); if(!b)return;
+    b.classList.toggle('on');
+    if(b.classList.contains('on')){ var i=document.getElementById('vmIn'); if(i)i.focus(); }
+  }
+  function vmParse(){
+    var i=document.getElementById('vmIn');
+    var t=(i&&i.value||'').replace(/^\s+|\s+$/g,'');
+    if(!t){ toast('文を入れてください（例：三島008 スタークル散布 1000倍）'); return; }
+    var tr=document.getElementById('tr'); if(tr)tr.textContent='「'+t+'」（⌨️手入力）';
+    parseText(t); /* 音声と同じ辞書照合。保存も同じ「✅これで保存する」から */
+  }
   function saveVoice(){
     var r=lastParse||{field:null,chem:null,rate:null,vol:null,mass:null,work:null};
     var fld=r.field||'三島008';
@@ -1964,7 +2246,7 @@
     var byField={};
     for(var i=0;i<ktLog.length;i++){
       var e=ktLog[i], f=e.field||'（田んぼ不明）';
-      (byField[f]=byField[f]||[]).push(e);
+      (byField[f]=byField[f]||[]).push({e:e,idx:i}); /* v22⑥:台帳の元番号を持ち歩く(直す・消す用) */
     }
     var order=[]; for(var k=0;k<KT_FIELDS.length;k++)if(byField[KT_FIELDS[k].n])order.push(KT_FIELDS[k].n);
     for(var f2 in byField)if(order.indexOf(f2)<0)order.push(f2);
@@ -1973,18 +2255,56 @@
     var html2='';
     for(var o=0;o<order.length;o++){
       var name=order[o], rows=byField[name].slice();
-      rows.sort(function(a,b){return (a.d||'')<(b.d||'')?-1:1;});
+      rows.sort(function(a,b){return ((a.e.d||'')<(b.e.d||''))?-1:1;});
       html2+='<div class="krtit">🌾 '+name+'</div>';
-      html2+='<div class="krtbl"><table><tr><th>月日</th><th>作業</th><th>農薬・肥料</th><th>倍率</th><th>量</th></tr>';
+      html2+='<div class="krtbl"><table><tr><th>月日</th><th>作業</th><th>農薬・肥料</th><th>倍率</th><th>量</th><th>直す</th></tr>';
       for(var rr=0;rr<rows.length;rr++){
-        var e2=rows[rr];
+        var e2=rows[rr].e, ix=rows[rr].idx;
         var vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'—');
         html2+='<tr><td>'+krMd(e2.d)+'</td><td>'+(e2.work||'—')+'</td><td>'+(e2.chem||'—')+
-          '</td><td>'+(e2.rate?e2.rate+'倍':'—')+'</td><td>'+vol+'</td></tr>';
+          '</td><td>'+(e2.rate?e2.rate+'倍':'—')+'</td><td>'+vol+'</td>'+
+          '<td class="krops"><span class="rowbtn mod" style="margin-left:0;" onclick="krEdit('+ix+')">✏️</span><span class="rowbtn del" onclick="krDel('+ix+')">🗑</span></td></tr>';
       }
       html2+='</table></div>';
     }
     box.innerHTML=html2;
+  }
+  /* ===== v22⑥ 記録簿の 直す・消す(作業記録・話して記録の実体=台帳) ===== */
+  var krEditIdx=-1;
+  function krEdit(idx){
+    var e=ktLog[idx]; if(!e){ toast('その記録が見つかりません'); return; }
+    krEditIdx=idx;
+    var set=function(id,v){ var el=document.getElementById(id); if(el)el.value=(v==null?'':v); };
+    set('krEd',e.d); set('krEw',e.work||''); set('krEc',e.chem||'');
+    set('krEr',e.rate||''); set('krEv',e.vol||''); set('krEm',e.mass||'');
+    var t=document.getElementById('krEditTitle');
+    if(t)t.textContent='✏️ '+(e.field||'')+' '+krMd(e.d)+' の記録を直す';
+    var c=document.getElementById('krEditCard'); if(c){ c.classList.add('on'); c.scrollIntoView({behavior:'smooth',block:'center'}); }
+  }
+  function krEditCancel(){
+    krEditIdx=-1;
+    var c=document.getElementById('krEditCard'); if(c)c.classList.remove('on');
+  }
+  function krEditSave(){
+    var e=ktLog[krEditIdx]; if(!e){ krEditCancel(); return; }
+    var gv=function(id){ var el=document.getElementById(id); return el?el.value.replace(/^\s+|\s+$/g,''):''; };
+    var d=gv('krEd');
+    if(d&&!/^\d{4}\/\d{2}\/\d{2}$/.test(d)){ toast('月日は 2026/07/20 の形で入れてください'); return; }
+    if(d)e.d=d;
+    e.work=gv('krEw'); e.chem=gv('krEc');
+    e.rate=gv('krEr'); e.vol=gv('krEv'); e.mass=gv('krEm');
+    ktSave();
+    krEditCancel();
+    krokuRender();
+    toast('✏️ 記録を直しました（工程表・原価・肥料にも反映）');
+  }
+  function krDel(idx){
+    var e=ktLog[idx]; if(!e)return;
+    if(!confirm('本当に消しますか？\n'+krMd(e.d)+' '+(e.field||'')+' '+(e.work||e.text||''))) return;
+    ktLog.splice(idx,1); ktSave();
+    krEditCancel();
+    krokuRender();
+    toast('🗑 記録を消しました');
   }
   function krMd(d){ if(!d)return '—'; var m=d.match(/\d+\/(\d+)\/(\d+)/); return m?(parseInt(m[1],10)+'/'+parseInt(m[2],10)):d; }
   function krokuText(){
@@ -2163,8 +2483,8 @@
       lh+='<div class="hy-item"><span class="hy-inm">'+r.fert+'</span>'
         +'<span class="hy-sub" style="margin-left:8px;">'+sub+'</span>'
         +'<span class="hy-ikg">'+ (r.kg||0) +' kg</span>';
-      if(r.fromWl){ lh+='<span class="hy-sub" style="margin-left:8px;">🎤記録</span>'; }
-      else{ lh+='<span class="hy-del" onclick="hyDel('+i+')">×</span>'; }
+      if(r.fromWl){ lh+='<span class="hy-sub" style="margin-left:8px;">🎤記録（📄記録簿で直せます）</span>'; }
+      else{ lh+='<span class="rowbtn mod" onclick="hyEdit('+i+')">✏️</span><span class="rowbtn del" onclick="hyDel('+i+')">🗑</span>'; }
       lh+='</div>';
     }
     var list=document.getElementById('hyList');
@@ -2182,10 +2502,25 @@
     hyRender();
     toast(hyField+' に '+hyFert+' '+kg+'kg を記録しました');
   }
-  function hyDel(i){
-    /* iは hyRows の並び。専用ログ分のみ削除可（🎤記録は台帳側なので消さない） */
+  function hyLocalIdx(i){
+    /* iは hyRows の並び。専用ログ内の元番号に変換（🎤記録は台帳側なので対象外） */
     var localRows=[]; for(var j=0;j<hyLog.length;j++){ if(hyLog[j].field===hyField) localRows.push(j); }
-    if(i<localRows.length){ hyLog.splice(localRows[i],1); hySave(); hyRender(); toast('削除しました'); }
+    return (i<localRows.length)?localRows[i]:-1;
+  }
+  function hyDel(i){
+    var li=hyLocalIdx(i); if(li<0)return;
+    var r=hyLog[li];
+    if(!confirm('本当に消しますか？\n'+r.fert+' '+(r.kg||0)+'kg')) return;
+    hyLog.splice(li,1); hySave(); hyRender(); toast('🗑 削除しました');
+  }
+  function hyEdit(i){
+    var li=hyLocalIdx(i); if(li<0)return;
+    var r=hyLog[li];
+    var v=prompt(r.fert+' の量（kg）を直す',r.kg||'');
+    if(v==null)return;
+    var kg=parseFloat(v);
+    if(!kg||kg<=0){ toast('量（kg）は数字で入れてください'); return; }
+    r.kg=kg; hySave(); hyRender(); toast('✏️ '+r.fert+' を '+kg+'kg に直しました');
   }
   function hyPickField(){
     var names=[]; for(var i=0;i<KT_FIELDS.length;i++)names.push(KT_FIELDS[i].n);
@@ -2193,9 +2528,45 @@
     var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=hyField;
     hyRender(); toast('田んぼ：'+hyField);
   }
+  /* ===== v22① 肥料をえらぶ:一覧シート(順送りを廃止) ===== */
+  function hyFertFilter(q){
+    /* 検索語で肥料名をしぼる(純関数・テスト対象) */
+    q=(q||'').replace(/\s+/g,'');
+    if(!q)return NG_FERT_NAMES.slice();
+    var out=[];
+    for(var i=0;i<NG_FERT_NAMES.length;i++){ if(NG_FERT_NAMES[i].indexOf(q)>=0)out.push(NG_FERT_NAMES[i]); }
+    return out;
+  }
+  function hyFertNP(name){
+    var f=NG_FERT[name]; if(!f)return '成分不明';
+    var p=[]; if(f.n)p.push('N'+f.n); if(f.p)p.push('P'+f.p); if(f.k)p.push('K'+f.k);
+    return p.length?p.join(' '):'成分0（石灰・ケイ酸など）';
+  }
   function hyPickFert(){
-    var cur=NG_FERT_NAMES.indexOf(hyFert); hyFert=NG_FERT_NAMES[(cur+1)%NG_FERT_NAMES.length];
+    var sh=document.getElementById('hyFertSheet'); if(!sh)return;
+    if(sh.classList.contains('on')){ hyFertSheetClose(); return; }
+    var q=document.getElementById('hyFertSearch'); if(q)q.value='';
+    hyFertSheetRender();
+    sh.classList.add('on');
+  }
+  function hyFertSheetClose(){
+    var sh=document.getElementById('hyFertSheet'); if(sh)sh.classList.remove('on');
+  }
+  function hyFertSheetRender(){
+    var box=document.getElementById('hyFertOpts'); if(!box)return;
+    var q=document.getElementById('hyFertSearch');
+    var names=hyFertFilter(q?q.value:'');
+    var h='';
+    for(var i=0;i<names.length;i++){
+      var n=names[i];
+      h+='<div class="fopt'+(n===hyFert?' sel':'')+'" onclick="hyFertSelect(\''+n+'\')">🌱 '+n+'<span class="np">'+hyFertNP(n)+'</span></div>';
+    }
+    box.innerHTML=h||'<div class="fempty">その名前の肥料は登録されていません（表に無い肥料は成分0で扱います）</div>';
+  }
+  function hyFertSelect(name){
+    hyFert=name;
     var ft=document.getElementById('hyFertName'); if(ft)ft.textContent=hyFert;
+    hyFertSheetClose();
     toast('肥料：'+hyFert);
   }
 
@@ -2242,7 +2613,7 @@
     for(var r=0;r<rows.length;r++){ var e=rows[r].e;
       lh+='<div class="ki-item"><span class="ki-d">'+krMd(e.d)+'</span><span class="ki-c">'+e.kind+'</span>'
         +'<span class="ki-y">'+kiYen(e.yen)+'</span>'
-        +'<span class="ki-del" onclick="kiDel('+rows[r].i+')">×</span></div>';
+        +'<span class="rowbtn mod" onclick="kiEdit('+rows[r].i+')">✏️</span><span class="rowbtn del" onclick="kiDel('+rows[r].i+')">🗑</span></div>';
     }
     var list=document.getElementById('kiList');
     if(list)list.innerHTML=lh||'<div class="ki-empty">まだ記録はありません</div>';
@@ -2260,7 +2631,19 @@
     var macNm=''; for(var i=0;i<KI_MACS.length;i++)if(KI_MACS[i].k===kiMac)macNm=KI_MACS[i].nm;
     toast(macNm+'：'+kiKind+' '+kiYen(yen)+' を記録しました');
   }
-  function kiDel(i){ kiLog.splice(i,1); kiSave(); kiRender(); toast('削除しました'); }
+  function kiDel(i){
+    var e=kiLog[i]; if(!e)return;
+    if(!confirm('本当に消しますか？\n'+krMd(e.d)+' '+e.kind+' '+kiYen(e.yen))) return;
+    kiLog.splice(i,1); kiSave(); kiRender(); toast('🗑 削除しました');
+  }
+  function kiEdit(i){
+    var e=kiLog[i]; if(!e)return;
+    var v=prompt(e.kind+' の金額（円）を直す',e.yen||'');
+    if(v==null)return;
+    var yen=parseInt(v,10);
+    if(!yen||yen<=0){ toast('金額（円）は数字で入れてください'); return; }
+    e.yen=yen; kiSave(); kiRender(); toast('✏️ '+e.kind+' を '+kiYen(yen)+' に直しました');
+  }
 
   /* ============================================================
      🛡 見張り番(農薬計算 p-pest 内)
@@ -2515,7 +2898,8 @@
   function applyDates(){
     var el;
     if(el=document.getElementById('todayDate'))el.textContent=shortDate();
-    if(el=document.getElementById('recDate'))el.textContent=todayStr();
+    /* v22④:日付を自分で選んでいない時だけ「今日」を表示 */
+    if((el=document.getElementById('recDateV'))&&(typeof recDateSel==='undefined'||!recDateSel))el.textContent=todayStr();
     if(el=document.getElementById('droneDate'))el.textContent=todayStr();
   }
   renderHeader('home');   /* 起動時:ホームの固定ヘッダーを表示 */
@@ -2789,7 +3173,14 @@
     }
     res.innerHTML=h;
   }
-  function calPick(ds){calSel=ds; renderCal(); renderDayList();}
+  function calPick(ds){calSel=ds; renderCal(); renderDayList();
+    /* v22②:予定フォームが開いたまま日を替えたら、見出しの日付も追随させる */
+    var f=document.getElementById('planForm');
+    if(f&&f.classList.contains('on')){
+      var p3=calSel.split('-'), t=document.getElementById('planFormTitle');
+      if(t)t.textContent='📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日 の予定を書く';
+    }
+  }
   function renderCal(){
     var g=document.getElementById('calGrid'),ttl=document.getElementById('calTitle'); if(!g)return;
     if(ttl)ttl.textContent=calY+'年'+(calM+1)+'月';
@@ -2809,7 +3200,14 @@
       var und=false,don=false;
       for(i=0;i<plans.length;i++){if(plans[i].date===ds){if(plans[i].done)don=true;else und=true;}}
       var mk=(und||don)?('<span class="mk">'+(und?'<span class="d1">●</span>':'')+(don?'<span class="d2">●</span>':'')+'</span>'):'';
-      html+='<span class="'+cls+'" onclick="calPick(\''+ds+'\')">'+d+mk+'</span>';
+      /* v22②:気象庁予報が出ている日だけ ☀️と最高/最低。無い日は空欄(ウソを出さない) */
+      var wx2='';
+      if(typeof WX_CACHE!=='undefined'&&WX_CACHE&&WX_CACHE.week&&WX_CACHE.week[ds]){
+        var wv=WX_CACHE.week[ds];
+        wx2='<span class="cw">'+(wv.e||'')+'</span>';
+        if(wv.mx!=null)wx2+='<span class="ct2"><span class="h">'+wv.mx+'</span>/'+(wv.mn!=null?'<span class="l">'+wv.mn+'</span>':'−')+'</span>';
+      }
+      html+='<span class="'+cls+'" onclick="calPick(\''+ds+'\')">'+d+wx2+mk+'</span>';
     }
     var total=start+dim, rest=(7-total%7)%7;
     for(i=1;i<=rest;i++){html+='<span class="day dim">'+i+'</span>';}
@@ -2826,9 +3224,58 @@
     }
     box.innerHTML=list.map(function(p){
       return '<div class="daycard"><div><div class="nm">'+(p.done?'✅ ':'(予定)')+p.title+'</div>'
-        +'<div class="fi">'+p.field+(p.who?'|担当:'+p.who:'')+'</div></div>'
+        +'<div class="fi">'+p.field+(p.who?'|担当:'+p.who:'')+'</div>'
+        +'<div style="margin-top:5px;"><span class="rowbtn mod" style="margin-left:0;" onclick="planEdit(\''+p.id+'\')">✏️ 直す</span><span class="rowbtn del" onclick="planDel(\''+p.id+'\')">🗑 消す</span></div></div>'
         +'<button class="actbtn '+(p.done?'a-undo':'a-do')+'" onclick="todoTap(\''+p.id+'\')">'+(p.done?'予定に戻す':'○ 実績にする')+'</button></div>';
     }).join('');
+  }
+  /* ===== v22⑥ 予定の 直す・消す ===== */
+  function planEdit(id){
+    var p=planById(id); if(!p)return;
+    var t=prompt('予定の名前を直す',p.title);
+    if(t==null)return;
+    t=t.replace(/^\s+|\s+$/g,'');
+    if(!t){ toast('予定の名前を入れてください'); return; }
+    p.title=t; savePlans();
+    renderTodo(); renderCal(); renderDayList(); renderAiTip();
+    toast('✏️ 予定を直しました');
+  }
+  function planDel(id){
+    var p=planById(id); if(!p)return;
+    if(!confirm('本当に消しますか？\n'+p.date.replace(/-/g,'/')+' '+p.title)) return;
+    for(var i=0;i<plans.length;i++){ if(plans[i].id===id){ plans.splice(i,1); break; } }
+    savePlans();
+    renderTodo(); renderCal(); renderDayList(); renderAiTip();
+    toast('🗑 予定を消しました');
+  }
+  /* ===== v22② 予定の手入力(選んだ日に書く→ホームの今日のやることへ自動連動) ===== */
+  var planField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'三島008';
+  function planFormToggle(){
+    var f=document.getElementById('planForm'); if(!f)return;
+    if(f.classList.contains('on')){ f.classList.remove('on'); return; }
+    var p3=calSel.split('-');
+    var t=document.getElementById('planFormTitle');
+    if(t)t.textContent='📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日 の予定を書く';
+    var fv=document.getElementById('planFieldV'); if(fv)fv.textContent=planField;
+    var ti=document.getElementById('planTitleIn'); if(ti)ti.value='';
+    f.classList.add('on');
+    if(ti)ti.focus();
+  }
+  function planFieldPick(){
+    var names=[]; for(var i=0;i<KT_FIELDS.length;i++)names.push(KT_FIELDS[i].n);
+    planField=names[(names.indexOf(planField)+1)%names.length];
+    var fv=document.getElementById('planFieldV'); if(fv)fv.textContent=planField;
+  }
+  function planAdd(){
+    var ti=document.getElementById('planTitleIn');
+    var title=(ti&&ti.value||'').replace(/^\s+|\s+$/g,'');
+    if(!title){ toast('予定の名前を入れてください（例：畦畔の草刈り）'); return; }
+    plans.push({id:'u'+Date.now(), date:calSel, title:title, field:planField, who:'', done:false});
+    savePlans();
+    var f=document.getElementById('planForm'); if(f)f.classList.remove('on');
+    renderTodo(); renderCal(); renderDayList(); renderAiTip();
+    var p3=calSel.split('-');
+    toast('📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日に「'+title+'」を入れました');
   }
   renderTodo(); renderCal(); renderDayList();
 
@@ -2951,6 +3398,14 @@
     if(/晴/.test(txt))return (/くもり|曇/.test(txt)?'⛅':'☀️');
     return '☁️';
   }
+  /* v22②:週間予報のweatherCode(数値)→絵文字。気象庁の規則=100番台:晴/200番台:曇/300番台:雨/400番台:雪 */
+  function wxCodeEmoji(c){
+    if(c>=400)return '❄️';
+    if(c>=300)return '🌧️';
+    if(c>=200)return (c%100>=2&&c%100<=17)?'☁️':'☁️';
+    if(c>=100)return (c===100)?'☀️':'⛅';
+    return '☁️';
+  }
   /* エリアをインデックス固定ではなくコード/名称で選ぶ(JSONの並び順変化に強い) */
   function pickAreaIdx(ts, code, name){
     if(!ts||!ts.areas)return 0;
@@ -2983,6 +3438,28 @@
     var day=sameDay?'今日':(ymd(d)===ymd(y)?'昨日':(d.getMonth()+1)+'月'+d.getDate()+'日');
     return day+' '+h+'時点の予報';
   }
+  /* v22⑤:短期予報のtemps(朝の最低/日中の最高のペア)を日付ごとに最高・最低へ分ける。
+     その日の値が1つしか無い時は最高のみ扱い(最低をでっち上げない=ウソを出さない) */
+  function wxTempsMinMax(defs,vals){
+    var byDate={};
+    (defs||[]).forEach(function(t,i){
+      var ds=(t||'').slice(0,10), v=parseInt((vals||[])[i],10);
+      if(isNaN(v))return;
+      (byDate[ds]=byDate[ds]||[]).push(v);
+    });
+    var out={max:{},min:{}};
+    for(var k in byDate){
+      var a=byDate[k], mx=a[0], mn=a[0];
+      for(var i2=1;i2<a.length;i2++){ if(a[i2]>mx)mx=a[i2]; if(a[i2]<mn)mn=a[i2]; }
+      out.max[k]=mx;
+      out.min[k]=(a.length>=2&&mn!==mx)?mn:null;
+    }
+    return out;
+  }
+  /* v22⑤:気象庁の元ページ(福岡県=筑後地方を含む)を開いて照合できるようにする */
+  function wxOpenJma(){
+    window.open('https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code='+WX_AREA,'_blank');
+  }
   function fetchWeather(){
     if(!window.fetch){ applyWeather(); return; }
     fetch('https://www.jma.go.jp/bosai/forecast/data/forecast/'+WX_AREA+'.json')
@@ -3009,30 +3486,53 @@
           pToday=popOfDate(tsP,today,pi);
           pTomo=popOfDate(tsP,tomo,pi);
         }catch(e){}
-        /* 最高気温:週間予報→当日詳細の順で日付ごとに拾う */
-        var tmax={};
+        /* 最高・最低気温:週間予報→当日詳細の順で日付ごとに拾う(v22:最低も追加) */
+        var tmax={}, tmin={};
         try{
           var wt=weekF.timeSeries[1];
           var wti=pickAreaIdx(wt,WX_TEMP_CODE,WX_TEMP_NAME);
           wt.timeDefines.forEach(function(t,i){
             var v=((wt.areas[wti]||{}).tempsMax||[])[i];
             if(v!==''&&v!=null)tmax[t.slice(0,10)]=parseInt(v,10);
+            var mv=((wt.areas[wti]||{}).tempsMin||[])[i];
+            if(mv!==''&&mv!=null)tmin[t.slice(0,10)]=parseInt(mv,10);
           });
         }catch(e){}
         try{
           var st=shortF.timeSeries[2];
           var si=pickAreaIdx(st,WX_TEMP_CODE,WX_TEMP_NAME);
-          var byDate={};
-          st.timeDefines.forEach(function(t,i){
-            var ds=t.slice(0,10), v=parseInt(((st.areas[si]||{}).temps||[])[i],10);
-            if(!isNaN(v)&&(byDate[ds]==null||v>byDate[ds]))byDate[ds]=v;
-          });
-          for(var k in byDate)tmax[k]=byDate[k];
+          var mm=wxTempsMinMax(st.timeDefines,(st.areas[si]||{}).temps||[]);
+          for(var k in mm.max)tmax[k]=mm.max[k];
+          for(var k2 in mm.min){ if(mm.min[k2]!=null)tmin[k2]=mm.min[k2]; }
         }catch(e){}
         /* v2.5.1:直接DOMに書かず一旦キャッシュ→反映関数経由にする
            (固定ヘッダーは画面遷移のたびに作り直されるため、直書きだと見本値に戻ってしまう) */
+        /* v22②:カレンダー用の週間データ {YYYY-MM-DD:{e:絵文字,mx,mn}}。予報が無い日は作らない */
+        var week={};
+        try{
+          var wk0=weekF.timeSeries[0];
+          var wk0i=pickAreaIdx(wk0,WX_REGION_CODE,WX_REGION_NAME);
+          var codes=(wk0.areas[wk0i]||{}).weatherCodes||[];
+          wk0.timeDefines.forEach(function(t,i){
+            var ds=t.slice(0,10), c=parseInt(codes[i],10);
+            if(!isNaN(c))week[ds]={e:wxCodeEmoji(c)};
+          });
+        }catch(e){}
+        /* 直近3日は短期予報の天気文で上書き(より正確) */
+        try{
+          ts0.timeDefines.forEach(function(t,i){
+            var ds=t.slice(0,10);
+            if(ws[i]){ week[ds]=week[ds]||{}; week[ds].e=wxEmoji(ws[i]); }
+          });
+        }catch(e){}
+        for(var wd in week){
+          if(tmax[wd]!=null)week[wd].mx=tmax[wd];
+          if(tmin[wd]!=null)week[wd].mn=tmin[wd];
+        }
         WX_CACHE={wToday:wToday,wTomo:wTomo,tToday:tmax[today],tTomo:tmax[tomo],
-                  pToday:pToday,pTomo:pTomo,ts:Date.now(),stale:false};
+                  tMinToday:(tmin[today]!=null?tmin[today]:null),
+                  tMinTomo:(tmin[tomo]!=null?tmin[tomo]:null),
+                  pToday:pToday,pTomo:pTomo,week:week,ts:Date.now(),stale:false};
         try{ localStorage.setItem(WX_LS_KEY,JSON.stringify(WX_CACHE)); }catch(e){}
         applyWeather();
         renderAiTip(); /* 実際の予報にあわせて「本日の提案」も更新 */
@@ -3050,14 +3550,19 @@
     if(!WX_CACHE)WX_CACHE=loadWxFromStore();
     if(!WX_CACHE)return; /* 保存も無ければ見本値のまま */
     var cs=document.querySelectorAll('.wx .c');
-    function setC(c,w,t,p){
+    function setC(c,w,t,tm,p){
       if(!c)return;
       if(w)c.querySelector('.ic').textContent=wxEmoji(w);
-      if(t!=null)c.querySelector('.tp').textContent=t+'℃';
+      if(t!=null){
+        /* v22:最高(赤)/最低(青)を並べる。最低が取れない日は最高だけ(空欄はウソを出さない) */
+        var tp=c.querySelector('.tp');
+        if(tm!=null)tp.innerHTML='<span class="mx">'+t+'</span>/<span class="mn">'+tm+'℃</span>';
+        else tp.innerHTML='<span class="mx">'+t+'℃</span>';
+      }
       var pp=c.querySelector('.pp'); if(pp)pp.textContent=(p!=null?'降水'+p+'%':'降水−');
     }
-    setC(cs[0],WX_CACHE.wToday,WX_CACHE.tToday,WX_CACHE.pToday);
-    setC(cs[1],WX_CACHE.wTomo,WX_CACHE.tTomo,WX_CACHE.pTomo);
+    setC(cs[0],WX_CACHE.wToday,WX_CACHE.tToday,(WX_CACHE.tMinToday!=null?WX_CACHE.tMinToday:null),WX_CACHE.pToday);
+    setC(cs[1],WX_CACHE.wTomo,WX_CACHE.tTomo,(WX_CACHE.tMinTomo!=null?WX_CACHE.tMinTomo:null),WX_CACHE.pTomo);
     var st=document.getElementById('wxStale');
     if(st){
       if(WX_CACHE.stale&&WX_CACHE.ts){ st.textContent='📡 '+staleLabel(WX_CACHE.ts); st.classList.add('on'); }
@@ -3231,7 +3736,10 @@
     }
     return out;
   }
-  function hasDel(i){ if(i>=0&&i<hasLog.length){hasLog.splice(i,1);hasSave();dgHist();toast('記録を消しました'); if(typeof yhRender==='function')yhRender();} }
+  function hasDel(i){ if(i>=0&&i<hasLog.length){
+    var r=hasLog[i];
+    if(!confirm('本当に消しますか？\n'+(r.f||'')+' '+(r.name||''))) return; /* v22⑥:1回確認 */
+    hasLog.splice(i,1);hasSave();dgHist();toast('🗑 記録を消しました'); if(typeof yhRender==='function')yhRender();} }
 
   /* ---- 🩺 カルテ式診断 ---- */
   var dgSel={}, dgField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'三島008';
