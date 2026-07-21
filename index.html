@@ -40,12 +40,16 @@
   /* ★実機(スマホ幅)では .pwa クラスの有無に関係なく常にビューポート高に収める。
      これによりSafariタブ起動でもタブバーのラベルが切れない。 */
   @media (max-width:600px){
-    /* ★v23修正②：body土台のpaddingを解除し、documentごとスクロールするのを止める
-       （これが無いと 100dvh + 上下padding60px となり、ヘッダー/タブバーが押し出される） */
+    /* ★v23修正②：body土台のpaddingを解除し、documentごとスクロールするのを止める */
     html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none;}
-    body{background:var(--paper);}
-    .phone{width:100%;max-width:100%;height:100vh;height:100dvh;padding:0;border-radius:0;box-shadow:none;background:var(--paper);}
-    .screen{height:100vh;height:100dvh;border-radius:0;}
+    body{background:var(--paper);display:block;}
+    /* ★v24.2修正：.phone を position:fixed で画面そのものに釘付けにする。
+       top/bottom:0 で「今見えている高さ」に必ず一致するので、
+       Safariのバー開閉・100dvhのズレ・親のpadding等の影響を一切受けない。
+       → ヘッダーが上に切れる／タブバーが押し出される事故が構造的に起きなくなる */
+    .phone{position:fixed;top:0;left:0;right:0;bottom:0;
+      width:100%;max-width:100%;height:auto;padding:0;border-radius:0;box-shadow:none;background:var(--paper);}
+    .screen{height:100%;border-radius:0;}
     .homehead{padding-top:calc(env(safe-area-inset-top) + 8px);}
     .navhead{padding-top:calc(env(safe-area-inset-top) + 12px);}
     .tabbar{padding-bottom:calc(env(safe-area-inset-bottom) + 10px);}
@@ -55,8 +59,11 @@
      JSが html に .pwa クラスを付与したときだけ適用 */
   html.pwa,html.pwa body{margin:0;padding:0;height:100%;background:var(--paper);
     overflow:hidden;overscroll-behavior:none;}
-  html.pwa .phone{width:100%;max-width:100%;height:100vh;height:100dvh;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:hidden;}
-  html.pwa .screen{border-radius:0;height:100vh;height:100dvh;overflow:hidden;}
+  html.pwa body{display:block;}
+  /* v24.2:PWA側も position:fixed で画面に釘付け(実機の切れ対策・上と同じ考え方) */
+  html.pwa .phone{position:fixed;top:0;left:0;right:0;bottom:0;
+    width:100%;max-width:100%;height:auto;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:hidden;}
+  html.pwa .screen{border-radius:0;height:100%;overflow:hidden;}
   /* PWA時、中の.pageは自然高さ。スクロールは親の.bodyが担当 */
   html.pwa .page{min-height:0;}
   html.pwa .homehead{padding-top:calc(env(safe-area-inset-top) + 8px);}
@@ -561,8 +568,8 @@
   /* トースト */
   .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
     background:var(--ink);color:#fff;font-size:15px;font-weight:800;padding:13px 20px;border-radius:14px;
-    opacity:0;transition:.3s;pointer-events:none;z-index:50;max-width:300px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.4);}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    opacity:0;transition:.3s;pointer-events:none;z-index:900;max-width:300px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.4);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;cursor:pointer;}
 
   /* 文字サイズ切替 */
   .screen.fs-big .tile .tx{font-size:16px;} .screen.fs-big .fld .v{font-size:20px;} .screen.fs-big .rowcard .nm{font-size:22px;}
@@ -2256,7 +2263,7 @@
     var src=(curScreen==='drone')?'drone':'rec';
     if(src==='drone'){
       wlAdd('josou','西 3','ドローン散布','drone');
-      toast('✅ 保存しました(みんなに共有・工程表にも反映)');setTimeout(function(){go('cal');},900);
+      toast('✅ 保存しました(みんなに共有・工程表にも反映)'); /* v24.2:カレンダーへ飛ばさずこの画面に留まる */
       return;
     }
     /* v22④:作業を記録2.0 */
@@ -2270,7 +2277,7 @@
       {d:(recDateSel||null), work:recWorkSel, chem:chem, rate:rate, vol:vol, mass:mass});
     toast('✅ 保存しました(記録簿・工程表・見張り番・原価にも反映)');
     recFormReset();
-    setTimeout(function(){go('cal');},900);
+    /* v24.2:保存後にカレンダーへ飛ばさない。この画面に留まって続けて記録できる */
   }
   /* いま生育上どの工程かを推定(稲作先生の計算があればそれ、無ければ田植え扱い) */
   function ktGuessStep(){
@@ -3201,7 +3208,16 @@
   }
   checkStandalone();
 
-  var tt;function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},1800);}
+  /* v24.2:表示を7秒に延長(読み切れないという要望)。押せばすぐ消せる */
+  var TOAST_MS=7000;
+  var tt;function toast(m){
+    var t=document.getElementById('toast'); if(!t)return;
+    t.textContent=m; t.classList.add('show');
+    clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('show');},TOAST_MS);
+  }
+  (function(){ var t=document.getElementById('toast');
+    if(t)t.addEventListener('click',function(){ t.classList.remove('show'); clearTimeout(tt); });
+  })();
   /* ===== 日付を全画面で統一(今日の日付を自動表示) ===== */
   var WD=['日','月','火','水','木','金','土'];
   function todayStr(){var d=new Date();return '今日 '+(d.getMonth()+1)+'月'+d.getDate()+'日('+WD[d.getDay()]+')';}
