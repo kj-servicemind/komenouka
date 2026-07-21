@@ -1942,7 +1942,10 @@
   }
 
   /* ---- 画面C:KSASへ記録(コピー&ジャンプ) ---- */
-  var KT_KSAS_URL='https://ksas.kubota.co.jp/';
+  /* v24.1 KSASログイン画面へ直行(スマホ版farming-m)。
+     'https://ksas.kubota.co.jp/' は宣伝サイト agriculture.kubota.co.jp に転送されるため直リンクにする */
+  var KT_KSAS_URL='https://ksas.kubota.co.jp/ksas/farming-m/Users/Login?ReturnUrl=%2Fksas%2Ffarming-m%2F';
+  var KT_KSAS_URL_PC='https://ksas.kubota.co.jp/ksas/farming/users/login';
   /* 全機能共通:KSASを実際に開く(連携B=手動連携の入口) */
   function openKsas(msg){ window.open(KT_KSAS_URL,'_blank'); toast('KSASを開きました。'+(msg||'')); }
 
