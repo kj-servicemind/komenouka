@@ -748,6 +748,32 @@
   .fld-geo{background:var(--blue-soft);border:1px solid #CADDE8;border-radius:10px;padding:10px;text-align:center;font-weight:700;font-size:15px;margin:8px 0;color:var(--blue);}
   /* ===== v22 実用化2.0 ===== */
   /* ① 肥料一覧シート */
+
+  /* ===== v25 写真共有（Cloudinary + Cloudflare Functions） ===== */
+  .day .cph{display:block;font-size:10px;line-height:1.1;}
+  .ph-strip{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .ph-strip::-webkit-scrollbar{display:none;}
+  .ph-th{flex-shrink:0;width:84px;height:84px;border-radius:12px;object-fit:cover;border:1px solid var(--line);background:#EFEBDD;}
+  .ph-take{display:flex;align-items:center;justify-content:center;gap:9px;background:#fff;position:relative;
+    border:1.5px solid var(--line);border-radius:14px;padding:12px;font-size:15.5px;font-weight:800;color:var(--green-deep);cursor:pointer;}
+  .ph-take .ic{font-size:22px;}
+  .ph-take input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;}
+  .ph-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px;}
+  .ph-card img{display:block;width:100%;max-height:280px;object-fit:cover;background:#EFEBDD;}
+  .ph-meta{padding:9px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ph-meta .who{font-size:14.5px;font-weight:800;}
+  .ph-meta .sub{font-size:12px;color:#8A8472;}
+  .ph-meta .del{margin-left:auto;font-size:12px;font-weight:800;color:var(--red);background:var(--red-soft);border-radius:8px;padding:5px 9px;}
+  .ph-note{font-size:12.5px;color:#8A8472;line-height:1.6;margin:2px 2px 8px;}
+  .ph-empty{text-align:center;color:#9A957F;font-size:14px;padding:22px 0;}
+  .ph-bar{display:flex;align-items:center;gap:8px;background:var(--blue-soft);border:1.5px solid #B3CEDB;
+    border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1A5A8A;margin-bottom:8px;}
+  .ph-bar .rf{margin-left:auto;font-weight:800;}
+  .ph-lb{position:fixed;inset:0;background:rgba(20,18,14,.9);z-index:950;display:none;align-items:center;justify-content:center;padding:14px;}
+  .ph-lb.on{display:flex;}
+  .ph-lb img{max-width:100%;max-height:78%;border-radius:12px;}
+  .ph-lb .cap{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 22px);text-align:center;color:#fff;font-size:14px;font-weight:700;padding:0 20px;line-height:1.6;}
+  .ph-lb .x{position:absolute;top:calc(env(safe-area-inset-top) + 12px);right:16px;color:#fff;font-size:15px;font-weight:800;background:rgba(255,255,255,.18);border-radius:99px;padding:8px 14px;}
   /* ===== v24 田んぼ選択シート(88枚対応・共通) ===== */
   #fpOv{position:fixed;inset:0;background:rgba(30,28,20,.45);z-index:900;display:none;}
   #fpOv.on{display:block;}
@@ -935,7 +961,11 @@
         </div>
         <div class="fld" onclick="recMemoToggle()"><div class="lb">メモ（押すと書けます）</div><div class="v" id="recmemo" style="font-size:16px;color:#8A8472;">(空欄)<span class="chv">›</span></div></div>
         <div class="recmemo-box" id="recMemoBox"><textarea id="recMemoIn" placeholder="例：北側だけ生育が遅い。水口を少し開けた。"></textarea></div>
-        <div class="ghost" onclick="go('voice')">🎤 話して入力 ／ 📷 写真を追加</div>
+        <div class="ph-take" onclick="document.getElementById('phRecIn').click()">
+          <span class="ic">📷</span>写真を撮る（この田んぼ・この日で共有）
+          <input id="phRecIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
+        </div>
+        <div class="ghost" onclick="go('voice')">🎤 話して入力にする</div>
         <div class="primary-btn" onclick="saveWork()">✅ 保存する</div>
         <div class="spacer"></div>
       </div>
@@ -964,17 +994,17 @@
         <div class="parsed" id="parsed" style="display:none;"></div>
 
         <!-- ===== 写真:撮って、みんなに共有 ===== -->
-        <div class="photolabel">📷 写真もいっしょに(みんなに共有できます)</div>
+        <div class="photolabel">📷 写真もいっしょに(押すと家族全員に共有されます)</div>
         <label class="photo-take" for="voicePhotoInput">
           <span class="ic">📷</span>写真を撮る／えらぶ
-          <input id="voicePhotoInput" type="file" accept="image/*" capture="environment" onchange="onPhotoPicked(event)">
+          <input id="voicePhotoInput" type="file" accept="image/*" onchange="onPhotoPicked(event)">
         </label>
         <div class="photo-preview" id="photoPreview" style="display:none;">
           <img id="photoImg" alt="撮った写真">
           <button class="photo-remove" onclick="removePhoto()" aria-label="写真を消す">✕ 消す</button>
         </div>
         <div class="photo-cam-tip" id="photoCamTip">📷 が出ない時は、Safariでこのページを開くとカメラが安定します。</div>
-        <div class="share-team" id="shareTeam" style="display:none;" onclick="sharePhotoToTeam()">👥 この写真をみんなに送る(KSASを開く)</div>
+        <div class="share-team" id="shareTeam" style="display:none;" onclick="sharePhotoToTeam()">👥 みんなの写真を見る ›</div>
 
         <div class="save" id="vsave" style="display:none;" onclick="saveVoice()">✅ これで保存する</div>
 
@@ -1213,15 +1243,21 @@
     <!-- ===== ⑩ みんなと共有 ===== -->
     <div class="page" id="p-team">
       <div class="sc">
-        <div class="sharenote">👥 5〜6人でKSASの無料共有を使います。だれが何をやったか、写真つきで全員に伝わります。</div>
+        <div class="ph-bar">📷 写真はこのアプリで家族全員に共有されます<span class="rf" onclick="phLoad(true)">↻ 更新</span></div>
+        <div class="ph-take" onclick="document.getElementById('phTeamIn').click()">
+          <span class="ic">📷</span>写真を撮る／えらぶ（今日の分）
+          <input id="phTeamIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
+        </div>
+        <div class="ph-note">あなたの名前：<b id="phWhoV">(未設定)</b>　<span style="color:var(--green);font-weight:800;" onclick="phWhoAsk()">✏️ 名前を決める</span>　<span style="color:#8A8472;" onclick="phPassAsk()">🔑 合言葉</span></div>
+        <div class="feedtitle">📷 みんなの写真</div>
+        <div id="phFeed"></div>
+        <div class="sharenote">👥 記録の共有はKSASの無料共有も使えます。だれが何をやったか全員に伝わります。</div>
         <div class="memcard"><div class="avatar" style="background:var(--green);">久</div><div><div class="nm">久保田 三郎</div><div class="role">代表</div></div><span class="rr">編集OK</span></div>
         <div class="memcard"><div class="avatar" style="background:var(--blue);">田</div><div><div class="nm">田中 一郎</div><div class="role">従業員</div></div><span class="rr">編集OK</span></div>
         <div class="memcard"><div class="avatar" style="background:var(--orange);">佐</div><div><div class="nm">佐藤 花子</div><div class="role">従業員</div></div><span class="rr">編集OK</span></div>
         <div class="memcard"><div class="avatar" style="background:var(--purple);">鈴</div><div><div class="nm">鈴木 次郎</div><div class="role">パート</div></div><span class="rr" style="color:#A19C8B;">見るだけ</span></div>
         <div class="memcard"><div class="avatar" style="background:var(--red);">山</div><div><div class="nm">山本 みどり</div><div class="role">家族</div></div><span class="rr" style="color:#A19C8B;">見るだけ</span></div>
-        <div class="feedtitle">📢 みんなの記録</div>
-        <div class="feed"><div class="fh"><div class="fa" style="background:var(--blue);">田</div><div class="fn">田中 一郎</div><div class="ft">10分前</div></div><div class="fp">📷 池松 6 の写真</div><div class="fx">池松 6 田植え終わりました🌾</div></div>
-        <div class="feed"><div class="fh"><div class="fa" style="background:var(--orange);">佐</div><div class="fn">佐藤 花子</div><div class="ft">1時間前</div></div><div class="fx">🐛 松延121 で虫食い発見。代表確認おねがいします</div></div>
+
         <div class="spacer"></div>
       </div>
     </div>
@@ -1429,6 +1465,11 @@
     <button class="tab" id="t-menu" onclick="go('menu')"><span class="ic">☰</span>メニュー</button>
   </div>
   <div class="toast" id="toast"></div>
+  <div class="ph-lb" id="phLb" onclick="phClose()">
+    <span class="x">✕ とじる</span>
+    <img id="phLbImg" alt="写真">
+    <div class="cap" id="phLbCap"></div>
+  </div>
 </div></div>
 
 <script>
@@ -1511,6 +1552,8 @@
     if(n==='pest'&&typeof mbEnter==='function')mbEnter();
     if(n==='cost'&&typeof costEnter==='function')costEnter();
     if(n==='cal'&&typeof calEnter==='function')calEnter();
+    if(n==='cal'&&typeof phLoad==='function')phLoad(false);
+    if(n==='team'&&typeof teamEnter==='function')teamEnter();
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
     highlightTab(n);
@@ -2024,6 +2067,189 @@
     var cb=fpCb; fpClose();
     if(cb)cb(n);
   }
+
+  /* ============================================================
+     v25 写真共有（Cloudinary + Cloudflare Functions/api）
+     ・ブラウザからCloudinaryへ直接は絶対に送らない。必ず /api/ 経由。
+     ・APIキーとシークレットはCloudflareの環境変数（画面には一切出ない）。
+     ・撮る→縮小→アップロード→みんなの一覧に反映→カレンダーに📷
+     ============================================================ */
+  var PH_LS='gyotoku.photos.v1';    /* 一覧キャッシュ(オフラインでも見える) */
+  var PH_WHO_LS='gyotoku.who.v1';   /* 自分の名前 */
+  var PH_PASS_LS='gyotoku.phpass.v1'; /* 家族の合言葉(設定していれば) */
+  var phItems=[], phByDate={}, phLoaded=false, phBusy=false, phErr='';
+
+  function phWho(){ try{ return localStorage.getItem(PH_WHO_LS)||''; }catch(e){ return ''; } }
+  function phWhoSet(v){ try{ localStorage.setItem(PH_WHO_LS,v); }catch(e){} }
+  function phWhoAsk(){
+    var cur=phWho();
+    var v=prompt('写真につけるあなたの名前を入れてください（例：久保田）', cur||'');
+    if(v==null)return cur;
+    v=v.replace(/^\s+|\s+$/g,'').slice(0,20);
+    if(v){ phWhoSet(v); toast('名前を「'+v+'」にしました'); phRenderTeam(); }
+    return v;
+  }
+  function phPass(){ try{ return localStorage.getItem(PH_PASS_LS)||''; }catch(e){ return ''; } }
+  function phPassAsk(){
+    var v=prompt('家族の合言葉を入れてください（決めていなければ空のままでOK）', phPass());
+    if(v==null)return;
+    try{ localStorage.setItem(PH_PASS_LS,v.replace(/^\s+|\s+$/g,'')); }catch(e){}
+    toast('合言葉を保存しました'); phLoad(true);
+  }
+  function phHeaders(){ var h={}; var p=phPass(); if(p)h['x-photo-pass']=p; return h; }
+
+  /* --- 一覧キャッシュ --- */
+  function phCacheSave(){ try{ localStorage.setItem(PH_LS,JSON.stringify(phItems.slice(0,200))); }catch(e){} }
+  function phCacheLoad(){
+    try{ var a=JSON.parse(localStorage.getItem(PH_LS)||'[]'); if(a instanceof Array){ phItems=a; phIndex(); } }catch(e){}
+  }
+  function phIndex(){
+    phByDate={};
+    for(var i=0;i<phItems.length;i++){ var d=phItems[i].date; if(d)phByDate[d]=(phByDate[d]||0)+1; }
+  }
+  /* サーバーから一覧を取り直す */
+  function phLoad(force){
+    if(phBusy)return;
+    if(phLoaded&&!force)return;
+    phBusy=true; phErr='';
+    fetch('/api/photo-list?max=200',{headers:phHeaders(),cache:'no-store'})
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        phBusy=false;
+        if(!j||!j.ok){ phErr=(j&&j.error)||'写真を読めませんでした'; phRenderTeam(); return; }
+        phItems=j.items||[]; phLoaded=true; phIndex(); phCacheSave();
+        if(curScreen==='cal'&&typeof renderCal==='function'){ renderCal(); renderDayList(); }
+        phRenderTeam();
+      })
+      .catch(function(){ phBusy=false; phErr='通信できませんでした（あとでもう一度）'; phRenderTeam(); });
+  }
+
+  /* --- 写真を小さくする（通信量と保存容量の節約。長辺1600px・JPEG） --- */
+  function phShrink(file){
+    return new Promise(function(res,rej){
+      var url=URL.createObjectURL(file);
+      var img=new Image();
+      img.onload=function(){
+        try{
+          var MAX=1600, w=img.naturalWidth, h=img.naturalHeight;
+          var s=Math.min(1, MAX/Math.max(w,h));
+          var cw=Math.max(1,Math.round(w*s)), ch=Math.max(1,Math.round(h*s));
+          var cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
+          cv.getContext('2d').drawImage(img,0,0,cw,ch);
+          cv.toBlob(function(b){
+            URL.revokeObjectURL(url);
+            if(b)res(b); else rej(new Error('変換できませんでした'));
+          },'image/jpeg',0.72);
+        }catch(e){ URL.revokeObjectURL(url); rej(e); }
+      };
+      img.onerror=function(){ URL.revokeObjectURL(url); rej(new Error('写真を読めませんでした')); };
+      img.src=url;
+    });
+  }
+
+  /* --- 撮った写真を送る（date/field/who を一緒に保存） --- */
+  function phSend(file, dateStr, fieldName, memo){
+    var who=phWho();
+    if(!who){ who=phWhoAsk(); if(!who){ toast('名前を入れると、だれの写真かみんなに分かります'); } }
+    toast('📷 写真を送っています…');
+    return phShrink(file).then(function(blob){
+      var fd=new FormData();
+      fd.append('file', blob, 'photo.jpg');
+      fd.append('date', dateStr||ymd(new Date()));
+      fd.append('field', fieldName||'');
+      fd.append('who', phWho()||'');
+      fd.append('memo', memo||'');
+      return fetch('/api/photo-upload',{method:'POST',body:fd,headers:phHeaders()});
+    }).then(function(r){ return r.json(); })
+      .then(function(j){
+        if(!j||!j.ok){ toast('⚠️ '+((j&&j.error)||'送れませんでした')); return null; }
+        phItems.unshift(j.item); phIndex(); phCacheSave();
+        toast('✅ 写真をみんなに共有しました（カレンダーにも📷がつきます）');
+        if(curScreen==='cal'&&typeof renderCal==='function'){ renderCal(); renderDayList(); }
+        phRenderTeam();
+        return j.item;
+      })
+      .catch(function(e){ toast('⚠️ 写真を送れませんでした（電波を確かめてください）'); return null; });
+  }
+  /* ファイル選択の受け口（画面から呼ぶ） */
+  function phPicked(ev, dateStr, fieldName){
+    var f=ev.target && ev.target.files && ev.target.files[0];
+    ev.target.value='';
+    if(!f)return;
+    var d=dateStr;
+    if(d==='@rec')d=(typeof recDateSel!=='undefined'&&recDateSel)?recDateSel:ymd(new Date());
+    if(d==='@cal')d=calSel;
+    var fl=fieldName;
+    if(fl==='@rec')fl=(typeof recField!=='undefined')?recField:'';
+    phSend(f, d, fl, '');
+  }
+  function phDelete(id){
+    if(!confirm('この写真をみんなの一覧から消しますか？'))return;
+    fetch('/api/photo-delete',{method:'POST',
+      headers:Object.assign({'content-type':'application/json'},phHeaders()),
+      body:JSON.stringify({id:id})})
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if(!j||!j.ok){ toast('⚠️ '+((j&&j.error)||'消せませんでした')); return; }
+        phItems=phItems.filter(function(x){ return x.id!==id; });
+        phIndex(); phCacheSave(); toast('🗑 写真を消しました');
+        if(curScreen==='cal'){ renderCal(); renderDayList(); }
+        phRenderTeam();
+      })
+      .catch(function(){ toast('⚠️ 通信できませんでした'); });
+  }
+
+  /* --- 大きく見る --- */
+  function phOpen(url,cap){
+    var lb=document.getElementById('phLb'); if(!lb)return;
+    document.getElementById('phLbImg').src=url;
+    document.getElementById('phLbCap').textContent=cap||'';
+    lb.classList.add('on');
+  }
+  function phClose(){ var lb=document.getElementById('phLb'); if(lb)lb.classList.remove('on'); }
+
+  /* --- カレンダー：その日の写真の帯 --- */
+  function phDayStripHtml(ds){
+    var list=phItems.filter(function(x){ return x.date===ds; });
+    var h='<div class="ph-take" onclick="document.getElementById(\'phCalIn\').click()">'
+      +'<span class="ic">📷</span>この日の写真を撮る／えらぶ'
+      +'<input id="phCalIn" type="file" accept="image/*" onchange="phPicked(event,\'@cal\',\'\')"></div>';
+    if(!list.length)return h+'<div class="ph-note">まだこの日の写真はありません。撮るとみんなのスマホでも見られます。</div>';
+    var s='<div class="ph-strip">';
+    for(var i=0;i<list.length;i++){
+      var it=list[i];
+      s+='<img class="ph-th" src="'+it.thumb+'" alt="写真" onclick="phOpen(\''+it.big+'\',\''+
+        ((it.field?it.field+' / ':'')+(it.who||'')).replace(/'/g,'')+'\')">';
+    }
+    s+='</div>';
+    return h+s+'<div class="ph-note">📷 '+list.length+'枚（押すと大きく見られます）</div>';
+  }
+
+  /* --- みんなと共有：写真のフィード --- */
+  function phRenderTeam(){
+    var box=document.getElementById('phFeed'); if(!box)return;
+    var me=document.getElementById('phWhoV'); if(me)me.textContent=phWho()||'(未設定)';
+    var h='';
+    if(phBusy)h+='<div class="ph-note">読み込み中です…</div>';
+    if(phErr)h+='<div class="ph-note" style="color:var(--red);">⚠️ '+phErr+'</div>';
+    if(!phItems.length){
+      h+='<div class="ph-empty">まだ写真はありません。<br>上の📷から撮ると、家族全員のスマホで見られます。</div>';
+      box.innerHTML=h; return;
+    }
+    for(var i=0;i<phItems.length&&i<60;i++){
+      var it=phItems[i];
+      var sub=(it.date||'')+(it.field?('・'+it.field):'');
+      h+='<div class="ph-card"><img src="'+it.thumb.replace('c_fill,w_300,h_300','c_fill,w_800,h_600')+'" alt="写真" onclick="phOpen(\''+it.big+'\',\''+
+        (sub+' '+(it.who||'')).replace(/'/g,'')+'\')">'
+        +'<div class="ph-meta"><span class="who">'+(it.who||'だれか')+'</span>'
+        +'<span class="sub">'+sub+'</span>'
+        +'<span class="del" onclick="phDelete(\''+it.id+'\')">🗑 消す</span></div></div>';
+    }
+    box.innerHTML=h;
+  }
+  function teamEnter(){ phRenderTeam(); phLoad(true); }
+  phCacheLoad();
+
 
   function ktKsasText(){
     var st=KT_STEPS[ktCurStep], dn=ktDoneFields(st.k);
@@ -3175,7 +3401,10 @@
     document.getElementById('photoPreview').style.display='block';
     document.getElementById('shareTeam').style.display='block';
     document.getElementById('photoCamTip').style.display='none';
-    toast('写真をつけました');
+    /* v25:その場で家族全員に共有（日付=今日 or 選んだ日、田んぼ=②で選んだ田んぼ） */
+    var d=(typeof recDateSel!=='undefined'&&recDateSel)?recDateSel:ymd(new Date());
+    phSend(f, d, (typeof recField!=='undefined'?recField:''), '');
+    ev.target.value='';
   }
   function removePhoto(){
     if(photoURL){ URL.revokeObjectURL(photoURL); photoURL=null; }
@@ -3188,7 +3417,8 @@
   }
   function sharePhotoToTeam(){
     photoShared=true;
-    toast('KSASを開いて、みんなに写真を送ります(無料)');
+    go('team'); phLoad(true);
+    toast('👥 みんなの写真を開きました');
     /* 実機ではここでKSASの写真投稿画面を開く導線につなぐ(連携B・手動)。
        PWA/オフライン時はSWが介入しないため、素直にKSASへ遷移する。 */
   }
@@ -3537,7 +3767,12 @@
         wx2='<span class="cw">'+(wv.e||'')+'</span>';
         if(wv.mx!=null)wx2+='<span class="ct2"><span class="h">'+wv.mx+'</span>/'+(wv.mn!=null?'<span class="l">'+wv.mn+'</span>':'−')+'</span>';
       }
-      html+='<span class="'+cls+'" onclick="calPick(\''+ds+'\')">'+d+wx2+mk+'</span>';
+      /* v25:その日に写真があれば天気の下に📷（枚数が2枚以上なら数字も） */
+      var cph='';
+      if(typeof phByDate!=='undefined'&&phByDate[ds]){
+        cph='<span class="cph">📷'+(phByDate[ds]>1?('<span style="font-size:8.5px;color:#8A8472;">'+phByDate[ds]+'</span>'):'')+'</span>';
+      }
+      html+='<span class="'+cls+'" onclick="calPick(\''+ds+'\')">'+d+wx2+cph+mk+'</span>';
     }
     var total=start+dim, rest=(7-total%7)%7;
     for(i=1;i<=rest;i++){html+='<span class="day dim">'+i+'</span>';}
@@ -3548,11 +3783,12 @@
     var p3=calSel.split('-');
     if(ttl)ttl.textContent=p3[0]+'年'+p3[1]+'月'+p3[2]+'日 の予定';
     var list=plans.filter(function(p){return p.date===calSel;});
+    var head=phDayStripHtml(calSel);   /* v25:この日の写真を上に */
     if(!list.length){
-      box.innerHTML='<div class="daycard"><div class="nm" style="color:#8A8472;font-size:15px;">この日の予定はありません</div></div>';
+      box.innerHTML=head+'<div class="daycard"><div class="nm" style="color:#8A8472;font-size:15px;">この日の予定はありません</div></div>';
       return;
     }
-    box.innerHTML=list.map(function(p){
+    box.innerHTML=head+list.map(function(p){
       return '<div class="daycard"><div><div class="nm">'+(p.done?'✅ ':'(予定)')+p.title+'</div>'
         +'<div class="fi">'+p.field+(p.who?'|担当:'+p.who:'')+'</div>'
         +'<div style="margin-top:5px;"><span class="rowbtn mod" style="margin-left:0;" onclick="planEdit(\''+p.id+'\')">✏️ 直す</span><span class="rowbtn del" onclick="planDel(\''+p.id+'\')">🗑 消す</span></div></div>'
