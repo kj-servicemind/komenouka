@@ -2121,7 +2121,9 @@
         if(curScreen==='cal'&&typeof renderCal==='function'){ renderCal(); renderDayList(); }
         phRenderTeam();
       })
-      .catch(function(){ phBusy=false; phErr='通信できませんでした（あとでもう一度）'; phRenderTeam(); });
+      .catch(function(e){ phBusy=false;
+        phErr='通信できませんでした：'+(e&&e.message?e.message:'原因不明')+'（/api/photo-list を開くと詳しい理由が見られます）';
+        phRenderTeam(); });
   }
 
   /* --- 写真を小さくする（通信量と保存容量の節約。長辺1600px・JPEG） --- */
@@ -2169,7 +2171,7 @@
         phRenderTeam();
         return j.item;
       })
-      .catch(function(e){ toast('⚠️ 写真を送れませんでした（電波を確かめてください）'); return null; });
+      .catch(function(e){ toast('⚠️ 写真を送れませんでした：'+(e&&e.message?e.message:'原因不明')); return null; });
   }
   /* ファイル選択の受け口（画面から呼ぶ） */
   function phPicked(ev, dateStr, fieldName){
@@ -3564,8 +3566,10 @@
   }
 
   /* ===== 下部タブバー(真ん中3つを入替・ホーム/メニューは固定) ===== */
+  /* v25.1:ksas等が抜けていてタブが「undefined」になっていたので全部そろえる */
   var TAB_SHORT={rec:'作業',voice:'記録',drone:'ドローン',diag:'診断',ai:'相談',map:'マップ',
-                 pest:'農薬',fields:'田んぼ',team:'共有',cal:'予定',cost:'原価',set:'設定'};
+                 pest:'農薬',fields:'田んぼ',team:'共有',cal:'予定',cost:'原価',set:'設定',
+                 ksas:'KSAS',koutei:'工程表',hiryo:'肥料',kikai:'機械',kyoka:'許可',kroku:'記録簿'};
   var TAB_ALIAS={rec:'voice', voice:'rec'}; /* 記録系はどちらでも同じタブを点灯 */
   var TAB_DEFAULT=['voice','ai','ksas'];
   var TAB_LS_KEY='gyotokuTabs_v1';
@@ -3585,12 +3589,14 @@
   }
   var midTabs=loadTabs();
   function saveTabs(){try{localStorage.setItem(TAB_LS_KEY,JSON.stringify(midTabs));}catch(e){}}
-  function tabIcon(k){var d=TILE_DEFS[k];return d.img?droneImgTag():d.ic;}
+  function tabIcon(k){var d=TILE_DEFS[k]; if(!d)return '•';
+    if(k==='ksas')return '🌐';           /* タブでは文字ロゴだと大きすぎるので地球アイコン */
+    return d.img?droneImgTag():d.ic;}
   function renderTabBar(){
     for(var i=0;i<3;i++){
       var b=document.getElementById('tabm'+i); if(!b)continue;
       var k=midTabs[i];
-      b.innerHTML='<span class="ic">'+tabIcon(k)+'</span>'+TAB_SHORT[k];
+      b.innerHTML='<span class="ic">'+tabIcon(k)+'</span>'+(TAB_SHORT[k]||(TILE_DEFS[k]?TILE_DEFS[k].tx:''));
     }
   }
   function goTab(i){go(midTabs[i]);}
