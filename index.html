@@ -792,6 +792,26 @@
   .fp-row .fa2{margin-left:auto;font-size:14.5px;font-weight:800;color:#6B6552;white-space:nowrap;}
   .fp-row .fa2 small{font-size:10px;color:#B8B4A4;}
   .fp-row.cur{background:#F5EEDF;border-color:#E0CFA3;}
+  /* v25.4 機能ピッカー(ボタン/タブをスクロールで選ぶ) */
+  #bpOv{position:fixed;inset:0;background:rgba(30,28,20,.45);z-index:905;display:none;}
+  #bpOv.on{display:block;}
+  #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:14%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  .bp-head{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--line);}
+  .bp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;color:#232821;}
+  .bp-x{margin-left:auto;font-size:14px;color:#8A8472;padding:4px 6px;font-weight:700;}
+  .bp-sub{font-size:12px;color:#9A957F;margin-top:3px;line-height:1.5;}
+  .bp-list{flex:1;overflow-y:auto;padding:10px 12px 34px;-webkit-overflow-scrolling:touch;}
+  .bp-row{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;}
+  .bp-row .bpic{font-size:22px;width:30px;text-align:center;flex-shrink:0;}
+  .bp-row .bpic img{height:22px;width:auto;vertical-align:middle;}
+  .bp-row .bpnm{font-size:16.5px;font-weight:800;color:#232821;}
+  .bp-row.cur{background:#EAF2EC;border-color:#9DBBA6;}
+  .bp-row.cur::after{content:"いま選択中";margin-left:auto;font-size:11.5px;font-weight:800;color:#356A43;background:#DDECE1;border-radius:99px;padding:5px 10px;white-space:nowrap;}
+  .bp-row.used{opacity:.55;}
+  .bp-row.used::after{content:"タブで使用中";margin-left:auto;font-size:11px;font-weight:700;color:#9A957F;white-space:nowrap;}
+  .setrow.danger{color:#B23B2E;font-weight:800;}
+  .setrow.danger .sv{color:#B23B2E;}
+  .setnote{font-size:12.5px;line-height:1.7;color:#7C7768;background:#FCFBF5;border:1px dashed #E0DCC8;border-radius:10px;padding:10px 12px;margin:2px 2px 12px;}
   /* v24 田んぼ一覧2.0 */
   .fl-sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 8px;display:flex;margin-bottom:10px;}
   .fl-sum>div{flex:1;text-align:center;}
@@ -1270,16 +1290,16 @@
           <button id="fs1" onclick="setFs(1)">大きい</button>
           <button id="fs2" onclick="setFs(2)">特大</button>
         </div>
-        <div class="sethead">🔁 ホームのボタン(押すと1つ下と入れ替わり・並び順を決められます／タブに使う機能は自動で外れます)</div>
+        <div class="sethead">🔁 ホームのボタン(押すと一覧から機能を選べます／タブに使う機能は自動で外れます)</div>
         <div class="setcard">
           <div id="slotRows"></div>
           <div class="setrow" onclick="resetTiles()">最初の並びに戻す<span class="sv">リセット ›</span></div>
         </div>
-        <div class="sethead">🔁 下のタブ(真ん中3つを入替・ホームとメニューは固定)</div>
+        <div class="sethead">🔁 下のタブ(真ん中3つ・押すと一覧から機能を選べます／ホームと設定は固定)</div>
         <div class="setcard">
-          <div class="setrow" onclick="cycleTab(0)">左のタブ<span class="sv" id="tabv0">話して記録 ›</span></div>
-          <div class="setrow" onclick="cycleTab(1)">真ん中のタブ<span class="sv" id="tabv1">AI相談 ›</span></div>
-          <div class="setrow" onclick="cycleTab(2)">右のタブ<span class="sv" id="tabv2">KSAS連携 ›</span></div>
+          <div class="setrow" onclick="openTabPicker(0)">左のタブ<span class="sv" id="tabv0">話して記録 ›</span></div>
+          <div class="setrow" onclick="openTabPicker(1)">真ん中のタブ<span class="sv" id="tabv1">AI相談 ›</span></div>
+          <div class="setrow" onclick="openTabPicker(2)">右のタブ<span class="sv" id="tabv2">KSAS連携 ›</span></div>
           <div class="setrow" onclick="resetTabs()">最初の並びに戻す<span class="sv">リセット ›</span></div>
         </div>
         <div class="sethead">🎤 音声入力</div>
@@ -1292,11 +1312,22 @@
           <div class="setrow" onclick="openKsas('地図・AI診断・共有がつかえます')">KSASを開く<span class="sv">›</span></div>
           <div class="setrow" onclick="go('team')">メンバーを確認<span class="sv">5人 ›</span></div>
         </div>
-        <div class="sethead">💾 データ</div>
+        <div class="sethead">🔄 家族と共有・自動バックアップ</div>
+        <div class="setcard">
+          <div class="setrow">状態<span class="sv" id="syncState">…確認中</span></div>
+          <div class="setrow" onclick="syncNow()">今すぐ同期する<span class="sv">記録・予定・メモ ›</span></div>
+          <div class="setrow" onclick="syncDiag()">つながりを調べる<span class="sv">診断 ›</span></div>
+        </div>
+        <div class="setnote">💡 記録・予定・メモ・工程表の設定などは、家族みんなで<b>自動的に共有・バックアップ</b>されます（数十秒ごと／アプリを開いた時）。ネットが無い時はこの端末で使え、つながると自動で追いつきます。写真はこれまで通り共有アルバムに保存されます。</div>
+        <div class="sethead">💾 データ（バックアップ・リセット）</div>
         <div class="setcard">
           <div class="setrow">保存場所<span class="sv">このiPhoneの中</span></div>
-          <div class="setrow" onclick="toast('バックアップを保存しました')">バックアップを取る<span class="sv">›</span></div>
+          <div class="setrow" onclick="backupExport()">バックアップを書き出す<span class="sv">ファイルに保存 ›</span></div>
+          <div class="setrow" onclick="backupImportPick()">バックアップから復元<span class="sv">ファイルを選ぶ ›</span></div>
+          <input type="file" id="bkFile" accept="application/json,.json" style="display:none" onchange="backupImportFile(this)">
+          <div class="setrow danger" onclick="dataResetAll()">入力内容を全部リセット<span class="sv">はじめから ›</span></div>
         </div>
+        <div class="setnote">💡 記録・予定・写真の一覧はこのiPhoneの中だけに保存されています。機種変更や故障にそなえて、ときどき「バックアップを書き出す」で保存しておくと安心です（写真そのものは共有アルバム側に残ります）。</div>
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
@@ -1456,7 +1487,7 @@
     <button class="tab" id="tabm0" onclick="goTab(0)"><span class="ic">🎤</span>記録</button>
     <button class="tab" id="tabm1" onclick="goTab(1)"><span class="ic">💬</span>相談</button>
     <button class="tab" id="tabm2" onclick="goTab(2)"><span class="ic">🗺️</span>マップ</button>
-    <button class="tab" id="t-menu" onclick="go('menu')"><span class="ic">☰</span>メニュー</button>
+    <button class="tab" id="t-menu" onclick="go('set')"><span class="ic">⚙️</span>設定</button>
   </div>
   <div class="toast" id="toast"></div>
   <div class="ph-lb" id="phLb" onclick="phClose()">
@@ -3477,9 +3508,10 @@
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'}
   };
-  var TILE_POOL=['rec','voice','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','set','koutei']; /* v24:map→ksasに置換(マップは田んぼ一覧に統合) */
+  /* v25.4:設定は下タブに固定になったのでボタン/タブの候補からは外す(重複させない)。 */
+  var TILE_POOL=['rec','voice','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','koutei'];
   /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
-  var HOME_ORDER_DEFAULT=['rec','voice','drone','diag','ai','koutei','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','set'];
+  var HOME_ORDER_DEFAULT=['rec','voice','drone','diag','ai','koutei','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka'];
   var TILE_LS_KEY='gyotokuHomeOrder_v1';
   function loadHomeOrder(){
     var base=HOME_ORDER_DEFAULT.slice();
@@ -3550,20 +3582,80 @@
     if(!host)return;
     var h='';
     for(var i=0;i<keys.length;i++){
-      h+='<div class="setrow" onclick="cycleSlot('+i+')">ボタン'+(i+1)+'<span class="sv">'+TILE_DEFS[keys[i]].tx+' ›</span></div>';
+      h+='<div class="setrow" onclick="openSlotPicker('+i+')">ボタン'+(i+1)+'<span class="sv">'+TILE_DEFS[keys[i]].tx+' ›</span></div>';
     }
     host.innerHTML=h;
   }
-  function cycleSlot(i){
-    /* 押すと1つ下と入れ替え(並び替え)。最後の行を押すと先頭へ回る。 */
-    var keys=buttonKeys();
-    if(keys.length<2)return;
-    var j=(i+1)%keys.length;
-    var a=homeOrder.indexOf(keys[i]), b=homeOrder.indexOf(keys[j]);
+  /* 設定でボタンに機能を割り当てる。選んだ機能を、いまその場所にある機能と入れ替える。 */
+  function setButtonSlot(index,k){
+    var keys=buttonKeys(); var cur=keys[index];
+    if(!cur||cur===k)return;
+    if(midTabs.indexOf(k)>=0)return; /* タブで使用中の機能はボタンに置かない */
+    var a=homeOrder.indexOf(cur), b=homeOrder.indexOf(k);
     if(a<0||b<0)return;
     var t=homeOrder[a]; homeOrder[a]=homeOrder[b]; homeOrder[b]=t;
     saveHomeOrder(); renderHomeGrid(); renderSlotRows();
-    toast('「'+TILE_DEFS[keys[i]].tx+'」の位置を入れ替えました');
+    toast('ボタン'+(index+1)+'を「'+TILE_DEFS[k].tx+'」にしました');
+  }
+  /* 設定でタブに機能を割り当てる。選んだ機能がボタンならタブへ移動(ボタンからは自動で外れる)。
+     選んだ機能が別のタブなら、2つのタブを入れ替える。 */
+  function setTabSlot(index,k){
+    var cur=midTabs[index];
+    if(cur===k)return;
+    var j=midTabs.indexOf(k);
+    if(j>=0){ midTabs[j]=cur; }   /* 別タブと入れ替え */
+    midTabs[index]=k;
+    saveTabs(); renderTabBar(); renderTabRows(); if(typeof curScreen!=='undefined')highlightTab(curScreen);
+    renderHomeGrid(); renderSlotRows();
+    toast('下の'+['左','真ん中','右'][index]+'のタブを「'+TILE_DEFS[k].tx+'」にしました');
+  }
+  /* ===== 機能ピッカー(スクロールで選ぶ・ボタンとタブ共通) ===== */
+  var bpKind='', bpIndex=-1;
+  function bpEnsure(){
+    if(document.getElementById('bpOv'))return;
+    var d=document.createElement('div'); d.id='bpOv';
+    d.innerHTML='<div id="bpSheet" onclick="event.stopPropagation()">'
+      +'<div class="bp-head"><div class="bp-ttl"><span id="bpTtl">機能をえらぶ</span><span class="bp-x" onclick="bpClose()">✕ とじる</span></div>'
+      +'<div class="bp-sub" id="bpSub"></div></div>'
+      +'<div class="bp-list" id="bpList"></div></div>';
+    d.onclick=bpClose;
+    document.body.appendChild(d);
+  }
+  function openSlotPicker(i){ bpKind='btn'; bpIndex=i; bpOpen(); }
+  function openTabPicker(i){ bpKind='tab'; bpIndex=i; bpOpen(); }
+  function bpOpen(){
+    bpEnsure();
+    var ttl=document.getElementById('bpTtl'), sub=document.getElementById('bpSub');
+    if(bpKind==='btn'){
+      if(ttl)ttl.textContent='ボタン'+(bpIndex+1)+'の機能をえらぶ';
+      if(sub)sub.textContent='下にスクロールして選べます。選ぶと、その場所の機能と入れ替わります。';
+    }else{
+      if(ttl)ttl.textContent=['左','真ん中','右'][bpIndex]+'のタブの機能をえらぶ';
+      if(sub)sub.textContent='下にスクロールして選べます。タブに入れた機能はホームのボタンから外れます。';
+    }
+    bpDraw();
+    document.getElementById('bpOv').classList.add('on');
+  }
+  function bpClose(){ var o=document.getElementById('bpOv'); if(o)o.classList.remove('on'); }
+  function bpIconOf(k){ var d=TILE_DEFS[k]; if(!d)return ''; if(k==='ksas')return '🌐'; return d.img?droneImgTag():d.ic; }
+  function bpDraw(){
+    var host=document.getElementById('bpList'); if(!host)return;
+    var cur = (bpKind==='btn') ? buttonKeys()[bpIndex] : midTabs[bpIndex];
+    var h='';
+    for(var i=0;i<TILE_POOL.length;i++){
+      var k=TILE_POOL[i], d=TILE_DEFS[k]; if(!d)continue;
+      var cls='bp-row', disabled=false;
+      if(k===cur){ cls+=' cur'; }
+      else if(bpKind==='btn' && midTabs.indexOf(k)>=0){ cls+=' used'; disabled=true; }
+      var onc = disabled ? '' : ' onclick="bpPick(\''+k+'\')"';
+      h+='<div class="'+cls+'"'+onc+'><span class="bpic">'+bpIconOf(k)+'</span><span class="bpnm">'+d.tx+'</span></div>';
+    }
+    host.innerHTML=h;
+  }
+  function bpPick(k){
+    if(bpKind==='btn') setButtonSlot(bpIndex,k);
+    else setTabSlot(bpIndex,k);
+    bpClose();
   }
   function resetTiles(){
     homeOrder=HOME_ORDER_DEFAULT.slice();
@@ -3641,6 +3733,158 @@
     renderHomeGrid(); renderSlotRows();
     toast('下のタブを最初の並びに戻しました');
   }
+
+  /* ===== v25.4 バックアップ(書き出し/復元)と 入力内容の全リセット =====
+     ・記録類は原則この端末のlocalStorageだけに保存される。長期運用ではときどき書き出す。
+     ・全リセットは「入力内容」を消し、並び順・タブ・名前・合言葉は残す。 */
+  function collectGyotokuKeys(){
+    var o={};
+    for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('gyotoku')===0){ o[k]=localStorage.getItem(k); } }
+    return o;
+  }
+  function backupExport(){
+    try{
+      var payload={app:'gyotoku',kind:'backup',at:new Date().toISOString(),keys:collectGyotokuKeys()};
+      var blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+      var url=URL.createObjectURL(blob);
+      var d=new Date();
+      var fn='gyotoku-backup-'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.json';
+      var a=document.createElement('a'); a.href=url; a.download=fn;
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ try{document.body.removeChild(a);}catch(e){} URL.revokeObjectURL(url); },1200);
+      toast('バックアップを書き出しました（'+fn+'）');
+    }catch(e){ toast('書き出しに失敗しました'); }
+  }
+  function backupImportPick(){ var el=document.getElementById('bkFile'); if(el){ el.value=''; el.click(); } }
+  function backupImportFile(input){
+    var f=input&&input.files&&input.files[0]; if(!f)return;
+    var r=new FileReader();
+    r.onload=function(){
+      var keys=null;
+      try{ var data=JSON.parse(r.result); keys=(data&&data.keys&&typeof data.keys==='object')?data.keys:null; }catch(e){ keys=null; }
+      if(!keys){ alert('このファイルは読み込めませんでした。行徳農園アプリで書き出したバックアップを選んでください。'); return; }
+      if(!confirm('このバックアップの内容で、今この端末の内容を上書きします。よろしいですか？')) return;
+      var n=0;
+      for(var k in keys){ if(keys.hasOwnProperty(k)&&k.indexOf('gyotoku')===0){ try{ localStorage.setItem(k,keys[k]); n++; }catch(e){} } }
+      alert('復元しました（'+n+'件）。画面を読み込み直します。');
+      location.reload();
+    };
+    r.readAsText(f);
+  }
+  function dataResetAll(){
+    if(!confirm('テストで入力した記録・予定・写真の一覧・メモなどを、この端末から全部消します。\n（ホームのボタンの並び・下のタブ・名前・合言葉は残ります）\n\n本当に消してよろしいですか？')) return;
+    if(!confirm('もう一度おたずねします。消したデータは元に戻せません。\nまだの場合は、先に「バックアップを書き出す」で保存しておくことをおすすめします。\n\nそれでも消してよろしいですか？')) return;
+    var alsoServer=confirm('家族みんなで共有しているサーバー上の記録も、一緒に消しますか？\n\n「OK」＝家族全員ぶんも消す（本番を始める前のリセットにおすすめ）\n「キャンセル」＝この端末だけ消す（※共有が続いていると、家族の分がまた入ってきます）');
+    var KEEP={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1};
+    var del=[];
+    for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('gyotoku')===0&&!KEEP[k]) del.push(k); }
+    for(var j=0;j<del.length;j++){ try{ localStorage.removeItem(del[j]); }catch(e){} }
+    try{ _syncHash={}; }catch(e){}
+    var finish=function(){ alert('入力内容をリセットしました（'+del.length+'件）。画面を読み込み直します。'); location.reload(); };
+    if(alsoServer && typeof fetch==='function'){
+      fetch('/api/sync-clear',{method:'POST',headers:{'content-type':'application/json','x-photo-pass':(function(){try{return localStorage.getItem('gyotoku.phpass.v1')||'';}catch(e){return '';}})()},body:JSON.stringify({keys:(typeof SYNC_KEYS!=='undefined')?SYNC_KEYS:[]})})
+        .then(function(r){return r.json().catch(function(){return {ok:false};});})
+        .then(function(jj){ if(!jj||!jj.ok){ alert('サーバー上の消去はできませんでした（ネットにつながってから、設定でもう一度お試しください）。この端末の分は消えています。'); } finish(); })
+        .catch(function(){ alert('サーバーにつながらず、共有分は消せませんでした。この端末の分は消えています。'); finish(); });
+    } else { finish(); }
+  }
+
+  /* ===== v25.5 家族共有＋自動バックアップ（記録・予定・メモを Cloudflare KV へ） =====
+     ・写真と同じ /api/ 経由。ブラウザから直接どこかへ送らない。
+     ・安全第一：この端末のデータは絶対に消さない(union)。取り込みは足すだけ。
+     ・オフラインでも普通に使える。つながった時だけ自動で同期する。 */
+  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1'];
+  var SYNC_SET={}; (function(){ for(var i=0;i<SYNC_KEYS.length;i++)SYNC_SET[SYNC_KEYS[i]]=1; })();
+  var _syncHash={};      /* key -> 直近に送った内容のハッシュ(無駄な送信を防ぐ) */
+  var _syncBusy=false;
+  function _lsSetRaw(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function _syncPass(){ try{ return localStorage.getItem('gyotoku.phpass.v1')||''; }catch(e){ return ''; } }
+  function _hash(s){ var h=0,i,c; if(!s)return '0'; for(i=0;i<s.length;i++){ c=s.charCodeAt(i); h=((h<<5)-h+c)|0; } return h+'_'+s.length; }
+  function _sig(it){ if(it&&typeof it==='object'&&(typeof it.id==='string'||typeof it.id==='number'))return 'id:'+it.id; try{ return 'j:'+JSON.stringify(it); }catch(e){ return 'x:'+Math.random(); } }
+  /* ローカルを壊さずサーバーの分を足す。返り値 {str, changed}。 */
+  function _mergeVal(localStr, serverStr){
+    var L,S;
+    try{ L=JSON.parse(localStr); }catch(e){ L=null; }
+    try{ S=JSON.parse(serverStr); }catch(e){ S=null; }
+    if(S==null) return {str:localStr, changed:false};
+    if(L==null) return {str:serverStr, changed:(serverStr!==localStr)};
+    var merged;
+    if(L instanceof Array && S instanceof Array){
+      var seen={}, out=[], a;
+      for(a=0;a<L.length;a++){ var sl=_sig(L[a]); if(!seen[sl]){ seen[sl]=1; out.push(L[a]); } }
+      for(a=0;a<S.length;a++){ var ss=_sig(S[a]); if(!seen[ss]){ seen[ss]=1; out.push(S[a]); } }
+      merged=out;
+    } else if(typeof L==='object' && typeof S==='object' && !(L instanceof Array) && !(S instanceof Array)){
+      merged={}; var k;
+      for(k in S){ if(S.hasOwnProperty(k))merged[k]=S[k]; }
+      for(k in L){ if(L.hasOwnProperty(k))merged[k]=L[k]; } /* 同じ鍵はローカル優先 */
+    } else {
+      merged=L; /* 型がちがう時はローカル優先 */
+    }
+    var ms; try{ ms=JSON.stringify(merged); }catch(e){ ms=localStr; }
+    return {str:ms, changed:(ms!==localStr)};
+  }
+  function _syncBadge(state){
+    var el=document.getElementById('syncState'); if(!el)return;
+    el.textContent = (state===true) ? '✅ つながっています（自動で共有・保存）'
+                   : (state===false) ? '📴 今はオフライン（つながると自動で同期）'
+                   : '…確認中';
+  }
+  function syncPushAll(done){
+    var pend=[];
+    for(var i=0;i<SYNC_KEYS.length;i++){ var k=SYNC_KEYS[i]; var v; try{ v=localStorage.getItem(k); }catch(e){ v=null; } if(v==null)continue; var h=_hash(v); if(_syncHash[k]!==h)pend.push({k:k,v:v,h:h}); }
+    if(!pend.length){ if(done)done(true); return; }
+    var left=pend.length, okAll=true;
+    pend.forEach(function(p){
+      fetch('/api/sync-put',{method:'POST',headers:{'content-type':'application/json','x-photo-pass':_syncPass()},body:JSON.stringify({key:p.k,value:p.v})})
+        .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
+        .then(function(j){ if(j&&j.ok){ _syncHash[p.k]=p.h; } else { okAll=false; } })
+        .catch(function(){ okAll=false; })
+        .then(function(){ if(--left===0){ if(done)done(okAll); } });
+    });
+  }
+  function syncPull(done){
+    var qs='/api/sync-list?keys='+encodeURIComponent(SYNC_KEYS.join(','));
+    fetch(qs,{headers:{'x-photo-pass':_syncPass()}})
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if(!j||!j.ok||!j.data){ _syncBadge(false); if(done)done(false); return; }
+        _syncBadge(true);
+        var changed=false, data=j.data;
+        for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue;
+          var loc; try{ loc=localStorage.getItem(k); }catch(e){ loc=null; }
+          var m=_mergeVal(loc==null?'null':loc, data[k]);
+          if(m.changed){ _lsSetRaw(k,m.str); _syncHash[k]=_hash(m.str); changed=true; }
+          else { _syncHash[k]=_hash(loc==null?'null':loc); }
+        }
+        if(changed) _syncApply();
+        if(done)done(true);
+      })
+      .catch(function(){ _syncBadge(false); if(done)done(false); });
+  }
+  /* 家族の新しいデータが入った時だけ、画面をやさしく更新する。
+     入力中・シートを開いている時・直前に更新した時は見送る(次の同期でやる)。 */
+  function _syncApply(){
+    var ae=document.activeElement;
+    if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'||ae.isContentEditable))return;
+    if(document.querySelector('#bpOv.on, #fpOv.on'))return;
+    var last=0; try{ last=parseInt(sessionStorage.getItem('gyotoku.sync.reloadedAt')||'0',10); }catch(e){}
+    var now=Date.now(); if(now-last<6000)return;
+    try{ sessionStorage.setItem('gyotoku.sync.reloadedAt',String(now)); }catch(e){}
+    location.reload();
+  }
+  function syncNow(){ toast('同期しています…'); syncPushAll(function(){ syncPull(function(ok){ toast(ok?'同期しました':'サーバーにつながりませんでした'); }); }); }
+  function syncTick(){ if(_syncBusy)return; if(document.hidden)return; _syncBusy=true; syncPushAll(function(){ syncPull(function(){ _syncBusy=false; }); }); }
+  function syncDiag(){
+    fetch('/api/sync-ping').then(function(r){ return r.json(); }).then(function(j){
+      if(!j||!j.ok){ alert('サーバーから返事がありません。Cloudflareのデプロイ状況を確認してください。'); return; }
+      alert('サーバー：OK\n共有の置き場(KV)：'+(j.kv?'設定ずみ ✅':'まだ未設定 ⚠️\n→ Cloudflareで KV を「GYOTOKU_KV」という名前で割り当ててください')+'\n合言葉：'+(j.passcode_set?('設定あり（'+j.passcode_len+'文字）'):'なし（URLを知る人は見られます）'));
+    }).catch(function(){ alert('サーバーにつながりませんでした（オフラインかもしれません）。'); });
+  }
+  /* 起動から少し後・約30秒ごと・アプリを前面に戻した時に同期。画面が見えている時だけ。 */
+  setTimeout(function(){ try{ syncTick(); }catch(e){} }, 1800);
+  setInterval(function(){ try{ syncTick(); }catch(e){} }, 30000);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ syncTick(); }catch(e){} } });
 
   renderHomeGrid(); renderSlotRows(); renderTabBar(); renderTabRows();
   (function(){
