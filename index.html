@@ -1144,9 +1144,11 @@
     <div class="page" id="p-pest">
       <div class="sc">
         <div class="fld"><div class="lb">農薬をえらぶ</div><div class="v" onclick="go('drug')"><span id="pestChemName">スタークル液剤</span><span class="chv">›</span></div></div>
-        <div class="fld"><div class="lb">面積</div><div class="v">西 3 39.81a<span class="chv">›</span></div></div>
+        <div class="fld" onclick="pestPickField()"><div class="lb">📍 どの田んぼ?（押して選べます）</div><div class="v"><span id="pestFieldV">西 3 39.81a・にじのきらめき</span><span class="chv">›</span></div></div>
+        <div class="fld" onclick="pestWaterAsk()"><div class="lb">まく水の量（10aあたり・押して変更）</div><div class="v"><span id="pestWaterV">100</span> L<span class="chv">›</span></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">ふつうの散布のめやす。国の基準は60〜150L</div></div>
         <div class="fld"><div class="lb">希釈倍率(自動)</div><div class="v"><span id="pestBai">1000</span>倍</div></div>
-        <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big">602 L</span><br>入れる農薬の量:<span class="big">602 mL</span><br><span style="font-size:13px;color:#8A6A2E;">※適用病害虫・使用回数もOK(農水省DB)</span></div>
+        <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big" id="pestWater">—</span> L<br>入れる農薬の量:<span class="big" id="pestChem">—</span> mL<br><span id="pestCalcNote" style="font-size:13px;color:#8A6A2E;">田んぼと倍率から計算します</span></div>
+        <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="pestYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">入れると生産原価の「農業薬剤費」に自動で入ります（空欄でもOK）</div></div>
         <div id="mbBox"><!-- 🛡見張り番(JS) --></div>
         <div class="famic-card"><div class="famic-t">🏛 国の最新ルールを見る</div><div class="famic-n">見張り番の表はアプリ内蔵（2026年7月時点）です。使用回数・収穫前日数の<b>最新の登録内容</b>は、国の農薬登録情報（FAMIC運用・無料）で確認できます。</div><div class="dbbtn" onclick="openSite('https://pesticide.maff.go.jp/')">🏛 農薬登録情報を最新で調べる（無料）</div></div>
         <div class="save" onclick="pestRecord()">✅ この内容で記録する</div>
@@ -1249,7 +1251,7 @@
     <!-- ===== ⑨ 生産原価 ===== -->
     <div class="page" id="p-cost">
       <div class="sc">
-        <div class="fld"><div class="lb">作付名</div><div class="v" style="font-size:16px;">にじのきらめき_西3_2026<span class="chv">›</span></div></div>
+        <div class="fld"><div class="lb">作付名（自動）</div><div class="v" style="font-size:15px;"><span id="costCropName">—</span></div></div>
         <div class="cost-lead">農水省の「米・生産費」と同じ費目にそろえました。<b>分からない費目は空欄でOK</b>（空欄は0円として合計に入りません）。肥料・農薬・燃料は他の画面の記録から自動で入ります。</div>
         <div class="cost-total"><span class="t">物財費 合計</span><span class="n" id="costTotal">0円</span></div>
         <div id="costBody"><!-- 費目(JS) --></div>
@@ -1351,6 +1353,7 @@
           <div class="sym" onclick="symTap(this)">👀 周りに人がいない</div>
           <div class="sym" onclick="symTap(this)">🧪 薬量を確認した</div>
         </div>
+        <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="droneYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">入れると生産原価の「農業薬剤費」に入ります（空欄でもOK）</div></div>
         <div class="primary-btn" onclick="saveWork()">✅ 散布を記録する</div>
         <div class="ksasbtn" onclick="openKsas('航空写真マップを表示します(無料)')">🗺️ 圃場マップで確認(KSASを開く)</div>
         <div class="spacer"></div>
@@ -1573,7 +1576,7 @@
     if(n==='fields'&&typeof fieldsEnter==='function')fieldsEnter();
     if(n==='hiryo'&&typeof hyEnter==='function')hyEnter();
     if(n==='kikai'&&typeof kiEnter==='function')kiEnter();
-    if(n==='pest'&&typeof mbEnter==='function')mbEnter();
+    if(n==='pest'&&typeof pestEnter==='function')pestEnter();
     if(n==='drone'&&typeof droneEnter==='function')droneEnter();
     if(n==='cost'&&typeof costEnter==='function')costEnter();
     if(n==='cal'&&typeof calEnter==='function')calEnter();
@@ -1861,7 +1864,8 @@
     var e={d:inaFmtFull(new Date()), step:stepK, field:fieldN, text:text||'', src:src||'rec', ksas:false};
     if(extra){ if(extra.d)e.d=extra.d; /* v22④:過去日にさかのぼって記録できる */
       if(extra.work)e.work=extra.work; if(extra.chem)e.chem=extra.chem;
-      if(extra.rate)e.rate=extra.rate; if(extra.vol)e.vol=extra.vol; if(extra.mass)e.mass=extra.mass; }
+      if(extra.rate)e.rate=extra.rate; if(extra.vol)e.vol=extra.vol; if(extra.mass)e.mass=extra.mass;
+      if(extra.yen)e.yen=extra.yen; if(extra.ckind)e.ckind=extra.ckind; }
     ktLog.push(e);
     ktSave();
   }
@@ -2515,9 +2519,16 @@
   function saveWork(){
     var src=(curScreen==='drone')?'drone':'rec';
     if(src==='drone'){
-      /* v25.6:固定の「西 3」をやめ、①②で選んだ日付・田んぼで記録する */
-      wlAdd('josou', droneField, 'ドローン散布', 'drone', {d:(droneDateSel||null), work:'ドローン散布'});
-      toast('✅ 保存しました('+droneField+'・みんなに共有・工程表にも反映)'); /* v24.2:カレンダーへ飛ばさずこの画面に留まる */
+      /* v26:固定の「西 3」をやめ、①②で選んだ日付・田んぼで記録する */
+      /* v26:農薬代(任意)を生産原価の農業薬剤費へ。薬は現状スタークル液剤表示 */
+      var dChem='スタークル';
+      var dyEl=document.getElementById('droneYen');
+      var dyen=dyEl?(parseInt((''+dyEl.value).replace(/[^\d]/g,''),10)||0):0;
+      var dex={d:(droneDateSel||null), work:'ドローン散布', chem:dChem};
+      if(dyen>0){ dex.yen=dyen; dex.ckind=(typeof chemKind==='function'?chemKind(dChem):'mushi'); }
+      wlAdd('josou', droneField, 'ドローン散布', 'drone', dex);
+      if(dyEl)dyEl.value='';
+      toast('✅ 保存しました('+droneField+(dyen>0?('・農薬代'+dyen.toLocaleString()+'円は生産原価へ'):'')+'・みんなに共有・工程表にも反映)'); /* v24.2:カレンダーへ飛ばさずこの画面に留まる */
       return;
     }
     /* v22④:作業を記録2.0 */
@@ -2589,6 +2600,20 @@
     'ブラシン','コラトップ','オリゼメート','ラブサイド','ビーム',
     'バリダシン','モンカット','ジャンボ','ラウンドアップ','バスタ','プリグロックス',
     'ロータム','フェニックス','パダン','トレボン','アプロード'];
+  /* ===== v26 農薬の種類（殺虫/殺菌/除草）＝生産原価の農業薬剤費に自動仕分けするため =====
+     ※内蔵の代表薬だけ分類。判定できない薬は「殺虫剤(mushi)」に寄せる（本人指定）。 */
+  var NG_KIND={
+    'スタークル':'mushi','アドマイヤー':'mushi','ダントツ':'mushi','キラップ':'mushi',
+    'トレボン':'mushi','アプロード':'mushi','パダン':'mushi','フェニックス':'mushi',
+    'ブラシン':'kin','コラトップ':'kin','オリゼメート':'kin','ラブサイド':'kin',
+    'ビーム':'kin','バリダシン':'kin','モンカット':'kin',
+    'ラウンドアップ':'josou','バスタ':'josou','プリグロックス':'josou','ジャンボ':'josou','ロータム':'josou'
+  };
+  /* 農薬名→種類キー。まずNG_CHEMSの代表名に寄せ、NG_KINDで種類を引く。無ければ殺虫剤に寄せる */
+  function chemKind(name){
+    var key=(typeof mbKeyOf==='function')?mbKeyOf(name||''):(name||'');
+    return NG_KIND[key]||'mushi';
+  }
   /* ===== v20 🛡見張り番：農薬の成分別ルール（年◯回まで・収穫◯日前まで） =====
      ※御農園でよく使う代表だけ内蔵。ここに無い農薬は「未登録」と表示し、勝手に判定しない。
         max=年間使用回数の上限 / phi=収穫前日数(この日数前までしか使えない)。名前は成分の代表商品名。
@@ -3224,6 +3249,59 @@
      ============================================================ */
   var mbCurChem='スタークル';   /* いま選んでいる農薬（本来は農薬選択と連動。当面は代表値） */
   var mbHarvest=null;           /* 収穫予定日(Date)。工程表の予想があれば使う */
+  /* v26 農薬計算：田んぼ選択＋まく水の量から水量・薬量を実計算 */
+  var pestField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS[0])?KT_FIELDS[0].n:'';
+  var pestWater=100;            /* 10aあたりのまく水の量(L)。初期値100L（国基準60〜150Lの代表値） */
+  function fieldAreaA(name){
+    /* 田んぼ名→面積(a)を数値で返す。'39.81a'→39.81。取れなければ0 */
+    var f=(typeof fieldByName==='function')?fieldByName(name):null;
+    if(!f||!f.a) return 0;
+    var m=(''+f.a).match(/[\d.]+/);
+    return m?parseFloat(m[0]):0;
+  }
+  function pestFieldShow(){
+    var v=document.getElementById('pestFieldV'); if(!v)return;
+    var f=(typeof fieldByName==='function')?fieldByName(pestField):null;
+    v.textContent=pestField+(f?(' '+f.a+'・'+(f.crop||'未定')):'');
+  }
+  function pestPickField(){
+    if(typeof fieldSheetOpen!=='function'){ return; }
+    fieldSheetOpen(function(n){ pestField=n; pestFieldShow(); pestCalc(); toast('田んぼ：'+n); }, pestField);
+  }
+  function pestWaterAsk(){
+    var v=prompt('10aあたりに、まく水の量（L）を入れてください。\nふつうの散布は100Lくらい（国の基準は60〜150L）。', pestWater);
+    if(v==null) return;
+    var n=parseFloat((''+v).replace(/[^\d.]/g,''));
+    if(!n||n<=0){ toast('数字で入れてください（例：100）'); return; }
+    pestWater=n;
+    var el=document.getElementById('pestWaterV'); if(el)el.textContent=(n%1===0?n:n.toFixed(1));
+    pestCalc();
+  }
+  function pestBaiVal(){
+    var b=document.getElementById('pestBai');
+    var n=b?parseFloat((b.textContent||'').replace(/[^\d.]/g,'')):0;
+    return n>0?n:1000;
+  }
+  function pestCalc(){
+    var area=fieldAreaA(pestField);       /* a */
+    var bai=pestBaiVal();                  /* 倍 */
+    var water=Math.round(area/10*pestWater);          /* L = a÷10 × L/10a */
+    var chem=bai>0?Math.round(water*1000/bai):0;        /* mL = L×1000 ÷ 倍率 */
+    var wEl=document.getElementById('pestWater'); if(wEl)wEl.textContent=water>0?water:'—';
+    var cEl=document.getElementById('pestChem'); if(cEl)cEl.textContent=(water>0&&chem>0)?chem:'—';
+    var note=document.getElementById('pestCalcNote');
+    if(note){
+      if(area>0){ note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L　／　'+water+'L ×1000 ÷'+bai+'倍 ＝ '+chem+'mL'; }
+      else { note.textContent='田んぼを選ぶと計算します'; }
+    }
+  }
+  function pestEnter(){
+    /* 農薬計算画面を開くたびに表示を整える */
+    var wv=document.getElementById('pestWaterV'); if(wv)wv.textContent=(pestWater%1===0?pestWater:pestWater.toFixed(1));
+    pestFieldShow();
+    pestCalc();
+    if(typeof mbEnter==='function') mbEnter();
+  }
   function mbCountChem(name){
     /* 今年、その農薬名を含む記録が台帳に何回あるか（成分の代表名で前方一致） */
     var y=new Date().getFullYear(), n=0;
@@ -3294,10 +3372,16 @@
     box.innerHTML=h;
   }
   function pestRecord(){
-    /* 記録：台帳に散布として残す→見張り番のカウントに反映 */
-    if(typeof wlAdd==='function'){ wlAdd('shussui', (typeof recField!=='undefined'?recField:KT_FIELDS[0].n), mbCurChem+' 散布(農薬計算)', 'pest', {work:'散布', chem:mbCurChem}); }
+    /* 記録：台帳に散布として残す→見張り番のカウントに反映。農薬代は生産原価へ */
+    var fld=pestField||(typeof recField!=='undefined'?recField:(KT_FIELDS[0]?KT_FIELDS[0].n:''));
+    var yEl=document.getElementById('pestYen');
+    var yen=yEl?(parseInt((''+yEl.value).replace(/[^\d]/g,''),10)||0):0;
+    var extra={work:'散布', chem:mbCurChem};
+    if(yen>0){ extra.yen=yen; extra.ckind=chemKind(mbCurChem); }
+    if(typeof wlAdd==='function'){ wlAdd('shussui', fld, mbCurChem+' 散布(農薬計算)', 'pest', extra); }
+    if(yEl)yEl.value='';
     mbEnter();
-    toast('計算結果を記録しました（見張り番に反映）');
+    toast(yen>0?('記録しました（農薬代 '+yen.toLocaleString()+'円は生産原価へ）'):'計算結果を記録しました（見張り番に反映）');
   }
 
   /* ============================================================
@@ -3322,9 +3406,9 @@
       {k:'hi_etc',nm:'石灰・複合・土壌改良など',type:'manual'}
     ]},
     {k:'yaku', nm:'農業薬剤費', dot:'#2E6E8E', subs:[
-      {k:'yaku_mushi',nm:'殺虫剤',type:'manual'},
-      {k:'yaku_kin',nm:'殺菌剤',type:'manual'},
-      {k:'yaku_josou',nm:'除草剤',type:'manual'}
+      {k:'yaku_mushi',nm:'殺虫剤',type:'auto',auto:'yaku_mushi'},
+      {k:'yaku_kin',nm:'殺菌剤',type:'auto',auto:'yaku_kin'},
+      {k:'yaku_josou',nm:'除草剤',type:'auto',auto:'yaku_josou'}
     ]},
     {k:'nen', nm:'光熱動力費', dot:'#C4772E', subs:[
       {k:'nen_fuel',nm:'軽油・ガソリン・灯油(機械)',type:'auto',auto:'kikai_fuel'},
@@ -3354,10 +3438,23 @@
     if(key==='fert_n'){ return Math.round(costFertKg().n*COST_FERT_YEN.n); }
     if(key==='fert_p'){ return Math.round(costFertKg().p*COST_FERT_YEN.p); }
     if(key==='fert_k'){ return Math.round(costFertKg().k*COST_FERT_YEN.k); }
+    if(key==='yaku_mushi'){ return costChemYen('mushi'); }
+    if(key==='yaku_kin'){ return costChemYen('kin'); }
+    if(key==='yaku_josou'){ return costChemYen('josou'); }
     if(key==='kikai_fuel'){ return kiSumKindYear(['tractor','combine'],['軽油','ガソリン','オイル交換']); }
     if(key==='kikai_truck'){ return kiSumMacYear('truck'); }
     if(key==='kikai_mac'){ return kiSumKindYear(['tractor','combine'],['整備・修理','部品交換','その他']); }
     return 0;
+  }
+  /* v26 農薬代を種類別(殺虫mushi/殺菌kin/除草josou)に今年ぶん合計。台帳のyen/ckindから */
+  function costChemYen(kind){
+    if(typeof ktLog==='undefined')return 0;
+    var y=new Date().getFullYear(), s=0;
+    for(var i=0;i<ktLog.length;i++){ var e=ktLog[i];
+      if(!e.yen)continue; if(kiYear(e.d)!==y)continue;
+      var k=e.ckind||(typeof chemKind==='function'?chemKind(e.chem||''):'mushi');
+      if(k===kind)s+=e.yen; }
+    return s;
   }
   function kiSumMacYear(mac){ kiLoad(); var y=new Date().getFullYear(),s=0;
     for(var i=0;i<kiLog.length;i++){ if(kiLog[i].mac===mac&&kiYear(kiLog[i].d)===y)s+=kiLog[i].yen||0; } return s; }
@@ -3370,7 +3467,17 @@
   }
   function costCatTotal(cat){ var s=0; for(var i=0;i<cat.subs.length;i++)s+=costSubVal(cat.subs[i]); return s; }
   function costGrand(){ var s=0; for(var i=0;i<COST_CATS.length;i++)s+=costCatTotal(COST_CATS[i]); return s; }
-  function costEnter(){ costLoad(); costRender(); }
+  function costCropName(){
+    /* 実データから作付名を作る：今年の主な品種・田んぼ数・年 */
+    var y=new Date().getFullYear();
+    var crops={}, n=0;
+    for(var i=0;i<KT_FIELDS.length;i++){ var c=KT_FIELDS[i].crop; if(c&&c!=='未定'){ crops[c]=(crops[c]||0)+1; n++; } }
+    var main='', mx=0; for(var k in crops){ if(crops[k]>mx){mx=crops[k];main=k;} }
+    if(!main) return '（品種未設定）'+y+'年';
+    var others=0; for(var k2 in crops)others++;
+    return main+(others>1?('ほか '+others+'品種'):'')+'・田んぼ'+KT_FIELDS.length+'枚（'+y+'年）';
+  }
+  function costEnter(){ costLoad(); var cn=document.getElementById('costCropName'); if(cn)cn.textContent=costCropName(); costRender(); }
   function costRender(){
     var body=document.getElementById('costBody'); if(!body)return;
     var h='';
