@@ -2051,7 +2051,7 @@
   function ktToggleField(f){
     var st=KT_STEPS[ktCurStep], fd=KT_FIELDS[f], dn=ktDoneFields(st.k);
     if(dn[fd.n]){
-      for(var i=ktLog.length-1;i>=0;i--)if(ktLog[i].step===st.k&&ktLog[i].field===fd.n)ktLog.splice(i,1);
+      for(var i=ktLog.length-1;i>=0;i--)if(ktLog[i].step===st.k&&ktLog[i].field===fd.n){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); }
       ktSave(); toast(fd.n+' を未実施に戻しました');
     }else{
       wlAdd(st.k, fd.n, st.nm, 'board');
@@ -2906,6 +2906,7 @@
     var gv=function(id){ var el=document.getElementById(id); return el?el.value.replace(/^\s+|\s+$/g,''):''; };
     var d=gv('krEd');
     if(d&&!/^\d{4}\/\d{2}\/\d{2}$/.test(d)){ toast('月日は 2026/07/20 の形で入れてください'); return; }
+    tombAdd(KT_LS,e);   /* v30 編集：古い版に削除印→別端末から古い版が復活しない */
     if(d)e.d=d;
     e.work=gv('krEw'); e.chem=gv('krEc');
     e.rate=gv('krEr'); e.vol=gv('krEv'); e.mass=gv('krEm');
@@ -2917,7 +2918,7 @@
   function krDel(idx){
     var e=ktLog[idx]; if(!e)return;
     if(!confirm('本当に消しますか？\n'+krMd(e.d)+' '+(e.field||'')+' '+(e.work||e.text||''))) return;
-    ktLog.splice(idx,1); ktSave();
+    tombAdd(KT_LS,e); ktLog.splice(idx,1); ktSave();
     krEditCancel();
     krokuRender();
     toast('🗑 記録を消しました');
@@ -3225,7 +3226,7 @@
     var li=hyLocalIdx(i); if(li<0)return;
     var r=hyLog[li];
     if(!confirm('本当に消しますか？\n'+r.fert+' '+(r.kg||0)+'kg')) return;
-    hyLog.splice(li,1); hySave(); hyRender(); toast('🗑 削除しました');
+    tombAdd(HY_LS,r); hyLog.splice(li,1); hySave(); hyRender(); toast('🗑 削除しました');
   }
   function hyEdit(i){
     var li=hyLocalIdx(i); if(li<0)return;
@@ -3234,7 +3235,7 @@
     if(v==null)return;
     var kg=parseFloat(v);
     if(!kg||kg<=0){ toast('量（kg）は数字で入れてください'); return; }
-    r.kg=kg; hySave(); hyRender(); toast('✏️ '+r.fert+' を '+kg+'kg に直しました');
+    tombAdd(HY_LS,r); r.kg=kg; hySave(); hyRender(); toast('✏️ '+r.fert+' を '+kg+'kg に直しました');
   }
   function hyPickField(){
     fieldSheetOpen(function(n){ hyField=n;
@@ -3347,7 +3348,7 @@
   function kiDel(i){
     var e=kiLog[i]; if(!e)return;
     if(!confirm('本当に消しますか？\n'+krMd(e.d)+' '+e.kind+' '+kiYen(e.yen))) return;
-    kiLog.splice(i,1); kiSave(); kiRender(); toast('🗑 削除しました');
+    tombAdd(KI_LS,e); kiLog.splice(i,1); kiSave(); kiRender(); toast('🗑 削除しました');
   }
   function kiEdit(i){
     var e=kiLog[i]; if(!e)return;
@@ -3355,7 +3356,7 @@
     if(v==null)return;
     var yen=parseInt(v,10);
     if(!yen||yen<=0){ toast('金額（円）は数字で入れてください'); return; }
-    e.yen=yen; kiSave(); kiRender(); toast('✏️ '+e.kind+' を '+kiYen(yen)+' に直しました');
+    tombAdd(KI_LS,e); e.yen=yen; kiSave(); kiRender(); toast('✏️ '+e.kind+' を '+kiYen(yen)+' に直しました');
   }
 
   /* ============================================================
@@ -4059,7 +4060,8 @@
      ・写真と同じ /api/ 経由。ブラウザから直接どこかへ送らない。
      ・安全第一：この端末のデータは絶対に消さない(union)。取り込みは足すだけ。
      ・オフラインでも普通に使える。つながった時だけ自動で同期する。 */
-  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1'];
+  var TOMB_LS='gyotoku.tomb.v1';   /* v30 削除印(tombstone)の台帳。中身は印だけで記録本体は入れない */
+  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1',TOMB_LS];
   var SYNC_SET={}; (function(){ for(var i=0;i<SYNC_KEYS.length;i++)SYNC_SET[SYNC_KEYS[i]]=1; })();
   var _syncHash={};      /* key -> 直近に送った内容のハッシュ(無駄な送信を防ぐ) */
   var _syncBusy=false;
@@ -4067,8 +4069,44 @@
   function _syncPass(){ try{ return localStorage.getItem('gyotoku.phpass.v1')||''; }catch(e){ return ''; } }
   function _hash(s){ var h=0,i,c; if(!s)return '0'; for(i=0;i<s.length;i++){ c=s.charCodeAt(i); h=((h<<5)-h+c)|0; } return h+'_'+s.length; }
   function _sig(it){ if(it&&typeof it==='object'&&(typeof it.id==='string'||typeof it.id==='number'))return 'id:'+it.id; try{ return 'j:'+JSON.stringify(it); }catch(e){ return 'x:'+Math.random(); } }
+  /* ===== v30 削除印(tombstone)：削除・編集を家族に共有する ===== */
+  /* 台帳の形： { "<同期キー>": { "<記録の印>": 消した時刻ms } }。記録本体は入れない＝軽い */
+  function _tombLoad(){ try{ var o=JSON.parse(localStorage.getItem(TOMB_LS)||'{}'); return (o&&typeof o==='object'&&!(o instanceof Array))?o:{}; }catch(e){ return {}; } }
+  function _tombSave(o){ try{ localStorage.setItem(TOMB_LS, JSON.stringify(o)); }catch(e){} }
+  /* 掃除：180日より古い印は捨てる／1キーあたり最大500件（KV無料枠にやさしく） */
+  function tombPrune(o){
+    var CUT=Date.now()-180*24*3600*1000, CAP=500;
+    for(var key in o){ if(!o.hasOwnProperty(key))continue;
+      var m=o[key], arr=[];
+      for(var s in m){ if(m.hasOwnProperty(s)){ if(m[s]>=CUT)arr.push([s,m[s]]); } }
+      if(arr.length>CAP){ arr.sort(function(a,b){return b[1]-a[1];}); arr=arr.slice(0,CAP); }
+      var nm={}; for(var i=0;i<arr.length;i++)nm[arr[i][0]]=arr[i][1];
+      if(!arr.length)delete o[key]; else o[key]=nm;
+    }
+    return o;
+  }
+  /* 削除印を1つ足す（記録を消す/編集で古い版を捨てる時に呼ぶ） */
+  function tombAdd(syncKey, item){
+    if(!syncKey||item==null)return;
+    var o=_tombLoad(); var m=o[syncKey]||(o[syncKey]={});
+    m[_sig(item)]=Date.now(); tombPrune(o); _tombSave(o);
+    try{ _syncHash[TOMB_LS]=''; }catch(e){}  /* 次の同期で必ず送るよう印だけリセット */
+  }
+  function tombFor(syncKey){ var o=_tombLoad(); return o[syncKey]||{}; }
+  /* サーバーの削除印を取り込む：印は消さず union、同じ印は新しい時刻を採用 */
+  function tombMergeServer(serverStr){
+    var S; try{ S=JSON.parse(serverStr); }catch(e){ S=null; }
+    if(!S||typeof S!=='object'||S instanceof Array)return false;
+    var o=_tombLoad(), changed=false;
+    for(var key in S){ if(!S.hasOwnProperty(key))continue; var sm=S[key]; if(!sm||typeof sm!=='object')continue;
+      var m=o[key]||(o[key]={});
+      for(var s in sm){ if(!sm.hasOwnProperty(s))continue; if(!(s in m)||sm[s]>m[s]){ m[s]=sm[s]; changed=true; } }
+    }
+    if(changed){ tombPrune(o); _tombSave(o); }
+    return changed;
+  }
   /* ローカルを壊さずサーバーの分を足す。返り値 {str, changed}。 */
-  function _mergeVal(localStr, serverStr){
+  function _mergeVal(localStr, serverStr, key){
     var L,S;
     try{ L=JSON.parse(localStr); }catch(e){ L=null; }
     try{ S=JSON.parse(serverStr); }catch(e){ S=null; }
@@ -4076,9 +4114,16 @@
     if(L==null) return {str:serverStr, changed:(serverStr!==localStr)};
     var merged;
     if(L instanceof Array && S instanceof Array){
+      var TOMB=(key?tombFor(key):{});               /* v30 削除印 */
       var seen={}, out=[], a;
-      for(a=0;a<L.length;a++){ var sl=_sig(L[a]); if(!seen[sl]){ seen[sl]=1; out.push(L[a]); } }
-      for(a=0;a<S.length;a++){ var ss=_sig(S[a]); if(!seen[ss]){ seen[ss]=1; out.push(S[a]); } }
+      /* まず id を持つ記録は「更新時刻 _m が新しい方」を勝たせる（編集の共有） */
+      var winner={}, srcs=[L,S], si, it, s;
+      for(si=0;si<2;si++){ for(a=0;a<srcs[si].length;a++){ it=srcs[si][a]; s=_sig(it);
+        if(s.indexOf('id:')!==0)continue; var p=winner[s]; if(!p||((it&&it._m||0)>(p._m||0)))winner[s]=it; } }
+      /* L→S の順に出す。削除印つきは外す。重複は先勝ち（ローカル優先） */
+      for(si=0;si<2;si++){ for(a=0;a<srcs[si].length;a++){ it=srcs[si][a]; s=_sig(it);
+        if(TOMB[s])continue; if(seen[s])continue; seen[s]=1;
+        out.push(s.indexOf('id:')===0?winner[s]:it); } }
       merged=out;
     } else if(typeof L==='object' && typeof S==='object' && !(L instanceof Array) && !(S instanceof Array)){
       merged={}; var k;
@@ -4117,9 +4162,11 @@
         if(!j||!j.ok||!j.data){ _syncBadge(false); if(done)done(false); return; }
         _syncBadge(true);
         var changed=false, data=j.data;
-        for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue;
+        /* v30 まず削除印を取り込む（この後の配列マージで参照するため先に反映） */
+        if(data[TOMB_LS]!=null){ if(tombMergeServer(data[TOMB_LS]))changed=true; try{ _syncHash[TOMB_LS]=_hash(localStorage.getItem(TOMB_LS)||'{}'); }catch(e){} }
+        for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue; if(k===TOMB_LS)continue;
           var loc; try{ loc=localStorage.getItem(k); }catch(e){ loc=null; }
-          var m=_mergeVal(loc==null?'null':loc, data[k]);
+          var m=_mergeVal(loc==null?'null':loc, data[k], k);
           if(m.changed){ _lsSetRaw(k,m.str); _syncHash[k]=_hash(m.str); changed=true; }
           else { _syncHash[k]=_hash(loc==null?'null':loc); }
         }
@@ -4205,7 +4252,7 @@
   }
   function todoTap(id){
     var p=planById(id); if(!p)return;
-    p.done=!p.done; savePlans();
+    p.done=!p.done; p._m=Date.now(); savePlans();   /* v30 済み⇔戻すも家族に反映 */
     renderTodo(); renderCal(); renderDayList(); renderAiTip(); /* 提案も進み具合に追随 */
     toast(p.done?'✅ 済みにしました':'予定に戻しました');
   }
@@ -4327,14 +4374,14 @@
     if(t==null)return;
     t=t.replace(/^\s+|\s+$/g,'');
     if(!t){ toast('予定の名前を入れてください'); return; }
-    p.title=t; savePlans();
+    p.title=t; p._m=Date.now(); savePlans();   /* v30 更新時刻→同じidは新しい方が家族に反映 */
     renderTodo(); renderCal(); renderDayList(); renderAiTip();
     toast('✏️ 予定を直しました');
   }
   function planDel(id){
     var p=planById(id); if(!p)return;
     if(!confirm('本当に消しますか？\n'+p.date.replace(/-/g,'/')+' '+p.title)) return;
-    for(var i=0;i<plans.length;i++){ if(plans[i].id===id){ plans.splice(i,1); break; } }
+    tombAdd(PLAN_LS_KEY,p); for(var i=0;i<plans.length;i++){ if(plans[i].id===id){ plans.splice(i,1); break; } }
     savePlans();
     renderTodo(); renderCal(); renderDayList(); renderAiTip();
     toast('🗑 予定を消しました');
@@ -4360,7 +4407,7 @@
     var ti=document.getElementById('planTitleIn');
     var title=(ti&&ti.value||'').replace(/^\s+|\s+$/g,'');
     if(!title){ toast('予定の名前を入れてください（例：畦畔の草刈り）'); return; }
-    plans.push({id:'u'+Date.now(), date:calSel, title:title, field:planField, who:'', done:false});
+    plans.push({id:'u'+Date.now(), date:calSel, title:title, field:planField, who:'', done:false, _m:Date.now()});
     savePlans();
     var f=document.getElementById('planForm'); if(f)f.classList.remove('on');
     renderTodo(); renderCal(); renderDayList(); renderAiTip();
@@ -4829,7 +4876,7 @@
   function hasDel(i){ if(i>=0&&i<hasLog.length){
     var r=hasLog[i];
     if(!confirm('本当に消しますか？\n'+(r.f||'')+' '+(r.name||''))) return; /* v22⑥:1回確認 */
-    hasLog.splice(i,1);hasSave();dgHist();toast('🗑 記録を消しました'); if(typeof yhRender==='function')yhRender();} }
+    tombAdd(HAS_KEY,r); hasLog.splice(i,1);hasSave();dgHist();toast('🗑 記録を消しました'); if(typeof yhRender==='function')yhRender();} }
 
   /* ---- 🩺 カルテ式診断 ---- */
   var dgSel={}, dgField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'西 3';
@@ -4971,7 +5018,7 @@
   }
   function kyoStar(i){
     if(i<0||i>=ktLog.length)return;
-    ktLog[i].star=!ktLog[i].star; ktSave(); kyoRender();
+    tombAdd(KT_LS,ktLog[i]); ktLog[i].star=!ktLog[i].star; ktSave(); kyoRender();
     toast(ktLog[i].star?'⭐ 教科書に残しました（来年の同じ月に金色で出ます）':'⭐を外しました');
   }
   function kyoMove(d){ kyoDate=new Date(kyoDate.getFullYear(),kyoDate.getMonth()+d,1); kyoRender(); }
