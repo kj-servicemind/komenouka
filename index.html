@@ -908,7 +908,6 @@
     <div class="page on" id="p-home">
       <div class="homebody">
         <div class="alertbar" id="alertBar"><!-- v2.6:警報・注意報が発表中のときだけJSで表示 --></div>
-        <div class="wxloc" onclick="wxOpenJma()">📍 右上の天気は <b>福岡県大刀洗町（筑後地方・気温は久留米観測点）</b> の気象庁データです。<span class="go">タップで気象庁の元ページを開いて確かめられます ›</span></div>
         <div class="wxstale" id="wxStale"><!-- v2.6:オフライン復元時のみ「◯時点の予報」を表示 --></div>
         <div class="todo">
           <div class="th"><span>🗓️</span>今日のやること<span class="src">予定表から自動</span></div>
@@ -1271,14 +1270,9 @@
           <button id="fs1" onclick="setFs(1)">大きい</button>
           <button id="fs2" onclick="setFs(2)">特大</button>
         </div>
-        <div class="sethead">🔁 ホームの6ボタン(押すたびに入れ替わります・自動で保存)</div>
+        <div class="sethead">🔁 ホームのボタン(押すと1つ下と入れ替わり・並び順を決められます／タブに使う機能は自動で外れます)</div>
         <div class="setcard">
-          <div class="setrow" onclick="cycleSlot(0)">ボタン1<span class="sv" id="slotv0">作業を記録 ›</span></div>
-          <div class="setrow" onclick="cycleSlot(1)">ボタン2<span class="sv" id="slotv1">話して記録 ›</span></div>
-          <div class="setrow" onclick="cycleSlot(2)">ボタン3<span class="sv" id="slotv2">ドローン散布 ›</span></div>
-          <div class="setrow" onclick="cycleSlot(3)">ボタン4<span class="sv" id="slotv3">AI病害虫診断 ›</span></div>
-          <div class="setrow" onclick="cycleSlot(4)">ボタン5<span class="sv" id="slotv4">AI相談 ›</span></div>
-          <div class="setrow" onclick="cycleSlot(5)">ボタン6<span class="sv" id="slotv5">米づくり工程表 ›</span></div>
+          <div id="slotRows"></div>
           <div class="setrow" onclick="resetTiles()">最初の並びに戻す<span class="sv">リセット ›</span></div>
         </div>
         <div class="sethead">🔁 下のタブ(真ん中3つを入替・ホームとメニューは固定)</div>
@@ -1492,7 +1486,6 @@
         '<div class="app">行徳農園</div>'+
         '<div class="dateline"><span class="date" id="todayDate">7月14日(月)</span><span class="today">農業は"記憶"から"記録"へ</span></div>'+
       '</div>'+
-      '<button class="gearbtn" onclick="go(\'set\')" aria-label="設定">⚙️</button>'+
       '<div class="wx">'+
         '<div class="c"><span class="lb">今日</span><span class="ic">☀️</span><span class="tp">28℃</span><span class="pp">降水10%</span></div>'+
         '<div class="sep"></div>'+
@@ -3485,26 +3478,33 @@
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'}
   };
   var TILE_POOL=['rec','voice','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','set','koutei']; /* v24:map→ksasに置換(マップは田んぼ一覧に統合) */
-  var TILE_DEFAULT=['rec','voice','drone','diag','ai','koutei'];
-  var TILE_LS_KEY='gyotokuHomeTiles_v1';
-  function loadTiles(){
+  /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
+  var HOME_ORDER_DEFAULT=['rec','voice','drone','diag','ai','koutei','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','set'];
+  var TILE_LS_KEY='gyotokuHomeOrder_v1';
+  function loadHomeOrder(){
+    var base=HOME_ORDER_DEFAULT.slice();
     try{
       var raw=localStorage.getItem(TILE_LS_KEY);
-      if(!raw)return TILE_DEFAULT.slice();
-      var arr=JSON.parse(raw);
-      if(arr instanceof Array)for(var mg=0;mg<arr.length;mg++)if(arr[mg]==='map')arr[mg]='ksas'; /* v24移行 */
-      if(!(arr instanceof Array)||arr.length!==6)return TILE_DEFAULT.slice();
-      for(var i=0;i<6;i++){
-        if(TILE_POOL.indexOf(arr[i])<0)return TILE_DEFAULT.slice();
-        if(arr.indexOf(arr[i])!==i)return TILE_DEFAULT.slice(); /* 重複は不正 */
+      if(raw){
+        var arr=JSON.parse(raw);
+        if(arr instanceof Array){
+          var out=[];
+          for(var i=0;i<arr.length;i++){
+            var k=arr[i]; if(k==='map')k='ksas'; /* 旧データ移行 */
+            if(TILE_POOL.indexOf(k)>=0 && out.indexOf(k)<0) out.push(k);
+          }
+          base=out;
+        }
       }
-      return arr;
-    }catch(e){return TILE_DEFAULT.slice();}
+    }catch(e){}
+    /* 抜けている機能は末尾に補完(将来機能が増えても落ちない) */
+    for(var j=0;j<TILE_POOL.length;j++){ if(base.indexOf(TILE_POOL[j])<0) base.push(TILE_POOL[j]); }
+    return base;
   }
-  var homeTiles=loadTiles();
-  function saveTiles(){
-    try{localStorage.setItem(TILE_LS_KEY,JSON.stringify(homeTiles));}catch(e){}
-  }
+  var homeOrder=loadHomeOrder();
+  function saveHomeOrder(){ try{localStorage.setItem(TILE_LS_KEY,JSON.stringify(homeOrder));}catch(e){} }
+  /* タブに使われていない=ホームのボタンに出る機能(タブと重複させない) */
+  function buttonKeys(){ return homeOrder.filter(function(k){return midTabs.indexOf(k)<0;}); }
   function droneImgTag(){
     var src=document.getElementById('droneSrc');
     return '<img src="'+(src?src.getAttribute('src'):'')+'" alt="ドローン">';
@@ -3522,11 +3522,9 @@
       +(d.img?droneImgTag():d.ic)+'</span><span class="tx">'+d.tx+'</span></div>';
   }
   function renderHomeGrid(){
-    /* 1ページ目=ホームで選んだ6つ、2ページ目以降=残り全機能を6個ずつ。
+    /* ホームのボタン=タブに使っていない全機能を、決めた並び順で6個ずつ。
        機能が増えるほどページが自動で増える(6個ごとに新ページ+ページ点も自動)。 */
-    var order=[];
-    for(var a=0;a<homeTiles.length;a++)order.push(homeTiles[a]);
-    for(var b=0;b<TILE_POOL.length;b++){ if(order.indexOf(TILE_POOL[b])<0)order.push(TILE_POOL[b]); }
+    var order=buttonKeys();
     var pager=document.getElementById('homePager');
     if(pager){
       var html='';
@@ -3537,7 +3535,7 @@
       }
       pager.innerHTML=html;
     }
-    var pageCount=Math.ceil(order.length/6);
+    var pageCount=Math.max(1,Math.ceil(order.length/6));
     var dots=document.getElementById('homeDots');
     if(dots){
       var dh='';
@@ -3546,22 +3544,31 @@
     }
   }
   function renderSlotRows(){
-    for(var i=0;i<6;i++){
-      var el=document.getElementById('slotv'+i);
-      if(el)el.textContent=TILE_DEFS[homeTiles[i]].tx+' ›';
+    /* 設定に「ボタン1〜N」を全機能ぶん出す(Nはタブを除いた機能の数) */
+    var keys=buttonKeys();
+    var host=document.getElementById('slotRows');
+    if(!host)return;
+    var h='';
+    for(var i=0;i<keys.length;i++){
+      h+='<div class="setrow" onclick="cycleSlot('+i+')">ボタン'+(i+1)+'<span class="sv">'+TILE_DEFS[keys[i]].tx+' ›</span></div>';
     }
+    host.innerHTML=h;
   }
   function cycleSlot(i){
-    var cur=TILE_POOL.indexOf(homeTiles[i]);
-    for(var step=1;step<=TILE_POOL.length;step++){
-      var cand=TILE_POOL[(cur+step)%TILE_POOL.length];
-      if(homeTiles.indexOf(cand)<0){ homeTiles[i]=cand; break; }
-    }
-    saveTiles(); renderHomeGrid(); renderSlotRows();
-    toast('ボタン'+(i+1)+'を「'+TILE_DEFS[homeTiles[i]].tx+'」にしました');
+    /* 押すと1つ下と入れ替え(並び替え)。最後の行を押すと先頭へ回る。 */
+    var keys=buttonKeys();
+    if(keys.length<2)return;
+    var j=(i+1)%keys.length;
+    var a=homeOrder.indexOf(keys[i]), b=homeOrder.indexOf(keys[j]);
+    if(a<0||b<0)return;
+    var t=homeOrder[a]; homeOrder[a]=homeOrder[b]; homeOrder[b]=t;
+    saveHomeOrder(); renderHomeGrid(); renderSlotRows();
+    toast('「'+TILE_DEFS[keys[i]].tx+'」の位置を入れ替えました');
   }
   function resetTiles(){
-    homeTiles=TILE_DEFAULT.slice(); saveTiles(); renderHomeGrid(); renderSlotRows();
+    homeOrder=HOME_ORDER_DEFAULT.slice();
+    for(var j=0;j<TILE_POOL.length;j++){ if(homeOrder.indexOf(TILE_POOL[j])<0) homeOrder.push(TILE_POOL[j]); }
+    saveHomeOrder(); renderHomeGrid(); renderSlotRows();
     toast('ホームのボタンを最初の並びに戻しました');
   }
 
@@ -3626,10 +3633,12 @@
       if(midTabs.indexOf(cand)<0){ midTabs[i]=cand; break; }
     }
     saveTabs(); renderTabBar(); renderTabRows(); highlightTab(curScreen);
+    renderHomeGrid(); renderSlotRows(); /* タブに入れた機能はホームのボタンから外れる */
     toast('下の'+['左','真ん中','右'][i]+'のタブを「'+TILE_DEFS[midTabs[i]].tx+'」にしました');
   }
   function resetTabs(){
     midTabs=TAB_DEFAULT.slice(); saveTabs(); renderTabBar(); renderTabRows(); highlightTab(curScreen);
+    renderHomeGrid(); renderSlotRows();
     toast('下のタブを最初の並びに戻しました');
   }
 
