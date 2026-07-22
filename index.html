@@ -942,7 +942,37 @@
   #p-hist .hist-fld{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #d1d5db;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
   #p-hist .hist-fld.on{background:#166534;border-color:#166534;color:#fff;font-weight:700;}
   #p-hist .hist-fld.clr{color:#b91c1c;border-color:#f3c0c0;background:#fff;}
-  </style>
+    /* ===== v31: ヘッダーの田んぼ(稲の成長ストーリー) =====
+     行徳農園ロゴ と 天気 の間に小さな田んぼ。工程が進むと株が育ち・秋は金色。
+     絵はCSSのみ(画像通信ゼロ)。段階は inaCompute() の生育ステージ、無い時は月で判定。
+     再描画で消えないよう applyScene() で毎回塗り直す(天気の applyWeather と同じ作法)。 */
+  .hscene{flex:1;min-width:66px;height:60px;align-self:center;margin:0 10px;
+    border-radius:14px;overflow:hidden;position:relative;cursor:pointer;
+    border:1px solid var(--green-line);box-shadow:inset 0 1px 2px #fff;
+    background:linear-gradient(#DCEFF3 0%,#DCEFF3 50%,#CFE7D0 50%,#CFE7D0 66%,#8FB89B 66%,#8FB89B 79%,#7A5C3A 79%);}
+  .hscene .hs-sun{position:absolute;top:7px;right:10px;width:15px;height:15px;border-radius:50%;
+    background:radial-gradient(circle,#FFE08A,#F4C24A);box-shadow:0 0 9px #F6CF6A;}
+  .hscene .hs-plant{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:2.5px;}
+  .hscene .hs-bl{width:3.5px;border-radius:4px 4px 0 0;background:linear-gradient(#5FA96A,#2F7A3E);transform-origin:bottom;position:relative;}
+  .hscene .hs-ear{display:none;position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:11px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));}
+  .hscene .hs-chip{position:absolute;left:7px;bottom:6px;background:#FFFFFFE8;border:1px solid var(--green);
+    border-radius:8px;padding:2px 7px;font-size:10.5px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;line-height:1;}
+  /* 生育段階ごとの株の高さ */
+  .hscene.hs-nae .hs-bl{height:9px;} .hscene.hs-nae .hs-bl:nth-child(2){height:12px;} .hscene.hs-nae .hs-bl:nth-child(3){height:14px;} .hscene.hs-nae .hs-bl:nth-child(4){height:11px;}
+  .hscene.hs-bun .hs-bl{height:14px;} .hscene.hs-bun .hs-bl:nth-child(2){height:20px;} .hscene.hs-bun .hs-bl:nth-child(3){height:24px;} .hscene.hs-bun .hs-bl:nth-child(4){height:19px;} .hscene.hs-bun .hs-bl:nth-child(5){height:13px;}
+  .hscene.hs-sui .hs-bl{height:18px;} .hscene.hs-sui .hs-bl:nth-child(1){transform:rotate(-12deg);} .hscene.hs-sui .hs-bl:nth-child(2){height:26px;transform:rotate(-4deg);} .hscene.hs-sui .hs-bl:nth-child(3){height:30px;} .hscene.hs-sui .hs-bl:nth-child(4){height:25px;transform:rotate(5deg);} .hscene.hs-sui .hs-bl:nth-child(5){height:17px;transform:rotate(12deg);}
+  /* 出穂・登熟は中央の1本に穂 */
+  .hscene.hs-sui .hs-bl:nth-child(3) .hs-ear{display:block;}
+  /* 実りの秋:金色・穂だらけ・空も暖色 */
+  .hscene.hs-autumn{background:linear-gradient(#F3ECD6 0%,#F3ECD6 50%,#E7D9A8 50%,#E7D9A8 66%,#D8C066 66%,#D8C066 79%,#7A5C3A 79%);}
+  .hscene.hs-autumn .hs-bl{background:linear-gradient(#E4C860,#C79A2E);height:20px;}
+  .hscene.hs-autumn .hs-bl:nth-child(1){transform:rotate(-14deg);height:16px;} .hscene.hs-autumn .hs-bl:nth-child(2){transform:rotate(-6deg);height:22px;} .hscene.hs-autumn .hs-bl:nth-child(3){height:24px;} .hscene.hs-autumn .hs-bl:nth-child(4){transform:rotate(6deg);height:22px;} .hscene.hs-autumn .hs-bl:nth-child(5){transform:rotate(14deg);height:16px;}
+  .hscene.hs-autumn .hs-ear{display:block;}
+  /* 農閑期(冬):株なし・落ち着いた田 */
+  .hscene.hs-rest{background:linear-gradient(#E8ECEE 0%,#E8ECEE 52%,#D9DCD2 52%,#D9DCD2 68%,#B7A886 68%,#B7A886 80%,#7A5C3A 80%);}
+  .hscene.hs-rest .hs-plant{display:none;}
+  .hscene.hs-rest .hs-sun{background:radial-gradient(circle,#FBF1D6,#E8DCB4);box-shadow:none;}
+</style>
 </head>
 <body>
 
@@ -1558,6 +1588,15 @@
         '<div class="app">行徳農園</div>'+
         '<div class="dateline"><span class="date" id="todayDate">7月14日(月)</span><span class="today">農業は"記憶"から"記録"へ</span></div>'+
       '</div>'+
+      '<div class="hscene hs-sui" id="homeScene" onclick="go(\'koutei\')" title="米づくり工程表へ">'+
+        '<span class="hs-sun"></span>'+
+        '<span class="hs-plant">'+
+          '<i class="hs-bl"></i><i class="hs-bl"></i>'+
+          '<i class="hs-bl"><span class="hs-ear">🌾</span></i>'+
+          '<i class="hs-bl"></i><i class="hs-bl"></i>'+
+        '</span>'+
+        '<span class="hs-chip" id="homeSceneChip">出穂</span>'+
+      '</div>'+
       '<div class="wx">'+
         '<div class="c"><span class="lb">今日</span><span class="ic">☀️</span><span class="tp">28℃</span><span class="pp">降水10%</span></div>'+
         '<div class="sep"></div>'+
@@ -1611,6 +1650,7 @@
     renderHeader(n);
     if(typeof applyDates==='function')applyDates();
     if(n==='home'&&typeof applyWeather==='function')applyWeather();
+    if(n==='home'&&typeof applyScene==='function')applyScene();
     if(n==='koutei'&&typeof ktEnter==='function')ktEnter();
     if(n==='fields'&&typeof fieldsEnter==='function')fieldsEnter();
     if(n==='hiryo'&&typeof hyEnter==='function')hyEnter();
@@ -3753,6 +3793,7 @@
   }
   renderHeader('home');   /* 起動時:ホームの固定ヘッダーを表示 */
   applyDates();
+  if(typeof applyScene==='function')applyScene();  /* v31:田んぼの絵を初期描画 */
 
   /* ===== v2.4 ホーム6ボタン(設定で入替・localStorageに保存) ===== */
   var TILE_DEFS={
@@ -4683,6 +4724,48 @@
       var o=JSON.parse(s); o.stale=true; return o;
     }catch(e){ return null; }
   }
+  /* v31:ヘッダーの田んぼを今の生育に合わせて塗り直す。
+     まず工程表の生育計算(inaCompute)を使い、品種/移植日が未設定なら月で判定。
+     再描画のたびに go('home') から呼ばれる(applyWeatherと同じ復元作法)。 */
+  function sceneStageFromIdx(curIdx){
+    /* INA_STAGES: 0育苗 1田植え 2活着分げつ 3分げつ盛期中干し 4幼穂形成 5出穂 6登熟 7収穫乾燥 */
+    switch(curIdx){
+      case 0: return {cls:'hs-nae', chip:'育苗'};
+      case 1: return {cls:'hs-nae', chip:'田植え'};
+      case 2: return {cls:'hs-bun', chip:'分げつ'};
+      case 3: return {cls:'hs-bun', chip:'中干し'};
+      case 4: return {cls:'hs-bun', chip:'幼穂'};
+      case 5: return {cls:'hs-sui', chip:'出穂'};
+      case 6: return {cls:'hs-sui', chip:'登熟'};
+      case 7: return {cls:'hs-autumn', chip:'稲刈り'};
+      default:return {cls:'hs-sui', chip:'生育中'};
+    }
+  }
+  function sceneStageFromMonth(){
+    var d=new Date(), m=d.getMonth()+1, day=d.getDate();
+    if(m===4||m===5) return {cls:'hs-nae', chip:(m===4?'育苗':'田植え')};
+    if(m===6)        return {cls:'hs-bun', chip:'分げつ'};
+    if(m===7)        return (day<15)?{cls:'hs-bun',chip:'幼穂'}:{cls:'hs-sui',chip:'出穂'};
+    if(m===8||m===9) return {cls:'hs-sui', chip:'登熟'};
+    if(m===10)       return {cls:'hs-autumn', chip:'稲刈り'};
+    return {cls:'hs-rest', chip:'冬の田'}; /* 11〜3月 */
+  }
+  function applyScene(){
+    var el=document.getElementById('homeScene'); if(!el)return;
+    var st=null;
+    try{
+      if(typeof inaState!=='undefined' && !inaState && typeof inaLoad==='function') inaLoad();
+      if(typeof inaState!=='undefined' && inaState && inaState.variety && inaState.transplant
+         && typeof inaCompute==='function'){
+        var r=inaCompute();
+        if(r && typeof r.curIdx==='number') st=sceneStageFromIdx(r.curIdx);
+      }
+    }catch(e){ st=null; }
+    if(!st) st=sceneStageFromMonth();
+    el.className='hscene '+st.cls;
+    var chip=document.getElementById('homeSceneChip'); if(chip)chip.textContent=st.chip;
+  }
+
   function applyWeather(){
     if(!WX_CACHE)WX_CACHE=loadWxFromStore();
     if(!WX_CACHE)return; /* 保存も無ければ見本値のまま */
