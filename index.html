@@ -746,8 +746,8 @@
   .fl-nae.none{background:#F0EEE6;color:#9A9484;font-weight:700;}
   .fl-gh .fl-nae + .gs{margin-left:8px;}
   /* 田んぼ1枚ずつの行に出す苗バッジ（本人指摘①） */
-  .fl-rnae{margin-left:auto;flex-shrink:0;font-size:13px;font-weight:800;color:var(--green-deep);
-    background:#EAF1EA;border-radius:999px;padding:4px 9px;white-space:nowrap;}
+  .fl-rnae{flex-shrink:0;font-size:12.5px;font-weight:800;color:var(--green-deep);
+    background:#EAF1EA;border-radius:999px;padding:3px 8px;white-space:nowrap;margin-left:6px;}
   .fl-rnae.ed{color:#B55A00;background:#FBF0E0;}
   /* 手直しできる枚数（破線の下線＝押せる印） */
   .nae-fl .mai.tap{border-bottom:1.5px dashed #A9C4AF;padding-bottom:1px;cursor:pointer;}
@@ -2690,9 +2690,10 @@
       for(j=0;j<g[b].length;j++)sb+=naeArea(g[b][j]);
       return sb-sa;
     });
-    /* 開閉の状態：初回だけ先頭の地区を開く。以後はユーザーの開閉をそのまま覚える */
+    /* 開閉の状態：★最初はどの地区も閉じておく（本人指摘・v36.2）。
+       88枚あるので、開いた状態で始まると下の地区が見えにくいため */
     var ac=naeAcS();
-    if(!ac.init){ ac.init=true; if(ks.length)ac.open[ks[0]]=true; }
+    if(!ac.init){ ac.init=true; }
     for(i=0;i<ks.length;i++){
       var arr=g[ks[i]].slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
       var sum=0, j2, hasSheet=false;
@@ -2701,7 +2702,7 @@
       var opn=!!ac.open[ks[i]]||hasSheet;
       h+='<div class="nae-ac'+(opn?' open':'')+'">'
         +'<div class="nae-ach" onclick="naeAcTg(\''+ks[i].replace(/'/g,"\\'")+'\')">'
-        +'<div class="an">'+ks[i]+'<span class="nae-chip">'+arr.length+'枚</span></div>'
+        +'<div class="an">'+ks[i]+'<span class="nae-chip">稲'+arr.length+'枚</span></div>'
         +'<div class="am">'+naeComma(sum)+'<span>枚</span></div></div>'
         +'<div class="nae-acb">';
       for(j2=0;j2<arr.length;j2++){
@@ -2753,7 +2754,7 @@
       h+='<div class="nae-warn">⚠️ <b>'+ex.length+'枚の田んぼは計算に入っていません</b><br>'
         +'2026年の作付が「未定」や「大豆」のところです。未定を稲に決めると、必要な枚数はもっと増えます。</div>';
     }
-    h+='<div class="ina-seclbl">田んぼごとの枚数（枚数を押すと手直しできます）</div>';
+    h+='<div class="ina-seclbl">田んぼごとの枚数（行を押すと手直しできます）</div>';
     h+='<div class="nae-tabs">'
       +'<div class="nae-tb'+(s.view==='area'?' on':'')+'" onclick="naeSetView(\'area\')">📍 地区べつ</div>'
       +'<div class="nae-tb'+(s.view==='all'?' on':'')+'" onclick="naeSetView(\'all\')">📋 ぜんぶ</div>'
@@ -3445,7 +3446,9 @@
     var body=document.getElementById('fieldsBody'); if(!body)return;
     var totalA=0; for(var i=0;i<KT_FIELDS.length;i++)totalA+=parseFloat(KT_FIELDS[i].a)||0;
     var crops={}; for(var c=0;c<KT_FIELDS.length;c++){ var ck=KT_FIELDS[c].crop||'未定'; crops[ck]=1; }
-    var nCrop=0; for(var k in crops)nCrop++;
+    /* v36.2バグ修正：「未定」「大豆」を米の品種として数えていたため「7品種」と出ていた。
+       実際の米の品種は5種類（にじのきらめき・夢つくし・つやおとめ・ひのひかり・にこまる） */
+    var nCrop=0; for(var k in crops){ if(NAE_EXC.indexOf(k)<0)nCrop++; }
     var h='<div class="fl-sum">'
       +'<div><div class="v">'+KT_FIELDS.length+'<small>枚</small></div><div class="k">登録圃場</div></div>'
       +'<div><div class="v">'+(totalA/100).toFixed(1)+'<small>ha</small></div><div class="k">合計面積</div></div>'
@@ -3484,11 +3487,11 @@
     }
     return '<div class="fld-wrap" id="fw'+i+'">'
       +'<div class="rowcard" onclick="fieldToggle('+i+')" style="border:0;border-radius:0;border-bottom:1px solid #F0EDE0;margin:0;box-shadow:none;">'
-      +'<div style="display:flex;align-items:center;gap:9px;"><span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
-      +'<div><div class="nm">'+f.n+(f.care?' <span style="font-size:10px;background:var(--red-soft);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:800;">注意</span>':'')+(f.memo?' <span style="font-size:10px;background:#F5EEDC;color:#B8912E;border-radius:5px;padding:1px 5px;font-weight:800;">メモ</span>':'')+'</div>'
+      +'<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;"><span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
+      +'<div style="min-width:0;"><div class="nm">'+f.n+(f.care?' <span style="font-size:10px;background:var(--red-soft);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:800;">注意</span>':'')+(f.memo?' <span style="font-size:10px;background:#F5EEDC;color:#B8912E;border-radius:5px;padding:1px 5px;font-weight:800;">メモ</span>':'')+'</div>'
       +'<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
       +nae
-      +'<span style="'+(nae?'margin-left:8px;':'margin-left:auto;')+'font-weight:800;color:#6B6552;font-size:14.5px;flex-shrink:0;">'+f.a+'</span></div>'
+      +'<span style="margin-left:8px;font-weight:800;color:#6B6552;font-size:14.5px;flex-shrink:0;">'+f.a+'</span></div>'
       +flDetailHtml(i)+'</div>';
   }
   function flListDraw(){
