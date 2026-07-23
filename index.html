@@ -725,6 +725,53 @@
   .nae-fl .mai span{font-size:12px;font-weight:700;margin-left:1px;}
   .nae-chip{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:#EAF1EA;color:var(--green-deep);margin-left:6px;vertical-align:middle;}
   .nae-mini{font-size:13px;color:#7C7767;line-height:1.85;margin-top:9px;}
+
+  /* ===== v36 苗箱：田んぼ一覧の入口ボタン／地区バッジ／手直し ===== */
+  /* 入口ボタン（田んぼ一覧の一番上。KSAS圃場マップのボタンがあった場所） */
+  .nae-entry{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2F5D3A,#27502F);
+    border-radius:14px;padding:14px;margin-bottom:12px;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(47,93,58,.28);}
+  .nae-entry .ic{font-size:26px;flex-shrink:0;}
+  .nae-entry .tx{flex:1;min-width:0;}
+  .nae-entry .tx .l1{font-size:16.5px;font-weight:800;display:block;}
+  .nae-entry .tx .l2{font-size:11.5px;font-weight:700;margin-top:4px;display:flex;align-items:center;gap:2px;
+    white-space:nowrap;letter-spacing:-.2px;}
+  .nae-entry .tx .l2 .fg{font-size:19px;font-style:normal;line-height:1;flex-shrink:0;} /* 指の絵文字だけ大きく */
+  .nae-entry .tx .l3{font-size:10.5px;opacity:.82;margin-top:3px;display:block;white-space:nowrap;letter-spacing:-.3px;}
+  .nae-entry .num{font-size:22px;font-weight:800;flex-shrink:0;}
+  .nae-entry .num span{font-size:12px;font-weight:700;}
+  /* 地区行の苗バッジ（地区名と「◯枚・◯a」の間） */
+  .fl-gh .fl-gdots{flex-shrink:1;overflow:hidden;}
+  .fl-nae{flex-shrink:0;margin-left:auto;font-size:12px;font-weight:800;color:var(--green-deep);
+    background:#EAF1EA;border-radius:999px;padding:3px 8px;white-space:nowrap;}
+  .fl-nae.none{background:#F0EEE6;color:#9A9484;font-weight:700;}
+  .fl-gh .fl-nae + .gs{margin-left:8px;}
+  /* 手直しできる枚数（破線の下線＝押せる印） */
+  .nae-fl .mai.tap{border-bottom:1.5px dashed #A9C4AF;padding-bottom:1px;cursor:pointer;}
+  .nae-fl.edited .mai{color:#B55A00;border-bottom-color:#DCA35E;}
+  .nae-fl .pen{font-size:11px;font-weight:800;color:#B55A00;flex-shrink:0;}
+  /* 手直しのシート（−／＋の大きいボタン。キーボードは出さない） */
+  .nae-sheet{background:#fff;border:2px solid var(--green);border-radius:15px;padding:14px;margin:10px 0;
+    box-shadow:0 6px 20px rgba(0,0,0,.15);}
+  .nae-sheet .ti{font-size:15px;font-weight:800;text-align:center;color:#33403A;}
+  .nae-sheet .row{display:flex;align-items:center;justify-content:center;gap:14px;margin:12px 0;}
+  .nae-sheet .pm{width:56px;height:56px;border-radius:14px;border:2px solid var(--green);background:#EAF1EA;
+    color:#213F29;font-size:30px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;}
+  .nae-sheet .val{font-size:38px;font-weight:800;min-width:110px;text-align:center;border:2px solid var(--line);
+    border-radius:12px;padding:4px 8px;color:#33403A;}
+  .nae-sheet .val span{font-size:16px;font-weight:700;}
+  .nae-sheet .auto{text-align:center;font-size:12.5px;color:#7C7767;line-height:1.7;}
+  .nae-sheet .acts{display:flex;gap:8px;margin-top:12px;}
+  .nae-sheet .b1{flex:1;padding:13px 0;text-align:center;border-radius:11px;font-size:15px;font-weight:800;
+    background:var(--green);color:#fff;cursor:pointer;}
+  .nae-sheet .b2{flex:1;padding:13px 0;text-align:center;border-radius:11px;font-size:14px;font-weight:700;
+    background:#F6F4EC;color:#6B6656;border:1.5px solid var(--line);cursor:pointer;}
+  /* この数字の根拠 */
+  .nae-trust{background:#EEF3EE;border:1.5px solid #CBDACB;border-radius:12px;padding:12px 13px;
+    font-size:12.5px;line-height:1.85;color:#3D5244;margin-bottom:12px;}
+  .nae-trust b{color:#213F29;}
+  .nae-big .fix{background:rgba(232,201,122,.2);border:1px solid rgba(232,201,122,.6);border-radius:8px;
+    font-size:12.5px;padding:7px 9px;margin-top:9px;color:#F3E3B5;}
+
   .kt-growbadge{display:inline-block;font-size:11.5px;font-weight:800;color:#fff;background:#5B8A9E;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:1px;}
 
   /* ===== v21：あい作＋レイミー統合 ===== */
@@ -1020,7 +1067,13 @@
     <!-- ===== ② 田んぼ一覧 ===== -->
     <div class="page" id="p-fields">
       <div class="sc">
-        <div class="ksasbtn" onclick="openKsas('航空写真マップを表示します(無料)')">🗺️ 圃場マップで見る（KSASの航空写真）</div>
+        <!-- v36:ここにあったKSAS航空写真へのボタンは苗箱ボタンに交代した。
+             KSAS航空写真の機能自体は消していない（メニュー→圃場マップから今までどおり開ける） -->
+        <div class="nae-entry" onclick="naeOpenFromFields()">
+          <span class="ic">🌱</span>
+          <span class="tx"><span class="l1">苗箱は何枚いる？</span><span class="l2"><i class="fg">☝️</i>ここを押すと枚数を変えられます</span><span class="l3">広さから自動計算・手直しもできます</span></span>
+          <span class="num" id="naeEntryNum">--<span>枚</span></span>
+        </div>
         <div id="fieldsBody"><!-- 田んぼ88枚(JS) --></div>
         <div class="spacer"></div>
       </div>
@@ -2487,32 +2540,121 @@
   }
   /* 1aあたりの枚数(予備こみ) */
   function naePer(){ var s=naeState(); return naeBase()[s.kabu]*(1+s.yobi/100); }
+
+  /* ---- v36 手直し(手で直した枚数)の保存と家族共有 ----
+     中身： [{id:'nae:<田んぼ名>', f:'<田んぼ名>', v:枚数 または null, _m:直した時刻ms}]
+     ・id を「田んぼ名」で固定しているので、家族の誰が直しても1つの田んぼにつき1件にまとまり、
+       既存の同期マージ(_mergeVal)が「_m の新しい方の勝ち」で自動的に決着させてくれる。
+     ・「自動にもどす」は v:null の記録を残す方式にした。
+       ★v30の削除印(tombstone)は使わない。tombstone は「二度と復活しない印」なので、
+         同じ田んぼをもう一度手直しできなくなってしまうため（id を名前で固定しているせい）。
+     ・window に持たせているので、起動順に左右されない（v33の事故の教訓） */
+  function naeOvKey(){ return 'gyotoku.naeov.v1'; }
+  function naeOvArr(){
+    if(!window._naeOv){
+      var a=null; try{ a=JSON.parse(localStorage.getItem(naeOvKey())||'[]'); }catch(e){ a=null; }
+      window._naeOv=(a instanceof Array)?a:[];
+    }
+    return window._naeOv;
+  }
+  function naeOvSave(){
+    try{ localStorage.setItem(naeOvKey(), JSON.stringify(naeOvArr())); }catch(e){}
+    window._naeOvMap=null;   /* 早見表を作り直させる */
+  }
+  /* 田んぼ名 → 手直しした枚数（自動にもどした分は入らない） */
+  function naeOvMap(){
+    if(!window._naeOvMap){
+      var a=naeOvArr(), m={}, t={}, i, it, k;
+      for(i=0;i<a.length;i++){ it=a[i]; if(!it||!it.f)continue;
+        if(t[it.f]!=null && t[it.f]>(it._m||0))continue;   /* 古い方は捨てる */
+        t[it.f]=(it._m||0); m[it.f]=it.v;
+      }
+      for(k in m){ if(m.hasOwnProperty(k)&&m[k]==null)delete m[k]; }
+      window._naeOvMap=m;
+    }
+    return window._naeOvMap;
+  }
+  function naeOvPut(name, val){
+    if(!name)return;
+    var a=naeOvArr(), i, hit=-1;
+    for(i=0;i<a.length;i++){ if(a[i]&&a[i].f===name){ hit=i; break; } }
+    var it={id:'nae:'+name, f:name, v:val, _m:Date.now()};
+    if(hit>=0)a[hit]=it; else a.push(it);
+    naeOvSave();
+  }
   /* 1枚の田んぼに要る苗箱(切り上げ。半端な箱は数えられないため) */
-  function naeMai(fd){ return Math.ceil(naeArea(fd)*naePer()); }
+  function naeMaiAuto(fd){ return Math.ceil(naeArea(fd)*naePer()); }
+  function naeMai(fd){ var o=naeOvMap()[fd.n]; return (o!=null)?o:naeMaiAuto(fd); }
+  function naeEdited(fd){ return naeOvMap()[fd.n]!=null; }
   function naeMaiBare(fd){ return Math.ceil(naeArea(fd)*naeBase()[naeState().kabu]); }
   function naeComma(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
   /* 合計 */
   function naeTotal(){
-    var r=naeRice(), sum=0, bare=0, ar=0;
-    for(var i=0;i<r.length;i++){ sum+=naeMai(r[i]); bare+=naeMaiBare(r[i]); ar+=naeArea(r[i]); }
-    return {n:r.length, sum:sum, bare:bare, area:ar};
+    var r=naeRice(), sum=0, bare=0, ar=0, fx=0;
+    for(var i=0;i<r.length;i++){ sum+=naeMai(r[i]); bare+=naeMaiBare(r[i]); ar+=naeArea(r[i]); if(naeEdited(r[i]))fx++; }
+    return {n:r.length, sum:sum, bare:bare, area:ar, fx:fx};
+  }
+  /* 田んぼ一覧の地区バッジ用：KT_FIELDS の番号の配列から苗箱の合計を出す */
+  function naeSumOf(idxs){
+    var s=0, n=0, ed=false, i, f;
+    for(i=0;i<idxs.length;i++){ f=KT_FIELDS[idxs[i]]; if(!f)continue;
+      if(NAE_EXC.indexOf(f.crop)>=0 || naeArea(f)<=0)continue;
+      s+=naeMai(f); n++; if(naeEdited(f))ed=true;
+    }
+    return {sum:s, n:n, edited:ed};
+  }
+  /* ---- 手直しのシート（−／＋。キーボードは出さない＝打ち間違い防止） ---- */
+  function naeEdit(i){
+    var f=KT_FIELDS[i]; if(!f)return;
+    window._naeEdit=(window._naeEdit===f.n)?null:f.n;
+    naeRender();
+  }
+  function naePM(i,d){
+    var f=KT_FIELDS[i]; if(!f)return;
+    var v=Math.max(1, naeMai(f)+d);
+    /* 自動計算と同じ数に戻ったら手直しの印は消す（意味のない✏️を残さない） */
+    naeOvPut(f.n, (v===naeMaiAuto(f))?null:v);
+    naeRender();
+  }
+  function naeFixDone(){ window._naeEdit=null; naeRender(); toast('✅ この枚数にしました（家族の端末にも共有されます）'); }
+  function naeUnfix(i){
+    var f=KT_FIELDS[i]; if(!f)return;
+    naeOvPut(f.n, null); window._naeEdit=null; naeRender(); toast('自動計算にもどしました');
   }
   /* 株数・予備の切替 */
   function naeSetKabu(k){ naeState().kabu=k; naeRender(); }
   function naeSetYobi(y){ naeState().yobi=y; naeRender(); }
   function naeSetView(v){ naeState().view=v; naeRender(); }
   function naeToggleAc(el){ if(el&&el.parentNode) el.parentNode.classList.toggle('open'); }
+  /* 手直しのシート（枚数を押した田んぼの下に出る） */
+  function naeSheetHtml(fd){
+    var i=KT_FIELDS.indexOf(fd);
+    return '<div class="nae-sheet"><div class="ti">'+fd.n+' の苗箱</div>'
+      +'<div class="row"><div class="pm" onclick="naePM('+i+',-1)">−</div>'
+      +'<div class="val">'+naeMai(fd)+'<span>枚</span></div>'
+      +'<div class="pm" onclick="naePM('+i+',1)">＋</div></div>'
+      +'<div class="auto">自動計算だと '+naeMaiAuto(fd)+'枚（'+naeArea(fd).toFixed(2)+'a）</div>'
+      +'<div class="acts"><div class="b2" onclick="naeUnfix('+i+')">自動にもどす</div>'
+      +'<div class="b1" onclick="naeFixDone()">この枚数にする</div></div></div>';
+  }
+  /* 田んぼ1行（枚数は押せる＝破線の下線つき） */
+  function naeRowHtml(fd, sub){
+    var i=KT_FIELDS.indexOf(fd), ed=naeEdited(fd);
+    var h='<div class="nae-fl'+(ed?' edited':'')+'">'
+      +'<div class="nm">'+fd.n+'<small>'+(sub||'')+'</small></div>'
+      +(ed?'<span class="pen">✏️手直し</span>':'')
+      +'<div class="ar">'+naeArea(fd).toFixed(2)+'a</div>'
+      +'<div class="mai tap" onclick="naeEdit('+i+')">'+naeMai(fd)+'<span>枚</span></div></div>';
+    if(window._naeEdit===fd.n)h+=naeSheetHtml(fd);
+    return h;
+  }
   /* 一覧のHTML */
   function naeListHtml(){
     var s=naeState(), r=naeRice(), h='', i;
     if(s.view==='all'){
       var sorted=r.slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
       h+='<div class="nae-card">';
-      for(i=0;i<sorted.length;i++){
-        h+='<div class="nae-fl"><div class="nm">'+sorted[i].n+'<small>'+(sorted[i].crop||'')+'</small></div>'
-          +'<div class="ar">'+naeArea(sorted[i]).toFixed(2)+'a</div>'
-          +'<div class="mai">'+naeMai(sorted[i])+'<span>枚</span></div></div>';
-      }
+      for(i=0;i<sorted.length;i++)h+=naeRowHtml(sorted[i], sorted[i].crop||'');
       h+='</div>';
       return h;
     }
@@ -2538,9 +2680,7 @@
         +'<div class="am">'+naeComma(sum)+'<span>枚</span></div></div>'
         +'<div class="nae-acb">';
       for(j2=0;j2<arr.length;j2++){
-        h+='<div class="nae-fl"><div class="nm">'+arr[j2].n+'<small>'+((s.view==='crop')?(arr[j2].area||''):(arr[j2].crop||''))+'</small></div>'
-          +'<div class="ar">'+naeArea(arr[j2]).toFixed(2)+'a</div>'
-          +'<div class="mai">'+naeMai(arr[j2])+'<span>枚</span></div></div>';
+        h+=naeRowHtml(arr[j2], (s.view==='crop')?(arr[j2].area||''):(arr[j2].crop||''));
       }
       h+='</div></div>';
     }
@@ -2568,14 +2708,22 @@
     h+='<div class="nae-big"><div class="cap">今年つくる田んぼ ぜんぶで</div>'
       +'<div class="num">'+naeComma(t.sum)+'<span>枚</span></div>'
       +'<div class="sub">稲をつくる '+t.n+'枚ぶん／'+t.area.toFixed(2)+'a<br>'
-      +(s.yobi===0?'予備なしで計算しています':'予備なしだと '+naeComma(t.bare)+'枚（＋'+naeComma(t.sum-t.bare)+'枚が予備）')
-      +'</div></div>';
+      +(s.yobi===0?'予備なしで計算しています':'予備なしだと '+naeComma(t.bare)+'枚'+((t.sum>t.bare)?'（＋'+naeComma(t.sum-t.bare)+'枚が予備）':''))
+      +'</div>'
+      +(t.fx?'<div class="fix">✏️ '+t.fx+'枚の田んぼを手直し済み（合計に反映しています）</div>':'')
+      +'</div>';
+    /* この数字の根拠（v36：外の数字を使うときは出典を画面に出す） */
+    h+='<div class="nae-trust"><b>🔬 この数字の根拠</b><br>'
+      +'①行徳農園の実績（西3・西4・中村(2)・田中7・山隈）＝<b>60株で1aあたり約2.15枚</b><br>'
+      +'②クボタ公式の目安（株数×田植機のかき取り設定で計算）とも一致<br>'
+      +'③一般の目安「10aで15〜20枚（稚苗）〜26枚（中苗）」の範囲内<br>'
+      +'それでも田んぼごとに差は出るので、<b>枚数を押せばその場で手直し</b>できます。</div>';
     /* 計算に入っていない田んぼ */
     if(ex.length){
       h+='<div class="nae-warn">⚠️ <b>'+ex.length+'枚の田んぼは計算に入っていません</b><br>'
         +'2026年の作付が「未定」や「大豆」のところです。未定を稲に決めると、必要な枚数はもっと増えます。</div>';
     }
-    h+='<div class="ina-seclbl">田んぼごとの枚数</div>';
+    h+='<div class="ina-seclbl">田んぼごとの枚数（枚数を押すと手直しできます）</div>';
     h+='<div class="nae-tabs">'
       +'<div class="nae-tb'+(s.view==='area'?' on':'')+'" onclick="naeSetView(\'area\')">📍 地区べつ</div>'
       +'<div class="nae-tb'+(s.view==='all'?' on':'')+'" onclick="naeSetView(\'all\')">📋 ぜんぶ</div>'
@@ -2585,8 +2733,12 @@
     h+='<div class="kt-ksasbtn" onclick="naeCopy()">📋 この一覧をコピーする<small>苗の注文や連絡にそのまま貼れます</small></div>';
     h+='<div class="nae-mini">・面積は田んぼ一覧に登録されている数字をそのまま使っています<br>'
       +'・株数を変えると枚数も変わります（株が多い＝苗も多い）<br>'
-      +'・小数点は切り上げ。半端な箱は数えられないためです</div>';
-    h+='<div class="ina-link" onclick="naeBack()" style="margin-top:14px;">‹ 田植えの工程へ戻る</div>';
+      +'・小数点は切り上げ。半端な箱は数えられないためです<br>'
+      +'・<b style="color:#B55A00;">オレンジ色＝手直しした枚数（✏️印）</b>。押して「自動にもどす」で戻せます<br>'
+      +'・手直しした枚数は家族全員の端末に共有されます（記録とおなじ仕組み）<br>'
+      +'・手直しした田んぼは、株数や予備を変えてもその枚数のままです</div>';
+    h+='<div class="ina-link" onclick="naeBack()" style="margin-top:14px;">‹ '
+      +((window._naeFrom==='fields')?'田んぼ一覧へ戻る':'田植えの工程へ戻る')+'</div>';
     el.innerHTML=h;
     ktShowOnly('ktViewNae');
   }
@@ -2612,8 +2764,22 @@
     else ng();
   }
   /* 入口・戻り */
-  function naeOpen(){ naeRender(); }
-  function naeBack(){ if(typeof ktCurStep==='number'&&KT_SMAP&&KT_SMAP.taue!=null) ktOpenStep(KT_SMAP.taue); else ktBackToBoard(); }
+  /* 入口①：工程表 →「③田植え」の緑の帯（v35から継続。同じ画面へ飛ぶだけなので残す） */
+  function naeOpen(){ window._naeFrom='kt'; window._naeEdit=null; naeRender(); }
+  /* 入口②：田んぼ一覧のいちばん上のボタン（v36で新設） */
+  function naeOpenFromFields(){
+    window._naeFrom='fields'; window._naeEdit=null;
+    go('koutei');                                   /* 計算画面は工程表ページの中にある */
+    var hd=document.getElementById('hdr');
+    if(hd)hd.innerHTML=navHdr('fields','田んぼ一覧','🌱 苗箱の枚数');   /* 来た道に合わせて見出しを差し替え */
+    naeRender();
+  }
+  /* 戻り：来た入口へ1つずつ戻す */
+  function naeBack(){
+    window._naeEdit=null;
+    if(window._naeFrom==='fields'){ go('fields'); return; }
+    if(typeof ktCurStep==='number'&&KT_SMAP&&KT_SMAP.taue!=null) ktOpenStep(KT_SMAP.taue); else ktBackToBoard();
+  }
 
   /* ---- ビュー切替・入口・スワイプ戻り ---- */
   function ktShowOnly(id){
@@ -3253,6 +3419,9 @@
       +'<div class="fl-chips" id="flChips"></div>'
       +'<div id="flList"></div>';
     body.innerHTML=h;
+    /* v36:いちばん上の苗箱ボタンに合計枚数を出す（手直しの分も反映） */
+    var ne=document.getElementById('naeEntryNum');
+    if(ne&&typeof naeTotal==='function')ne.innerHTML=naeComma(naeTotal().sum)+'<span>枚</span>';
     flShellModes(); flListDraw();
   }
   function flChipsDraw(){
@@ -3298,8 +3467,15 @@
         for(var j=0;j<arr.length;j++){ sumA+=parseFloat(KT_FIELDS[arr[j]].a)||0; dots[KT_FIELDS[arr[j]].crop||'']=1; }
         for(var dk in dots){ if(dn<4){dh+='<div class="d" style="background:'+cropColor(dk||null)+'"></div>';dn++;} }
         var op=autoOpen||flOpenG[k2];
+        /* v36:地区べつのときだけ、その地区に要る苗箱の枚数をバッジで出す */
+        var nb='';
+        if(flMode==='area'&&typeof naeSumOf==='function'){
+          var ns=naeSumOf(arr);
+          nb = ns.n ? '<span class="fl-nae">🌱苗 '+naeComma(ns.sum)+'枚'+(ns.edited?' ✏️':'')+'</span>'
+                    : '<span class="fl-nae none">苗 —</span>';   /* 未定・大豆だけの地区 */
+        }
         h+='<div class="fl-grp'+(op?' open':'')+'"><div class="fl-gh" onclick="flGrpToggle(\''+k2+'\')">'
-          +'<span class="gn">'+(flMode==='area'?'📍 ':'')+k2+'</span><div class="fl-gdots">'+dh+'</div>'
+          +'<span class="gn">'+(flMode==='area'?'📍 ':'')+k2+'</span><div class="fl-gdots">'+dh+'</div>'+nb
           +'<span class="gs">'+arr.length+'枚・'+sumA.toFixed(0)+'a</span><span class="gar">›</span></div>'
           +'<div class="fl-glist">';
         for(var r=0;r<arr.length;r++)h+=flRowHtml(arr[r]);
@@ -4313,7 +4489,7 @@
      ・安全第一：この端末のデータは絶対に消さない(union)。取り込みは足すだけ。
      ・オフラインでも普通に使える。つながった時だけ自動で同期する。 */
   var TOMB_LS='gyotoku.tomb.v1';   /* v30 削除印(tombstone)の台帳。中身は印だけで記録本体は入れない */
-  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1',TOMB_LS];
+  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1',TOMB_LS];
   var SYNC_SET={}; (function(){ for(var i=0;i<SYNC_KEYS.length;i++)SYNC_SET[SYNC_KEYS[i]]=1; })();
   var _syncHash={};      /* key -> 直近に送った内容のハッシュ(無駄な送信を防ぐ) */
   var _syncBusy=false;
