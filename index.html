@@ -525,6 +525,57 @@
     font-size:18px;font-weight:800;color:#fff;flex-shrink:0;}
   .memcard .nm{font-size:17px;font-weight:800;} .memcard .role{font-size:12px;font-weight:700;color:#6B6656;}
   .memcard .rr{margin-left:auto;font-size:13px;font-weight:800;color:var(--green-deep);}
+  /* ===== v37 家族の名簿（編集できるようにした） ===== */
+  .memcard .ed{margin-left:auto;font-size:14px;font-weight:800;color:var(--green-deep);flex-shrink:0;white-space:nowrap;}
+  .memcard .info{flex:1;min-width:0;}
+  .memcard .info .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .memadd{background:#fff;border:1.5px solid var(--green-deep);border-radius:14px;padding:13px 14px;
+    text-align:center;font-size:16px;font-weight:800;color:var(--green-deep);margin-top:8px;}
+  .memsheet{background:#fff;border:2px solid var(--green-deep);border-radius:16px;padding:15px 14px;margin-top:10px;display:none;}
+  .memsheet.on{display:block;}
+  .memsheet h4{margin:0 0 10px;font-size:17px;font-weight:800;color:var(--green-deep);}
+  .memsheet .k{font-size:14px;font-weight:700;color:#6B6656;margin:12px 0 6px;}
+  .memsheet input.mi{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 13px;
+    font-size:17px;font-family:inherit;background:#FCFCF9;color:#16211B;}
+  .memchips{display:flex;flex-wrap:wrap;gap:7px;}
+  .memchip{border:1.5px solid var(--line);border-radius:999px;padding:8px 15px;font-size:15px;font-weight:700;background:#fff;}
+  .memchip.on{background:var(--green-deep);color:#fff;border-color:var(--green-deep);}
+  .memcols{display:flex;gap:10px;flex-wrap:wrap;}
+  .memdot{width:40px;height:40px;border-radius:50%;border:3px solid transparent;}
+  .memdot.on{border-color:#16211B;}
+  .memrow2{display:flex;gap:9px;margin-top:16px;}
+  .memrow2 > div{flex:1;}
+  .memdel{margin-top:11px;text-align:center;font-size:15px;font-weight:800;color:#A83A3A;}
+  .memdelnote{margin-top:5px;text-align:center;font-size:13px;color:#6B6656;line-height:1.6;}
+  /* ===== v37 今日ひとこと ===== */
+  .hitobox{background:#fff;border:1.5px solid var(--line);border-left:5px solid var(--green-deep);
+    border-radius:14px;padding:13px 14px;margin-bottom:10px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
+  .hitobox .hl{font-size:16.5px;font-weight:800;color:#16211B;}
+  .hitobox .hs{font-size:13.5px;font-weight:700;color:#6B6656;margin:2px 0 9px;line-height:1.55;}
+  .hitobox textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;
+    font-size:16px;font-family:inherit;background:#FCFCF9;color:#16211B;min-height:62px;resize:vertical;}
+  .hitorow{display:flex;gap:8px;margin-top:9px;}
+  .hitorow > div{flex:1;text-align:center;border-radius:10px;padding:13px 0;font-size:16px;font-weight:800;}
+  .hitomic{background:#fff;border:1.5px solid var(--green-deep);color:var(--green-deep);}
+  .hitosave{background:var(--green-deep);border:1.5px solid var(--green-deep);color:#fff;}
+  .hitoshare{font-size:13px;font-weight:700;color:#A8843A;margin-top:8px;text-align:center;line-height:1.5;}
+  /* 切りかえ帯 */
+  .recsw{display:flex;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:#F0EEE4;margin-bottom:10px;}
+  .recsw > div{flex:1;text-align:center;padding:12px 4px;font-size:15.5px;font-weight:800;color:#6B6656;}
+  .recsw > div.on{background:var(--green-deep);color:#fff;}
+  /* だれが */
+  .whopick{background:#fff;border:2px solid var(--green-deep);border-radius:16px;padding:14px;margin-bottom:10px;display:none;}
+  .whopick.on{display:block;}
+  .whopick h4{margin:0 0 3px;font-size:17px;font-weight:800;color:var(--green-deep);}
+  .whopick .cap{font-size:13.5px;font-weight:700;color:#6B6656;margin-bottom:10px;}
+  .whorow{display:flex;align-items:center;gap:11px;padding:11px 6px;border-bottom:1px solid var(--line);}
+  .whorow:last-child{border-bottom:0;}
+  .whorow .nm{font-size:17px;font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .whorow .ck{color:var(--green-deep);font-size:19px;font-weight:800;}
+  .whorow.sel{background:#F1F5EE;border-radius:10px;}
+  /* 履歴のひとこと行 */
+  .hist-row.hito{background:#FAF9F2;border-left:4px solid #A8843A;}
+  .day .chito{display:block;font-size:15px;line-height:1.15;margin-top:1px;}
   .feed{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
   .feed .fh{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
   .feed .fa{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;}
@@ -1098,6 +1149,22 @@
     <div class="page" id="p-rec">
       <div class="sc">
         <div class="banner" id="recGeoBanner" onclick="recNearField(false)">📍 近くの田んぼをさがす（タップ）</div>
+        <!-- ===== v37 今日ひとこと ===== -->
+        <div class="hitobox" id="hitoBox">
+          <div class="hl">✍️ 今日ひとこと</div>
+          <div class="hs" id="hitoDate">田んぼをえらばず、ひとことだけ残せます</div>
+          <textarea id="hitoIn" placeholder="例：雨で作業は休み。西の田でうんかを少し見かけた" enterkeyhint="done"></textarea>
+          <div class="hitorow">
+            <div class="hitomic" onclick="hitoMic()">🎤 話して書く</div>
+            <div class="hitosave" onclick="hitoSave()">書きとめる</div>
+          </div>
+          <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
+        </div>
+        <div class="recsw">
+          <div class="on" id="recSwA" onclick="recSw('rec')">📝 作業を記録する</div>
+          <div id="recSwB" onclick="recSw('hito')">✍️ ひとことだけ</div>
+        </div>
+        <div id="recFormWrap">
         <div class="fld datefld"><div class="lb">① いつ?（押すと日付を選べます）</div><div class="v"><span id="recDateV">今日</span><span class="chv">›</span></div><input type="date" id="recDateIn" onchange="recDateSet(this.value)"></div>
         <div class="fld" onclick="recPickField()"><div class="lb">② どの田んぼ?（📍か、押して変更）</div><div class="v"><span id="recFieldV">西 3 39.81a・にじのきらめき</span><span class="chv">›</span></div></div>
         <div class="fld" onclick="recWorkOpen()"><div class="lb">③ 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#8A8472;">押して作業をえらぶ</span><span class="chv">›</span></div></div>
@@ -1125,8 +1192,15 @@
           <span class="ic">📷</span>写真を撮る（この田んぼ・この日で共有）
           <input id="phRecIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
         </div>
+        <div class="fld" onclick="whoOpen('rec')"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="recWhoV" style="color:#8A8472;">押して名前をえらぶ</span><span class="chv">›</span></div></div>
+        <div class="whopick" id="whoSheet">
+          <h4>👤 だれが</h4>
+          <div class="cap">名前を押すだけ。キーボードは出ません</div>
+          <div id="whoOpts"></div>
+        </div>
         <div class="ghost" onclick="go('voice')">🎤 話して入力にする</div>
         <div class="primary-btn" onclick="saveWork()">✅ 保存する</div>
+        </div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -1426,11 +1500,24 @@
         <div class="feedtitle">📷 みんなの写真</div>
         <div id="phFeed"></div>
         <div class="sharenote">👥 記録の共有はKSASの無料共有も使えます。だれが何をやったか全員に伝わります。</div>
-        <div class="memcard"><div class="avatar" style="background:var(--green);">久</div><div><div class="nm">久保田 三郎</div><div class="role">代表</div></div><span class="rr">編集OK</span></div>
-        <div class="memcard"><div class="avatar" style="background:var(--blue);">田</div><div><div class="nm">田中 一郎</div><div class="role">従業員</div></div><span class="rr">編集OK</span></div>
-        <div class="memcard"><div class="avatar" style="background:var(--orange);">佐</div><div><div class="nm">佐藤 花子</div><div class="role">従業員</div></div><span class="rr">編集OK</span></div>
-        <div class="memcard"><div class="avatar" style="background:var(--purple);">鈴</div><div><div class="nm">鈴木 次郎</div><div class="role">パート</div></div><span class="rr" style="color:#A19C8B;">見るだけ</span></div>
-        <div class="memcard"><div class="avatar" style="background:var(--red);">山</div><div><div class="nm">山本 みどり</div><div class="role">家族</div></div><span class="rr" style="color:#A19C8B;">見るだけ</span></div>
+        <div class="feedtitle">👥 はたらく人（名前を直せます）</div>
+        <div id="memBody"><!-- v37 名簿(JS) --></div>
+        <div class="memadd" onclick="memAdd()">＋ 人をふやす</div>
+        <div class="memsheet" id="memSheet">
+          <h4 id="memSheetT">✏️ この人を直す</h4>
+          <div class="k">名前</div>
+          <input class="mi" id="memName" type="text" placeholder="例：久保田 三郎" enterkeyhint="done">
+          <div class="k">立場（押してえらぶ）</div>
+          <div class="memchips" id="memRoles"></div>
+          <div class="k">丸の色（押してえらぶ）</div>
+          <div class="memcols" id="memColors"></div>
+          <div class="memrow2">
+            <div class="ghost" style="margin:0;" onclick="memClose()">やめる</div>
+            <div class="primary-btn" style="margin:0;" onclick="memSave()">この内容にする</div>
+          </div>
+          <div class="memdel" id="memDelBtn" onclick="memDel()">🗑 この人を消す</div>
+          <div class="memdelnote">※ その人が今までつけた記録は残ります</div>
+        </div>
 
         <div class="spacer"></div>
       </div>
@@ -2027,7 +2114,11 @@
     if(extra){ if(extra.d)e.d=extra.d; /* v22④:過去日にさかのぼって記録できる */
       if(extra.work)e.work=extra.work; if(extra.chem)e.chem=extra.chem;
       if(extra.rate)e.rate=extra.rate; if(extra.vol)e.vol=extra.vol; if(extra.mass)e.mass=extra.mass;
-      if(extra.yen)e.yen=extra.yen; if(extra.ckind)e.ckind=extra.ckind; }
+      if(extra.yen)e.yen=extra.yen; if(extra.ckind)e.ckind=extra.ckind;
+      if(extra.hito)e.hito=true; if(extra.who)e.who=extra.who; }
+    /* v37 新しい記録には id を付ける（家族間で編集・削除を見分けるため）。
+       既存の記録に id は無いが、_sig が JSON 全文で見分けるので影響しない */
+    if(!e.id)e.id='w'+Date.now()+'_'+Math.floor(Math.random()*10000);
     ktLog.push(e);
     ktSave();
   }
@@ -2564,6 +2655,225 @@
        ★v30の削除印(tombstone)は使わない。tombstone は「二度と復活しない印」なので、
          同じ田んぼをもう一度手直しできなくなってしまうため（id を名前で固定しているせい）。
      ・window に持たせているので、起動順に左右されない（v33の事故の教訓） */
+  /* ================= v37 家族の名簿（gyotoku.members.v1） =================
+     ★naeov と同じ方式：id を固定し _m(更新時刻) で新しい方を勝たせる。
+       削除は tombstone を使わず v:null（消した印）を残す。
+       tombstone は「二度と復活しない印」なので、同じ人をもう一度足せなくなるため。
+     ★window に持たせて起動順の事故を防ぐ（v33の教訓）。 */
+  var MEM_LS='gyotoku.members.v1';
+  var MEM_ROLES=['代表','家族','従業員','パート'];
+  var MEM_COLORS=['var(--green)','var(--blue)','var(--orange)','var(--purple)','var(--red)'];
+  var MEM_SEED=[
+    {id:'m1', n:'久保田 三郎', r:'代表',   c:'var(--green)'},
+    {id:'m2', n:'田中 一郎',   r:'従業員', c:'var(--blue)'},
+    {id:'m3', n:'佐藤 花子',   r:'従業員', c:'var(--orange)'},
+    {id:'m4', n:'鈴木 次郎',   r:'パート', c:'var(--purple)'},
+    {id:'m5', n:'山本 みどり', r:'家族',   c:'var(--red)'}
+  ];
+  function memArr(){
+    if(!window._mem){
+      var a=null; try{ a=JSON.parse(localStorage.getItem(MEM_LS)||'null'); }catch(e){ a=null; }
+      if(!(a instanceof Array)){
+        a=[]; for(var i=0;i<MEM_SEED.length;i++){ var q=MEM_SEED[i];
+          a.push({id:q.id, n:q.n, r:q.r, c:q.c, _m:0}); }
+      }
+      window._mem=a;
+    }
+    return window._mem;
+  }
+  function memSaveLS(){
+    try{ localStorage.setItem(MEM_LS, JSON.stringify(memArr())); }catch(e){}
+    window._memList=null;
+    if(typeof syncSoon==='function')syncSoon();
+  }
+  /* 表示用：消された人(v:null)を外し、同じidは新しい_mを採用 */
+  function memList(){
+    if(!window._memList){
+      var a=memArr(), best={}, ord=[], i, it;
+      for(i=0;i<a.length;i++){ it=a[i]; if(!it||!it.id)continue;
+        if(!best[it.id]){ ord.push(it.id); best[it.id]=it; }
+        else if((it._m||0)>=(best[it.id]._m||0)){ best[it.id]=it; }
+      }
+      var out=[];
+      for(i=0;i<ord.length;i++){ var b=best[ord[i]];
+        if(!b||b.v===null||b.n==null)continue;   /* 消した印 */
+        out.push(b);
+      }
+      window._memList=out;
+    }
+    return window._memList;
+  }
+  function memPut(rec){
+    /* ★保存の直前に必ず読み直す（家族の同期を上書きで消さないため） */
+    window._mem=null;
+    var a=memArr(), i, hit=-1;
+    for(i=0;i<a.length;i++){ if(a[i]&&a[i].id===rec.id){ hit=i; break; } }
+    rec._m=Date.now();
+    if(hit>=0)a[hit]=rec; else a.push(rec);
+    memSaveLS();
+  }
+  function memInitial(n){ n=(''+(n||'')).replace(/^\s+/,''); return n?n.charAt(0):'？'; }
+  function memEsc(t){ return (''+(t==null?'':t)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function memRender(){
+    var box=document.getElementById('memBody'); if(!box)return;
+    var a=memList(), h='', i;
+    if(!a.length){ box.innerHTML='<div class="ngnote" style="margin:0;">まだ登録がありません。「＋ 人をふやす」から足してください。</div>'; return; }
+    for(i=0;i<a.length;i++){ var m=a[i];
+      h+='<div class="memcard" style="margin-top:8px;">'+
+           '<div class="avatar" style="background:'+memEsc(m.c||'var(--green)')+';">'+memEsc(memInitial(m.n))+'</div>'+
+           '<div class="info"><div class="nm">'+memEsc(m.n)+'</div><div class="role">'+memEsc(m.r||'')+'</div></div>'+
+           '<span class="ed" onclick="memEdit(\''+memEsc(m.id)+'\')">✏️ 直す</span>'+
+         '</div>';
+    }
+    box.innerHTML=h;
+  }
+  var memCur=null, memRoleSel='', memColSel='';
+  function memChipsRender(){
+    var h='', i;
+    for(i=0;i<MEM_ROLES.length;i++){ h+='<div class="memchip'+(memRoleSel===MEM_ROLES[i]?' on':'')+'" onclick="memPickRole(\''+MEM_ROLES[i]+'\')">'+MEM_ROLES[i]+'</div>'; }
+    var e=document.getElementById('memRoles'); if(e)e.innerHTML=h;
+    h='';
+    for(i=0;i<MEM_COLORS.length;i++){ h+='<div class="memdot'+(memColSel===MEM_COLORS[i]?' on':'')+'" style="background:'+MEM_COLORS[i]+';" onclick="memPickCol('+i+')"></div>'; }
+    e=document.getElementById('memColors'); if(e)e.innerHTML=h;
+  }
+  function memPickRole(r){ memRoleSel=r; memChipsRender(); }
+  function memPickCol(i){ memColSel=MEM_COLORS[i]; memChipsRender(); }
+  function memEdit(id){
+    var a=memList(), i, f=null;
+    for(i=0;i<a.length;i++)if(a[i].id===id)f=a[i];
+    if(!f)return;
+    memCur=id; memRoleSel=f.r||MEM_ROLES[0]; memColSel=f.c||MEM_COLORS[0];
+    var n=document.getElementById('memName'); if(n)n.value=f.n||'';
+    var t=document.getElementById('memSheetT'); if(t)t.textContent='✏️ この人を直す';
+    var d=document.getElementById('memDelBtn'); if(d)d.style.display='';
+    memChipsRender();
+    var sh=document.getElementById('memSheet'); if(sh){ sh.classList.add('on'); if(typeof scrollIntoBody==='function')scrollIntoBody(sh); }
+  }
+  function memAdd(){
+    memCur=null; memRoleSel=MEM_ROLES[2]; memColSel=MEM_COLORS[memList().length%MEM_COLORS.length];
+    var n=document.getElementById('memName'); if(n)n.value='';
+    var t=document.getElementById('memSheetT'); if(t)t.textContent='＋ 人をふやす';
+    var d=document.getElementById('memDelBtn'); if(d)d.style.display='none';
+    memChipsRender();
+    var sh=document.getElementById('memSheet'); if(sh){ sh.classList.add('on'); if(typeof scrollIntoBody==='function')scrollIntoBody(sh); }
+  }
+  function memClose(){ var sh=document.getElementById('memSheet'); if(sh)sh.classList.remove('on'); memCur=null; }
+  function memSave(){
+    var n=document.getElementById('memName');
+    var nm=n?(''+n.value).replace(/^\s+|\s+$/g,''):'';
+    if(!nm){ toast('名前を入れてください'); if(n)n.focus(); return; }
+    var id=memCur||('m'+Date.now()+'_'+Math.floor(Math.random()*1000));
+    memPut({id:id, n:nm, r:memRoleSel||MEM_ROLES[2], c:memColSel||MEM_COLORS[0]});
+    memClose(); memRender(); whoRender();
+    toast('✅ 保存しました（家族全員に共有されます）');
+  }
+  function memDel(){
+    if(!memCur)return;
+    var a=memList(), i, f=null;
+    for(i=0;i<a.length;i++)if(a[i].id===memCur)f=a[i];
+    if(!f)return;
+    if(!confirm('「'+f.n+'」を名簿から消しますか?\n\n※ この人が今までつけた記録は残ります。'))return;
+    memPut({id:memCur, v:null, n:null});   /* 消した印。tombstoneは使わない */
+    memClose(); memRender(); whoRender();
+    toast('🗑 消しました');
+  }
+  /* ---- 「だれが」えらぶ ---- */
+  var WHO_LAST='gyotoku.whoLast.v1';   /* この端末だけ。前に選んだ人 */
+  var whoTarget='rec';
+  function whoLastGet(){ try{ return localStorage.getItem(WHO_LAST)||''; }catch(e){ return ''; } }
+  function whoLastSet(v){ try{ localStorage.setItem(WHO_LAST, v||''); }catch(e){} }
+  function whoRender(){
+    var box=document.getElementById('whoOpts'); if(!box)return;
+    var a=memList(), cur=whoLastGet(), h='', i;
+    if(!a.length){ box.innerHTML='<div class="ngnote" style="margin:0;">名簿がありません。「みんなと共有」で登録してください。</div>'; return; }
+    for(i=0;i<a.length;i++){ var m=a[i], on=(m.n===cur);
+      h+='<div class="whorow'+(on?' sel':'')+'" onclick="whoPick(\''+memEsc(m.id)+'\')">'+
+           '<div class="avatar" style="background:'+memEsc(m.c||'var(--green)')+';width:36px;height:36px;font-size:15px;">'+memEsc(memInitial(m.n))+'</div>'+
+           '<div class="nm">'+memEsc(m.n)+'</div>'+(on?'<span class="ck">✓</span>':'')+
+         '</div>';
+    }
+    box.innerHTML=h;
+  }
+  function whoOpen(t){
+    whoTarget=t||'rec'; whoRender();
+    var sh=document.getElementById('whoSheet'); if(sh){ sh.classList.add('on'); if(typeof scrollIntoBody==='function')scrollIntoBody(sh); }
+  }
+  function whoClose(){ var sh=document.getElementById('whoSheet'); if(sh)sh.classList.remove('on'); }
+  function whoPick(id){
+    var a=memList(), i, f=null;
+    for(i=0;i<a.length;i++)if(a[i].id===id)f=a[i];
+    if(!f)return;
+    whoLastSet(f.n);
+    var v=document.getElementById('recWhoV');
+    if(v){ v.textContent=f.n; v.style.color='#16211B'; }
+    whoClose();
+  }
+  function whoApply(){
+    var v=document.getElementById('recWhoV'); if(!v)return;
+    var cur=whoLastGet();
+    /* 名簿から消えた人が残っていたら空にもどす */
+    if(cur){ var a=memList(), ok=false, i;
+      for(i=0;i<a.length;i++)if(a[i].n===cur)ok=true;
+      if(!ok){ cur=''; whoLastSet(''); }
+    }
+    if(cur){ v.textContent=cur; v.style.color='#16211B'; }
+    else { v.textContent='押して名前をえらぶ'; v.style.color='#8A8472'; }
+  }
+  /* ---- 今日ひとこと ---- */
+  function hitoByDate(){
+    var m={}, i;
+    try{
+      if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
+      for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
+        if(e&&e.hito&&e.d) m[(''+e.d).slice(0,10)]=(m[(''+e.d).slice(0,10)]||0)+1; }
+    }catch(x){}
+    return m;
+  }
+  function hitoDateShow(){
+    var e=document.getElementById('hitoDate'); if(!e)return;
+    var d=new Date(), W=['日','月','火','水','木','金','土'];
+    e.textContent=(d.getMonth()+1)+'月'+d.getDate()+'日（'+W[d.getDay()]+'）　田んぼをえらばず、ひとことだけ残せます';
+  }
+  function hitoSave(){
+    var t=document.getElementById('hitoIn');
+    var tx=t?(''+t.value).replace(/^\s+|\s+$/g,''):'';
+    if(!tx){ toast('ひとことを書いてください'); if(t)t.focus(); return; }
+    var who=whoLastGet();
+    wlAdd('furikaeri', '', tx, 'hito', {hito:true, who:who});
+    if(t)t.value='';
+    toast('✅ 書きとめました（家族全員に共有されます）');
+    if(typeof renderCal==='function'){ try{ renderCal(); }catch(e){} }
+  }
+  function hitoMic(){
+    var t=document.getElementById('hitoIn'); if(!t)return;
+    if(typeof SR==='undefined' || !SR){ toast('この端末では音声入力が使えません。指で書いてください'); t.focus(); return; }
+    try{
+      var r=new SR(); r.lang='ja-JP'; r.continuous=false; r.interimResults=false;
+      r.onresult=function(e){
+        var got=''; try{ got=e.results[0][0].transcript||''; }catch(x){}
+        if(got){ t.value=(t.value?(t.value+' '):'')+got; }
+      };
+      r.onerror=function(){ toast('聞きとれませんでした。もう一度どうぞ'); };
+      r.start(); toast('🎤 どうぞ話してください');
+    }catch(e){ toast('音声入力を start できませんでした'); }
+  }
+  function recSw(which){
+    var a=document.getElementById('recSwA'), b=document.getElementById('recSwB');
+    var box=document.getElementById('hitoBox'), form=document.getElementById('recFormWrap');
+    if(which==='hito'){
+      if(a)a.classList.remove('on'); if(b)b.classList.add('on');
+      if(box)box.style.display=''; if(form)form.style.display='none';
+    } else {
+      if(a)a.classList.add('on'); if(b)b.classList.remove('on');
+      if(box)box.style.display='none'; if(form)form.style.display='';
+    }
+  }
+  function memBoot(){
+    try{ memRender(); }catch(e){}
+    try{ whoRender(); whoApply(); }catch(e){}
+    try{ hitoDateShow(); }catch(e){}
+    try{ recSw('rec'); }catch(e){}
+  }
   function naeOvKey(){ return 'gyotoku.naeov.v1'; }
   function naeOvArr(){
     if(!window._naeOv){
@@ -3078,7 +3388,8 @@
     var memo=gv('recMemoIn');
     var text=recWorkSel+(chem?('：'+chem+(rate?' '+rate+'倍':'')+(vol?' '+vol+'L':'')+(mass?' '+mass+'kg':'')):'')+(memo?('。'+memo):'');
     wlAdd(recStepOf(recWorkSel), recField, text, 'rec',
-      {d:(recDateSel||null), work:recWorkSel, chem:chem, rate:rate, vol:vol, mass:mass});
+      {d:(recDateSel||null), work:recWorkSel, chem:chem, rate:rate, vol:vol, mass:mass,
+       who:(typeof whoLastGet==='function'?whoLastGet():'')});
     toast('✅ 保存しました(記録簿・工程表・見張り番・原価にも反映)');
     recFormReset();
     /* v24.2:保存後にカレンダーへ飛ばさない。この画面に留まって続けて記録できる */
@@ -3292,12 +3603,13 @@
     if(typeof hyLoad==='function') hyLoad();
     var out=[], i;
     for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
-      var kind = e.rate ? 'yaku' : (e.mass ? 'hiryo' : 'sagyo');
-      var ic = kind==='yaku'?'💊':(kind==='hiryo'?'🌱':'✍️');
+      var kind = e.hito ? 'hito' : (e.rate ? 'yaku' : (e.mass ? 'hiryo' : 'sagyo'));
+      var ic = e.hito?'📣':(kind==='yaku'?'💊':(kind==='hiryo'?'🌱':'✍️'));
       var amt=[]; if(e.rate)amt.push(e.rate+'倍'); if(e.vol)amt.push(e.vol+'L'); if(e.mass)amt.push(e.mass+'kg');
-      out.push({ d:e.d||'', kind:kind, ic:ic, where:(e.field||'田んぼ不明'),
-        title:(e.work||e.text||'記録'),
-        sub:[(e.chem||''), amt.join(' ')].filter(function(s){return s;}).join('　'),
+      out.push({ d:e.d||'', kind:kind, ic:ic, hito:!!e.hito,
+        where:(e.hito?(e.who||'ひとこと'):(e.field||'田んぼ不明')),
+        title:(e.hito?(e.text||'ひとこと'):(e.work||e.text||'記録')),
+        sub:(e.hito?'':[(e.chem||''), amt.join(' ')].filter(function(s){return s;}).join('　')),
         yen:(e.yen? +e.yen : 0) });
     }
     for(i=0;i<kiLog.length;i++){ var m=kiLog[i];
@@ -3314,7 +3626,7 @@
     return out;
   }
   function histChipRender(){
-    var defs=[['all','ぜんぶ'],['yaku','💊農薬'],['hiryo','🌱肥料'],['kikai','🚜機械'],['sagyo','✍️作業']], h='';
+    var defs=[['all','ぜんぶ'],['yaku','💊農薬'],['hiryo','🌱肥料'],['kikai','🚜機械'],['sagyo','✍️作業'],['hito','📣ひとこと']], h='';
     for(var i=0;i<defs.length;i++){ h+='<div class="hist-chip'+(histFilter===defs[i][0]?' on':'')+'" onclick="histPick(\''+defs[i][0]+'\')">'+defs[i][1]+'</div>'; }
     var c=document.getElementById('histChips'); if(c)c.innerHTML=h;
   }
@@ -3348,7 +3660,7 @@
     var h='', curDay='';
     for(var i=0;i<items.length;i++){ var x=items[i], day=histDayKey(x.d);
       if(day!==curDay){ curDay=day; h+='<div class="hist-day">'+histDayLabel(x.d)+'</div>'; }
-      h+='<div class="hist-row"><span class="hist-ic">'+x.ic+'</span>'+
+      h+='<div class="hist-row'+(x.hito?' hito':'')+'"><span class="hist-ic">'+x.ic+'</span>'+
            '<span class="hist-main"><span class="hist-where">'+x.where+'</span>'+
              '<span class="hist-title">'+x.title+'</span>'+
              (x.sub?'<span class="hist-sub">'+x.sub+'</span>':'')+'</span>'+
@@ -4623,7 +4935,7 @@
          消すと電波の悪い所で天気が出なくなるだけで、消す意味がない
        ・最近つかった田んぼ(gyotoku.fldRecent.v1)＝入力の履歴ではなく使い勝手の設定 */
     var KEEP={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
-              'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1};
+              'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1};
     var del=[];
     for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('gyotoku')===0&&!KEEP[k]) del.push(k); }
     for(var j=0;j<del.length;j++){ try{ localStorage.removeItem(del[j]); }catch(e){} }
@@ -4657,7 +4969,7 @@
      ・安全第一：この端末のデータは絶対に消さない(union)。取り込みは足すだけ。
      ・オフラインでも普通に使える。つながった時だけ自動で同期する。 */
   var TOMB_LS='gyotoku.tomb.v1';   /* v30 削除印(tombstone)の台帳。中身は印だけで記録本体は入れない */
-  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1',TOMB_LS];
+  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1',TOMB_LS];
   var SYNC_SET={}; (function(){ for(var i=0;i<SYNC_KEYS.length;i++)SYNC_SET[SYNC_KEYS[i]]=1; })();
   var _syncHash={};      /* key -> 直近に送った内容のハッシュ(無駄な送信を防ぐ) */
   var _syncBusy=false;
@@ -4763,7 +5075,7 @@
         for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue; if(k===TOMB_LS)continue;
           var loc; try{ loc=localStorage.getItem(k); }catch(e){ loc=null; }
           var m=_mergeVal(loc==null?'null':loc, data[k], k);
-          if(m.changed){ _lsSetRaw(k,m.str); _syncHash[k]=_hash(m.str); changed=true; }
+          if(m.changed){ _lsSetRaw(k,m.str); if(k===MEM_LS){ window._mem=null; window._memList=null; } _syncHash[k]=_hash(m.str); changed=true; }
           else { _syncHash[k]=_hash(loc==null?'null':loc); }
         }
         if(changed) _syncApply();
@@ -4944,7 +5256,9 @@
       if(typeof phByDate!=='undefined'&&phByDate[ds]){
         cph='<span class="cph">📷'+(phByDate[ds]>1?('<span class="n">'+phByDate[ds]+'</span>'):'')+'</span>';
       }
-      html+='<span class="'+cls+'" onclick="calPick(\''+ds+'\')">'+d+wx2+cph+mk+'</span>';
+      var chito='';
+      if(typeof hitoByDate==='function'&&hitoByDate()[ds]){ chito='<span class="chito">📣</span>'; }
+      html+='<span class="'+cls+'" onclick="calPick(\''+ds+'\')">'+d+wx2+cph+chito+mk+'</span>';
     }
     var total=start+dim, rest=(7-total%7)%7;
     for(i=1;i<=rest;i++){html+='<span class="day dim">'+i+'</span>';}
@@ -5015,6 +5329,7 @@
     toast('📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日に「'+title+'」を入れました');
   }
   renderTodo(); renderCal(); renderDayList();
+  try{ memBoot(); }catch(e){}   /* v37 名簿・ひとことの初期表示 */
 
   /* ===== v2.4.1 本日のAIからの提案(日替わり・31本の実践知を内蔵) ===== */
   var AI_TIPS=[
