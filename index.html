@@ -841,7 +841,12 @@
   /* ① 肥料一覧シート */
 
   /* ===== v25 写真共有（Cloudinary + Cloudflare Functions） ===== */
-  .day .cph{display:block;font-size:10px;line-height:1.1;}
+  .day .cph{display:block;font-size:15px;line-height:1.15;margin-top:1px;}
+  /* ★v36.6：カレンダーの写真マークを 10px→15px に拡大（本人要望）。
+     年配の方に見やすくするため。天気の絵文字(.cw 13px)より少し大きくして、
+     「この日は写真がある」と一目で分かるようにした。
+     枚数の数字は小さいままだと読めないので 8.5px→10px に上げる。 */
+  .cph .n{font-size:10px;color:#8A8472;font-weight:700;vertical-align:1px;}
   .ph-strip{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .ph-strip::-webkit-scrollbar{display:none;}
   .ph-th{flex-shrink:0;width:84px;height:84px;border-radius:12px;object-fit:cover;border:1px solid var(--line);background:#EFEBDD;}
@@ -1477,7 +1482,7 @@
           <input type="file" id="bkFile" accept="application/json,.json" style="display:none" onchange="backupImportFile(this)">
           <div class="setrow danger" onclick="dataResetAll()">入力内容を全部リセット<span class="sv">はじめから ›</span></div>
         </div>
-        <div class="setnote">💡 記録・予定・写真の一覧はこのiPhoneの中だけに保存されています。機種変更や故障にそなえて、ときどき「バックアップを書き出す」で保存しておくと安心です（写真そのものは共有アルバム側に残ります）。</div>
+        <div class="setnote">💡 記録・予定・メモはこのiPhoneの中に保存され、家族とはサーバー経由で共有されます。機種変更や故障にそなえて、ときどき「バックアップを書き出す」で保存しておくと安心です。<br>⚠️ 写真だけはバックアップに入りません（サーバーにあるため）。「入力内容を全部リセット」で「家族全員ぶんも消す」を選ぶと、みんなの写真も消えます。</div>
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
@@ -4565,21 +4570,85 @@
     };
     r.readAsText(f);
   }
+  /* ★v36.5：みんなの写真をサーバーから全部消す。
+     写真は「本体=Cloudinary／一覧=Cloudflare KV」にあり、端末の gyotoku.photos.v1 は
+     ただの控え。だから端末だけ消しても、カレンダーを開いた時に phLoad() が
+     /api/photo-list から取り直して写真が必ず復活していた（本人指摘の原因）。
+     /api/photo-delete は1件ずつなので、一覧を取って順に消す。 */
+  function phDeleteAllServer(){
+    return fetch('/api/photo-list?max=200',{headers:phHeaders(),cache:'no-store'})
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var items=(j&&j.ok&&j.items)?j.items:[];
+        if(!items.length) return 0;
+        var n=0;
+        var step=function(i){
+          if(i>=items.length) return n;
+          return fetch('/api/photo-delete',{method:'POST',
+              headers:Object.assign({'content-type':'application/json'},phHeaders()),
+              body:JSON.stringify({id:items[i].id})})
+            .then(function(r){ return r.json().catch(function(){return {ok:false};}); })
+            .then(function(jj){ if(jj&&jj.ok)n++; return step(i+1); })
+            .catch(function(){ return step(i+1); });  /* 1枚失敗しても続ける */
+        };
+        return step(0);
+      })
+      .then(function(n){
+        /* 端末側の控えも空にして、画面から写真の印を消す */
+        try{ phItems=[]; phIndex(); phCacheSave(); phLoaded=false; }catch(e){}
+        return n;
+      })
+      .catch(function(){ return -1; });   /* -1 = 通信できなかった */
+  }
+  /* ★v36.5：一覧は一度に200枚までしか返らないので、
+     200枚ぴったり消せたときは「まだ残っている」とみなしてもう一度取り直す。
+     念のため上限20回（=4000枚）で必ず止める（無限ループ防止）。 */
+  function phDeleteAllServerAll(total,round){
+    total=total||0; round=round||0;
+    if(round>=20) return Promise.resolve(total);
+    return phDeleteAllServer().then(function(n){
+      if(n<0) return (total>0)?total:-1;      /* 途中で通信が切れた */
+      total+=n;
+      if(n>=200) return phDeleteAllServerAll(total,round+1);
+      return total;
+    });
+  }
+
   function dataResetAll(){
-    if(!confirm('テストで入力した記録・予定・写真の一覧・メモなどを、この端末から全部消します。\n（ホームのボタンの並び・下のタブ・名前・合言葉は残ります）\n\n本当に消してよろしいですか？')) return;
+    if(!confirm('テストで入力した記録・予定・写真・メモなどを全部消します。\n（ホームのボタンの並び・下のタブ・名前・合言葉・天気は残ります）\n\n本当に消してよろしいですか？')) return;
     if(!confirm('もう一度おたずねします。消したデータは元に戻せません。\nまだの場合は、先に「バックアップを書き出す」で保存しておくことをおすすめします。\n\nそれでも消してよろしいですか？')) return;
-    var alsoServer=confirm('家族みんなで共有しているサーバー上の記録も、一緒に消しますか？\n\n「OK」＝家族全員ぶんも消す（本番を始める前のリセットにおすすめ）\n「キャンセル」＝この端末だけ消す（※共有が続いていると、家族の分がまた入ってきます）');
-    var KEEP={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1};
+    var alsoServer=confirm('家族みんなで共有しているサーバー上の記録と、みんなの写真も一緒に消しますか？\n\n「OK」＝家族全員ぶんも消す（本番を始める前のリセットにおすすめ。写真も消えます）\n「キャンセル」＝この端末だけ消す（※共有が続いていると、家族の分や写真がまた入ってきます）');
+    /* ★v36.5：消さないもの。「入力内容」ではない設定・控えは残す。
+       ・天気(gyotoku_wx_v1 / gyotoku_alert_v1)＝気象庁から取り直せるただの控え。
+         消すと電波の悪い所で天気が出なくなるだけで、消す意味がない
+       ・最近つかった田んぼ(gyotoku.fldRecent.v1)＝入力の履歴ではなく使い勝手の設定 */
+    var KEEP={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
+              'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1};
     var del=[];
     for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('gyotoku')===0&&!KEEP[k]) del.push(k); }
     for(var j=0;j<del.length;j++){ try{ localStorage.removeItem(del[j]); }catch(e){} }
     try{ _syncHash={}; }catch(e){}
-    var finish=function(){ alert('入力内容をリセットしました（'+del.length+'件）。画面を読み込み直します。'); location.reload(); };
+    var syncNg=false, photoN=0;
+    var finish=function(){
+      var msg='入力内容をリセットしました（'+del.length+'件）。';
+      if(alsoServer){
+        if(syncNg) msg+='\n※共有の記録はネットにつながらず消せませんでした。';
+        if(photoN>0)      msg+='\nみんなの写真も'+photoN+'枚消しました。';
+        else if(photoN<0) msg+='\n※みんなの写真はネットにつながらず消せませんでした。';
+      }
+      alert(msg+'\n画面を読み込み直します。'); location.reload();
+    };
     if(alsoServer && typeof fetch==='function'){
+      /* ★v36.5：①共有記録(KV) → ②みんなの写真 の順で消してから終わる。
+         写真を消さないと、カレンダーを開いた時に /api/photo-list から
+         また戻ってきてしまう（本人指摘のバグの原因）。 */
       fetch('/api/sync-clear',{method:'POST',headers:{'content-type':'application/json','x-photo-pass':(function(){try{return localStorage.getItem('gyotoku.phpass.v1')||'';}catch(e){return '';}})()},body:JSON.stringify({keys:(typeof SYNC_KEYS!=='undefined')?SYNC_KEYS:[]})})
         .then(function(r){return r.json().catch(function(){return {ok:false};});})
-        .then(function(jj){ if(!jj||!jj.ok){ alert('サーバー上の消去はできませんでした（ネットにつながってから、設定でもう一度お試しください）。この端末の分は消えています。'); } finish(); })
-        .catch(function(){ alert('サーバーにつながらず、共有分は消せませんでした。この端末の分は消えています。'); finish(); });
+        .then(function(jj){ if(!jj||!jj.ok){ syncNg=true; } })
+        .catch(function(){ syncNg=true; })
+        .then(function(){ return (typeof phDeleteAllServerAll==='function')?phDeleteAllServerAll():0; })
+        .then(function(n){ photoN=n; finish(); })
+        .catch(function(){ photoN=-1; finish(); });
     } else { finish(); }
   }
 
@@ -4873,7 +4942,7 @@
       /* v25:その日に写真があれば天気の下に📷（枚数が2枚以上なら数字も） */
       var cph='';
       if(typeof phByDate!=='undefined'&&phByDate[ds]){
-        cph='<span class="cph">📷'+(phByDate[ds]>1?('<span style="font-size:8.5px;color:#8A8472;">'+phByDate[ds]+'</span>'):'')+'</span>';
+        cph='<span class="cph">📷'+(phByDate[ds]>1?('<span class="n">'+phByDate[ds]+'</span>'):'')+'</span>';
       }
       html+='<span class="'+cls+'" onclick="calPick(\''+ds+'\')">'+d+wx2+cph+mk+'</span>';
     }
