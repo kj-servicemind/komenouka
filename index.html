@@ -690,6 +690,41 @@
   .kt-setup .edit.dchg{color:#fff;background:#C62828;text-decoration:none;border-radius:8px;padding:6px 11px;white-space:nowrap;}
   .kt-setup.warn{background:#FBF4E4;border-color:#E6D6B8;}
   .kt-setup.warn .tx b{color:#8A611C;}
+  /* ===== v35: 苗箱の枚数計算 ===== */
+  .nae-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .nae-lbl{font-size:14px;font-weight:800;color:#5F5B4E;margin-bottom:9px;}
+  .nae-segs{display:flex;gap:8px;}
+  .nae-seg{flex:1;padding:12px 2px;text-align:center;border:2px solid var(--line);border-radius:11px;background:#FBFAF6;font-size:17px;font-weight:800;color:#6B6656;cursor:pointer;}
+  .nae-seg.on{border-color:var(--green);background:#EAF1EA;color:var(--green-deep);}
+  .nae-seg small{display:block;font-size:11px;font-weight:700;margin-top:2px;color:#9A9484;}
+  .nae-seg.on small{color:#5A7D5F;}
+  .nae-big{background:linear-gradient(180deg,#2F5D3A,#27502F);color:#fff;border-radius:15px;padding:18px 14px;text-align:center;margin-bottom:12px;}
+  .nae-big .cap{font-size:14px;opacity:.9;}
+  .nae-big .num{font-size:52px;font-weight:800;line-height:1.05;margin:4px 0;letter-spacing:-1px;}
+  .nae-big .num span{font-size:22px;margin-left:4px;}
+  .nae-big .sub{font-size:13px;opacity:.88;border-top:1px solid rgba(255,255,255,.25);padding-top:9px;margin-top:9px;line-height:1.8;}
+  .nae-warn{background:#FBF4E4;border:1.5px solid #E6D6B8;border-radius:12px;padding:12px 13px;font-size:13.5px;line-height:1.8;color:#6B5A2A;margin-bottom:12px;}
+  .nae-warn b{color:#8A611C;}
+  .nae-tabs{display:flex;gap:6px;margin-bottom:10px;}
+  .nae-tb{flex:1;padding:10px 0;text-align:center;font-size:13.5px;font-weight:700;border-radius:9px;border:1.5px solid var(--line);background:#FBFAF6;color:#6B6656;cursor:pointer;}
+  .nae-tb.on{background:var(--green);color:#fff;border-color:var(--green);font-weight:800;}
+  .nae-ac{border:1.5px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden;background:#fff;}
+  .nae-ach{display:flex;align-items:center;gap:8px;padding:12px;cursor:pointer;background:#F6F4EC;}
+  .nae-ach .an{flex:1;min-width:0;font-size:15.5px;font-weight:800;color:#33403A;}
+  .nae-ach .am{font-size:18px;font-weight:800;color:var(--green-deep);flex-shrink:0;}
+  .nae-ach .am span{font-size:12px;font-weight:700;}
+  .nae-acb{padding:0 12px;display:none;}
+  .nae-ac.open .nae-acb{display:block;}
+  .nae-ac.open .nae-ach{border-bottom:1px solid #EFECE2;}
+  .nae-fl{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #EFECE2;gap:10px;}
+  .nae-fl:last-child{border-bottom:0;}
+  .nae-fl .nm{flex:1;min-width:0;font-size:15px;font-weight:700;color:#33403A;}
+  .nae-fl .nm small{display:block;color:#9A9484;font-size:12px;font-weight:700;margin-top:1px;}
+  .nae-fl .ar{font-size:13px;color:#7C7767;flex-shrink:0;width:58px;text-align:right;font-weight:700;}
+  .nae-fl .mai{font-size:19px;font-weight:800;color:var(--green-deep);flex-shrink:0;width:62px;text-align:right;}
+  .nae-fl .mai span{font-size:12px;font-weight:700;margin-left:1px;}
+  .nae-chip{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:#EAF1EA;color:var(--green-deep);margin-left:6px;vertical-align:middle;}
+  .nae-mini{font-size:13px;color:#7C7767;line-height:1.85;margin-top:9px;}
   .kt-growbadge{display:inline-block;font-size:11.5px;font-weight:800;color:#fff;background:#5B8A9E;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:1px;}
 
   /* ===== v21：あい作＋レイミー統合 ===== */
@@ -1214,7 +1249,8 @@
         <div class="dg-photo">
           <div class="dg-pt">📸 写真で調べるなら（無料アプリ）</div>
           <div class="dg-tips">コツは3つ：<b>①近づいて大きく ②ピントを合わせて ③明るい所で</b>。5枚までまとめて診断できます。</div>
-          <div class="dbbtn" onclick="openSite('https://www.nichino.co.jp/products/aiapp/')">📸 レイミーAI診断を開く（無料）</div>
+          <div class="dbbtn" onclick="openRaimy()">📸 レイミーAI診断を開く（無料）</div>
+          <div class="dg-tips" style="margin-top:-2px;">※App Storeが開いたら「開く」を押すとレイミーが始まります（未インストールなら入手できます）</div>
           <div class="ksasbtn" onclick="openKsas('無料AI診断を開きます(写真もいっしょに送れます)')">🤖 KSASのAI診断を開く(無料)</div>
         </div>
         <div class="dg-kttl">🩺 見た目で調べる（カルテ式）<span class="dg-ksub">あてはまるものを押すと、候補が絞られます（複数OK）</span></div>
@@ -1527,6 +1563,8 @@
           </div>
           <!-- view E: 予想のしくみ＋実出穂日の補正(旧・稲作先生の信頼性説明を吸収) -->
           <div id="ktViewWhy" style="display:none;"></div>
+          <!-- view F: 苗箱の枚数計算(v35・田植え工程から入る) -->
+          <div id="ktViewNae" style="display:none;"></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2031,6 +2069,15 @@
         +'<span class="fn">'+fd.n+' <span class="fs">'+fd.a+'</span></span>'
         +'<span class="kt-b '+(isDone?'done':'no')+'">'+(isDone?'✅ 済み':'タップで済みに')+'</span></div>';
     }
+    /* v35 田植えの工程だけ:苗箱の枚数計算への入口 */
+    if(st.k==='taue'){
+      var naeT=naeTotal();
+      h+='<div class="kt-setup" onclick="naeOpen()">'
+        +'<span class="ic">🌱</span>'
+        +'<span class="tx"><span class="tx-line"><b>苗箱は何枚いる？</b></span>'
+        +'<span class="tx-line">今の設定だと ぜんぶで <b>'+naeComma(naeT.sum)+'枚</b></span></span>'
+        +'<span class="edit dchg">計算する ›</span></div>';
+    }
     h+='<div class="linkcard ina-trust">💡 <b>つながり</b>：🎤や'+droneMini(18)+'で「'+KT_FIELDS[2].n+' '+st.nm+'やった」と記録しても、この表は自動で✅に変わります。</div>';
     /* 稲作先生の栽培アドバイス(この工程に対応するステージの中身を吸収) */
     var d=(st.dtl&&INA_DETAIL[st.dtl])?INA_DETAIL[st.dtl]:null;
@@ -2406,9 +2453,171 @@
     ktRenderBoard(); ktShowOnly('ktViewBoard');
   }
 
+  /* ============================================================
+     v35 苗箱の枚数計算（田植え工程の中に置く）
+     根拠：行徳農園の実績メモ(西3=39.81a/84枚, 西4=28.71a/55枚,
+     中村(2)=26.78a/60枚, 田中7=62.60a/128枚, 山隈=36.86a/90枚)
+     → 60株植えで 1aあたり平均 約2.15枚。50株/70株は面積比からの推定値。
+     ★function宣言にしてあるので呼び出し順に依存しない(v33の事故の教訓)
+     ============================================================ */
+  function naeBase(){ return {50:1.80, 60:2.15, 70:2.50}; }
+  var NAE_EXC=['大豆','未定'];            /* 稲以外は苗箱が要らないので除く */
+  function naeState(){
+    if(!window._naeS) window._naeS={kabu:60, yobi:10, view:'area'};
+    return window._naeS;
+  }
+  /* 面積の文字列(例 '39.81a')を数値へ */
+  function naeArea(fd){
+    var v=parseFloat(String(fd.a||'').replace(/[^0-9.]/g,''));
+    return isNaN(v)?0:v;
+  }
+  /* 今年つくる田んぼ(稲だけ) */
+  function naeRice(){
+    var r=[];
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var f=KT_FIELDS[i];
+      if(NAE_EXC.indexOf(f.crop)<0 && naeArea(f)>0) r.push(f);
+    }
+    return r;
+  }
+  function naeExcluded(){
+    var r=[];
+    for(var i=0;i<KT_FIELDS.length;i++){ if(NAE_EXC.indexOf(KT_FIELDS[i].crop)>=0) r.push(KT_FIELDS[i]); }
+    return r;
+  }
+  /* 1aあたりの枚数(予備こみ) */
+  function naePer(){ var s=naeState(); return naeBase()[s.kabu]*(1+s.yobi/100); }
+  /* 1枚の田んぼに要る苗箱(切り上げ。半端な箱は数えられないため) */
+  function naeMai(fd){ return Math.ceil(naeArea(fd)*naePer()); }
+  function naeMaiBare(fd){ return Math.ceil(naeArea(fd)*naeBase()[naeState().kabu]); }
+  function naeComma(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+  /* 合計 */
+  function naeTotal(){
+    var r=naeRice(), sum=0, bare=0, ar=0;
+    for(var i=0;i<r.length;i++){ sum+=naeMai(r[i]); bare+=naeMaiBare(r[i]); ar+=naeArea(r[i]); }
+    return {n:r.length, sum:sum, bare:bare, area:ar};
+  }
+  /* 株数・予備の切替 */
+  function naeSetKabu(k){ naeState().kabu=k; naeRender(); }
+  function naeSetYobi(y){ naeState().yobi=y; naeRender(); }
+  function naeSetView(v){ naeState().view=v; naeRender(); }
+  function naeToggleAc(el){ if(el&&el.parentNode) el.parentNode.classList.toggle('open'); }
+  /* 一覧のHTML */
+  function naeListHtml(){
+    var s=naeState(), r=naeRice(), h='', i;
+    if(s.view==='all'){
+      var sorted=r.slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
+      h+='<div class="nae-card">';
+      for(i=0;i<sorted.length;i++){
+        h+='<div class="nae-fl"><div class="nm">'+sorted[i].n+'<small>'+(sorted[i].crop||'')+'</small></div>'
+          +'<div class="ar">'+naeArea(sorted[i]).toFixed(2)+'a</div>'
+          +'<div class="mai">'+naeMai(sorted[i])+'<span>枚</span></div></div>';
+      }
+      h+='</div>';
+      return h;
+    }
+    var key=(s.view==='crop')?'crop':'area', g={}, ks=[];
+    for(i=0;i<r.length;i++){
+      var kk=r[i][key]||'その他';
+      if(!g[kk]){ g[kk]=[]; ks.push(kk); }
+      g[kk].push(r[i]);
+    }
+    ks.sort(function(a,b){
+      var sa=0,sb=0,j;
+      for(j=0;j<g[a].length;j++)sa+=naeArea(g[a][j]);
+      for(j=0;j<g[b].length;j++)sb+=naeArea(g[b][j]);
+      return sb-sa;
+    });
+    for(i=0;i<ks.length;i++){
+      var arr=g[ks[i]].slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
+      var sum=0, j2;
+      for(j2=0;j2<arr.length;j2++) sum+=naeMai(arr[j2]);
+      h+='<div class="nae-ac'+(i===0?' open':'')+'">'
+        +'<div class="nae-ach" onclick="naeToggleAc(this)">'
+        +'<div class="an">'+ks[i]+'<span class="nae-chip">'+arr.length+'枚</span></div>'
+        +'<div class="am">'+naeComma(sum)+'<span>枚</span></div></div>'
+        +'<div class="nae-acb">';
+      for(j2=0;j2<arr.length;j2++){
+        h+='<div class="nae-fl"><div class="nm">'+arr[j2].n+'<small>'+((s.view==='crop')?(arr[j2].area||''):(arr[j2].crop||''))+'</small></div>'
+          +'<div class="ar">'+naeArea(arr[j2]).toFixed(2)+'a</div>'
+          +'<div class="mai">'+naeMai(arr[j2])+'<span>枚</span></div></div>';
+      }
+      h+='</div></div>';
+    }
+    return h;
+  }
+  /* 画面を描く */
+  function naeRender(){
+    var el=document.getElementById('ktViewNae'); if(!el)return;
+    var s=naeState(), t=naeTotal(), ex=naeExcluded(), h='';
+    h+='<div class="ina-hero"><div class="no">田植えの準備</div><div class="nm">🌱 苗箱は何枚いる？</div>'
+      +'<div class="badge">田んぼの広さから自動で計算します</div></div>';
+    /* 株数 */
+    h+='<div class="nae-card"><div class="nae-lbl">植える株数（1坪あたり）</div><div class="nae-segs">'
+      +'<div class="nae-seg'+(s.kabu===50?' on':'')+'" onclick="naeSetKabu(50)">50株<small>うすめ</small></div>'
+      +'<div class="nae-seg'+(s.kabu===60?' on':'')+'" onclick="naeSetKabu(60)">60株<small>いつも</small></div>'
+      +'<div class="nae-seg'+(s.kabu===70?' on':'')+'" onclick="naeSetKabu(70)">70株<small>こめ</small></div>'
+      +'</div><div class="nae-mini">※ 行徳農園の実績（西3・西4・中村(2)・田中7・山隈）から <b>60株＝1aあたり約2.15枚</b> を基準にしています。</div></div>';
+    /* 予備 */
+    h+='<div class="nae-card"><div class="nae-lbl">予備（補植・破損のぶん）</div><div class="nae-segs">'
+      +'<div class="nae-seg'+(s.yobi===0?' on':'')+'" onclick="naeSetYobi(0)">なし<small>ぴったり</small></div>'
+      +'<div class="nae-seg'+(s.yobi===10?' on':'')+'" onclick="naeSetYobi(10)">10%<small>おすすめ</small></div>'
+      +'<div class="nae-seg'+(s.yobi===15?' on':'')+'" onclick="naeSetYobi(15)">15%<small>多め</small></div>'
+      +'</div></div>';
+    /* 合計 */
+    h+='<div class="nae-big"><div class="cap">今年つくる田んぼ ぜんぶで</div>'
+      +'<div class="num">'+naeComma(t.sum)+'<span>枚</span></div>'
+      +'<div class="sub">稲をつくる '+t.n+'枚ぶん／'+t.area.toFixed(2)+'a<br>'
+      +(s.yobi===0?'予備なしで計算しています':'予備なしだと '+naeComma(t.bare)+'枚（＋'+naeComma(t.sum-t.bare)+'枚が予備）')
+      +'</div></div>';
+    /* 計算に入っていない田んぼ */
+    if(ex.length){
+      h+='<div class="nae-warn">⚠️ <b>'+ex.length+'枚の田んぼは計算に入っていません</b><br>'
+        +'2026年の作付が「未定」や「大豆」のところです。未定を稲に決めると、必要な枚数はもっと増えます。</div>';
+    }
+    h+='<div class="ina-seclbl">田んぼごとの枚数</div>';
+    h+='<div class="nae-tabs">'
+      +'<div class="nae-tb'+(s.view==='area'?' on':'')+'" onclick="naeSetView(\'area\')">📍 地区べつ</div>'
+      +'<div class="nae-tb'+(s.view==='all'?' on':'')+'" onclick="naeSetView(\'all\')">📋 ぜんぶ</div>'
+      +'<div class="nae-tb'+(s.view==='crop'?' on':'')+'" onclick="naeSetView(\'crop\')">🌾 品種べつ</div>'
+      +'</div>';
+    h+=naeListHtml();
+    h+='<div class="kt-ksasbtn" onclick="naeCopy()">📋 この一覧をコピーする<small>苗の注文や連絡にそのまま貼れます</small></div>';
+    h+='<div class="nae-mini">・面積は田んぼ一覧に登録されている数字をそのまま使っています<br>'
+      +'・株数を変えると枚数も変わります（株が多い＝苗も多い）<br>'
+      +'・小数点は切り上げ。半端な箱は数えられないためです</div>';
+    h+='<div class="ina-link" onclick="naeBack()" style="margin-top:14px;">‹ 田植えの工程へ戻る</div>';
+    el.innerHTML=h;
+    ktShowOnly('ktViewNae');
+  }
+  /* コピー用の文（KSAS連携と同じ作法） */
+  function naeText(){
+    var s=naeState(), t=naeTotal(), r=naeRice(), i;
+    var tx='【苗箱の必要枚数】'+(new Date()).getFullYear()+'年\n';
+    tx+= s.kabu+'株植え／予備'+s.yobi+'%\n';
+    tx+='合計 '+t.sum+'枚（稲 '+t.n+'枚ぶん・'+t.area.toFixed(2)+'a）\n\n';
+    var sorted=r.slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
+    for(i=0;i<sorted.length;i++) tx+=sorted[i].n+'　'+naeArea(sorted[i]).toFixed(2)+'a　'+naeMai(sorted[i])+'枚\n';
+    return tx;
+  }
+  function naeCopy(){
+    var t=naeText();
+    var ok=function(){toast('📋 コピーしました');};
+    var ng=function(){
+      var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta);
+      ta.select(); try{document.execCommand('copy'); ok();}catch(e){toast('コピーできませんでした');}
+      document.body.removeChild(ta);
+    };
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok,ng); }
+    else ng();
+  }
+  /* 入口・戻り */
+  function naeOpen(){ naeRender(); }
+  function naeBack(){ if(typeof ktCurStep==='number'&&KT_SMAP&&KT_SMAP.taue!=null) ktOpenStep(KT_SMAP.taue); else ktBackToBoard(); }
+
   /* ---- ビュー切替・入口・スワイプ戻り ---- */
   function ktShowOnly(id){
-    var ids=['ktViewBoard','ktViewStep','ktViewKsas','ktViewSetup','ktViewWhy'];
+    var ids=['ktViewBoard','ktViewStep','ktViewKsas','ktViewSetup','ktViewWhy','ktViewNae'];
     for(var i=0;i<ids.length;i++){var e=document.getElementById(ids[i]); if(e)e.style.display=(ids[i]===id)?'block':'none';}
     var b=document.getElementById('body'); if(b)b.scrollTop=0;
   }
@@ -2418,6 +2627,7 @@
   /* 横スワイプ:内部ビュー→工程表→ホーム(段階的に戻る/v15確立の共通ルール) */
   function ktSwipeBack(){
     var vis=function(id){var e=document.getElementById(id);return e&&e.style.display!=='none';};
+    if(vis('ktViewNae')){ naeBack(); return false; }
     if(vis('ktViewKsas')){ ktOpenStep(ktCurStep); return false; }
     if(vis('ktViewStep')){ ktBackToBoard(); return false; }
     if(vis('ktViewWhy')){ ktShowSetup(); return false; }
@@ -5045,6 +5255,26 @@
     }
   })();
   function openSite(u){ window.open(u,'_blank'); }
+  /* レイミー：App Store経由で開く。インストール済みなら「開く」でアプリが起動する。
+     日本農薬はiOS用のURLスキームを公開していないため、確実に動く経路にしている。
+     もし将来スキームが判明したら RAIMY_SCHEME に入れれば1タップで開くようになる。 */
+  var RAIMY_SCHEME='';                       /* 例:'ramey://' 実機で確認できたら入れる */
+  var RAIMY_STORE='https://apps.apple.com/jp/app/id1502937431';
+  function openRaimy(){
+    if(RAIMY_SCHEME){
+      /* スキームが分かっている場合:試して、開けなければApp Storeへ */
+      var t=Date.now(), moved=false;
+      var onHide=function(){ moved=true; };
+      document.addEventListener('visibilitychange',onHide);
+      window.location.href=RAIMY_SCHEME;
+      setTimeout(function(){
+        document.removeEventListener('visibilitychange',onHide);
+        if(!moved && Date.now()-t<2000) window.open(RAIMY_STORE,'_blank');
+      },1200);
+      return;
+    }
+    window.open(RAIMY_STORE,'_blank');
+  }
   function toggleNaro(){
     var c=document.getElementById('naroCard'), l=document.getElementById('naroList');
     if(!c||!l) return;
