@@ -948,6 +948,7 @@
   .hscene{flex:1;min-width:0;height:60px;align-self:center;margin:0 10px;
     border-radius:14px;overflow:hidden;position:relative;cursor:pointer;
     border:1px solid var(--green-line);box-shadow:inset 0 1px 2px #fff;background:#DCEFF3;}
+  .hscene>#homeSceneArt{position:absolute;inset:0;}
   .hscene svg{display:block;width:100%;height:100%;}
   .hscene .hs-chip{position:absolute;left:7px;bottom:6px;background:#FFFFFFE8;border:1px solid var(--green);
     border-radius:8px;padding:2px 7px;font-size:10.5px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;line-height:1;
@@ -4750,7 +4751,10 @@
     if(m===10)       return {cls:'hs-autumn', chip:'稲刈り'};
     return {cls:'hs-rest', chip:'冬の田'}; /* 11〜3月 */
   }
-  /* 田んぼの絵(SVG)。段階ごとに丸ごと差し替える。画像ファイルなし=通信ゼロ。 */
+  /* 田んぼの絵(SVG)。段階ごとに丸ごと差し替える。画像ファイルなし=通信ゼロ。
+     ★function宣言にしてあるのは、起動時の applyScene() がこの定義より前で呼ばれるため。
+       var のままだと巻き上げで値が undefined になり TypeError で以降のJSが全部止まる。 */
+  function hsBuild(cls){
   var HS_DEFS=
     '<defs>'+
       '<linearGradient id="hsSkySp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CCBE4"/><stop offset=".5" stop-color="#CBE4EF"/><stop offset="1" stop-color="#EDF3EC"/></linearGradient>'+
@@ -4907,10 +4911,10 @@
         '<path d="M103.8 77 C105 75 106 74 107 73" stroke="#9A8F72" stroke-width="1.6" fill="none" stroke-linecap="round"/>'+
       '</g>'
   };
-  function hsSvg(cls){
     var art=HS_ART[cls]||HS_ART['hs-sui'];
     return '<svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+HS_DEFS+art+'</svg>';
   }
+  function hsSvg(cls){ return hsBuild(cls); }
 
   function applyScene(){
     var el=document.getElementById('homeScene'); if(!el)return;
