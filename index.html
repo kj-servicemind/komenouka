@@ -32,6 +32,9 @@
   .cap{font-size:12px;font-weight:600;color:#5A5648;text-align:center;margin-bottom:14px;line-height:1.6;}
 
   /* ===== 端末フレーム ===== */
+  /* ★v36.4：メディアクエリの外でも html に紙色を敷いておく。
+     iOSのステータスバー帯・オーバースクロール域は html の背景色で塗られるため。 */
+  html{background:#FBFAF6;}
   .phone{width:414px;max-width:100%;background:#0E0E0C;border-radius:48px;padding:12px;
     box-shadow:0 30px 70px rgba(20,25,18,.42),0 6px 16px rgba(0,0,0,.3);}
   .screen{background:var(--paper);border-radius:38px;overflow:hidden;height:800px;
@@ -42,6 +45,9 @@
   @media (max-width:600px){
     /* ★v23修正②：body土台のpaddingを解除し、documentごとスクロールするのを止める */
     html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none;}
+    /* ★v36.4：html にも背景色を入れる。iOSはステータスバー(safe-area)の帯を
+       html の背景色で塗るため、html が透明だと端末既定色=黒帯が出る。 */
+    html{background:var(--paper);}
     body{background:var(--paper);display:block;}
     /* ★v24.2修正：.phone を position:fixed で画面そのものに釘付けにする。
        top/bottom:0 で「今見えている高さ」に必ず一致するので、
@@ -4289,7 +4295,13 @@
   /* v25.4:設定は下タブに固定になったのでボタン/タブの候補からは外す(重複させない)。 */
   var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','koutei'];
   /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
-  var HOME_ORDER_DEFAULT=['rec','voice','hist','drone','diag','ai','koutei','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka'];
+  /* ★v36.4：ご家族に配布したときの初期の並び。実機の画面どおりにした。
+     1ページ目=作業を記録／田んぼ・マップ／AI病害虫診断／KSAS連携／米づくり工程表／肥料の栄養
+     2ページ目=話して記録／うちの教科書／記録の履歴／機械の維持費／生産原価／ドローン散布
+     ※タブに使う ai・cal・pest はボタンからは自動で除かれる（重複させない仕様）。 */
+  var HOME_ORDER_DEFAULT=['rec','fields','diag','ksas','koutei','hiryo',
+                          'voice','kyoka','hist','kikai','cost','drone',
+                          'ai','pest','cal','team'];
   var TILE_LS_KEY='gyotokuHomeOrder_v1';
   function loadHomeOrder(){
     var base=HOME_ORDER_DEFAULT.slice();
@@ -4448,7 +4460,9 @@
                  pest:'農薬',fields:'田んぼ',team:'共有',cal:'予定',cost:'原価',set:'設定',
                  ksas:'KSAS',koutei:'工程表',hiryo:'肥料',kikai:'機械',kyoka:'許可',kroku:'記録簿',hist:'履歴'};
   var TAB_ALIAS={rec:'voice', voice:'rec'}; /* 記録系はどちらでも同じタブを点灯 */
-  var TAB_DEFAULT=['voice','ai','ksas'];
+  /* ★v36.4：ご家族に配布したときの初期タブ。実機の並び（相談・予定・農薬）に合わせた。
+     localStorage は端末ごとなので、配布先には必ずこの初期値が出る。 */
+  var TAB_DEFAULT=['ai','cal','pest'];
   var TAB_LS_KEY='gyotokuTabs_v1';
   function loadTabs(){
     try{
