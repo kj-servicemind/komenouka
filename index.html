@@ -745,6 +745,10 @@
     background:#EAF1EA;border-radius:999px;padding:3px 8px;white-space:nowrap;}
   .fl-nae.none{background:#F0EEE6;color:#9A9484;font-weight:700;}
   .fl-gh .fl-nae + .gs{margin-left:8px;}
+  /* 田んぼ1枚ずつの行に出す苗バッジ（本人指摘①） */
+  .fl-rnae{margin-left:auto;flex-shrink:0;font-size:13px;font-weight:800;color:var(--green-deep);
+    background:#EAF1EA;border-radius:999px;padding:4px 9px;white-space:nowrap;}
+  .fl-rnae.ed{color:#B55A00;background:#FBF0E0;}
   /* 手直しできる枚数（破線の下線＝押せる印） */
   .nae-fl .mai.tap{border-bottom:1.5px dashed #A9C4AF;padding-bottom:1px;cursor:pointer;}
   .nae-fl.edited .mai{color:#B55A00;border-bottom-color:#DCA35E;}
@@ -2576,6 +2580,9 @@
   }
   function naeOvPut(name, val){
     if(!name)return;
+    /* ★保存の直前に必ず読み直す：家族の同期が入った直後に古いキャッシュへ
+       追記すると、家族の手直しを上書きで消してしまうため */
+    window._naeOv=null;
     var a=naeOvArr(), i, hit=-1;
     for(i=0;i<a.length;i++){ if(a[i]&&a[i].f===name){ hit=i; break; } }
     var it={id:'nae:'+name, f:name, v:val, _m:Date.now()};
@@ -2606,30 +2613,43 @@
   /* ---- 手直しのシート（−／＋。キーボードは出さない＝打ち間違い防止） ---- */
   function naeEdit(i){
     var f=KT_FIELDS[i]; if(!f)return;
-    window._naeEdit=(window._naeEdit===f.n)?null:f.n;
-    naeRender();
+    var opening=(window._naeEdit!==f.n);
+    window._naeEdit=opening?f.n:null;
+    if(opening)window._naeShowSheet=true;   /* 開いた時だけシートへ寄せる（③） */
+    naeRender(true);
   }
   function naePM(i,d){
     var f=KT_FIELDS[i]; if(!f)return;
     var v=Math.max(1, naeMai(f)+d);
     /* 自動計算と同じ数に戻ったら手直しの印は消す（意味のない✏️を残さない） */
     naeOvPut(f.n, (v===naeMaiAuto(f))?null:v);
-    naeRender();
+    naeRender(true);
   }
-  function naeFixDone(){ window._naeEdit=null; naeRender(); toast('✅ この枚数にしました（家族の端末にも共有されます）'); }
+  function naeFixDone(){ window._naeEdit=null; naeRender(true); toast('✅ この枚数にしました（家族の端末にも共有されます）'); }
   function naeUnfix(i){
     var f=KT_FIELDS[i]; if(!f)return;
-    naeOvPut(f.n, null); window._naeEdit=null; naeRender(); toast('自動計算にもどしました');
+    naeOvPut(f.n, null); window._naeEdit=null; naeRender(true); toast('自動計算にもどしました');
   }
   /* 株数・予備の切替 */
-  function naeSetKabu(k){ naeState().kabu=k; naeRender(); }
-  function naeSetYobi(y){ naeState().yobi=y; naeRender(); }
-  function naeSetView(v){ naeState().view=v; naeRender(); }
+  function naeSetKabu(k){ naeState().kabu=k; naeRender(true); }
+  function naeSetYobi(y){ naeState().yobi=y; naeRender(true); }
+  function naeSetView(v){ naeState().view=v; window._naeAcS=null; naeRender(true); }
+  /* ★v36.1:地区の開閉は「状態」として記憶する（本人指摘③の一部）。
+     旧方式はDOMのclass直接操作だったため、−／＋を押して再描画されるたびに
+     開閉が全部リセットされ、開いていた地区が閉じてシートごと隠れていた */
+  function naeAcS(){
+    if(!window._naeAcS) window._naeAcS={open:{}, init:false};
+    return window._naeAcS;
+  }
+  function naeAcTg(name){
+    var ac=naeAcS(); ac.open[name]=!ac.open[name]; naeRender(true);
+  }
+  /* 旧関数は他から呼ばれても落ちないよう残す（中身は新方式へ委譲しない・単なる保険） */
   function naeToggleAc(el){ if(el&&el.parentNode) el.parentNode.classList.toggle('open'); }
   /* 手直しのシート（枚数を押した田んぼの下に出る） */
   function naeSheetHtml(fd){
     var i=KT_FIELDS.indexOf(fd);
-    return '<div class="nae-sheet"><div class="ti">'+fd.n+' の苗箱</div>'
+    return '<div class="nae-sheet" id="naeSheet" onclick="event.stopPropagation()"><div class="ti">'+fd.n+' の苗箱</div>'
       +'<div class="row"><div class="pm" onclick="naePM('+i+',-1)">−</div>'
       +'<div class="val">'+naeMai(fd)+'<span>枚</span></div>'
       +'<div class="pm" onclick="naePM('+i+',1)">＋</div></div>'
@@ -2637,14 +2657,14 @@
       +'<div class="acts"><div class="b2" onclick="naeUnfix('+i+')">自動にもどす</div>'
       +'<div class="b1" onclick="naeFixDone()">この枚数にする</div></div></div>';
   }
-  /* 田んぼ1行（枚数は押せる＝破線の下線つき） */
+  /* 田んぼ1行（★行のどこを押しても手直しが開く＝本人指摘②。枚数の破線は「押せる」印として残す） */
   function naeRowHtml(fd, sub){
     var i=KT_FIELDS.indexOf(fd), ed=naeEdited(fd);
-    var h='<div class="nae-fl'+(ed?' edited':'')+'">'
+    var h='<div class="nae-fl'+(ed?' edited':'')+'" onclick="naeEdit('+i+')" style="cursor:pointer;">'
       +'<div class="nm">'+fd.n+'<small>'+(sub||'')+'</small></div>'
       +(ed?'<span class="pen">✏️手直し</span>':'')
       +'<div class="ar">'+naeArea(fd).toFixed(2)+'a</div>'
-      +'<div class="mai tap" onclick="naeEdit('+i+')">'+naeMai(fd)+'<span>枚</span></div></div>';
+      +'<div class="mai tap">'+naeMai(fd)+'<span>枚</span></div></div>';
     if(window._naeEdit===fd.n)h+=naeSheetHtml(fd);
     return h;
   }
@@ -2670,12 +2690,17 @@
       for(j=0;j<g[b].length;j++)sb+=naeArea(g[b][j]);
       return sb-sa;
     });
+    /* 開閉の状態：初回だけ先頭の地区を開く。以後はユーザーの開閉をそのまま覚える */
+    var ac=naeAcS();
+    if(!ac.init){ ac.init=true; if(ks.length)ac.open[ks[0]]=true; }
     for(i=0;i<ks.length;i++){
       var arr=g[ks[i]].slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
-      var sum=0, j2;
-      for(j2=0;j2<arr.length;j2++) sum+=naeMai(arr[j2]);
-      h+='<div class="nae-ac'+(i===0?' open':'')+'">'
-        +'<div class="nae-ach" onclick="naeToggleAc(this)">'
+      var sum=0, j2, hasSheet=false;
+      for(j2=0;j2<arr.length;j2++){ sum+=naeMai(arr[j2]); if(window._naeEdit===arr[j2].n)hasSheet=true; }
+      /* シートを開いている田んぼの地区は必ず開く（隠れて「消えた」ように見せない） */
+      var opn=!!ac.open[ks[i]]||hasSheet;
+      h+='<div class="nae-ac'+(opn?' open':'')+'">'
+        +'<div class="nae-ach" onclick="naeAcTg(\''+ks[i].replace(/'/g,"\\'")+'\')">'
         +'<div class="an">'+ks[i]+'<span class="nae-chip">'+arr.length+'枚</span></div>'
         +'<div class="am">'+naeComma(sum)+'<span>枚</span></div></div>'
         +'<div class="nae-acb">';
@@ -2686,9 +2711,14 @@
     }
     return h;
   }
-  /* 画面を描く */
-  function naeRender(){
+  /* 画面を描く
+     keep=true のとき、いま見ている場所（スクロール位置）を保ったまま描き直す。
+     ★本人指摘③：旧実装は毎回 ktShowOnly が scrollTop=0 にしていたため、
+     枚数を押すたび・−／＋を押すたびに画面が一番上へ飛んでいた */
+  function naeRender(keep){
     var el=document.getElementById('ktViewNae'); if(!el)return;
+    var bd=document.getElementById('body');
+    var keepTop=(keep&&bd)?bd.scrollTop:0;
     var s=naeState(), t=naeTotal(), ex=naeExcluded(), h='';
     h+='<div class="ina-hero"><div class="no">田植えの準備</div><div class="nm">🌱 苗箱は何枚いる？</div>'
       +'<div class="badge">田んぼの広さから自動で計算します</div></div>';
@@ -2741,6 +2771,13 @@
       +((window._naeFrom==='fields')?'田んぼ一覧へ戻る':'田植えの工程へ戻る')+'</div>';
     el.innerHTML=h;
     ktShowOnly('ktViewNae');
+    if(keep&&bd)bd.scrollTop=keepTop;   /* いま見ていた場所に戻す */
+    /* シートを開いた直後だけ、シートが画面に入るように寄せる（画面上部へ飛ばさない） */
+    if(window._naeShowSheet){
+      window._naeShowSheet=false;
+      var sh=document.getElementById('naeSheet');
+      if(sh&&sh.scrollIntoView){ try{ sh.scrollIntoView({block:'nearest'}); }catch(e){ try{ sh.scrollIntoView(false); }catch(e2){} } }
+    }
   }
   /* コピー用の文（KSAS連携と同じ作法） */
   function naeText(){
@@ -2749,7 +2786,9 @@
     tx+= s.kabu+'株植え／予備'+s.yobi+'%\n';
     tx+='合計 '+t.sum+'枚（稲 '+t.n+'枚ぶん・'+t.area.toFixed(2)+'a）\n\n';
     var sorted=r.slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
-    for(i=0;i<sorted.length;i++) tx+=sorted[i].n+'　'+naeArea(sorted[i]).toFixed(2)+'a　'+naeMai(sorted[i])+'枚\n';
+    for(i=0;i<sorted.length;i++) tx+=sorted[i].n+'　'+naeArea(sorted[i]).toFixed(2)+'a　'+naeMai(sorted[i])+'枚'+(naeEdited(sorted[i])?'（手直し）':'')+'\n';
+    var fxn=t.fx||0;
+    if(fxn)tx+='\n※（手直し）は自動計算から手で直した枚数（'+fxn+'枚の田んぼ）\n';
     return tx;
   }
   function naeCopy(){
@@ -2765,10 +2804,10 @@
   }
   /* 入口・戻り */
   /* 入口①：工程表 →「③田植え」の緑の帯（v35から継続。同じ画面へ飛ぶだけなので残す） */
-  function naeOpen(){ window._naeFrom='kt'; window._naeEdit=null; naeRender(); }
+  function naeOpen(){ window._naeFrom='kt'; window._naeEdit=null; window._naeAcS=null; naeRender(); }
   /* 入口②：田んぼ一覧のいちばん上のボタン（v36で新設） */
   function naeOpenFromFields(){
-    window._naeFrom='fields'; window._naeEdit=null;
+    window._naeFrom='fields'; window._naeEdit=null; window._naeAcS=null;
     go('koutei');                                   /* 計算画面は工程表ページの中にある */
     var hd=document.getElementById('hdr');
     if(hd)hd.innerHTML=navHdr('fields','田んぼ一覧','🌱 苗箱の枚数');   /* 来た道に合わせて見出しを差し替え */
@@ -3437,12 +3476,19 @@
   }
   function flRowHtml(i){
     var f=KT_FIELDS[i];
+    /* v36.1:稲の田んぼには1枚ずつの苗箱の枚数を出す（本人指摘①）。手直し済みはオレンジ＋✏️ */
+    var nae='';
+    if(typeof naeMai==='function' && NAE_EXC.indexOf(f.crop)<0 && naeArea(f)>0){
+      var ned=naeEdited(f);
+      nae='<span class="fl-rnae'+(ned?' ed':'')+'">🌱'+naeMai(f)+'枚'+(ned?'✏️':'')+'</span>';
+    }
     return '<div class="fld-wrap" id="fw'+i+'">'
       +'<div class="rowcard" onclick="fieldToggle('+i+')" style="border:0;border-radius:0;border-bottom:1px solid #F0EDE0;margin:0;box-shadow:none;">'
       +'<div style="display:flex;align-items:center;gap:9px;"><span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
       +'<div><div class="nm">'+f.n+(f.care?' <span style="font-size:10px;background:var(--red-soft);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:800;">注意</span>':'')+(f.memo?' <span style="font-size:10px;background:#F5EEDC;color:#B8912E;border-radius:5px;padding:1px 5px;font-weight:800;">メモ</span>':'')+'</div>'
       +'<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
-      +'<span style="margin-left:auto;font-weight:800;color:#6B6552;font-size:14.5px;">'+f.a+'</span></div>'
+      +nae
+      +'<span style="'+(nae?'margin-left:8px;':'margin-left:auto;')+'font-weight:800;color:#6B6552;font-size:14.5px;flex-shrink:0;">'+f.a+'</span></div>'
       +flDetailHtml(i)+'</div>';
   }
   function flListDraw(){
