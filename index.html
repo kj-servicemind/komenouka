@@ -102,9 +102,9 @@
     border-bottom:1px solid var(--line);}
   .brand{position:relative;flex-shrink:0;}
   .brand .app{font-family:var(--mincho);font-size:23px;font-weight:700;letter-spacing:.06em;line-height:1.1;}
-  .brand .dateline{display:flex;align-items:center;flex-wrap:nowrap;gap:9px;margin-top:4px;}
+  .brand .dateline{display:block;margin-top:3px;}
   .brand .date{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.04em;white-space:nowrap;}
-  .brand .today{font-size:11.5px;font-weight:700;letter-spacing:.04em;position:relative;color:#6B6656;white-space:nowrap;}
+  .brand .today{display:block;margin-top:3px;font-size:11px;font-weight:700;letter-spacing:.04em;position:relative;color:#7C7767;white-space:nowrap;}
   .wx{display:flex;gap:9px;flex-shrink:0;align-items:stretch;}
   .wx .c{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:46px;}
   .wx .lb{font-size:10.5px;font-weight:800;color:var(--ink);letter-spacing:.06em;}
@@ -947,30 +947,11 @@
      再描画で消えないよう applyScene() で毎回塗り直す(天気の applyWeather と同じ作法)。 */
   .hscene{flex:1;min-width:0;height:60px;align-self:center;margin:0 10px;
     border-radius:14px;overflow:hidden;position:relative;cursor:pointer;
-    border:1px solid var(--green-line);box-shadow:inset 0 1px 2px #fff;
-    background:linear-gradient(#DCEFF3 0%,#DCEFF3 50%,#CFE7D0 50%,#CFE7D0 66%,#8FB89B 66%,#8FB89B 79%,#7A5C3A 79%);}
-  .hscene .hs-sun{position:absolute;top:7px;right:10px;width:15px;height:15px;border-radius:50%;
-    background:radial-gradient(circle,#FFE08A,#F4C24A);box-shadow:0 0 9px #F6CF6A;}
-  .hscene .hs-plant{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:2.5px;}
-  .hscene .hs-bl{width:3.5px;border-radius:4px 4px 0 0;background:linear-gradient(#5FA96A,#2F7A3E);transform-origin:bottom;position:relative;}
-  .hscene .hs-ear{display:none;position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:11px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));}
+    border:1px solid var(--green-line);box-shadow:inset 0 1px 2px #fff;background:#DCEFF3;}
+  .hscene svg{display:block;width:100%;height:100%;}
   .hscene .hs-chip{position:absolute;left:7px;bottom:6px;background:#FFFFFFE8;border:1px solid var(--green);
-    border-radius:8px;padding:2px 7px;font-size:10.5px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;line-height:1;}
-  /* 生育段階ごとの株の高さ */
-  .hscene.hs-nae .hs-bl{height:9px;} .hscene.hs-nae .hs-bl:nth-child(2){height:12px;} .hscene.hs-nae .hs-bl:nth-child(3){height:14px;} .hscene.hs-nae .hs-bl:nth-child(4){height:11px;}
-  .hscene.hs-bun .hs-bl{height:14px;} .hscene.hs-bun .hs-bl:nth-child(2){height:20px;} .hscene.hs-bun .hs-bl:nth-child(3){height:24px;} .hscene.hs-bun .hs-bl:nth-child(4){height:19px;} .hscene.hs-bun .hs-bl:nth-child(5){height:13px;}
-  .hscene.hs-sui .hs-bl{height:18px;} .hscene.hs-sui .hs-bl:nth-child(1){transform:rotate(-12deg);} .hscene.hs-sui .hs-bl:nth-child(2){height:26px;transform:rotate(-4deg);} .hscene.hs-sui .hs-bl:nth-child(3){height:30px;} .hscene.hs-sui .hs-bl:nth-child(4){height:25px;transform:rotate(5deg);} .hscene.hs-sui .hs-bl:nth-child(5){height:17px;transform:rotate(12deg);}
-  /* 出穂・登熟は中央の1本に穂 */
-  .hscene.hs-sui .hs-bl:nth-child(3) .hs-ear{display:block;}
-  /* 実りの秋:金色・穂だらけ・空も暖色 */
-  .hscene.hs-autumn{background:linear-gradient(#F3ECD6 0%,#F3ECD6 50%,#E7D9A8 50%,#E7D9A8 66%,#D8C066 66%,#D8C066 79%,#7A5C3A 79%);}
-  .hscene.hs-autumn .hs-bl{background:linear-gradient(#E4C860,#C79A2E);height:20px;}
-  .hscene.hs-autumn .hs-bl:nth-child(1){transform:rotate(-14deg);height:16px;} .hscene.hs-autumn .hs-bl:nth-child(2){transform:rotate(-6deg);height:22px;} .hscene.hs-autumn .hs-bl:nth-child(3){height:24px;} .hscene.hs-autumn .hs-bl:nth-child(4){transform:rotate(6deg);height:22px;} .hscene.hs-autumn .hs-bl:nth-child(5){transform:rotate(14deg);height:16px;}
-  .hscene.hs-autumn .hs-ear{display:block;}
-  /* 農閑期(冬):株なし・落ち着いた田 */
-  .hscene.hs-rest{background:linear-gradient(#E8ECEE 0%,#E8ECEE 52%,#D9DCD2 52%,#D9DCD2 68%,#B7A886 68%,#B7A886 80%,#7A5C3A 80%);}
-  .hscene.hs-rest .hs-plant{display:none;}
-  .hscene.hs-rest .hs-sun{background:radial-gradient(circle,#FBF1D6,#E8DCB4);box-shadow:none;}
+    border-radius:8px;padding:2px 7px;font-size:10.5px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;line-height:1;
+    box-shadow:0 1px 2px rgba(0,0,0,.07);}
 </style>
 </head>
 <body>
@@ -1587,13 +1568,8 @@
         '<div class="app">行徳農園</div>'+
         '<div class="dateline"><span class="date" id="todayDate">7月14日(月)</span><span class="today">農業は"記憶"から"記録"へ</span></div>'+
       '</div>'+
-      '<div class="hscene hs-sui" id="homeScene" onclick="go(\'koutei\')" title="米づくり工程表へ">'+
-        '<span class="hs-sun"></span>'+
-        '<span class="hs-plant">'+
-          '<i class="hs-bl"></i><i class="hs-bl"></i>'+
-          '<i class="hs-bl"><span class="hs-ear">🌾</span></i>'+
-          '<i class="hs-bl"></i><i class="hs-bl"></i>'+
-        '</span>'+
+      '<div class="hscene" id="homeScene" onclick="go(\'koutei\')" title="米づくり工程表へ">'+
+        '<div id="homeSceneArt"></div>'+
         '<span class="hs-chip" id="homeSceneChip">出穂</span>'+
       '</div>'+
       '<div class="wx">'+
@@ -4774,6 +4750,168 @@
     if(m===10)       return {cls:'hs-autumn', chip:'稲刈り'};
     return {cls:'hs-rest', chip:'冬の田'}; /* 11〜3月 */
   }
+  /* 田んぼの絵(SVG)。段階ごとに丸ごと差し替える。画像ファイルなし=通信ゼロ。 */
+  var HS_DEFS=
+    '<defs>'+
+      '<linearGradient id="hsSkySp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CCBE4"/><stop offset=".5" stop-color="#CBE4EF"/><stop offset="1" stop-color="#EDF3EC"/></linearGradient>'+
+      '<linearGradient id="hsSkySu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FB8DE"/><stop offset=".45" stop-color="#B4D9EC"/><stop offset="1" stop-color="#E4F0E9"/></linearGradient>'+
+      '<linearGradient id="hsSkyAu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9BE7E"/><stop offset=".45" stop-color="#F5DBA8"/><stop offset="1" stop-color="#FAEED2"/></linearGradient>'+
+      '<linearGradient id="hsSkyWi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C6CE"/><stop offset=".5" stop-color="#D8DFE0"/><stop offset="1" stop-color="#ECEEE8"/></linearGradient>'+
+      '<radialGradient id="hsGlow"><stop offset="0" stop-color="#FFFBE8" stop-opacity=".95"/><stop offset=".4" stop-color="#FFE9A8" stop-opacity=".5"/><stop offset="1" stop-color="#FFD873" stop-opacity="0"/></radialGradient>'+
+      '<radialGradient id="hsSun"><stop offset="0" stop-color="#FFFEF5"/><stop offset=".7" stop-color="#FFF0BE"/><stop offset="1" stop-color="#FFDD8C"/></radialGradient>'+
+      '<linearGradient id="hsWatSu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9C6A8"/><stop offset=".5" stop-color="#8FB292"/><stop offset="1" stop-color="#6F9678"/></linearGradient>'+
+      '<linearGradient id="hsWatSp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BCD8E2"/><stop offset=".5" stop-color="#9DBFCE"/><stop offset="1" stop-color="#7FA3B4"/></linearGradient>'+
+      '<linearGradient id="hsLfT" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#1F5E2B"/><stop offset=".35" stop-color="#3C8442"/><stop offset=".75" stop-color="#63A85C"/><stop offset="1" stop-color="#8CC47B"/></linearGradient>'+
+      '<linearGradient id="hsLfB" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#17491F"/><stop offset=".5" stop-color="#2C6B33"/><stop offset="1" stop-color="#4E8F4C"/></linearGradient>'+
+      '<linearGradient id="hsCulm" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2A6B33"/><stop offset=".6" stop-color="#4E8F4A"/><stop offset="1" stop-color="#7CB36C"/></linearGradient>'+
+      '<linearGradient id="hsLfA" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9A7B23"/><stop offset=".4" stop-color="#C7A33A"/><stop offset=".8" stop-color="#E0C65E"/><stop offset="1" stop-color="#EFDD8E"/></linearGradient>'+
+      '<linearGradient id="hsCulmA" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#A5832A"/><stop offset="1" stop-color="#D9BC5A"/></linearGradient>'+
+      '<linearGradient id="hsGrG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B7D08A"/><stop offset=".45" stop-color="#8FB65F"/><stop offset="1" stop-color="#5F8B3C"/></linearGradient>'+
+      '<linearGradient id="hsGrA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3DE95"/><stop offset=".4" stop-color="#DCBB55"/><stop offset="1" stop-color="#A9832A"/></linearGradient>'+
+      '<filter id="hsFar" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="1.6"/></filter>'+
+      '<filter id="hsMid" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".8"/></filter>'+
+      '<filter id="hsSh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="1" dy="1.4" stdDeviation="1.1" flood-color="#123018" flood-opacity=".33"/></filter>'+
+      '<filter id="hsShG" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx=".5" dy=".7" stdDeviation=".5" flood-color="#2A3A18" flood-opacity=".4"/></filter>'+
+      '<g id="hsGrainG"><ellipse rx="1.9" ry="4.2" fill="url(#hsGrG)"/><path d="M0 -4.2 L0 -7.6" stroke="#7FA84F" stroke-width=".5" stroke-linecap="round"/><ellipse rx=".55" ry="1.7" cx="-.5" cy="-1.1" fill="#D6E8B4" opacity=".55"/></g>'+
+      '<g id="hsGrainA"><ellipse rx="2" ry="4.4" fill="url(#hsGrA)"/><path d="M0 -4.4 L0 -8.2" stroke="#C9A94E" stroke-width=".5" stroke-linecap="round"/><ellipse rx=".6" ry="1.8" cx="-.5" cy="-1.2" fill="#FBF0C4" opacity=".6"/><path d="M0 4.4 L0 5.6" stroke="#9A7B23" stroke-width=".7" stroke-linecap="round"/></g>'+
+    '</defs>';
+
+  /* 夏の穂(緑・11粒) */
+  var HS_EARS_G=
+    '<g filter="url(#hsShG)">'+
+      '<path d="M98.4 42 C99.6 32 103 25 109 21 C116 17 124 17 130 20" stroke="url(#hsCulm)" stroke-width="1.7" fill="none" stroke-linecap="round"/>'+
+      '<use href="#hsGrainG" transform="translate(101,33) rotate(24)"/>'+
+      '<use href="#hsGrainG" transform="translate(105,28) rotate(38)"/>'+
+      '<use href="#hsGrainG" transform="translate(110,24) rotate(52)"/>'+
+      '<use href="#hsGrainG" transform="translate(116,21) rotate(66)"/>'+
+      '<use href="#hsGrainG" transform="translate(122,20) rotate(78)"/>'+
+      '<use href="#hsGrainG" transform="translate(128,20) rotate(88)"/>'+
+      '<use href="#hsGrainG" transform="translate(103,38) rotate(14)"/>'+
+      '<use href="#hsGrainG" transform="translate(107,33) rotate(30)"/>'+
+      '<use href="#hsGrainG" transform="translate(113,29) rotate(46)"/>'+
+      '<use href="#hsGrainG" transform="translate(119,26) rotate(60)"/>'+
+      '<use href="#hsGrainG" transform="translate(125,25) rotate(74)"/>'+
+    '</g>';
+
+  /* 秋の垂れ穂(金・15粒) */
+  var HS_EARS_A=
+    '<g filter="url(#hsShG)">'+
+      '<path d="M98.6 48 C100 40 104 34 110 31 C118 27 128 29 134 36 C138 41 139 47 137 53" stroke="url(#hsCulmA)" stroke-width="1.8" fill="none" stroke-linecap="round"/>'+
+      '<use href="#hsGrainA" transform="translate(101,40) rotate(28)"/>'+
+      '<use href="#hsGrainA" transform="translate(106,35) rotate(44)"/>'+
+      '<use href="#hsGrainA" transform="translate(112,32) rotate(58)"/>'+
+      '<use href="#hsGrainA" transform="translate(119,31) rotate(74)"/>'+
+      '<use href="#hsGrainA" transform="translate(126,32) rotate(92)"/>'+
+      '<use href="#hsGrainA" transform="translate(132,36) rotate(112)"/>'+
+      '<use href="#hsGrainA" transform="translate(136,42) rotate(132)"/>'+
+      '<use href="#hsGrainA" transform="translate(137,49) rotate(150)"/>'+
+      '<use href="#hsGrainA" transform="translate(104,44) rotate(20)"/>'+
+      '<use href="#hsGrainA" transform="translate(110,39) rotate(36)"/>'+
+      '<use href="#hsGrainA" transform="translate(116,36) rotate(52)"/>'+
+      '<use href="#hsGrainA" transform="translate(123,36) rotate(70)"/>'+
+      '<use href="#hsGrainA" transform="translate(130,39) rotate(92)"/>'+
+    '</g>';
+
+  var HS_ART={
+    /* 育苗・田植え:水を張った春の田、小さな苗 */
+    'hs-nae':
+      '<rect width="200" height="100" fill="url(#hsSkySp)"/>'+
+      '<circle cx="158" cy="18" r="28" fill="url(#hsGlow)"/><circle cx="158" cy="18" r="8" fill="url(#hsSun)"/>'+
+      '<g filter="url(#hsFar)" opacity=".8"><path d="M0 44 Q26 37 52 42 T104 39 T156 43 T200 40 V54 H0Z" fill="#9FB59C"/><rect y="50" width="200" height="10" fill="#B3C6AC"/></g>'+
+      '<rect y="55" width="200" height="45" fill="url(#hsWatSp)"/>'+
+      '<g stroke="#FFFFFF" stroke-opacity=".55" stroke-width="1.2" stroke-linecap="round" filter="url(#hsMid)"><path d="M10 64 H46"/><path d="M120 70 H164"/><path d="M46 78 H82"/><path d="M144 85 H182"/></g>'+
+      '<g filter="url(#hsMid)" opacity=".45"><path d="M20 76 C19 72 18 69 17 66" stroke="#4E9450" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M178 79 C177 75 176 72 175 69" stroke="#4E9450" stroke-width="1.8" fill="none" stroke-linecap="round"/></g>'+
+      '<ellipse cx="100" cy="86" rx="10" ry="2.6" fill="#3B5A62" opacity=".3"/>'+
+      '<g filter="url(#hsSh)">'+
+        '<path d="M100 88 C99.7 80 99.4 73 99.2 66" stroke="url(#hsCulm)" stroke-width="2.4" fill="none" stroke-linecap="round"/>'+
+        '<path d="M99.6 82 C93 78 87 72 83 65 C89 72 95 77 99.5 79 Z" fill="url(#hsLfT)"/>'+
+        '<path d="M100.3 78 C107 74 113 68 117 61 C112 69 106 75 100.4 78 Z" fill="url(#hsLfB)"/>'+
+        '<path d="M100.4 78 C106 75 112 69 117 61 C114 70 107 76 100.3 79 Z" fill="url(#hsLfT)" opacity=".8"/>'+
+        '<path d="M99.3 71 C95 66 91 60 89 54 C93 62 96 68 99.2 71 Z" fill="url(#hsLfT)" opacity=".9"/>'+
+        '<path d="M99.9 68 C104 63 108 57 110 51 C108 60 104 66 100 69 Z" fill="url(#hsLfB)"/>'+
+      '</g>',
+    /* 分げつ・中干し:夏、株が茂る(穂はまだ) */
+    'hs-bun':
+      '<rect width="200" height="100" fill="url(#hsSkySu)"/>'+
+      '<circle cx="158" cy="18" r="30" fill="url(#hsGlow)"/><circle cx="158" cy="18" r="9" fill="url(#hsSun)"/>'+
+      '<g filter="url(#hsFar)" opacity=".8"><path d="M0 44 Q26 36 52 41 T104 38 T156 42 T200 39 V54 H0Z" fill="#93AE93"/><rect y="50" width="200" height="10" fill="#A8C0A2"/></g>'+
+      '<rect y="55" width="200" height="45" fill="url(#hsWatSu)"/>'+
+      '<g stroke="#FFFFFF" stroke-opacity=".4" stroke-width="1.2" stroke-linecap="round" filter="url(#hsMid)"><path d="M12 68 H44"/><path d="M128 73 H166"/><path d="M54 80 H86"/></g>'+
+      '<g filter="url(#hsMid)" opacity=".5"><path d="M18 75 C17 68 15 63 13 58" stroke="#3E7C42" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M178 77 C177 70 175 65 173 60" stroke="#3E7C42" stroke-width="2" fill="none" stroke-linecap="round"/></g>'+
+      '<ellipse cx="100" cy="88" rx="15" ry="3.2" fill="#2C5136" opacity=".28"/>'+
+      '<g filter="url(#hsSh)">'+
+        '<path d="M100 90 C99.6 78 99.2 66 99 54" stroke="url(#hsCulm)" stroke-width="2.9" fill="none" stroke-linecap="round"/>'+
+        '<g stroke="#2A6B33" stroke-width=".45" opacity=".5"><path d="M99.6 76 h1.6"/><path d="M99.4 64 h1.6"/></g>'+
+        '<path d="M99.7 80 C89 75 79 66 71 55 C81 64 91 71 99.5 75 Z" fill="url(#hsLfB)"/>'+
+        '<path d="M99.5 75 C91 71 81 64 71 55 C82 66 91 73 99.4 77 Z" fill="url(#hsLfT)" opacity=".85"/>'+
+        '<path d="M100.3 71 C110 66 120 58 128 48 C119 59 109 66 100.5 70 Z" fill="url(#hsLfT)"/>'+
+        '<path d="M100.5 70 C109 66 119 59 128 48 C121 61 110 68 100.4 73 Z" fill="url(#hsLfB)" opacity=".55"/>'+
+        '<path d="M99.2 63 C92 58 85 50 80 41 C87 52 94 59 99.1 62 Z" fill="url(#hsLfT)"/>'+
+        '<path d="M99.8 59 C107 54 114 46 119 37 C114 48 106 56 99.9 60 Z" fill="url(#hsLfB)"/>'+
+        '<path d="M99.9 60 C106 56 113 48 119 37 C115 49 107 57 100 62 Z" fill="url(#hsLfT)" opacity=".8"/>'+
+        '<path d="M98.9 54 C94 49 90 42 88 35 C92 44 96 50 98.9 54 Z" fill="url(#hsLfT)" opacity=".9"/>'+
+      '</g>',
+    /* 出穂・登熟:夏、穂が立つ */
+    'hs-sui':
+      '<rect width="200" height="100" fill="url(#hsSkySu)"/>'+
+      '<circle cx="158" cy="18" r="30" fill="url(#hsGlow)"/><circle cx="158" cy="18" r="9" fill="url(#hsSun)"/>'+
+      '<g filter="url(#hsFar)" opacity=".8"><path d="M0 44 Q26 36 52 41 T104 38 T156 42 T200 39 V54 H0Z" fill="#93AE93"/><rect y="50" width="200" height="10" fill="#A8C0A2"/></g>'+
+      '<rect y="55" width="200" height="45" fill="url(#hsWatSu)"/>'+
+      '<g filter="url(#hsMid)" opacity=".75"><path d="M0 55 Q40 52 80 55 T160 54 T200 55 V62 H0Z" fill="#B6D0B0"/></g>'+
+      '<g stroke="#FFFFFF" stroke-opacity=".4" stroke-width="1.2" stroke-linecap="round" filter="url(#hsMid)"><path d="M10 66 H42"/><path d="M126 71 H166"/><path d="M52 78 H84"/><path d="M150 84 H184"/></g>'+
+      '<g filter="url(#hsMid)" opacity=".5"><path d="M18 74 C17 66 15 60 13 55" stroke="#3E7C42" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M22 74 C23 66 25 60 27 56" stroke="#3E7C42" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M176 76 C175 68 173 62 171 57" stroke="#3E7C42" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M180 76 C181 68 183 62 185 58" stroke="#3E7C42" stroke-width="2" fill="none" stroke-linecap="round"/></g>'+
+      '<ellipse cx="100" cy="88" rx="17" ry="3.6" fill="#2C5136" opacity=".28"/>'+
+      '<g filter="url(#hsSh)">'+
+        '<path d="M100 90 C99.4 74 98.8 58 98.4 42" stroke="url(#hsCulm)" stroke-width="3.1" fill="none" stroke-linecap="round"/>'+
+        '<g stroke="#2A6B33" stroke-width=".45" opacity=".5"><path d="M99.5 74 h1.6"/><path d="M99.2 62 h1.6"/><path d="M98.9 51 h1.6"/></g>'+
+        '<path d="M99.6 78 C88 72 76 62 66 49 C78 58 90 66 99.4 71 Z" fill="url(#hsLfB)"/>'+
+        '<path d="M99.4 71 C90 66 78 58 66 49 C79 61 90 69 99.3 74 Z" fill="url(#hsLfT)" opacity=".85"/>'+
+        '<path d="M100.2 68 C112 63 124 54 134 43 C123 55 111 63 100.4 67 Z" fill="url(#hsLfT)"/>'+
+        '<path d="M100.4 67 C111 63 123 55 134 43 C125 57 112 66 100.3 70 Z" fill="url(#hsLfB)" opacity=".55"/>'+
+        '<path d="M99.2 58 C90 52 82 43 76 32 C85 45 93 53 99.1 57 Z" fill="url(#hsLfT)"/>'+
+        '<path d="M99.9 54 C109 48 118 39 124 29 C117 42 108 51 100 55 Z" fill="url(#hsLfB)"/>'+
+        '<path d="M100 55 C108 51 117 42 124 29 C119 43 110 52 100.1 57 Z" fill="url(#hsLfT)" opacity=".8"/>'+
+      '</g>'+HS_EARS_G,
+    /* 稲刈り:秋、穂が垂れる */
+    'hs-autumn':
+      '<rect width="200" height="100" fill="url(#hsSkyAu)"/>'+
+      '<circle cx="150" cy="22" r="32" fill="url(#hsGlow)"/><circle cx="150" cy="22" r="9" fill="#FFE9A8"/>'+
+      '<g filter="url(#hsFar)" opacity=".8"><path d="M0 44 Q26 37 52 42 T104 39 T156 43 T200 40 V54 H0Z" fill="#C4A96E"/><rect y="50" width="200" height="10" fill="#D3BC7E"/></g>'+
+      '<rect y="55" width="200" height="45" fill="#C9AE5E"/>'+
+      '<g filter="url(#hsMid)" opacity=".7"><path d="M0 55 Q40 52 80 55 T160 54 T200 55 V63 H0Z" fill="#E0CB8C"/></g>'+
+      '<g filter="url(#hsMid)" opacity=".55"><path d="M16 76 C15 68 13 62 11 57" stroke="#B79338" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M178 78 C177 70 175 64 173 59" stroke="#B79338" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>'+
+      '<ellipse cx="98" cy="88" rx="18" ry="3.8" fill="#6B5320" opacity=".3"/>'+
+      '<g filter="url(#hsSh)">'+
+        '<path d="M98 90 C97.6 76 97.6 62 98.6 48" stroke="url(#hsCulmA)" stroke-width="3.2" fill="none" stroke-linecap="round"/>'+
+        '<g stroke="#9A7B23" stroke-width=".45" opacity=".5"><path d="M97.3 74 h1.7"/><path d="M97.3 62 h1.7"/></g>'+
+        '<path d="M97.8 78 C86 72 74 62 64 50 C76 59 88 67 97.6 71 Z" fill="#B08F2E"/>'+
+        '<path d="M97.6 71 C88 67 76 59 64 50 C77 62 88 70 97.5 74 Z" fill="url(#hsLfA)" opacity=".9"/>'+
+        '<path d="M98.6 68 C111 63 123 54 133 43 C122 56 110 64 98.8 67 Z" fill="url(#hsLfA)"/>'+
+        '<path d="M97.6 58 C88 52 80 43 74 33 C83 46 91 54 97.5 57 Z" fill="url(#hsLfA)"/>'+
+      '</g>'+HS_EARS_A,
+    /* 冬の田:刈り株だけ */
+    'hs-rest':
+      '<rect width="200" height="100" fill="url(#hsSkyWi)"/>'+
+      '<circle cx="152" cy="22" r="24" fill="#F2EDDC" opacity=".45"/><circle cx="152" cy="22" r="8" fill="#F7F3E4" opacity=".9"/>'+
+      '<g filter="url(#hsFar)" opacity=".75"><path d="M0 44 Q26 38 52 43 T104 40 T156 44 T200 41 V54 H0Z" fill="#A9AE9E"/><rect y="50" width="200" height="10" fill="#BCC0B0"/></g>'+
+      '<rect y="55" width="200" height="45" fill="#B0A583"/>'+
+      '<g filter="url(#hsMid)" opacity=".6"><path d="M0 55 Q40 52 80 55 T160 54 T200 55 V62 H0Z" fill="#C8C6B2"/></g>'+
+      '<g stroke="#8E8468" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round" filter="url(#hsMid)"><path d="M10 64 H50"/><path d="M118 70 H162"/><path d="M44 78 H80"/><path d="M140 86 H180"/></g>'+
+      '<g fill="#9C9276" opacity=".8"><rect x="30" y="72" width="2.6" height="5" rx="1.2"/><rect x="62" y="79" width="2.6" height="5" rx="1.2"/><rect x="132" y="75" width="2.6" height="5" rx="1.2"/><rect x="168" y="83" width="2.6" height="5" rx="1.2"/></g>'+
+      '<ellipse cx="100" cy="87" rx="9" ry="2.4" fill="#5E5741" opacity=".3"/>'+
+      '<g filter="url(#hsSh)">'+
+        '<path d="M97 88 L96.4 76" stroke="#A79B7C" stroke-width="2.6" stroke-linecap="round"/>'+
+        '<path d="M100 88 L100 74" stroke="#B3A788" stroke-width="2.8" stroke-linecap="round"/>'+
+        '<path d="M103 88 L103.8 77" stroke="#A79B7C" stroke-width="2.6" stroke-linecap="round"/>'+
+        '<path d="M96.4 76 C95 74 94 73 93 72" stroke="#9A8F72" stroke-width="1.6" fill="none" stroke-linecap="round"/>'+
+        '<path d="M103.8 77 C105 75 106 74 107 73" stroke="#9A8F72" stroke-width="1.6" fill="none" stroke-linecap="round"/>'+
+      '</g>'
+  };
+  function hsSvg(cls){
+    var art=HS_ART[cls]||HS_ART['hs-sui'];
+    return '<svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+HS_DEFS+art+'</svg>';
+  }
+
   function applyScene(){
     var el=document.getElementById('homeScene'); if(!el)return;
     var st=null;
@@ -4787,6 +4925,7 @@
     }catch(e){ st=null; }
     if(!st) st=sceneStageFromMonth();
     el.className='hscene '+st.cls;
+    var art=document.getElementById('homeSceneArt'); if(art)art.innerHTML=hsSvg(st.cls);
     var chip=document.getElementById('homeSceneChip'); if(chip)chip.textContent=st.chip;
   }
 
