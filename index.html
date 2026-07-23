@@ -100,12 +100,11 @@
   .homehead{background:var(--paper);
     padding:8px 20px 9px;display:flex;justify-content:space-between;align-items:flex-start;
     border-bottom:1px solid var(--line);}
-  .brand{position:relative;}
+  .brand{position:relative;flex-shrink:0;}
   .brand .app{font-family:var(--mincho);font-size:23px;font-weight:700;letter-spacing:.06em;line-height:1.1;}
-  .brand .dateline{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:4px;}
-  .brand .date{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.04em;}
-  .brand .today{font-size:11.5px;font-weight:700;letter-spacing:.04em;position:relative;padding-left:11px;color:#6B6656;}
-  .brand .today::before{content:"";position:absolute;left:0;top:2px;bottom:1px;width:3px;background:var(--gold);border-radius:2px;}
+  .brand .dateline{display:flex;align-items:center;flex-wrap:nowrap;gap:9px;margin-top:4px;}
+  .brand .date{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.04em;white-space:nowrap;}
+  .brand .today{font-size:11.5px;font-weight:700;letter-spacing:.04em;position:relative;color:#6B6656;white-space:nowrap;}
   .wx{display:flex;gap:9px;flex-shrink:0;align-items:stretch;}
   .wx .c{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:46px;}
   .wx .lb{font-size:10.5px;font-weight:800;color:var(--ink);letter-spacing:.06em;}
@@ -946,7 +945,7 @@
      行徳農園ロゴ と 天気 の間に小さな田んぼ。工程が進むと株が育ち・秋は金色。
      絵はCSSのみ(画像通信ゼロ)。段階は inaCompute() の生育ステージ、無い時は月で判定。
      再描画で消えないよう applyScene() で毎回塗り直す(天気の applyWeather と同じ作法)。 */
-  .hscene{flex:1;min-width:66px;height:60px;align-self:center;margin:0 10px;
+  .hscene{flex:1;min-width:0;height:60px;align-self:center;margin:0 10px;
     border-radius:14px;overflow:hidden;position:relative;cursor:pointer;
     border:1px solid var(--green-line);box-shadow:inset 0 1px 2px #fff;
     background:linear-gradient(#DCEFF3 0%,#DCEFF3 50%,#CFE7D0 50%,#CFE7D0 66%,#8FB89B 66%,#8FB89B 79%,#7A5C3A 79%);}
@@ -1636,7 +1635,7 @@
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
     cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home',kroku:'voice',
-    hiryo:'home',kikai:'home',kyoka:'home'};
+    hiryo:'home',kikai:'home',kyoka:'home',hist:'home'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
@@ -2117,6 +2116,29 @@
   function fieldByName(n){ for(var i=0;i<KT_FIELDS.length;i++)if(KT_FIELDS[i].n===n)return KT_FIELDS[i]; return null; }
   var CROP_COLOR={'つやおとめ':'#D4A017','ひのひかり':'#2E7D32','にこまる':'#6A5A86','にじのきらめき':'#1A5A8A','夢つくし':'#D2691E','大豆':'#8B5A2B','モチ':'#9AA0A6'};
   function cropColor(c){ return (c&&CROP_COLOR[c])?CROP_COLOR[c]:'#C8C4B4'; }
+  /* ===== v32: 地区のあいうえお順(読みがな)＋初期選択の田んぼ =====
+     漢字は文字コード順だと「西→にし」の位置に来ないため、地区28件に読みを持たせる。
+     KT_FIELDS 自体は並べ替えない(取込順のまま=他機能への影響ゼロ)。 */
+  var AREA_YOMI={'たるみ':'たるみ','マミーズ':'まみいず','乙隈':'おとくま','花立':'はなたて','椛島':'かばしま','吉田':'よしだ','古賀':'こが','高田':'たかた','国分':'こくぶ','山隈':'やまくま','寺松':'てらまつ','松延':'まつのぶ','松尾':'まつお','松本':'まつもと','須戸折':'すどおり','吹上':'ふきあげ','西':'にし','大津':'おおつ','棚町':'たなまち','池松':'いけまつ','池末':'いけすえ','中村':'なかむら','田村':'たむら','田中':'たなか','島崎':'しまざき','苗田':'なえた','豊田':'とよだ','立石':'たていし'};
+  function areaYomi(a){ return (a&&AREA_YOMI[a])?AREA_YOMI[a]:(a||'んん'); }
+  function areaSort(arr){
+    return arr.sort(function(x,y){
+      var r=areaYomi(x).localeCompare(areaYomi(y),'ja');
+      return r!==0?r:String(x).localeCompare(String(y),'ja');
+    });
+  }
+  /* あいうえお順で先頭の地区の1枚目 = 初期選択 */
+  function defaultFieldName(){
+    try{
+      if(typeof KT_FIELDS==='undefined'||!KT_FIELDS.length)return '';
+      var as=[],i;
+      for(i=0;i<KT_FIELDS.length;i++){ var a=KT_FIELDS[i].area||'その他'; if(as.indexOf(a)<0)as.push(a); }
+      areaSort(as);
+      for(i=0;i<KT_FIELDS.length;i++) if((KT_FIELDS[i].area||'その他')===as[0]) return KT_FIELDS[i].n;
+      return KT_FIELDS[0].n;
+    }catch(e){ return (typeof KT_FIELDS!=='undefined'&&KT_FIELDS[0])?KT_FIELDS[0].n:''; }
+  }
+
   var fpCb=null, fpCur='';
   function fpEnsure(){
     if(document.getElementById('fpOv'))return;
@@ -2160,7 +2182,7 @@
         for(var r=0;r<rec.length;r++){ var fr=fieldByName(rec[r]); if(fr)h+=fpRowHtml(fr); } }
       var gs={},order=[];
       for(var i=0;i<list.length;i++){ var k=list[i].area||'その他'; if(!gs[k]){gs[k]=[];order.push(k);} gs[k].push(list[i]); }
-      order.sort(function(a,b){return gs[b].length-gs[a].length});
+      areaSort(order);
       for(var g=0;g<order.length;g++){ var k2=order[g];
         h+='<div class="fp-gh">📍 '+k2+'（'+gs[k2].length+'枚）</div>';
         for(var j=0;j<gs[k2].length;j++)h+=fpRowHtml(gs[k2][j]);
@@ -2812,7 +2834,7 @@
   }
   function saveVoice(){
     var r=lastParse||{field:null,chem:null,rate:null,vol:null,mass:null,work:null};
-    var fld=r.field||((typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'西 3');
+    var fld=r.field||defaultFieldName()||'西 3';
     var text=(lastMemo||'音声記録');
     var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML=(lastMemo||'(空欄)');
     wlAdd(ktGuessStep(), fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''});
@@ -3173,7 +3195,7 @@
      ============================================================ */
   var HY_LS='gyotoku.hiryo.v1';
   var hyLog=[];              /* [{d,field,fert,kg}] */
-  var hyField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'西 3';
+  var hyField=defaultFieldName()||'西 3';
   var hyFert='化成14-14-14';
   function hyLoad(){ try{var s=localStorage.getItem(HY_LS); hyLog=s?JSON.parse(s):[];}catch(e){hyLog=[];}
     if(!(hyLog instanceof Array))hyLog=[]; }
@@ -3407,7 +3429,7 @@
   var mbCurChem='スタークル';   /* いま選んでいる農薬（本来は農薬選択と連動。当面は代表値） */
   var mbHarvest=null;           /* 収穫予定日(Date)。工程表の予想があれば使う */
   /* v26 農薬計算：田んぼ選択＋まく水の量から水量・薬量を実計算 */
-  var pestField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS[0])?KT_FIELDS[0].n:'';
+  var pestField=defaultFieldName();
   var pestWater=100;            /* 10aあたりのまく水の量(L)。初期値100L（国基準60〜150Lの代表値） */
   function fieldAreaA(name){
     /* 田んぼ名→面積(a)を数値で返す。'39.81a'→39.81。取れなければ0 */
@@ -3530,7 +3552,7 @@
   }
   function pestRecord(){
     /* 記録：台帳に散布として残す→見張り番のカウントに反映。農薬代は生産原価へ */
-    var fld=pestField||(typeof recField!=='undefined'?recField:(KT_FIELDS[0]?KT_FIELDS[0].n:''));
+    var fld=pestField||(typeof recField!=='undefined'?recField:defaultFieldName());
     var yEl=document.getElementById('pestYen');
     var yen=yEl?(parseInt((''+yEl.value).replace(/[^\d]/g,''),10)||0):0;
     var extra={work:'散布', chem:mbCurChem};
@@ -4016,7 +4038,9 @@
       for(var i=0;i<3;i++){ if(midTabs[i]===n){ el=document.getElementById('tabm'+i); break; } }
       if(!el){ var al=TAB_ALIAS[n];
         if(al){ for(var j=0;j<3;j++){ if(midTabs[j]===al){ el=document.getElementById('tabm'+j); break; } } } }
-      if(!el){ el=document.getElementById('t-menu'); }
+      /* v31.1修正:タブに無い画面(田んぼ一覧・工程表・履歴など)で⚙️設定が点灯していた不具合。
+         設定タブが光るのは設定画面の時だけ。それ以外は点灯なしが正しい。 */
+      if(!el && n==='set'){ el=document.getElementById('t-menu'); }
     }
     if(el)el.classList.add('on');
   }
@@ -4428,7 +4452,7 @@
     toast('🗑 予定を消しました');
   }
   /* ===== v22② 予定の手入力(選んだ日に書く→ホームの今日のやることへ自動連動) ===== */
-  var planField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'西 3';
+  var planField=defaultFieldName()||'西 3';
   function planFormToggle(){
     var f=document.getElementById('planForm'); if(!f)return;
     if(f.classList.contains('on')){ f.classList.remove('on'); return; }
@@ -4894,8 +4918,22 @@
     var sx=0, sy=0, st=0, tracking=false;
     var body=document.getElementById('body');
     if(!body) return;
+    /* v31.1修正:横スクロールする要素(記録簿の表.krtbl・品種チップ.fl-chips・写真.ph-strip・ホームの.gridpager など)の上で
+       指を右に動かすと、スクロールのつもりが「戻る」と誤判定されて前画面へ飛んでいた。
+       タッチ開始点の祖先に「横にスクロールできる要素」があれば、戻るスワイプの追跡をしない。 */
+    function inHScroll(el){
+      while(el&&el!==body&&el.nodeType===1){
+        if(el.scrollWidth>el.clientWidth+4){
+          var ov; try{ ov=getComputedStyle(el).overflowX; }catch(e){ ov=''; }
+          if(ov==='auto'||ov==='scroll')return true;
+        }
+        el=el.parentNode;
+      }
+      return false;
+    }
     body.addEventListener('touchstart',function(e){
       if(e.touches.length!==1) { tracking=false; return; }
+      if(inHScroll(e.target)) { tracking=false; return; }
       sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now(); tracking=true;
     },{passive:true});
     body.addEventListener('touchend',function(e){
@@ -4962,7 +5000,7 @@
     tombAdd(HAS_KEY,r); hasLog.splice(i,1);hasSave();dgHist();toast('🗑 記録を消しました'); if(typeof yhRender==='function')yhRender();} }
 
   /* ---- 🩺 カルテ式診断 ---- */
-  var dgSel={}, dgField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'西 3';
+  var dgSel={}, dgField=defaultFieldName()||'西 3';
   function dgSym(el,k){ if(el)el.classList.toggle('on'); dgSel[k]=!dgSel[k]; dgRender(); }
   function dgScore(d){ var sc=0; for(var i=0;i<d.sym.length;i++)if(dgSel[d.sym[i]])sc++; return sc; }
   function dgPickField(){
@@ -5220,7 +5258,7 @@
     },function(){ toast('📍 位置がわかりませんでした。空の見える場所でもう一度どうぞ'); },
     {enableHighAccuracy:true,timeout:9000,maximumAge:30000});
   }
-  var recField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'西 3';
+  var recField=defaultFieldName()||'西 3';
   function recFieldShow(){
     var v=document.getElementById('recFieldV'); if(!v)return;
     var f=fieldByName(recField), sub=f?(' '+f.a+'・'+(f.crop||'未定')):'';
@@ -5232,7 +5270,7 @@
 
   /* ===== ドローン散布：日付・田んぼを作業記録と同じ方式で選べるように ===== */
   var droneDateSel=null;   /* 'YYYY/MM/DD'。nullなら今日 */
-  var droneField=(typeof KT_FIELDS!=='undefined'&&KT_FIELDS.length)?KT_FIELDS[0].n:'西 3';
+  var droneField=defaultFieldName()||'西 3';
   function droneDateSet(v){
     if(!v){ droneDateSel=null; var e0=document.getElementById('droneDateV'); if(e0)e0.textContent=todayStr(); return; }
     droneDateSel=v.replace(/-/g,'/');
