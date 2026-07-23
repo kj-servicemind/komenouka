@@ -2770,15 +2770,41 @@
       +'・手直しした田んぼは、株数や予備を変えてもその枚数のままです</div>';
     h+='<div class="ina-link" onclick="naeBack()" style="margin-top:14px;">‹ '
       +((window._naeFrom==='fields')?'田んぼ一覧へ戻る':'田植えの工程へ戻る')+'</div>';
+    /* ★v36.3：いちばん下の地区でシートを開いた時に、下のタブバーに隠れて
+       操作できなくならないよう、たっぷり余白をとる */
+    h+='<div style="height:120px;"></div>';
     el.innerHTML=h;
     ktShowOnly('ktViewNae');
     if(keep&&bd)bd.scrollTop=keepTop;   /* いま見ていた場所に戻す */
-    /* シートを開いた直後だけ、シートが画面に入るように寄せる（画面上部へ飛ばさない） */
+    /* シートを開いた直後だけ、シートが画面に入るように寄せる。
+       ★v36.3：ここは以前 scrollIntoView を使っていたが、iOSでは
+       ページ全体（固定ヘッダーごと）を動かしてしまい、戻るボタンが画面外へ
+       押し出されて「戻れない」ことがあった。中のスクロール容器 .body の
+       scrollTop だけを自分で計算して動かす方式に変更（外側は一切動かさない）。 */
     if(window._naeShowSheet){
       window._naeShowSheet=false;
-      var sh=document.getElementById('naeSheet');
-      if(sh&&sh.scrollIntoView){ try{ sh.scrollIntoView({block:'nearest'}); }catch(e){ try{ sh.scrollIntoView(false); }catch(e2){} } }
+      naeScrollToSheet();
     }
+  }
+  /* シートが画面からはみ出している時だけ、.body のスクロールを最小限ずらす */
+  function naeScrollToSheet(){
+    scrollIntoBody(document.getElementById('naeSheet'));
+  }
+  /* ★v36.3 共通：画面内スクロール容器 .body の中だけで要素を見える位置へ寄せる。
+     scrollIntoView は使わない（iOSで固定ヘッダーごとページが動き、
+     戻るボタンが画面外へ出て「戻れない」事故になるため）。
+     外側のページ・window は一切動かさない。 */
+  function scrollIntoBody(elm){
+    var bd=document.getElementById('body');
+    if(!bd||!elm||!elm.getBoundingClientRect||!bd.getBoundingClientRect)return;
+    var br, sr;
+    try{ br=bd.getBoundingClientRect(); sr=elm.getBoundingClientRect(); }catch(e){ return; }
+    if(!br||!sr||!br.height)return;
+    var pad=14;
+    var below=sr.bottom-(br.bottom-pad);   /* 下にはみ出している量 */
+    var above=(br.top+pad)-sr.top;         /* 上にはみ出している量 */
+    if(below>0) bd.scrollTop+=below;
+    else if(above>0) bd.scrollTop-=above;
   }
   /* コピー用の文（KSAS連携と同じ作法） */
   function naeText(){
@@ -2814,11 +2840,18 @@
     if(hd)hd.innerHTML=navHdr('fields','田んぼ一覧','🌱 苗箱の枚数');   /* 来た道に合わせて見出しを差し替え */
     naeRender();
   }
-  /* 戻り：来た入口へ1つずつ戻す */
+  /* 戻り：来た入口へ1つずつ戻す
+     ★v36.3：ここで例外が出ると「戻れない」状態になるため、
+     何が起きても必ずどこかの画面に着地させる（年配の方が詰まないように） */
   function naeBack(){
-    window._naeEdit=null;
-    if(window._naeFrom==='fields'){ go('fields'); return; }
-    if(typeof ktCurStep==='number'&&KT_SMAP&&KT_SMAP.taue!=null) ktOpenStep(KT_SMAP.taue); else ktBackToBoard();
+    window._naeEdit=null; window._naeShowSheet=false;
+    try{
+      if(window._naeFrom==='fields'){ go('fields'); return; }
+      if(typeof ktCurStep==='number'&&KT_SMAP&&KT_SMAP.taue!=null){ ktOpenStep(KT_SMAP.taue); return; }
+      ktBackToBoard(); return;
+    }catch(e){
+      try{ go(window._naeFrom==='fields'?'fields':'home'); }catch(e2){}
+    }
   }
 
   /* ---- ビュー切替・入口・スワイプ戻り ---- */
@@ -3350,7 +3383,10 @@
     set('krEr',e.rate||''); set('krEv',e.vol||''); set('krEm',e.mass||'');
     var t=document.getElementById('krEditTitle');
     if(t)t.textContent='✏️ '+(e.field||'')+' '+krMd(e.d)+' の記録を直す';
-    var c=document.getElementById('krEditCard'); if(c){ c.classList.add('on'); c.scrollIntoView({behavior:'smooth',block:'center'}); }
+    /* ★v36.3：以前は scrollIntoView({block:'center'}) だったが、iOSでは
+       固定ヘッダーごとページ全体を動かして戻るボタンが画面外へ出ることがある。
+       中のスクロール容器だけを動かす共通関数に統一した */
+    var c=document.getElementById('krEditCard'); if(c){ c.classList.add('on'); scrollIntoBody(c); }
   }
   function krEditCancel(){
     krEditIdx=-1;
@@ -4658,6 +4694,10 @@
     var ae=document.activeElement;
     if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'||ae.isContentEditable))return;
     if(document.querySelector('#bpOv.on, #fpOv.on'))return;
+    /* ★v36.3：苗箱の手直しシートを開いている間は読み込み直さない。
+       操作の途中で画面が作り直されると、見ていた場所を見失って
+       「戻れない」ように感じるため。次の同期でやり直す（30秒後） */
+    if(document.getElementById('naeSheet'))return;
     var last=0; try{ last=parseInt(sessionStorage.getItem('gyotoku.sync.reloadedAt')||'0',10); }catch(e){}
     var now=Date.now(); if(now-last<6000)return;
     try{ sessionStorage.setItem('gyotoku.sync.reloadedAt',String(now)); }catch(e){}
