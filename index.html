@@ -1728,11 +1728,11 @@
   </div>
 
   <div class="tabbar">
-    <button class="tab on" id="t-home" onclick="go('home')"><span class="ic">🏠</span>ホーム</button>
+    <button class="tab on" id="t-home" onclick="goFromTab('home')"><span class="ic">🏠</span>ホーム</button>
     <button class="tab" id="tabm0" onclick="goTab(0)"><span class="ic">🎤</span>記録</button>
     <button class="tab" id="tabm1" onclick="goTab(1)"><span class="ic">💬</span>相談</button>
     <button class="tab" id="tabm2" onclick="goTab(2)"><span class="ic">🗺️</span>マップ</button>
-    <button class="tab" id="t-menu" onclick="go('set')"><span class="ic">⚙️</span>設定</button>
+    <button class="tab" id="t-menu" onclick="goFromTab('set')"><span class="ic">⚙️</span>設定</button>
   </div>
   <div class="toast" id="toast"></div>
   <div class="ph-lb" id="phLb" onclick="phClose()">
@@ -1773,7 +1773,11 @@
       '</div>'+
     '</div>';
   function navHdr(back,label,title){
-    var b = back ? '<button class="back" onclick="go(\''+back+'\')">‹ '+label+'</button>' : '';
+    /* ★v40：行き先を固定せず goBack() で「直前の画面」へ戻る。
+       行き先が変わるので、ラベルも「ホーム」等ではなく「戻る」に統一する
+       （「ホーム」と書いてあるのに田んぼ一覧へ戻ると、かえって混乱するため）。
+       第2引数 label は互換のため残しているが使わない。 */
+    var b = back ? '<button class="back" onclick="goBack()">‹ 戻る</button>' : '';
     var t = back ? '<span class="title">'+title+'</span>'
                  : '<span class="title" style="margin:0;text-align:left;padding-left:2px;">'+title+'</span>';
     return '<div class="navhead">'+b+t+'</div>';
@@ -1812,8 +1816,57 @@
     for(var i=0;i<3;i++){document.getElementById('fs'+i).classList.toggle('on',i===n);}
     toast(n===0?'標準の文字にしました':(n===1?'文字を大きくしました':'文字を特大にしました'));}
   var curScreen='home';
+
+  /* ===== v40★ 「戻る」を直前の画面へ =====
+     これまでは BACK_MAP で行き先が固定だったため、
+     田んぼ一覧や工程表から「作業を記録」に入っても、戻るとホームへ飛んでいた。
+     来た道を覚えておき、一つずつ戻る。
+     ★決めごと（イメージ図で確定）
+       1. 下のタブを押したら履歴はまっさら（ぐるぐる回って戻れなくなるのを防ぐ）
+       2. 同じ画面は積み重ねない
+       3. 履歴は10個まで（古いものから捨てる）
+       4. 履歴が空ならホームへ（迷子にならない） */
+  var NAV_MAX=10;
+  var navStack=[];
+  /* 画面を開く前に、今いる画面を履歴に積む */
+  function navPush(from,to){
+    if(!from||from===to) return;                  /* 同じ画面は積まない */
+    if(navStack[navStack.length-1]===from) return;/* 直前と同じなら積まない */
+    /* ★v40：行き先がすでに履歴にあるなら、そこまで巻き戻す（往復で履歴が膨らむのを防ぐ）。
+       例）田んぼ一覧⇄作業を記録 を何度おうふくしても、
+       戻るを1回押せば田んぼ一覧、2回でホームに着く。
+       これが無いと往復のたびに履歴が2つずつ増え、
+       「戻るを何回押してもホームに着かない」になる（テスト23で検出）。 */
+    var i=navStack.indexOf(to);
+    if(i>=0){ navStack.length=i; return; }
+    navStack.push(from);
+    if(navStack.length>NAV_MAX) navStack.shift(); /* 古いものから捨てる */
+  }
+  /* 戻る先を取り出す。無ければ home */
+  function navPop(){
+    while(navStack.length){
+      var p=navStack.pop();
+      if(p&&p!==curScreen) return p;
+    }
+    return 'home';
+  }
+  /* タブを押した時は履歴を捨てる */
+  function navClear(){ navStack=[]; }
+  var _navSkip=false;
+  /* 「戻る」＝直前の画面へ。履歴が空ならホーム */
+  function goBack(){
+    var to=navPop();
+    _navSkip=true;          /* 戻る動作そのものは履歴に積まない */
+    go(to);
+  }
+  /* 下のタブから開く時は履歴をまっさらにしてから移動 */
+  function goFromTab(n){ navClear(); _navSkip=true; go(n); }
+
   function go(n){
     if(n==='ksas'){ openKsas('ログイン画面が開きます(IDは保存できます)'); return; } /* v24:ワンタップでKSASへ */
+    /* ★v40：切りかえる前に「今いる画面」を履歴へ。goBack から呼ばれた時は積まない */
+    if(!_navSkip) navPush(curScreen,n);
+    _navSkip=false;
     curScreen=n;for(var k in pages){document.getElementById(pages[k]).classList.remove('on');}
     document.getElementById(pages[n]).classList.add('on');
     renderHeader(n);
@@ -4839,7 +4892,7 @@
       b.innerHTML='<span class="ic">'+tabIcon(k)+'</span>'+(TAB_SHORT[k]||(TILE_DEFS[k]?TILE_DEFS[k].tx:''));
     }
   }
-  function goTab(i){go(midTabs[i]);}
+  function goTab(i){ goFromTab(midTabs[i]); }  /* ★v40：タブは履歴を捨ててから移動 */
   function highlightTab(n){
     document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
     var el=null;
@@ -6055,9 +6108,13 @@
       var t=e.changedTouches[0]; if(!t) return;
       var dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
       if(!(dx>70 && Math.abs(dy)<60 && dt<700)) return;
-      /* 工程表は内部に複数ビュー(工程表/詳細/KSAS/品種設定/しくみ)があるので、まず1つ前のビューへ。工程表まで戻ったらホームへ */
-      if(curScreen==='koutei'){ if(ktSwipeBack()) go('home'); return; }
-      var back=BACK_MAP[curScreen]; if(back) go(back);
+      /* 工程表は内部に複数ビュー(工程表/詳細/KSAS/品種設定/しくみ)があるので、まず1つ前のビューへ。工程表まで戻ったら直前の画面へ */
+      if(curScreen==='koutei'){ if(ktSwipeBack()) goBack(); return; }
+      /* ★v40：BACK_MAP は「この画面は戻れるか」の判定だけに使い、
+         行き先は goBack()（直前の画面）にまかせる。
+         ホームには BACK_MAP が無いので、これまで通り右スワイプは効かない
+         （ホームは横スワイプのページ送りと衝突するため）。 */
+      if(BACK_MAP[curScreen]) goBack();
     },{passive:true});
   })();
 
