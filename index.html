@@ -2682,15 +2682,15 @@
 
   /* ============================================================
      v35 苗箱の枚数計算（田植え工程の中に置く）
-     根拠：行徳農園の実績メモ(西3=39.81a/84枚, 西4=28.71a/55枚,
-     中村(2)=26.78a/60枚, 田中7=62.60a/128枚, 山隈=36.86a/90枚)
-     → 60株植えで 1aあたり平均 約2.15枚。50株/70株は面積比からの推定値。
+     根拠：親方に確認した方式
+     → 50株植えで 1反あたり18枚（＝1aあたり1.8枚）を基準にする。
+        60株=21.6枚/反(2.16枚/a)、70株=25.2枚/反(2.52枚/a)は株数の比で計算。
      ★function宣言にしてあるので呼び出し順に依存しない(v33の事故の教訓)
      ============================================================ */
-  function naeBase(){ return {50:1.80, 60:2.15, 70:2.50}; }
+  function naeBase(){ return {50:1.80, 60:2.16, 70:2.52}; }
   var NAE_EXC=['大豆','未定'];            /* 稲以外は苗箱が要らないので除く */
   function naeState(){
-    if(!window._naeS) window._naeS={kabu:60, yobi:10, view:'area'};
+    if(!window._naeS) window._naeS={kabu:50, yobi:10, view:'area'};
     return window._naeS;
   }
   /* 面積の文字列(例 '39.81a')を数値へ */
@@ -3139,10 +3139,10 @@
       +'<div class="badge">田んぼの広さから自動で計算します</div></div>';
     /* 株数 */
     h+='<div class="nae-card"><div class="nae-lbl">植える株数（1坪あたり）</div><div class="nae-segs">'
-      +'<div class="nae-seg'+(s.kabu===50?' on':'')+'" onclick="naeSetKabu(50)">50株<small>うすめ</small></div>'
-      +'<div class="nae-seg'+(s.kabu===60?' on':'')+'" onclick="naeSetKabu(60)">60株<small>いつも</small></div>'
-      +'<div class="nae-seg'+(s.kabu===70?' on':'')+'" onclick="naeSetKabu(70)">70株<small>こめ</small></div>'
-      +'</div><div class="nae-mini">※ 行徳農園の実績（西3・西4・中村(2)・田中7・山隈）から <b>60株＝1aあたり約2.15枚</b> を基準にしています。</div></div>';
+      +'<div class="nae-seg'+(s.kabu===50?' on':'')+'" onclick="naeSetKabu(50)">50株<small>通常</small></div>'
+      +'<div class="nae-seg'+(s.kabu===60?' on':'')+'" onclick="naeSetKabu(60)">60株<small>濃いめ</small></div>'
+      +'<div class="nae-seg'+(s.kabu===70?' on':'')+'" onclick="naeSetKabu(70)">70株<small>もっと濃いめ</small></div>'
+      +'</div><div class="nae-mini">※ <b>親方に確認</b>した方式で、<b>50株＝1反あたり18枚（1aあたり1.8枚）</b> を基準にしています。</div></div>';
     /* 予備 */
     h+='<div class="nae-card"><div class="nae-lbl">予備（補植・破損のぶん）</div><div class="nae-segs">'
       +'<div class="nae-seg'+(s.yobi===0?' on':'')+'" onclick="naeSetYobi(0)">なし<small>ぴったり</small></div>'
@@ -3159,7 +3159,7 @@
       +'</div>';
     /* この数字の根拠（v36：外の数字を使うときは出典を画面に出す） */
     h+='<div class="nae-trust"><b>🔬 この数字の根拠</b><br>'
-      +'①行徳農園の実績（西3・西4・中村(2)・田中7・山隈）＝<b>60株で1aあたり約2.15枚</b><br>'
+      +'①<b>親方に確認</b>した方式＝<b>50株で1反あたり18枚（1aあたり1.8枚）</b><br>'
       +'②クボタ公式の目安（株数×田植機のかき取り設定で計算）とも一致<br>'
       +'③一般の目安「10aで15〜20枚（稚苗）〜26枚（中苗）」の範囲内<br>'
       +'それでも田んぼごとに差は出るので、<b>枚数を押せばその場で手直し</b>できます。</div>';
