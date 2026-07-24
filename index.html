@@ -2213,9 +2213,24 @@
         }
       }
     }
-    /* 進捗%:済み工程 + 今の位置の大きい方 */
-    var pos=nowIdx>=0?nowIdx:doneCount;
-    var pct=Math.round(Math.max(doneCount,pos)/KT_STEPS.length*100);
+    /* ★v42：進み率の計算を直した。
+       これまでは「今いる工程の番号(0始まり)÷12」だけだったので、
+       工程①にいる間は何枚記録しても必ず 0% のままだった（画面は「いま 1/12 工程め」なのに 0%）。
+       これからは次の2つを足す：
+         ① 各工程の中の進み具合（88枚のうち何枚終わったか）を小数で数える
+         ② 今いる工程を1始まりで数える（「いま 1/12 工程め」の表示と数字をそろえる）
+       → 1枚記録するたび約0.09%ずつ増え、1工程まるごと終わると8%増える。
+       ※何も記録していなければ0%、全工程が済めば100%。ここは従来どおり。 */
+    var earned=0;
+    for(var p=0;p<arr.length;p++){
+      var tt=arr[p].total>0?arr[p].total:1;
+      var f=arr[p].doneN/tt; if(f>1)f=1; if(f<0)f=0;
+      earned+=f;                                   /* ①工程の中の進み具合 */
+    }
+    if(earned>0&&nowIdx>=0&&earned<nowIdx+1) earned=nowIdx+1; /* ②今いる工程を1始まりで（何も記録が無いうちは0%のまま） */
+    if(earned>KT_STEPS.length) earned=KT_STEPS.length;
+    var pct=Math.round(earned/KT_STEPS.length*100);
+    if(doneCount>=KT_STEPS.length) pct=100;         /* 全工程が済んだら必ず100% */
     return {list:arr, pct:pct, nowIdx:nowIdx, warnIdx:warnIdx, c:c, doneCount:doneCount};
   }
 
@@ -2724,6 +2739,14 @@
        消した直後に読みにいくと、家族の端末やサーバーの控えから戻る余地があるため。
      ★v33の鉄則：使う場所より前に置く。memArr() が下で使うのでここに置いている。 */
   var RESET_AT_LS='gyotoku.resetAt.v1';  /* リセットした時刻(ms)。KEEPに入れて消えないようにする */
+  /* ★v43：全台リセットの目印(エポック)。
+     リセットは押した端末だけの操作なので、家族の他の端末は「消えたこと」を知らない。
+     他の端末は30秒ごとに自分の古いデータをサーバーへ送り返すため、
+     消したはずの記録がサーバー経由で全台に復活していた（本人報告の「消しても残る」の正体）。
+     そこで「いつ全台リセットしたか」をサーバー共有のキーとして置き、
+     どの端末も、自分の最後のリセット時刻がこれより古ければ、
+     起動時に自分の端末のデータを捨ててから同期に参加する。 */
+  var RESET_EPOCH_LS='gyotoku.resetEpoch.v1'; /* 全台リセットの時刻(ms)。同期対象＆KEEP対象 */
   var RESET_QUIET_MS=60000;              /* この間は見本を作らず・同期も止める（60秒） */
   /* リセット直後で、まだ静かにしておくべきか？ */
   function inResetQuiet(){
@@ -4388,8 +4411,35 @@
     }else{
       h+='<div class="mb-cap" style="margin-top:8px;">📋 収穫予定日が未設定です。工程表で品種・移植日を入れると、収穫前チェックも出せます。（この農薬は収穫 '+lim.phi+' 日前まで）</div>';
     }
+    /* ★v43：回数の「内訳」を必ず出す。
+       使用回数は法令にかかわる数字なので、合計だけ見せて信じてもらうのは危険。
+       どの日・どの田んぼの記録を数えたのかを並べ、実際と違えば気づけるようにする
+       （本人報告：履歴では1回なのに見張り番は5回と出ていた）。 */
+    var _det=mbListChem(mbCurChem);
+    h+='<div class="mb-cap" style="margin-top:10px;font-weight:700">📋 「'+used+'回」の内訳（今年ぶん）</div>';
+    if(!_det.length){
+      h+='<div class="mb-cap">記録は見つかりませんでした。</div>';
+    }else{
+      h+='<div class="mb-cap">';
+      for(var _q=0;_q<_det.length;_q++){
+        h+='・'+(_det[_q].d||'日付なし')+'　'+(_det[_q].f||'田んぼなし')+'　'+(_det[_q].t||'')+'<br>';
+      }
+      h+='</div>';
+      h+='<div class="mb-cap">この一覧と実際にまいた回数が違うときは、'
+        +'「記録の履歴」で消し忘れ・重複がないか確かめてください。</div>';
+    }
     h+='</div>';
     box.innerHTML=h;
+  }
+  /* ★v43：回数の内訳を返す（mbCountChem と同じ数え方でそろえる） */
+  function mbListChem(name){
+    var y=new Date().getFullYear(), out=[];
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i]; if(kiYear(e.d)!==y) continue;
+      var c=e.chem||''; if(!c && e.text) c=e.text;
+      if(c.indexOf(name)>=0) out.push({d:e.d||'', f:e.field||e.fld||'', t:e.text||e.work||''});
+    }
+    return out;
   }
   function pestRecord(){
     /* 記録：台帳に散布として残す→見張り番のカウントに反映。農薬代は生産原価へ */
@@ -5003,7 +5053,11 @@
   function dataResetAll(){
     if(!confirm('テストで入力した記録・予定・写真・メモなどを全部消します。\n（ホームのボタンの並び・下のタブ・名前・合言葉・天気は残ります）\n\n本当に消してよろしいですか？')) return;
     if(!confirm('もう一度おたずねします。消したデータは元に戻せません。\nまだの場合は、先に「バックアップを書き出す」で保存しておくことをおすすめします。\n\nそれでも消してよろしいですか？')) return;
-    var alsoServer=confirm('家族みんなで共有しているサーバー上の記録と、みんなの写真も一緒に消しますか？\n\n「OK」＝家族全員ぶんも消す（本番を始める前のリセットにおすすめ。写真も消えます）\n「キャンセル」＝この端末だけ消す（※共有が続いていると、家族の分や写真がまた入ってきます）');
+    /* ★v43：「この端末だけ消す」を廃止し、必ず全台ぶん消す。
+       端末だけ消しても、家族の他の端末が古いデータをサーバーへ送り返すため
+       必ず復活してしまい、「消したのに残る」の原因そのものだった。
+       迷う余地をなくすほうが年配の方にも安全（本人選択：案A＋C）。 */
+    var alsoServer=true;
     /* ★v36.5：消さないもの。「入力内容」ではない設定・控えは残す。
        ・天気(gyotoku_wx_v1 / gyotoku_alert_v1)＝気象庁から取り直せるただの控え。
          消すと電波の悪い所で天気が出なくなるだけで、消す意味がない
@@ -5012,7 +5066,7 @@
        「リセット直後だから同期を止める」判断ができなくなり、元の不具合に戻る。 */
     var KEEP={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
               'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1,
-              'gyotoku.resetAt.v1':1};
+              'gyotoku.resetAt.v1':1,'gyotoku.resetEpoch.v1':1};
     var del=[];
     for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('gyotoku')===0&&!KEEP[k]) del.push(k); }
     for(var j=0;j<del.length;j++){ try{ localStorage.removeItem(del[j]); }catch(e){} }
@@ -5024,6 +5078,11 @@
        「リセットしても消えない」に見える。これが本当の原因（v39で判明）。
        この時刻を見て、しばらく同期を止める。→ RESET_QUIET_MS */
     try{ localStorage.setItem(RESET_AT_LS, String(Date.now())); }catch(e){}
+    /* ★v43：全台リセットの目印を立て、サーバーにも送る。
+       家族の端末は次に開いた時これを見て、自分の古いデータを捨ててから同期に参加する。
+       この1行が無いと、他の端末が古いデータを送り返して全部復活する。 */
+    var _epoch=String(Date.now());
+    try{ localStorage.setItem(RESET_EPOCH_LS, _epoch); }catch(e){}
     var finish=function(){
       var msg='入力内容をリセットしました（'+del.length+'件）。';
       if(alsoServer){
@@ -5042,6 +5101,14 @@
       fetch('/api/sync-clear',{method:'POST',headers:{'content-type':'application/json','x-photo-pass':(function(){try{return localStorage.getItem('gyotoku.phpass.v1')||'';}catch(e){return '';}})()},body:JSON.stringify({keys:(typeof SYNC_KEYS!=='undefined')?SYNC_KEYS:[]})})
         .then(function(r){return r.json().catch(function(){return {ok:false};});})
         .then(function(jj){ if(!jj||!jj.ok){ syncNg=true; } else if(typeof jj.deleted==='number'){ syncDel=jj.deleted; } })
+        /* ★v43：空にした「あと」でエポックを置く。先に置くと sync-clear で消えてしまう。
+           これが家族の端末への「みんな消してください」という合図になる。 */
+        .then(function(){
+          return fetch('/api/sync-put',{method:'POST',
+            headers:{'content-type':'application/json','x-photo-pass':(function(){try{return localStorage.getItem('gyotoku.phpass.v1')||'';}catch(e){return '';}})()},
+            body:JSON.stringify({key:RESET_EPOCH_LS,value:JSON.stringify({t:parseInt(_epoch,10)})})
+          }).catch(function(){});
+        })
         .catch(function(){ syncNg=true; })
         .then(function(){ return (typeof phDeleteAllServerAll==='function')?phDeleteAllServerAll():0; })
         .then(function(n){ photoN=n; finish(); })
@@ -5056,6 +5123,10 @@
   var TOMB_LS='gyotoku.tomb.v1';   /* v30 削除印(tombstone)の台帳。中身は印だけで記録本体は入れない */
   var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1',TOMB_LS];
   var SYNC_SET={}; (function(){ for(var i=0;i<SYNC_KEYS.length;i++)SYNC_SET[SYNC_KEYS[i]]=1; })();
+  /* ★v43：読むときだけエポックも一緒に取る。
+     SYNC_KEYS 本体には入れない（入れると sync-clear で消され、
+     さらに通常データとして送り合ってしまうため）。 */
+  var SYNC_READ_KEYS=SYNC_KEYS.concat([RESET_EPOCH_LS]);
   var _syncHash={};      /* key -> 直近に送った内容のハッシュ(無駄な送信を防ぐ) */
   var _syncBusy=false;
   function _lsSetRaw(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
@@ -5150,13 +5221,36 @@
     });
   }
   function syncPull(done){
-    var qs='/api/sync-list?keys='+encodeURIComponent(SYNC_KEYS.join(','));
+    var qs='/api/sync-list?keys='+encodeURIComponent(SYNC_READ_KEYS.join(','));
     fetch(qs,{headers:{'x-photo-pass':_syncPass()}})
       .then(function(r){ return r.json(); })
       .then(function(j){
         if(!j||!j.ok||!j.data){ _syncBadge(false); if(done)done(false); return; }
         _syncBadge(true);
         var changed=false, data=j.data;
+        /* ★v43：全台リセットの合図を受け取ったら、自分の古いデータを捨ててから同期する。
+           これをしないと、この端末が古いデータをサーバーへ送り返し、
+           リセットした端末に全部復活してしまう（「消しても残る」の本体）。 */
+        if(data[RESET_EPOCH_LS]!=null){
+          var _se=0, _me=0;
+          try{ var _o=JSON.parse(data[RESET_EPOCH_LS]); _se=(_o&&_o.t)?_o.t:0; }catch(e){}
+          try{ _me=parseInt(localStorage.getItem(RESET_EPOCH_LS)||'0',10)||0; }catch(e){}
+          if(_se>_me){
+            /* まだこのリセットに従っていない端末。自分のぶんを消す（設定・並び順は残す） */
+            var _keep={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
+                       'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1,
+                       'gyotoku.resetAt.v1':1,'gyotoku.resetEpoch.v1':1};
+            var _d=[];
+            try{ for(var _i=0;_i<localStorage.length;_i++){ var _k=localStorage.key(_i);
+              if(_k&&_k.indexOf('gyotoku')===0&&!_keep[_k]) _d.push(_k); } }catch(e){}
+            for(var _j2=0;_j2<_d.length;_j2++){ try{ localStorage.removeItem(_d[_j2]); }catch(e){} }
+            try{ localStorage.setItem(RESET_EPOCH_LS, String(_se)); }catch(e){}
+            try{ _syncHash={}; }catch(e){}   /* 送信済み記録も忘れる（古い値を送り返さない） */
+            try{ window._mem=null; window._memList=null; }catch(e){}
+            alert('家族の誰かが「入力内容のリセット」をしました。\nこの端末の記録も、あわせて消しました。\n\n画面を読み込み直します。');
+            location.reload(); return;
+          }
+        }
         /* v30 まず削除印を取り込む（この後の配列マージで参照するため先に反映） */
         if(data[TOMB_LS]!=null){ if(tombMergeServer(data[TOMB_LS]))changed=true; try{ _syncHash[TOMB_LS]=_hash(localStorage.getItem(TOMB_LS)||'{}'); }catch(e){} }
         for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue; if(k===TOMB_LS)continue;
@@ -5188,7 +5282,7 @@
   function syncNow(){
     /* ★v39：リセット直後は手で押されても同期しない（古いデータが戻るため） */
     if(inResetQuiet()){ alert('リセットした直後のため、共有の同期をお休みしています。\n\nあと'+resetQuietLeftSec()+'秒ほどお待ちください。\n（消したものが元に戻らないようにするためです）'); return; }
-    toast('同期しています…'); syncPushAll(function(){ syncPull(function(ok){ toast(ok?'同期しました':'サーバーにつながりませんでした'); }); });
+    toast('同期しています…'); syncPull(function(ok){ syncPushAll(function(){ toast(ok?'同期しました':'サーバーにつながりませんでした'); }); });
   }
   function syncTick(){
     if(_syncBusy)return; if(document.hidden)return;
@@ -5196,7 +5290,10 @@
        ここで止めないと、まだ消える前の古いデータをKVから読んで書き戻してしまう。
        push（送る）も pull（読む）も両方止めるのが肝心。片方だけでは戻ってくる。 */
     if(inResetQuiet()){ _syncBadge(null); return; }
-    _syncBusy=true; syncPushAll(function(){ syncPull(function(){ _syncBusy=false; }); });
+    /* ★v43：先に読む→あとで送る、の順にした。
+       送ってから読むと、リセットの合図を受け取る前に自分の古いデータを
+       サーバーへ上書きしてしまい、消したはずの記録が全台に戻る。 */
+    _syncBusy=true; syncPull(function(){ syncPushAll(function(){ _syncBusy=false; }); });
   }
   function syncDiag(){
     fetch('/api/sync-ping').then(function(r){ return r.json(); }).then(function(j){
