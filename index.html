@@ -1568,6 +1568,7 @@
           <div class="setrow" onclick="backupImportPick()">バックアップから復元<span class="sv">ファイルを選ぶ ›</span></div>
           <input type="file" id="bkFile" accept="application/json,.json" style="display:none" onchange="backupImportFile(this)">
           <div class="setrow danger" onclick="dataResetAll()">入力内容を全部リセット<span class="sv">はじめから ›</span></div>
+          <div class="setrow" onclick="shindanRun()">🔧 リセットの原因しらべ<span class="sv">調べるだけ ›</span></div>
         </div>
         <div class="setnote">💡 記録・予定・メモはこのiPhoneの中に保存され、家族とはサーバー経由で共有されます。機種変更や故障にそなえて、ときどき「バックアップを書き出す」で保存しておくと安心です。<br>⚠️ 写真だけはバックアップに入りません（サーバーにあるため）。「入力内容を全部リセット」で「家族全員ぶんも消す」を選ぶと、みんなの写真も消えます。</div>
         <div class="sethead">ℹ️ このアプリについて</div>
@@ -4924,6 +4925,48 @@
       if(n>=200) return phDeleteAllServerAll(total,round+1);
       return total;
     });
+  }
+
+  /* ★一時：リセットが効かない原因をPWAの中から調べる。原因が分かったら消してよい。 */
+  function shindanRun(){
+    var out=[];
+    out.push('【この端末の中】');
+    var n=0, list=[];
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i);
+        if(k&&k.indexOf('gyotoku')===0){ n++;
+          var v=''; try{ v=localStorage.getItem(k)||''; }catch(e){}
+          list.push(k+'（'+v.length+'文字）');
+        }
+      }
+    }catch(e){ out.push('localStorage が読めません：'+e); }
+    out.push('gyotoku で始まる保存 '+n+'件');
+    out.push(list.join('\n'));
+    var pass=''; try{ pass=localStorage.getItem('gyotoku.phpass.v1')||''; }catch(e){}
+    out.push('\n合言葉：'+(pass?('あり '+pass.length+'文字'):'なし ← これが原因かも'));
+    var H={}; if(pass)H['x-photo-pass']=pass;
+
+    var say=function(){ alert(out.join('\n').slice(0,1800)); };
+    out.push('\n【サーバー】しらべています…');
+
+    var probe=function(url,label,opt){
+      return fetch(url,opt||{headers:H,cache:'no-store'})
+        .then(function(r){ return r.text().then(function(t){
+          out.push(label+'：HTTP '+r.status+' → '+t.slice(0,160)); }); })
+        .catch(function(e){ out.push(label+'：つながらず → '+(e&&e.message?e.message:e)); });
+    };
+
+    probe('/api/sync-ping','同期ping')
+      .then(function(){ return probe('/api/sync-list','同期list'); })
+      .then(function(){ return probe('/api/photo-list?max=200','写真list'); })
+      .then(function(){
+        return probe('/api/sync-clear','消す命令',{method:'POST',
+          headers:Object.assign({'content-type':'application/json'},H),
+          body:JSON.stringify({keys:(typeof SYNC_KEYS!=='undefined')?SYNC_KEYS:[]})});
+      })
+      .then(function(){ out.push('\n※この画面は調べただけです。'); say(); })
+      .catch(function(e){ out.push('途中で止まりました：'+e); say(); });
   }
 
   function dataResetAll(){
