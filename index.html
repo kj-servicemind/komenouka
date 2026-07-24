@@ -2662,6 +2662,33 @@
        tombstone は「二度と復活しない印」なので、同じ人をもう一度足せなくなるため。
      ★window に持たせて起動順の事故を防ぐ（v33の教訓）。 */
   var MEM_LS='gyotoku.members.v1';
+  /* ===== v39★ リセット直後の見きわめ（すべての「見本データ」より前に置くこと） =====
+     ★v39で判明した本当の原因：
+       リセットで予定・名簿を消すと、アプリが「初回だ」と判断して
+       見本データ（水位確認・追肥作業・除草剤散布／久保田さんたち5人）を作り直していた。
+       ホームに残り続けた「今日のやること」3件は、この見本そのもの。
+       サーバーもKVも正常で、端末の中だけで完結していた問題だった。
+     ★あわせて、リセット直後は共有の同期も止める。
+       消した直後に読みにいくと、家族の端末やサーバーの控えから戻る余地があるため。
+     ★v33の鉄則：使う場所より前に置く。memArr() が下で使うのでここに置いている。 */
+  var RESET_AT_LS='gyotoku.resetAt.v1';  /* リセットした時刻(ms)。KEEPに入れて消えないようにする */
+  var RESET_QUIET_MS=60000;              /* この間は見本を作らず・同期も止める（60秒） */
+  /* リセット直後で、まだ静かにしておくべきか？ */
+  function inResetQuiet(){
+    var t=0; try{ t=parseInt(localStorage.getItem(RESET_AT_LS)||'0',10); }catch(e){ return false; }
+    if(!t) return false;
+    var left=RESET_QUIET_MS-(Date.now()-t);
+    if(left<=0){ try{ localStorage.removeItem(RESET_AT_LS); }catch(e){} return false; }
+    return true;
+  }
+  /* あと何秒静かにするか（画面の表示用） */
+  function resetQuietLeftSec(){
+    var t=0; try{ t=parseInt(localStorage.getItem(RESET_AT_LS)||'0',10); }catch(e){ return 0; }
+    if(!t) return 0;
+    var left=RESET_QUIET_MS-(Date.now()-t);
+    return left>0?Math.ceil(left/1000):0;
+  }
+
   var MEM_ROLES=['代表','家族','従業員','パート'];
   var MEM_COLORS=['var(--green)','var(--blue)','var(--orange)','var(--purple)','var(--red)'];
   var MEM_SEED=[
@@ -2675,8 +2702,13 @@
     if(!window._mem){
       var a=null; try{ a=JSON.parse(localStorage.getItem(MEM_LS)||'null'); }catch(e){ a=null; }
       if(!(a instanceof Array)){
-        a=[]; for(var i=0;i<MEM_SEED.length;i++){ var q=MEM_SEED[i];
-          a.push({id:q.id, n:q.n, r:q.r, c:q.c, _m:0}); }
+        /* ★v39：リセット直後は見本の5人を作らない。
+           これをしないと、名簿を消しても久保田さんたちが毎回よみがえる。 */
+        if(inResetQuiet()){ a=[]; }
+        else {
+          a=[]; for(var i=0;i<MEM_SEED.length;i++){ var q=MEM_SEED[i];
+            a.push({id:q.id, n:q.n, r:q.r, c:q.c, _m:0}); }
+        }
       }
       window._mem=a;
     }
@@ -4927,6 +4959,10 @@
     });
   }
 
+  /* ★v39：RESET_AT_LS / RESET_QUIET_MS / inResetQuiet / resetQuietLeftSec は
+     memArr() より前（ファイル冒頭側）へ移した。v33の鉄則どおり、
+     使う場所より後ろに var を置くと undefined になるため。 */
+
   /* ★一時：リセットが効かない原因をPWAの中から調べる。原因が分かったら消してよい。
      ★すぐに結果を出す。ネットが遅い/止まっても必ず1回目のお知らせは出る。 */
   function shindanRun(){
@@ -4985,19 +5021,30 @@
        ・天気(gyotoku_wx_v1 / gyotoku_alert_v1)＝気象庁から取り直せるただの控え。
          消すと電波の悪い所で天気が出なくなるだけで、消す意味がない
        ・最近つかった田んぼ(gyotoku.fldRecent.v1)＝入力の履歴ではなく使い勝手の設定 */
+    /* ★v39：'gyotoku.resetAt.v1' を必ず残す。これ自身が消えると
+       「リセット直後だから同期を止める」判断ができなくなり、元の不具合に戻る。 */
     var KEEP={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
-              'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1};
+              'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1,
+              'gyotoku.resetAt.v1':1};
     var del=[];
     for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('gyotoku')===0&&!KEEP[k]) del.push(k); }
     for(var j=0;j<del.length;j++){ try{ localStorage.removeItem(del[j]); }catch(e){} }
     try{ _syncHash={}; }catch(e){}
-    var syncNg=false, photoN=0;
+    var syncNg=false, photoN=0, syncDel=-1;
+    /* ★v39：リセットした時刻を残す。
+       Cloudflare KV は「消した」がすぐには反映されないことがある（数秒〜十数秒）。
+       リロード直後に同期すると、まだ消える前の古いデータを読んで書き戻してしまい、
+       「リセットしても消えない」に見える。これが本当の原因（v39で判明）。
+       この時刻を見て、しばらく同期を止める。→ RESET_QUIET_MS */
+    try{ localStorage.setItem(RESET_AT_LS, String(Date.now())); }catch(e){}
     var finish=function(){
       var msg='入力内容をリセットしました（'+del.length+'件）。';
       if(alsoServer){
         if(syncNg) msg+='\n※共有の記録はネットにつながらず消せませんでした。';
+        else if(syncDel>=0) msg+='\n共有の記録も'+syncDel+'件消しました。';
         if(photoN>0)      msg+='\nみんなの写真も'+photoN+'枚消しました。';
         else if(photoN<0) msg+='\n※みんなの写真はネットにつながらず消せませんでした。';
+        msg+='\n\n※消えたものが元に戻らないよう、これから'+Math.round(RESET_QUIET_MS/1000)+'秒ほど共有の同期を止めます。';
       }
       alert(msg+'\n画面を読み込み直します。'); location.reload();
     };
@@ -5007,7 +5054,7 @@
          また戻ってきてしまう（本人指摘のバグの原因）。 */
       fetch('/api/sync-clear',{method:'POST',headers:{'content-type':'application/json','x-photo-pass':(function(){try{return localStorage.getItem('gyotoku.phpass.v1')||'';}catch(e){return '';}})()},body:JSON.stringify({keys:(typeof SYNC_KEYS!=='undefined')?SYNC_KEYS:[]})})
         .then(function(r){return r.json().catch(function(){return {ok:false};});})
-        .then(function(jj){ if(!jj||!jj.ok){ syncNg=true; } })
+        .then(function(jj){ if(!jj||!jj.ok){ syncNg=true; } else if(typeof jj.deleted==='number'){ syncDel=jj.deleted; } })
         .catch(function(){ syncNg=true; })
         .then(function(){ return (typeof phDeleteAllServerAll==='function')?phDeleteAllServerAll():0; })
         .then(function(n){ photoN=n; finish(); })
@@ -5096,6 +5143,8 @@
   }
   function _syncBadge(state){
     var el=document.getElementById('syncState'); if(!el)return;
+    /* ★v39：リセット直後は理由を文字で出す。年配の方が「壊れた」と思わないように */
+    if(inResetQuiet()){ el.textContent='🕒 リセット直後のため同期をお休み中（あと'+resetQuietLeftSec()+'秒）'; return; }
     el.textContent = (state===true) ? '✅ つながっています（自動で共有・保存）'
                    : (state===false) ? '📴 今はオフライン（つながると自動で同期）'
                    : '…確認中';
@@ -5149,8 +5198,19 @@
     try{ sessionStorage.setItem('gyotoku.sync.reloadedAt',String(now)); }catch(e){}
     location.reload();
   }
-  function syncNow(){ toast('同期しています…'); syncPushAll(function(){ syncPull(function(ok){ toast(ok?'同期しました':'サーバーにつながりませんでした'); }); }); }
-  function syncTick(){ if(_syncBusy)return; if(document.hidden)return; _syncBusy=true; syncPushAll(function(){ syncPull(function(){ _syncBusy=false; }); }); }
+  function syncNow(){
+    /* ★v39：リセット直後は手で押されても同期しない（古いデータが戻るため） */
+    if(inResetQuiet()){ alert('リセットした直後のため、共有の同期をお休みしています。\n\nあと'+resetQuietLeftSec()+'秒ほどお待ちください。\n（消したものが元に戻らないようにするためです）'); return; }
+    toast('同期しています…'); syncPushAll(function(){ syncPull(function(ok){ toast(ok?'同期しました':'サーバーにつながりませんでした'); }); });
+  }
+  function syncTick(){
+    if(_syncBusy)return; if(document.hidden)return;
+    /* ★v39：リセット直後は同期しない。
+       ここで止めないと、まだ消える前の古いデータをKVから読んで書き戻してしまう。
+       push（送る）も pull（読む）も両方止めるのが肝心。片方だけでは戻ってくる。 */
+    if(inResetQuiet()){ _syncBadge(null); return; }
+    _syncBusy=true; syncPushAll(function(){ syncPull(function(){ _syncBusy=false; }); });
+  }
   function syncDiag(){
     fetch('/api/sync-ping').then(function(r){ return r.json(); }).then(function(j){
       if(!j||!j.ok){ alert('サーバーから返事がありません。Cloudflareのデプロイ状況を確認してください。'); return; }
@@ -5196,7 +5256,17 @@
       {id:'p6',date:od(-2),title:'中干し開始',field:'西 4',who:'久保田',done:true}
     ];
   }
-  var plans=loadPlans(); if(!plans){plans=seedPlans(); savePlans();}
+  /* ★v39：ここが「リセットしても消えない」の正体だった。
+     予定を消すと loadPlans() が null を返し「初回だ」と判断して、
+     見本の予定6件（水位確認・追肥作業・除草剤散布…）を作り直して保存していた。
+     ホームに残り続けた「今日のやること」3件は、まさにこの見本。
+     サーバーもKVも無関係で、端末の中だけで完結していた。
+     → リセット直後（RESET_QUIET_MS の間）は見本を作らず、空のままにする。 */
+  var plans=loadPlans();
+  if(!plans){
+    if(inResetQuiet()){ plans=[]; }        /* リセット直後：見本を作らない */
+    else { plans=seedPlans(); savePlans(); } /* ふだんの初回：これまで通り見本を出す */
+  }
   function planById(id){for(var i=0;i<plans.length;i++){if(plans[i].id===id)return plans[i];}return null;}
 
   /* ホーム「今日のやること」= 今日の予定を自動表示 */
