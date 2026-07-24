@@ -756,10 +756,10 @@
   .nae-seg small{display:block;font-size:11px;font-weight:700;margin-top:2px;color:#9A9484;}
   .nae-seg.on small{color:#5A7D5F;}
   .nae-big{background:linear-gradient(180deg,#2F5D3A,#27502F);color:#fff;border-radius:15px;padding:18px 14px;text-align:center;margin-bottom:12px;}
-  .nae-big .cap{font-size:14px;opacity:.9;}
+  .nae-big .cap{font-size:16px;opacity:1;color:#fff;font-weight:800;}
   .nae-big .num{font-size:52px;font-weight:800;line-height:1.05;margin:4px 0;letter-spacing:-1px;}
   .nae-big .num span{font-size:22px;margin-left:4px;}
-  .nae-big .sub{font-size:13px;opacity:.88;border-top:1px solid rgba(255,255,255,.25);padding-top:9px;margin-top:9px;line-height:1.8;}
+  .nae-big .sub{font-size:14px;opacity:1;color:#fff;font-weight:600;border-top:1px solid rgba(255,255,255,.35);padding-top:9px;margin-top:9px;line-height:1.8;}
   .nae-warn{background:#FBF4E4;border:1.5px solid #E6D6B8;border-radius:12px;padding:12px 13px;font-size:13.5px;line-height:1.8;color:#6B5A2A;margin-bottom:12px;}
   .nae-warn b{color:#8A611C;}
   .nae-tabs{display:flex;gap:6px;margin-bottom:10px;}
@@ -2682,8 +2682,7 @@
 
   /* ============================================================
      v35 苗箱の枚数計算（田植え工程の中に置く）
-     根拠：親方に確認した方式
-     → 50株植えで 1反あたり18枚（＝1aあたり1.8枚）を基準にする。
+     根拠：50株植えで 1反あたり18枚（＝1aあたり1.8枚）を基準にする。
         60株=21.6枚/反(2.16枚/a)、70株=25.2枚/反(2.52枚/a)は株数の比で計算。
      ★function宣言にしてあるので呼び出し順に依存しない(v33の事故の教訓)
      ============================================================ */
@@ -3142,7 +3141,7 @@
       +'<div class="nae-seg'+(s.kabu===50?' on':'')+'" onclick="naeSetKabu(50)">50株<small>通常</small></div>'
       +'<div class="nae-seg'+(s.kabu===60?' on':'')+'" onclick="naeSetKabu(60)">60株<small>濃いめ</small></div>'
       +'<div class="nae-seg'+(s.kabu===70?' on':'')+'" onclick="naeSetKabu(70)">70株<small>もっと濃いめ</small></div>'
-      +'</div><div class="nae-mini">※ <b>親方に確認</b>した方式で、<b>50株＝1反あたり18枚（1aあたり1.8枚）</b> を基準にしています。</div></div>';
+      +'</div><div class="nae-mini">※ <b>50株＝1反あたり18枚（1aあたり1.8枚）</b> を基準にしています。</div></div>';
     /* 予備 */
     h+='<div class="nae-card"><div class="nae-lbl">予備（補植・破損のぶん）</div><div class="nae-segs">'
       +'<div class="nae-seg'+(s.yobi===0?' on':'')+'" onclick="naeSetYobi(0)">なし<small>ぴったり</small></div>'
@@ -3159,7 +3158,7 @@
       +'</div>';
     /* この数字の根拠（v36：外の数字を使うときは出典を画面に出す） */
     h+='<div class="nae-trust"><b>🔬 この数字の根拠</b><br>'
-      +'①<b>親方に確認</b>した方式＝<b>50株で1反あたり18枚（1aあたり1.8枚）</b><br>'
+      +'①<b>50株で1反あたり18枚（1aあたり1.8枚）</b>を基準に計算<br>'
       +'②クボタ公式の目安（株数×田植機のかき取り設定で計算）とも一致<br>'
       +'③一般の目安「10aで15〜20枚（稚苗）〜26枚（中苗）」の範囲内<br>'
       +'それでも田んぼごとに差は出るので、<b>枚数を押せばその場で手直し</b>できます。</div>';
