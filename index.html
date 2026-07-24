@@ -1568,7 +1568,6 @@
           <div class="setrow" onclick="backupImportPick()">バックアップから復元<span class="sv">ファイルを選ぶ ›</span></div>
           <input type="file" id="bkFile" accept="application/json,.json" style="display:none" onchange="backupImportFile(this)">
           <div class="setrow danger" onclick="dataResetAll()">入力内容を全部リセット<span class="sv">はじめから ›</span></div>
-          <div class="setrow" onclick="shindanRun()">🔧 リセットの原因しらべ<span class="sv">調べるだけ ›</span></div>
         </div>
         <div class="setnote">💡 記録・予定・メモはこのiPhoneの中に保存され、家族とはサーバー経由で共有されます。機種変更や故障にそなえて、ときどき「バックアップを書き出す」で保存しておくと安心です。<br>⚠️ 写真だけはバックアップに入りません（サーバーにあるため）。「入力内容を全部リセット」で「家族全員ぶんも消す」を選ぶと、みんなの写真も消えます。</div>
         <div class="sethead">ℹ️ このアプリについて</div>
@@ -1765,7 +1764,7 @@
       '</div>'+
       '<div class="hscene" id="homeScene" onclick="go(\'koutei\')" title="米づくり工程表へ">'+
         '<div id="homeSceneArt"></div>'+
-        '<span class="hs-chip" id="homeSceneChip">出穂</span>'+
+        '<span class="hs-chip" id="homeSceneChip" style="display:none;"></span>'+
       '</div>'+
       '<div class="wx">'+
         '<div class="c"><span class="lb">今日</span><span class="ic">☀️</span><span class="tp">28℃</span><span class="pp">降水10%</span></div>'+
@@ -4963,56 +4962,6 @@
      memArr() より前（ファイル冒頭側）へ移した。v33の鉄則どおり、
      使う場所より後ろに var を置くと undefined になるため。 */
 
-  /* ★一時：リセットが効かない原因をPWAの中から調べる。原因が分かったら消してよい。
-     ★すぐに結果を出す。ネットが遅い/止まっても必ず1回目のお知らせは出る。 */
-  function shindanRun(){
-    alert('しらべを始めます。');
-    var out=[];
-    out.push('【この端末の中】');
-    var n=0, list=[];
-    try{
-      for(var i=0;i<localStorage.length;i++){
-        var k=localStorage.key(i);
-        if(k&&k.indexOf('gyotoku')===0){ n++;
-          var v=''; try{ v=localStorage.getItem(k)||''; }catch(e){}
-          list.push(k+'（'+v.length+'文字）');
-        }
-      }
-    }catch(e){ out.push('localStorage が読めません：'+e); }
-    out.push('gyotoku で始まる保存 '+n+'件');
-    out.push(list.join('\n'));
-    var pass=''; try{ pass=localStorage.getItem('gyotoku.phpass.v1')||''; }catch(e){}
-    out.push('\n合言葉：'+(pass?('あり '+pass.length+'文字'):'なし ← これが原因かも'));
-    /* ★ここでいったん見せる。ネットが止まっても必ずここまでは出る */
-    alert(out.join('\n').slice(0,1600));
-
-    var H={}; if(pass)H['x-photo-pass']=pass;
-    var net=['【サーバー】'];
-    var done=false;
-    var say2=function(){ if(done)return; done=true; alert(net.join('\n').slice(0,1600)); };
-    setTimeout(say2, 12000);   /* 12秒で必ず結果を出す(固まり防止) */
-
-    var probe=function(url,label,opt){
-      return fetch(url,opt||{headers:H,cache:'no-store'})
-        .then(function(r){ return r.text().then(function(t){
-          net.push(label+'：HTTP '+r.status+' → '+t.slice(0,140)); }); })
-        .catch(function(e){ net.push(label+'：つながらず → '+(e&&e.message?e.message:e)); });
-    };
-
-    if(typeof fetch!=='function'){ net.push('この端末では通信の確認ができません'); say2(); return; }
-
-    probe('/api/sync-ping','同期ping')
-      .then(function(){ return probe('/api/sync-list','同期list'); })
-      .then(function(){ return probe('/api/photo-list?max=200','写真list'); })
-      .then(function(){
-        return probe('/api/sync-clear','消す命令',{method:'POST',
-          headers:Object.assign({'content-type':'application/json'},H),
-          body:JSON.stringify({keys:(typeof SYNC_KEYS!=='undefined')?SYNC_KEYS:[]})});
-      })
-      .then(function(){ net.push('\n※この画面は調べただけです。'); say2(); })
-      .catch(function(e){ net.push('途中で止まりました：'+e); say2(); });
-  }
-
   function dataResetAll(){
     if(!confirm('テストで入力した記録・予定・写真・メモなどを全部消します。\n（ホームのボタンの並び・下のタブ・名前・合言葉・天気は残ります）\n\n本当に消してよろしいですか？')) return;
     if(!confirm('もう一度おたずねします。消したデータは元に戻せません。\nまだの場合は、先に「バックアップを書き出す」で保存しておくことをおすすめします。\n\nそれでも消してよろしいですか？')) return;
@@ -5912,19 +5861,27 @@
 
   function applyScene(){
     var el=document.getElementById('homeScene'); if(!el)return;
-    var st=null;
+    var st=null, known=false;   /* ★v39.1 known=移植日から本当に段階が分かったか */
     try{
       if(typeof inaState!=='undefined' && !inaState && typeof inaLoad==='function') inaLoad();
       if(typeof inaState!=='undefined' && inaState && inaState.variety && inaState.transplant
          && typeof inaCompute==='function'){
         var r=inaCompute();
-        if(r && typeof r.curIdx==='number') st=sceneStageFromIdx(r.curIdx);
+        if(r && typeof r.curIdx==='number'){ st=sceneStageFromIdx(r.curIdx); known=true; }
       }
-    }catch(e){ st=null; }
+    }catch(e){ st=null; known=false; }
+    /* ★v39.1：移植日が未入力のときは sceneStageFromMonth() が
+       「月と日だけ」で段階を決めてしまう（7/15以降なら苗が無くても必ず「出穂」）。
+       絵は季節に合うので出すが、分かっていない段階を名乗るのは嘘になるため
+       チップ（出穂・分げつ等の札）は出さない。押せば工程表へ行ける。 */
     if(!st) st=sceneStageFromMonth();
     el.className='hscene '+st.cls;
     var art=document.getElementById('homeSceneArt'); if(art)art.innerHTML=hsSvg(st.cls);
-    var chip=document.getElementById('homeSceneChip'); if(chip)chip.textContent=st.chip;
+    var chip=document.getElementById('homeSceneChip');
+    if(chip){
+      if(known){ chip.textContent=st.chip; chip.style.display=''; }
+      else { chip.textContent=''; chip.style.display='none'; }
+    }
   }
 
   function applyWeather(){
