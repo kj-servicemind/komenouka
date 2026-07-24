@@ -4927,8 +4927,10 @@
     });
   }
 
-  /* ★一時：リセットが効かない原因をPWAの中から調べる。原因が分かったら消してよい。 */
+  /* ★一時：リセットが効かない原因をPWAの中から調べる。原因が分かったら消してよい。
+     ★すぐに結果を出す。ネットが遅い/止まっても必ず1回目のお知らせは出る。 */
   function shindanRun(){
+    alert('しらべを始めます。');
     var out=[];
     out.push('【この端末の中】');
     var n=0, list=[];
@@ -4945,17 +4947,23 @@
     out.push(list.join('\n'));
     var pass=''; try{ pass=localStorage.getItem('gyotoku.phpass.v1')||''; }catch(e){}
     out.push('\n合言葉：'+(pass?('あり '+pass.length+'文字'):'なし ← これが原因かも'));
-    var H={}; if(pass)H['x-photo-pass']=pass;
+    /* ★ここでいったん見せる。ネットが止まっても必ずここまでは出る */
+    alert(out.join('\n').slice(0,1600));
 
-    var say=function(){ alert(out.join('\n').slice(0,1800)); };
-    out.push('\n【サーバー】しらべています…');
+    var H={}; if(pass)H['x-photo-pass']=pass;
+    var net=['【サーバー】'];
+    var done=false;
+    var say2=function(){ if(done)return; done=true; alert(net.join('\n').slice(0,1600)); };
+    setTimeout(say2, 12000);   /* 12秒で必ず結果を出す(固まり防止) */
 
     var probe=function(url,label,opt){
       return fetch(url,opt||{headers:H,cache:'no-store'})
         .then(function(r){ return r.text().then(function(t){
-          out.push(label+'：HTTP '+r.status+' → '+t.slice(0,160)); }); })
-        .catch(function(e){ out.push(label+'：つながらず → '+(e&&e.message?e.message:e)); });
+          net.push(label+'：HTTP '+r.status+' → '+t.slice(0,140)); }); })
+        .catch(function(e){ net.push(label+'：つながらず → '+(e&&e.message?e.message:e)); });
     };
+
+    if(typeof fetch!=='function'){ net.push('この端末では通信の確認ができません'); say2(); return; }
 
     probe('/api/sync-ping','同期ping')
       .then(function(){ return probe('/api/sync-list','同期list'); })
@@ -4965,8 +4973,8 @@
           headers:Object.assign({'content-type':'application/json'},H),
           body:JSON.stringify({keys:(typeof SYNC_KEYS!=='undefined')?SYNC_KEYS:[]})});
       })
-      .then(function(){ out.push('\n※この画面は調べただけです。'); say(); })
-      .catch(function(e){ out.push('途中で止まりました：'+e); say(); });
+      .then(function(){ net.push('\n※この画面は調べただけです。'); say2(); })
+      .catch(function(e){ net.push('途中で止まりました：'+e); say2(); });
   }
 
   function dataResetAll(){
