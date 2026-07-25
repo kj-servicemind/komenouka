@@ -254,10 +254,14 @@
     border:1.5px solid #BDCFC0;border-radius:14px;padding:11px;font-size:15px;font-weight:800;
     color:var(--green-deep);text-align:center;letter-spacing:.01em;}
   .fld{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:11px 14px;}
-  .fld .lb{font-size:13px;font-weight:800;color:#6B6656;margin-bottom:4px;letter-spacing:.02em;}
+  .fld .lb{font-size:14.5px;font-weight:800;color:#4A463B;margin-bottom:4px;letter-spacing:.02em;}
   .fld .v{font-size:18px;font-weight:800;display:flex;justify-content:space-between;align-items:center;}
   .fld .v .chv{color:#B9B3A2;font-size:19px;}
   .fld .v .sub{font-size:14px;color:var(--green);font-weight:800;}
+  /* v46 自動で入った値：深緑帯にはせず、緑の細枠＋薄い緑背景＋緑文字＋小さな札で静かに伝える */
+  .fld.autofill{border-color:#BCD3C0;background:#F4F9F5;}
+  .fld.autofill .v>span:first-child{color:var(--green);}
+  .autotag{display:inline-block;font-size:12px;color:#fff;background:#3A7A4A;border-radius:8px;padding:1px 8px;margin-left:8px;vertical-align:middle;font-weight:700;}
   .primary-btn{background:linear-gradient(157deg,#356A43,#254A2F);color:#fff;border:none;border-radius:14px;
     padding:15px;font-size:20px;font-weight:800;text-align:center;box-shadow:0 6px 14px rgba(33,63,41,.25);cursor:pointer;letter-spacing:.03em;}
   .ghost{background:#fff;border:1.5px dashed var(--line);border-radius:14px;padding:12px;
@@ -669,6 +673,31 @@
   .ina-now .stg-name{font-family:var(--mincho);font-size:24px;font-weight:800;letter-spacing:.03em;margin-top:2px;}
   .ina-now .pred-rows{margin-top:8px;display:flex;flex-direction:column;gap:3px;}
   .ina-now .pred-row{font-size:14.5px;font-weight:700;opacity:.97;}
+
+  .ina-now .kt-ricefoot{font-size:13.5px;font-weight:700;margin-top:9px;padding-top:9px;
+    border-top:1px solid rgba(255,255,255,.35);color:#fff;}
+
+  /* v45 品種ごとの出穂・収穫予想カード */
+  .kt-pcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 13px;margin-bottom:12px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .kt-pcard .ti{font-size:17px;font-weight:800;margin-bottom:3px;}
+  .kt-pcard .sb{font-size:13px;color:#8A8472;line-height:1.7;margin-bottom:10px;}
+  .kt-prow{display:flex;align-items:center;gap:9px;padding:12px 10px;border-radius:12px;
+    background:#F7F5EC;margin-bottom:7px;}
+  .kt-prow.soon{background:var(--green-soft);border:1.5px solid #9DBBA6;}
+  .kt-prow.wait{background:#F2F0E8;}
+  .kt-prow.wait .nm{color:#8A8472;}
+  .kt-prow .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .kt-prow .nm{font-size:16px;font-weight:800;flex:1;min-width:0;}
+  .kt-prow .nm small{display:block;font-size:12px;color:#8A8472;font-weight:700;margin-top:2px;}
+  .kt-prow .dz{text-align:right;font-size:15.5px;font-weight:800;color:var(--green-deep);flex-shrink:0;line-height:1.5;}
+  .kt-prow .dz small{display:block;font-size:12px;color:#8A8472;font-weight:700;}
+  .kt-prow .wt{font-size:13px;color:#A9A392;font-weight:800;text-align:right;flex-shrink:0;}
+  .kt-flag{font-size:11.5px;font-weight:800;color:#fff;background:var(--green);padding:2px 8px;
+    border-radius:999px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+  .kt-flag.l{background:#8A6D1E;}
+  .kt-pnote{font-size:13px;color:#8A8472;line-height:1.85;margin-top:9px;}
+  .kt-pnote b{color:#6E6A5C;}
 
   .ina-seclbl{font-size:13.5px;font-weight:800;color:#5F5B4E;letter-spacing:.04em;margin:4px 3px 8px;}
   .ina-stg{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 14px;margin-bottom:8px;
@@ -1167,7 +1196,7 @@
         <div id="recFormWrap">
         <div class="fld datefld"><div class="lb">① いつ?（押すと日付を選べます）</div><div class="v"><span id="recDateV">今日</span><span class="chv">›</span></div><input type="date" id="recDateIn" onchange="recDateSet(this.value)"></div>
         <div class="fld" onclick="recPickField()"><div class="lb">② どの田んぼ?（📍か、押して変更）</div><div class="v"><span id="recFieldV">西 3 39.81a・にじのきらめき</span><span class="chv">›</span></div></div>
-        <div class="fld" onclick="recWorkOpen()"><div class="lb">③ 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#8A8472;">押して作業をえらぶ</span><span class="chv">›</span></div></div>
+        <div class="fld" id="recWorkFld" onclick="recWorkOpen()"><div class="lb">③ 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#8A8472;">押して作業をえらぶ</span><span id="recWorkTag"></span><span class="chv">›</span></div></div>
         <div class="fsheet" id="recWorkSheet">
           <div class="sh">作業をえらんでください<span class="x" onclick="recWorkClose()">✕</span></div>
           <div id="recWorkOpts"></div>
@@ -1192,7 +1221,7 @@
           <span class="ic">📷</span>写真を撮る（この田んぼ・この日で共有）
           <input id="phRecIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
         </div>
-        <div class="fld" onclick="whoOpen('rec')"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="recWhoV" style="color:#8A8472;">押して名前をえらぶ</span><span class="chv">›</span></div></div>
+        <div class="fld" id="recWhoFld" onclick="whoOpen('rec')"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="recWhoV" style="color:#8A8472;">押して名前をえらぶ</span><span id="recWhoTag"></span><span class="chv">›</span></div></div>
         <div class="whopick" id="whoSheet">
           <h4>👤 だれが</h4>
           <div class="cap">名前を押すだけ。キーボードは出ません</div>
@@ -1883,6 +1912,7 @@
     if(n==='cal'&&typeof calEnter==='function')calEnter();
     if(n==='cal'&&typeof phLoad==='function')phLoad(false);
     if(n==='team'&&typeof teamEnter==='function')teamEnter();
+    if(n==='rec'&&typeof recEnter==='function')recEnter();
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
     if(n==='hist'&&typeof histRender==='function')histRender();
@@ -2019,6 +2049,60 @@
     if(today<new Date(base))curIdx=0; /* 移植前は育苗 */
     return {v:v, curIdx:curIdx, stageDates:stageDates, headDate:headDate, harvestDate:harvestDate};
   }
+
+  /* ===== v45：品種ごとの出穂・収穫予想（入力ゼロ・自動） =====
+     考え方：田植え(taue)の作業台帳から、品種ごとの「最も早い田植え日」を読む。
+     入力欄は要らない。品種は KT_FIELDS(田んぼ一覧)から自動、日付は記録から自動。
+     まだ田植え記録が無い品種は date:null（＝「田植え待ち」を表示、あてずっぽうを出さない）。 */
+  var INA_CROP2KEY={ 'つやおとめ':'tsuyaotome','ひのひかり':'hinohikari','にこまる':'nikomaru',
+    'にじのきらめき':'nijinokira','夢つくし':'yumetsukushi','元気つくし':'genkitsukushi',
+    'つくしろまん':'tsukushiroman','ミルキークイーン':'milky','つやきらり':'tsuyakirari',
+    'ヒヨクモチ':'hiyokumochi','コシヒカリ':'koshihikari','あきたこまち':'akitakomachi','ひとめぼれ':'hitomebore' };
+  /* 田植え記録のうち、その田んぼ名の crop 別に最も早い田植え日を集める */
+  function inaTaueDates(){
+    var byField={};                 /* 田んぼ名 → 最も早い田植え日(ISO) */
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i]; if(e.step!=='taue')continue;
+      var d=(e.d||'').slice(0,10); if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue;
+      if(!byField[e.field]||d<byField[e.field])byField[e.field]=d;
+    }
+    return byField;
+  }
+  /* 品種ごとの予想をまとめて返す（早い順にならべる） */
+  function inaVarietyPredict(){
+    var taue=inaTaueDates();
+    var g={};                       /* crop名 → {n,枚,面積,key,植日(最早)} */
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var f=KT_FIELDS[i], crop=f.crop;
+      if(NAE_EXC.indexOf(crop)>=0)continue;           /* 大豆・未定は除外 */
+      var key=INA_CROP2KEY[crop]; if(!key||!INA_VMAP[key])continue;
+      if(!g[crop])g[crop]={crop:crop, key:key, v:INA_VMAP[key], n:0, area:0, tp:null};
+      g[crop].n++; g[crop].area+=(parseFloat(f.a)||0);
+      var td=taue[f.n];
+      if(td && (!g[crop].tp || td<g[crop].tp))g[crop].tp=td;   /* 品種内で最も早い田植え日 */
+    }
+    var out=[];
+    for(var c in g){
+      var o=g[c], head=null, harv=null;
+      if(o.tp){
+        head=inaDateAtAccum(o.tp, o.v.head); head.setHours(0,0,0,0);
+        harv=inaDateAtAccum(inaFmtFull(head), o.v.ripen); harv.setHours(0,0,0,0);
+      }
+      out.push({crop:o.crop, key:o.key, n:o.n, area:o.area, tp:o.tp, head:head, harvest:harv});
+    }
+    /* 田植え済み(head有)を出穂日の早い順に、未田植え(null)は後ろに面積の大きい順で */
+    out.sort(function(a,b){
+      if(a.head&&b.head)return a.head-b.head;
+      if(a.head&&!b.head)return -1;
+      if(!a.head&&b.head)return 1;
+      return b.area-a.area;
+    });
+    return out;
+  }
+  /* 品種名 → 田んぼ一覧と同じ色（丸バッジ用） */
+  var INA_CROP_COLOR={ 'つやおとめ':'#D4A017','ひのひかり':'#2E7D32','にこまる':'#6B4FA0',
+    'にじのきらめき':'#1D5C8F','夢つくし':'#D97706','元気つくし':'#0E7C7B','未定':'#9A958A','大豆':'#8B5E3C' };
+  function inaCropColor(c){ return INA_CROP_COLOR[c]||'#7A9A5B'; }
 
   /* =========================================================
      ⑰ 米づくり工程表(シーズンボード) v17（稲作先生を統合）
@@ -2186,18 +2270,30 @@
   }
 
   /* ---- 工程ごとの状態を計算 ---- */
+  /* v45：稲をつくる田んぼの枚数（大豆・未定を除く）。工程の分母はこれを使う。
+     苗箱(naeRice)と同じ除外ルールで、アプリ全体の数字をそろえる。 */
+  function ktRiceCount(){
+    var n=0; for(var i=0;i<KT_FIELDS.length;i++){ if(NAE_EXC.indexOf(KT_FIELDS[i].crop)<0)n++; }
+    return n;
+  }
+  /* 稲の田んぼ名の集合（記録の数え上げを稲に限るため） */
+  function ktRiceSet(){
+    var m={}; for(var i=0;i<KT_FIELDS.length;i++){ if(NAE_EXC.indexOf(KT_FIELDS[i].crop)<0)m[KT_FIELDS[i].n]=true; }
+    return m;
+  }
   function ktStatus(){
     var c=(inaState&&typeof inaCompute==='function')?inaCompute():null;
     var today=new Date(); today.setHours(0,0,0,0);
+    var TOTAL=ktRiceCount(), RSET=ktRiceSet();
     var arr=[], doneCount=0, nowIdx=-1, warnIdx=-1;
     for(var i=0;i<KT_STEPS.length;i++){
-      var st=KT_STEPS[i], dn=ktDoneFields(st.k), n=0;
-      for(var k in dn)n++;
-      var o={i:i, st:st, doneN:n, total:KT_FIELDS.length, date:null, cls:'todo', stx:'これから', src:''};
+      var st=KT_STEPS[i], dnAll=ktDoneFields(st.k), dn={}, n=0;
+      for(var kk in dnAll){ if(RSET[kk]){ dn[kk]=true; n++; } }  /* 稲の田んぼの記録だけ数える */
+      var o={i:i, st:st, doneN:n, total:TOTAL, date:null, cls:'todo', stx:'これから', src:''};
       if(st.type==='grow'&&c&&c.stageDates[st.ina]&&c.stageDates[st.ina].date){
         o.date=c.stageDates[st.ina].date; o.src=KT_SRC.ina;
       }
-      if(n>=KT_FIELDS.length){ o.cls='done'; o.stx='✅ 済み'; doneCount++; }
+      if(TOTAL>0&&n>=TOTAL){ o.cls='done'; o.stx='✅ 済み'; doneCount++; }
       else if(n>0){ o.cls='warn'; o.stx='⚠️ 残りあり ›'; if(warnIdx<0)warnIdx=i; }
       else if(st.type==='grow'&&c&&st.ina===c.curIdx){ o.cls='now'; o.stx='📍 今ここ ›'; nowIdx=i; }
       arr.push(o);
@@ -2235,6 +2331,40 @@
   }
 
   /* ---- 画面A:工程表 ---- */
+  /* v45：品種ごとの出穂・収穫予想カード。早い順。田植え待ちは「田植え待ち」を表示。 */
+  function ktPredictCardHTML(){
+    var arr=(typeof inaVarietyPredict==='function')?inaVarietyPredict():[];
+    if(!arr.length)return '';
+    var anyHead=false; for(var q=0;q<arr.length;q++)if(arr[q].head){anyHead=true;break;}
+    var h='<div class="kt-pcard"><div class="ti">🌼 出穂・収穫の予想</div>';
+    h+='<div class="sb">'+(anyHead
+        ? '記録した田植え日から自動で計算。<b>早い順</b>にならべています。'
+        : '<b>田植えを記録すると、ここに予想が出ます。</b>入力するものはありません。')+'</div>';
+    /* いちばん早い/遅い の札（田植え済みが2つ以上あるときだけ） */
+    var heads=[]; for(var i=0;i<arr.length;i++)if(arr[i].head)heads.push(i);
+    var firstI=heads.length?heads[0]:-1, lastI=heads.length>1?heads[heads.length-1]:-1;
+    for(var i2=0;i2<arr.length;i2++){
+      var o=arr[i2], col=inaCropColor(o.crop);
+      var flag='';
+      if(i2===firstI)flag=' <span class="kt-flag">いちばん早い</span>';
+      else if(i2===lastI)flag=' <span class="kt-flag l">いちばん遅い</span>';
+      var cls='kt-prow'+(i2===firstI?' soon':'')+(o.head?'':' wait');
+      var sub=o.n+'枚・'+Math.round(o.area)+'a'+(o.tp?' ／ '+inaFmt(new Date(o.tp))+'に田植え':'');
+      h+='<div class="'+cls+'">'
+        +'<span class="dot" style="background:'+col+';"></span>'
+        +'<div class="nm">'+o.crop+flag+'<small>'+sub+'</small></div>';
+      if(o.head){
+        h+='<div class="dz">'+inaFmt(o.head)+'ごろ<small>収穫 '+inaFmt(o.harvest)+'ごろ</small></div>';
+      }else{
+        h+='<div class="wt">田植え待ち</div>';
+      }
+      h+='</div>';
+    }
+    h+='<div class="kt-pnote">※ 気温の積み上げから計算した目安です。<b>未定・大豆は入っていません</b>。'
+      +(anyHead?'<br>※ 出穂を実際に見た日を入れると、そこから先はもっと正確になります（任意）。':'<br>※ 分からないことは「分からない」と出します。あてずっぽうの日付は出しません。')
+      +'</div></div>';
+    return h;
+  }
   function ktRenderBoard(){
     var el=document.getElementById('ktViewBoard'); if(!el)return;
     var s=ktStatus(), c=s.c;
@@ -2244,22 +2374,12 @@
       +'<div class="lbl">🌾 '+(new Date()).getFullYear()+'年の米づくり</div>'
       +'<div class="stg-meta">いま '+(s.nowIdx>=0?(s.nowIdx+1):Math.max(1,s.doneCount))+'/'+KT_STEPS.length+' 工程め</div>'
       +'<div class="stg-name">「'+nowNm+'」</div>'
-      +(c?'<div class="pred-rows"><div class="pred-row">🌡 出穂予想　'+inaFmt(c.headDate)+'ごろ</div><div class="pred-row">🌾 収穫予想　'+inaFmt(c.harvestDate)+'ごろ</div></div>':'')
       +'<div class="kt-bar"><div class="in" style="width:'+s.pct+'%;"></div></div>'
       +'<div class="kt-bar-lbl"><span>種まき</span><span>今年の進み '+s.pct+'%</span><span>稲刈り</span></div>'
+      +'<div class="kt-ricefoot">稲をつくる '+ktRiceCount()+'枚ぶん（大豆・未定はのぞく）</div>'
       +'</div>';
-    /* 品種・移植日の帯(旧・稲作先生の入力を常設)。押すと設定ビューへ */
-    if(c){
-      h+='<div class="kt-setup" onclick="ktShowSetup()">'
-        +'<span class="ic">🌱</span>'
-        +'<span class="tx"><span class="tx-line">品種 <b>'+c.v.n+'</b></span><span class="tx-line">移植日 <b>'+inaFmt(new Date(inaState.transplant))+'</b></span></span>'
-        +'<span class="edit dchg">日付変更 ›</span></div>';
-    }else{
-      h+='<div class="kt-setup warn" onclick="ktShowSetup()">'
-        +'<span class="ic">🌱</span>'
-        +'<span class="tx"><b>品種と移植日を入れる</b>と、出穂・収穫の予想が出ます</span>'
-        +'<span class="edit dchg">入れる ›</span></div>';
-    }
+    /* v45：品種ごとの出穂・収穫予想。入力ゼロ。田植え記録から自動。 */
+    h+=ktPredictCardHTML();
     h+='<div class="ina-seclbl">全'+KT_STEPS.length+'工程（記録・気温の計算から自動反映）</div>';
     for(var i=0;i<s.list.length;i++){
       var o=s.list[i];
@@ -2285,11 +2405,12 @@
   var ktCurStep=0;
   function ktOpenStep(i){
     ktCurStep=i;
-    var st=KT_STEPS[i], dn=ktDoneFields(st.k), n=0; for(var k in dn)n++;
+    var st=KT_STEPS[i], dn=ktDoneFields(st.k);
+    var RSET=ktRiceSet(), RC=ktRiceCount(), n=0; for(var k in dn){ if(RSET[k])n++; }  /* v45:稲だけ数える */
     var el=document.getElementById('ktViewStep'); if(!el)return;
     var h='';
     h+='<div class="ina-hero"><div class="no">工程 '+st.no+'</div><div class="nm">'+st.nm+'</div>'
-      +'<div class="badge">'+(n>=KT_FIELDS.length?'✅ '+KT_FIELDS.length+'枚すべて済み':(n>0?'⚠️ '+KT_FIELDS.length+'枚のうち '+(KT_FIELDS.length-n)+'枚が残っています':'これからの工程です'))+'</div></div>';
+      +'<div class="badge">'+(RC>0&&n>=RC?'✅ '+RC+'枚すべて済み':(n>0?'⚠️ '+RC+'枚のうち '+(RC-n)+'枚が残っています':'これからの工程です'))+'</div></div>';
     for(var f=0;f<KT_FIELDS.length;f++){
       var fd=KT_FIELDS[f], isDone=!!dn[fd.n];
       h+='<div class="kt-frow" onclick="ktToggleField('+f+')">'
@@ -2896,20 +3017,38 @@
     for(i=0;i<a.length;i++)if(a[i].id===id)f=a[i];
     if(!f)return;
     whoLastSet(f.n);
-    var v=document.getElementById('recWhoV');
-    if(v){ v.textContent=f.n; v.style.color='#16211B'; }
     whoClose();
+    if(typeof whoApply==='function')whoApply();
+  }
+  /* v46②：この端末の「前回の人」があればそれ、無ければ設定名(phWho)を初期値にする。
+     ※名簿への見本追加はしない（A案・鉄則どおり）。phWhoは各端末が自分で設定した名前。 */
+  function whoEffective(){
+    var cur=whoLastGet();
+    if(cur){ return {n:cur, src:'last'}; }
+    var pw=(typeof phWho==='function')?phWho():'';
+    if(pw){ return {n:pw, src:'dev'}; }
+    return {n:'', src:''};
   }
   function whoApply(){
     var v=document.getElementById('recWhoV'); if(!v)return;
+    var fld=document.getElementById('recWhoFld');
+    var tag=document.getElementById('recWhoTag');
     var cur=whoLastGet();
-    /* 名簿から消えた人が残っていたら空にもどす */
+    /* 名簿から消えた人が「前回」に残っていたら空にもどす（設定名phWhoは名簿外でも可） */
     if(cur){ var a=memList(), ok=false, i;
       for(i=0;i<a.length;i++)if(a[i].n===cur)ok=true;
       if(!ok){ cur=''; whoLastSet(''); }
     }
-    if(cur){ v.textContent=cur; v.style.color='#16211B'; }
-    else { v.textContent='押して名前をえらぶ'; v.style.color='#8A8472'; }
+    var eff=whoEffective();
+    if(eff.n){
+      v.textContent=eff.n; v.style.color='';
+      if(fld)fld.classList.add('autofill');
+      if(tag)tag.innerHTML='<span class="autotag">'+(eff.src==='dev'?'この端末':'前回')+'</span>';
+    } else {
+      v.textContent='押して名前をえらぶ'; v.style.color='#8A8472';
+      if(fld)fld.classList.remove('autofill');
+      if(tag)tag.innerHTML='';
+    }
   }
   /* ---- 今日ひとこと ---- */
   function hitoByDate(){
@@ -2930,7 +3069,7 @@
     var t=document.getElementById('hitoIn');
     var tx=t?(''+t.value).replace(/^\s+|\s+$/g,''):'';
     if(!tx){ toast('ひとことを書いてください'); if(t)t.focus(); return; }
-    var who=whoLastGet();
+    var who=(typeof whoEffective==='function'?whoEffective().n:whoLastGet());
     wlAdd('furikaeri', '', tx, 'hito', {hito:true, who:who});
     if(t)t.value='';
     toast('✅ 書きとめました（家族全員に共有されます）');
@@ -3374,6 +3513,12 @@
     var el=document.getElementById('recDateV');
     if(el)el.textContent=parseInt(p[1],10)+'月'+parseInt(p[2],10)+'日('+WD[d.getDay()]+')';
   }
+  /* v46：作業記録の画面を開くたびに、①今ここ／②だれが を最新化する */
+  function recEnter(){
+    try{ if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad(); }catch(e){}
+    try{ recWorkApply(); }catch(e){}
+    try{ whoApply(); }catch(e){}
+  }
   function recWorkOpen(){
     var sh=document.getElementById('recWorkSheet'); if(!sh)return;
     if(sh.classList.contains('on')){ recWorkClose(); return; }
@@ -3390,9 +3535,38 @@
   function recWorkSet(n){
     recWorkSel=n;
     var v=document.getElementById('recWorkV'); if(v){ v.textContent=n; v.style.color=''; }
+    /* 手で選んだら「今ここ」の自動表示は解除（＝ふつうの入力済み表示） */
+    var fld=document.getElementById('recWorkFld'); if(fld)fld.classList.remove('autofill');
+    var tag=document.getElementById('recWorkTag'); if(tag)tag.innerHTML='';
     recWorkClose();
     /* 追肥・散布系をえらんだら「使ったもの」欄へ自然に誘導 */
     if(/追肥|散布|防除/.test(n)&&!recUseSel)toast('④で使った農薬・肥料もえらべます');
+  }
+  /* v46①：工程キー→作業名（REC_WORKS の逆引き）。無ければ空 */
+  function stepToWorkName(stepK){
+    if(!stepK)return '';
+    for(var i=0;i<REC_WORKS.length;i++){ if(REC_WORKS[i].step===stepK)return REC_WORKS[i].n; }
+    return '';
+  }
+  /* v46①：まだ何も選んでいなければ、工程表の「今ここ」を初期選択する。
+     分からない時は空欄のまま（あてずっぽうを出さない＝鉄則）。 */
+  function recWorkApply(){
+    if(recWorkSel)return;  /* すでに選択済み（手動含む）なら触らない */
+    var stepK=(typeof ktGuessStep==='function')?ktGuessStep():'';
+    var nm=stepToWorkName(stepK);
+    var v=document.getElementById('recWorkV');
+    var fld=document.getElementById('recWorkFld');
+    var tag=document.getElementById('recWorkTag');
+    if(nm){
+      recWorkSel=nm;
+      if(v){ v.textContent=nm; v.style.color=''; }
+      if(fld)fld.classList.add('autofill');
+      if(tag)tag.innerHTML='<span class="autotag">今ここ</span>';
+    } else {
+      if(v){ v.textContent='押して作業をえらぶ'; v.style.color='#8A8472'; }
+      if(fld)fld.classList.remove('autofill');
+      if(tag)tag.innerHTML='';
+    }
   }
   function recWorkOther(){
     var t=prompt('した作業を書いてください','');
@@ -3449,12 +3623,15 @@
     recDateSet('');
     var di=document.getElementById('recDateIn'); if(di)di.value='';
     var wv=document.getElementById('recWorkV'); if(wv){ wv.textContent='押して作業をえらぶ'; wv.style.color='#8A8472'; }
+    var wtag=document.getElementById('recWorkTag'); if(wtag)wtag.innerHTML='';
+    var wfld=document.getElementById('recWorkFld'); if(wfld)wfld.classList.remove('autofill');
     var uv=document.getElementById('recUseV'); if(uv){ uv.textContent='🧪農薬・🌾肥料をえらぶ（無しでもOK）'; uv.style.color='#8A8472'; }
     var amt=document.getElementById('recAmtBox'); if(amt)amt.classList.remove('on');
     ['recRate','recVol','recMass','recMemoIn'].forEach(function(id){ var e=document.getElementById(id); if(e)e.value=''; });
     var mb=document.getElementById('recMemoBox'); if(mb)mb.classList.remove('on');
     var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML='(空欄)<span class="chv">›</span>';
     recWorkClose(); recUseClose();
+    if(typeof recWorkApply==='function')recWorkApply();  /* v46①：次の記録も「今ここ」で始める */
   }
   /* 保存時に共通の作業台帳(工程表)へも書き込む(連携連動) */
   function saveWork(){
@@ -3481,7 +3658,7 @@
     var text=recWorkSel+(chem?('：'+chem+(rate?' '+rate+'倍':'')+(vol?' '+vol+'L':'')+(mass?' '+mass+'kg':'')):'')+(memo?('。'+memo):'');
     wlAdd(recStepOf(recWorkSel), recField, text, 'rec',
       {d:(recDateSel||null), work:recWorkSel, chem:chem, rate:rate, vol:vol, mass:mass,
-       who:(typeof whoLastGet==='function'?whoLastGet():'')});
+       who:(typeof whoEffective==='function'?whoEffective().n:'')});
     toast('✅ 保存しました(記録簿・工程表・見張り番・原価にも反映)');
     recFormReset();
     /* v24.2:保存後にカレンダーへ飛ばさない。この画面に留まって続けて記録できる */
