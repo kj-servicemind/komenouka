@@ -1350,6 +1350,9 @@
         <div class="hitobox" id="hitoBox">
           <div class="hl">✍️ 今日ひとこと</div>
           <div class="hs" id="hitoDate">田んぼをえらばず、ひとことだけ残せます</div>
+          <!-- ★v53 だれが書いたかを選ぶ。自動で入った値は緑の細枠＋札（CLAUDE.md 6節の共通ルール） -->
+          <div class="fld" id="hitoWhoFld" onclick="whoOpen('hito')" style="margin-bottom:9px;"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="hitoWhoV" style="color:#8A8472;">押して名前をえらぶ</span><span id="hitoWhoTag"></span><span class="chv">›</span></div></div>
+          <div class="whopick" id="hitoWhoSheet"><h4>👤 だれが書きますか？</h4><div class="cap">名前を押すだけ。キーボードは出ません</div><div id="hitoWhoOpts"></div></div>
           <textarea id="hitoIn" placeholder="例：雨で作業は休み。西の田でうんかを少し見かけた" enterkeyhint="done"></textarea>
           <div class="hitorow">
             <div class="hitomic" onclick="hitoMic()">🎤 話して書く</div>
@@ -1646,7 +1649,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v52(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v53(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -1959,6 +1962,7 @@
     if(n==='rec'&&typeof recEnter==='function')recEnter();
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
     if(n==='hist'){ if(typeof hitoDateShow==='function')hitoDateShow();
+      if(typeof whoApply==='function'){ try{ whoApply(); }catch(e){} }   /* ★v53 だれがの欄を塗る */
                     if(typeof histRender==='function')histRender(); }
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
     highlightTab(n);
@@ -3062,8 +3066,12 @@
   var whoTarget='rec';
   function whoLastGet(){ try{ return localStorage.getItem(WHO_LAST)||''; }catch(e){ return ''; } }
   function whoLastSet(v){ try{ localStorage.setItem(WHO_LAST, v||''); }catch(e){} }
-  function whoRender(){
-    var box=document.getElementById('whoOpts'); if(!box)return;
+  /* ★v53 名前の一覧は「作業を記録」と「記録の確認(今日ひとこと)」の2か所から開く。
+     出す場所(箱のid)だけを引数にし、中身を作る処理は1本のまま（同じものを2か所に書かない）。 */
+  function whoRender(boxId){
+    /* 場所の指定が無いときは両方を塗り直す（名簿を直したときに片方だけ古くならないように） */
+    if(boxId===undefined){ whoRender('whoOpts'); whoRender('hitoWhoOpts'); return; }
+    var box=document.getElementById(boxId); if(!box)return;
     var a=memList(), cur=whoLastGet(), h='', i;
     if(!a.length){ box.innerHTML='<div class="ngnote" style="margin:0;">名簿がありません。「みんなと共有」で登録してください。</div>'; return; }
     for(i=0;i<a.length;i++){ var m=a[i], on=(m.n===cur);
@@ -3074,11 +3082,23 @@
     }
     box.innerHTML=h;
   }
-  function whoOpen(t){
-    whoTarget=t||'rec'; whoRender();
-    var sh=document.getElementById('whoSheet'); if(sh){ sh.classList.add('on'); if(typeof scrollIntoBody==='function')scrollIntoBody(sh); }
+  /* ★v53 いま開いている画面の一覧だけを開く。
+     名前の一覧(whopick)は「作業を記録」の中にあるので、記録の確認から whoOpen しても
+     見えない画面の中で開くだけだった。ひとこと用の一覧を同じ作りで持たせて、両方に対応する。 */
+  function whoSheetIds(t){
+    return (t==='hito') ? {sh:'hitoWhoSheet', box:'hitoWhoOpts'} : {sh:'whoSheet', box:'whoOpts'};
   }
-  function whoClose(){ var sh=document.getElementById('whoSheet'); if(sh)sh.classList.remove('on'); }
+  function whoOpen(t){
+    whoTarget=t||'rec';
+    var ids=whoSheetIds(whoTarget);
+    whoRender(ids.box);
+    var sh=document.getElementById(ids.sh);
+    if(sh){ sh.classList.add('on'); if(typeof scrollIntoBody==='function')scrollIntoBody(sh); }
+  }
+  function whoClose(){
+    var a=['whoSheet','hitoWhoSheet'], i;
+    for(i=0;i<a.length;i++){ var sh=document.getElementById(a[i]); if(sh)sh.classList.remove('on'); }
+  }
   function whoPick(id){
     var a=memList(), i, f=null;
     for(i=0;i<a.length;i++)if(a[i].id===id)f=a[i];
@@ -3096,17 +3116,11 @@
     if(pw){ return {n:pw, src:'dev'}; }
     return {n:'', src:''};
   }
-  function whoApply(){
-    var v=document.getElementById('recWhoV'); if(!v)return;
-    var fld=document.getElementById('recWhoFld');
-    var tag=document.getElementById('recWhoTag');
-    var cur=whoLastGet();
-    /* 名簿から消えた人が「前回」に残っていたら空にもどす（設定名phWhoは名簿外でも可） */
-    if(cur){ var a=memList(), ok=false, i;
-      for(i=0;i<a.length;i++)if(a[i].n===cur)ok=true;
-      if(!ok){ cur=''; whoLastSet(''); }
-    }
-    var eff=whoEffective();
+  /* ★v53 「だれが」の欄は2か所（作業を記録／今日ひとこと）。塗り方は1本にして、
+     両方に同じ見た目を当てる。片方だけ直すと、同じ意味の欄が画面ごとに違う姿になる。 */
+  function whoPaint(vId, fldId, tagId, eff){
+    var v=document.getElementById(vId); if(!v)return;
+    var fld=document.getElementById(fldId), tag=document.getElementById(tagId);
     if(eff.n){
       v.textContent=eff.n; v.style.color='';
       if(fld)fld.classList.add('autofill');
@@ -3116,6 +3130,26 @@
       if(fld)fld.classList.remove('autofill');
       if(tag)tag.innerHTML='';
     }
+  }
+  function whoApply(){
+    var cur=whoLastGet();
+    /* 名簿から消えた人が「前回」に残っていたら空にもどす（設定名phWhoは名簿外でも可） */
+    if(cur){ var a=memList(), ok=false, i;
+      for(i=0;i<a.length;i++)if(a[i].n===cur)ok=true;
+      if(!ok){ cur=''; whoLastSet(''); }
+    }
+    var eff=whoEffective();
+    whoPaint('recWhoV','recWhoFld','recWhoTag', eff);
+    whoPaint('hitoWhoV','hitoWhoFld','hitoWhoTag', eff);   /* ★v53 */
+  }
+  /* ★v53 えらべる名前があるか（名簿に誰か居るか、この端末に設定名があるか）。
+     どちらも無いときに「名前をえらぶまで書けない」にすると、書く手だてが無くなる。 */
+  function whoCanPick(){
+    try{
+      if(typeof memList==='function' && memList().length>0) return true;
+      if(typeof phWho==='function' && phWho()) return true;
+    }catch(e){}
+    return false;
   }
   /* ---- 今日ひとこと ---- */
   function hitoByDate(){
@@ -3137,6 +3171,14 @@
     var tx=t?(''+t.value).replace(/^\s+|\s+$/g,''):'';
     if(!tx){ toast('ひとことを書いてください'); if(t)t.focus(); return; }
     var who=(typeof whoEffective==='function'?whoEffective().n:whoLastGet());
+    /* ★v53 本人指示：名前をえらぶまで書きとめない。
+       ただし書いた文は消さずに残し、名前の一覧をその場で開く（探させない・打ち直させない）。
+       えらべる名前が1人も無いときは止めない（止めると書く手だてが無くなるため）。 */
+    if(!who && typeof whoCanPick==='function' && whoCanPick()){
+      toast('だれが書いたか、先に名前をえらんでください');
+      if(typeof whoOpen==='function') whoOpen('hito');
+      return;
+    }
     wlAdd('furikaeri', '', tx, 'hito', {hito:true, who:who});
     if(t)t.value='';
     toast('✅ 書きとめました（家族全員に共有されます）');
