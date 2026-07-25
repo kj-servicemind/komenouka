@@ -386,6 +386,19 @@
   .hy-item .hy-ikg{margin-left:auto;color:var(--green-deep);font-weight:900;}
   .hy-item .hy-del{margin-left:12px;color:#B76A5A;font-size:20px;font-weight:900;padding:0 4px;}
   .hy-empty{text-align:center;color:#9A9584;font-size:14px;font-weight:700;padding:14px 0;}
+  /* ===== v50 年の切りかえ（今年／去年）＋日付の札＋隠れた記録の案内 ===== */
+  .hy-yrs{display:flex;gap:8px;margin:8px 0 2px;}
+  .hy-yr{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 6px;
+    text-align:center;font-size:15px;font-weight:800;color:#5A5648;cursor:pointer;white-space:nowrap;}
+  .hy-yr.on{background:var(--green);border-color:var(--green);color:#fff;font-weight:900;
+    box-shadow:0 4px 10px rgba(47,93,58,.20);}
+  .hy-yrnote{display:none;background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:11px;
+    padding:10px 12px;margin:8px 0 2px;font-size:13.5px;font-weight:800;color:#8A6A2E;line-height:1.6;}
+  .hy-item .hy-d{font-size:12.5px;font-weight:800;color:#6B6656;background:#F3F1E9;
+    border-radius:7px;padding:2px 7px;margin-right:8px;white-space:nowrap;}
+  .hy-old{background:#F3F1E9;border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;
+    margin-top:9px;font-size:13px;font-weight:800;color:#6B6656;line-height:1.6;}
+  .screen.fs-big .hy-yr{font-size:17px;} .screen.fs-huge .hy-yr{font-size:19px;}
 
   /* ===== v20 🚜機械の維持費 ===== */
   .ki-tabs{display:flex;gap:8px;margin:2px 0 10px;flex-wrap:wrap;}
@@ -414,18 +427,29 @@
   .ki-note{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 13px;
     font-size:14px;font-weight:700;color:#16211B;line-height:1.6;margin-top:12px;}
 
-  /* ===== v20 🛡見張り番(農薬計算内) ===== */
-  .mb-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;margin:10px 0;}
-  .mb-ttl{font-size:16px;font-weight:900;color:var(--green-deep);margin-bottom:2px;}
-  .mb-meter{margin:11px 0 4px;}
-  .mb-top{display:flex;align-items:baseline;font-size:15px;font-weight:800;color:#16211B;margin-bottom:5px;}
-  .mb-top .mb-r{margin-left:auto;font-weight:900;color:var(--green);}
-  .mb-bar{height:15px;border-radius:8px;background:#EDEAE0;overflow:hidden;}
-  .mb-fill{height:100%;background:var(--green);border-radius:8px;}
-  .mb-cap{font-size:13px;font-weight:700;color:#6B6656;margin-top:5px;line-height:1.55;}
-  .mb-meter.warn .mb-r{color:var(--red);} .mb-meter.warn .mb-fill{background:var(--red);} .mb-meter.warn .mb-cap{color:var(--red);}
-  .mb-unreg{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:12px;padding:11px 13px;
-    font-size:14px;font-weight:700;color:#8A6A2E;line-height:1.6;}
+  /* ===== v49 📋 この農薬をまいた記録(農薬計算内)。★判定はしない =====
+     v20〜v48.2 の「🛡見張り番」(あと○回・収穫まで○日)は、法令上の数え方
+     (①有効成分ごと ②作物・ほ場ごと ③育苗箱処理も1回)と一致しないため v49 で廃止。
+     記録の一覧と、国の登録内容へのリンクだけを持つ。 */
+  .kk-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;margin:10px 0;}
+  .kk-ttl{font-size:16px;font-weight:900;color:var(--green-deep);margin-bottom:1px;}
+  .kk-sub{font-size:13px;font-weight:800;color:#6B6656;margin-bottom:10px;line-height:1.5;}
+  .kk-sum{background:var(--green-soft);border:1.5px solid #C6D8C9;border-radius:12px;padding:9px 12px;
+    font-size:15px;font-weight:900;color:var(--green-deep);margin-bottom:9px;}
+  .kk-row{display:flex;align-items:baseline;gap:8px;padding:8px 2px;border-bottom:1px solid #F0EDE3;font-size:15px;}
+  .kk-list .kk-row:last-child{border-bottom:none;}
+  .kk-f{font-weight:900;color:#16211B;min-width:86px;}
+  .kk-n{font-weight:900;color:var(--green);white-space:nowrap;}
+  .kk-d{margin-left:auto;font-size:13px;font-weight:700;color:#6B6656;text-align:right;}
+  .kk-none{font-size:14px;font-weight:700;color:#6B6656;padding:8px 2px;line-height:1.6;}
+  .kk-warn{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:12px;padding:11px 13px;
+    margin-top:11px;font-size:13.5px;font-weight:800;color:#8A6A2E;line-height:1.7;}
+  .kk-warn .t{font-size:14.5px;font-weight:900;color:#7A5A1E;display:block;margin-bottom:4px;}
+  .kk-db{background:var(--green);color:#fff;border-radius:14px;padding:15px 12px;margin-top:12px;
+    font-size:17px;font-weight:900;text-align:center;letter-spacing:.02em;white-space:nowrap;cursor:pointer;
+    box-shadow:0 5px 12px rgba(47,93,58,.22);}
+  .screen.fs-big .kk-row,.screen.fs-big .kk-sum{font-size:17px;} .screen.fs-big .kk-warn{font-size:15px;}
+  .screen.fs-huge .kk-row,.screen.fs-huge .kk-sum{font-size:19px;} .screen.fs-huge .kk-warn{font-size:16.5px;}
   .screen.fs-big .hy-inp,.screen.fs-big .hy-amtlab{font-size:22px;} .screen.fs-big .hy-lead,.screen.fs-big .hy-item,.screen.fs-big .ki-item{font-size:17px;}
   .screen.fs-huge .hy-inp,.screen.fs-huge .hy-amtlab{font-size:24px;} .screen.fs-huge .hy-lead,.screen.fs-huge .hy-item,.screen.fs-huge .ki-item{font-size:19px;}
 
@@ -1227,7 +1251,7 @@
             <div class="ua"><div class="ual">量（L）</div><input id="recVol" type="number" inputmode="decimal" placeholder="100"></div>
             <div class="ua"><div class="ual">量（kg）</div><input id="recMass" type="number" inputmode="decimal" placeholder="20"></div>
           </div>
-          <div class="uat" style="margin:6px 0 0;font-weight:700;">入れた量は 🛡見張り番・📊生産原価・🌾肥料の栄養にも自動で回ります（二重入力なし）</div>
+          <div class="uat" style="margin:6px 0 0;font-weight:700;">入れた量は 📊生産原価・🌾肥料の栄養にも自動で回ります（二重入力なし）</div>
         </div>
         <div class="fld" onclick="recMemoToggle()"><div class="lb">メモ（押すと書けます）</div><div class="v" id="recmemo" style="font-size:16px;color:#8A8472;">(空欄)<span class="chv">›</span></div></div>
         <div class="recmemo-box" id="recMemoBox"><textarea id="recMemoIn" placeholder="例：北側だけ生育が遅い。水口を少し開けた。"></textarea></div>
@@ -1361,8 +1385,10 @@
       <div class="sc">
         <div class="hy-lead">🎤で「西3に化成を20キロあげた」と話すか、下から肥料を選んで量を入れるだけ。<b>窒素・りん酸・カリ</b>に自動で分けて、今年あげた栄養がひと目でわかります。</div>
         <div class="fld" onclick="hyPickField()"><div class="lb">田んぼ</div><div class="v"><span id="hyFieldName">西 3</span><span class="chv">›</span></div></div>
+        <div class="hy-yrs" id="hyYrs"><!-- v50 今年／去年の切りかえ(JS) --></div>
+        <div class="hy-yrnote" id="hyYrNote"></div>
         <div class="hy-graphcard">
-          <div class="hy-gt">今年あげた栄養（合計）</div>
+          <div class="hy-gt" id="hyGt">今年あげた栄養（合計）</div>
           <div class="hy-graph" id="hyGraph"></div>
           <div class="hy-gnote" id="hyGnote"></div>
         </div>
@@ -1379,6 +1405,7 @@
           <div class="hy-addbtn" onclick="hyAdd()">＋ 記録する</div>
         </div>
         <div class="hy-list" id="hyList"></div>
+        <div class="hy-old" id="hyOld" style="display:none;"></div>
         <div class="kroku-why">
           <div class="wt">🔎 なぜ栄養がわかるの？（しくみ）</div>
           <div class="item"><span class="num">1</span><span class="wtx"><b>肥料の名前</b>…登録ずみの肥料の成分表（窒素・りん酸・カリの％）と照らし合わせます</span></div>
@@ -1422,8 +1449,7 @@
         <div class="fld"><div class="lb">希釈倍率(自動)</div><div class="v"><span id="pestBai">1000</span>倍</div></div>
         <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big" id="pestWater">—</span> L<br>入れる農薬の量:<span class="big" id="pestChem">—</span> mL<br><span id="pestCalcNote" style="font-size:13px;color:#8A6A2E;">田んぼと倍率から計算します</span></div>
         <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="pestYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">入れると生産原価の「農業薬剤費」に自動で入ります（空欄でもOK）</div></div>
-        <div id="mbBox"><!-- 🛡見張り番(JS) --></div>
-        <div class="famic-card"><div class="famic-t">🏛 国の最新ルールを見る</div><div class="famic-n">見張り番の表はアプリ内蔵（2026年7月時点）です。使用回数・収穫前日数の<b>最新の登録内容</b>は、国の農薬登録情報（FAMIC運用・無料）で確認できます。</div><div class="dbbtn" onclick="openSite('https://pesticide.maff.go.jp/')">🏛 農薬登録情報を最新で調べる（無料）</div></div>
+        <div id="mbBox"><!-- 📋 この農薬をまいた記録(JS)。国のDBボタンもこの中 --></div>
         <div class="save" onclick="pestRecord()">✅ この内容で記録する</div>
         <div class="wide" onclick="go('drug')">🔍 ほかの農薬をさがす(農水省DB・無料)</div>
         <div class="spacer"></div>
@@ -1620,7 +1646,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v2.6(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v49(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -3610,9 +3636,9 @@
     var sh=document.getElementById('recUseSheet'); if(!sh)return;
     if(sh.classList.contains('on')){ recUseClose(); return; }
     var h='<div class="fopt'+(recUseSel==='なし'?' sel':'')+'" onclick="recUseSet(\'なし\')">─ 使っていない（なし）</div>';
-    h+='<div class="fgroup">🧪 農薬（🛡見張り番と連動）</div>';
-    for(var k in NG_LIMIT){
-      h+='<div class="fopt'+(k===recUseSel?' sel':'')+'" onclick="recUseSet(\''+k+'\')">🧪 '+k+'<span class="np">'+NG_LIMIT[k].seibun+'</span></div>';
+    h+='<div class="fgroup">🧪 農薬（記録に残ります）</div>';
+    for(var k in NG_SEIBUN){
+      h+='<div class="fopt'+(k===recUseSel?' sel':'')+'" onclick="recUseSet(\''+k+'\')">🧪 '+k+'<span class="np">'+NG_SEIBUN[k].seibun+'</span></div>';
     }
     h+='<div class="fgroup">🌾 肥料（栄養バランスと連動）</div>';
     for(var i=0;i<NG_FERT_NAMES.length;i++){
@@ -3632,7 +3658,7 @@
       if(v){ v.textContent='─ 使っていない（なし）'; v.style.color=''; }
       if(amt)amt.classList.remove('on');
     }else{
-      if(v){ v.textContent=(NG_LIMIT[n]?'🧪 ':'🌱 ')+n; v.style.color=''; }
+      if(v){ v.textContent=(NG_SEIBUN[n]?'🧪 ':'🌱 ')+n; v.style.color=''; }
       if(amt)amt.classList.add('on');
     }
     recUseClose();
@@ -3690,7 +3716,7 @@
     wlAdd(recStepOf(recWorkSel), recField, text, 'rec',
       {d:(recDateSel||null), work:recWorkSel, chem:chem, rate:rate, vol:vol, mass:mass,
        who:(typeof whoEffective==='function'?whoEffective().n:'')});
-    toast('✅ 保存しました(記録簿・工程表・見張り番・原価にも反映)');
+    toast('✅ 保存しました(記録簿・工程表・原価にも反映)');
     recFormReset();
     /* v24.2:保存後にカレンダーへ飛ばさない。この画面に留まって続けて記録できる */
   }
@@ -3764,20 +3790,22 @@
     var key=(typeof mbKeyOf==='function')?mbKeyOf(name||''):(name||'');
     return NG_KIND[key]||'mushi';
   }
-  /* ===== v20 🛡見張り番：農薬の成分別ルール（年◯回まで・収穫◯日前まで） =====
-     ※御農園でよく使う代表だけ内蔵。ここに無い農薬は「未登録」と表示し、勝手に判定しない。
-        max=年間使用回数の上限 / phi=収穫前日数(この日数前までしか使えない)。名前は成分の代表商品名。
-        使う農薬が増えたら1行足すだけ（農水省DBの登録内容に合わせて調整）。 */
-  var NG_LIMIT={
-    'スタークル':{max:3, phi:7,  seibun:'ジノテフラン'},
-    'アドマイヤー':{max:3, phi:14, seibun:'イミダクロプリド'},
-    'ダントツ':{max:3, phi:7,  seibun:'クロチアニジン'},
-    'キラップ':{max:2, phi:14, seibun:'フィプロニル'},
-    'ブラシン':{max:3, phi:21, seibun:'フサライド・イソプロチオラン'},
-    'コラトップ':{max:3, phi:14, seibun:'イソプロチオラン等'},
-    'ビーム':{max:3, phi:21, seibun:'トリシクラゾール'},
-    'トレボン':{max:3, phi:7,  seibun:'エトフェンプロックス'},
-    'アプロード':{max:2, phi:14, seibun:'ブプロフェジン'}
+  /* ===== v49 農薬の代表名→有効成分の名前（えらぶ画面の表示用） =====
+     ★v49で「年◯回まで(max)」「収穫◯日前まで(phi)」を削除した。
+        理由：使用回数・収穫前日数は剤型（顆粒水溶剤／粒剤／豆つぶ／液剤）ごとに違い、
+        登録内容も変わる。アプリに手打ちした時点で古くなることが確定する。
+        → 数字は持たず、国の農薬登録情報（pesticide.maff.go.jp）へ送る。
+        ここに残すのは「えらぶときの目印」としての成分名だけで、判定には一切使わない。 */
+  var NG_SEIBUN={
+    'スタークル':{seibun:'ジノテフラン'},
+    'アドマイヤー':{seibun:'イミダクロプリド'},
+    'ダントツ':{seibun:'クロチアニジン'},
+    'キラップ':{seibun:'フィプロニル'},
+    'ブラシン':{seibun:'フサライド・イソプロチオラン'},
+    'コラトップ':{seibun:'イソプロチオラン等'},
+    'ビーム':{seibun:'トリシクラゾール'},
+    'トレボン':{seibun:'エトフェンプロックス'},
+    'アプロード':{seibun:'ブプロフェジン'}
   };
   /* ===== v20 🌾肥料の栄養バランス：肥料名→成分％(N窒素/P りん酸/K カリ) =====
      ※代表的な肥料だけ内蔵。無い肥料は成分不明として扱い、勝手に数値を作らない。
@@ -4029,7 +4057,7 @@
     var gv=function(id){ var el=document.getElementById(id); return el?el.value.replace(/^\s+|\s+$/g,''):''; };
     var d=gv('krEd');
     if(d&&!/^\d{4}\/\d{2}\/\d{2}$/.test(d)){ toast('月日は 2026/07/20 の形で入れてください'); return; }
-    tombAdd(KT_LS,e);   /* v30 編集：古い版に削除印→別端末から古い版が復活しない */
+    tombEdit(KT_LS,e);  /* ★v48.2:ここも同じ不具合だった。直した記録が同期で消えていた */
     if(d)e.d=d;
     e.work=gv('krEw'); e.chem=gv('krEc');
     e.rate=gv('krEr'); e.vol=gv('krEv'); e.mass=gv('krEm');
@@ -4279,13 +4307,22 @@
   function hyLoad(){ try{var s=localStorage.getItem(HY_LS); hyLog=s?JSON.parse(s):[];}catch(e){hyLog=[];}
     if(!(hyLog instanceof Array))hyLog=[]; }
   function hySave(){ try{localStorage.setItem(HY_LS,JSON.stringify(hyLog));}catch(e){} }
-  /* 台帳(worklog)から、この田んぼの肥料記録も拾う（二重入力を防ぐ） */
-  function hyFromWorklog(field){
-    var out=[];
+  /* ★v50 表示している年。既定は今年。hyEnter で毎回いまの年に戻す */
+  var hyYear=new Date().getFullYear();
+  function hyThisYear(){ return new Date().getFullYear(); }
+  function hyYearOf(d){ var m=(''+(d||'')).match(/^(\d{4})/); return m?parseInt(m[1],10):null; }
+  /* 台帳(worklog)から、この田んぼの肥料記録も拾う（🎤話して記録・📝記録画面からのぶん）
+     ★v50：肥料画面の「＋記録する」は肥料台帳と作業台帳の両方に書くため、
+       ここで src==='hiryo' を除かないと自分の書いたぶんを拾い返して二重に数える。
+       （1回20kg入れただけで窒素が倍になり、🗑で消しても片方が残って見えていた） */
+  function hyFromWorklog(field, year){
+    var out=[], y=(year==null)?hyYear:year;
     for(var i=0;i<ktLog.length;i++){
       var e=ktLog[i];
       if(e.field!==field) continue;
+      if(e.src==='hiryo') continue;         /* ★v50 二重計上を止める */
       if(!e.mass) continue;                 /* kg(mass)が無ければ肥料量ではない */
+      if(hyYearOf(e.d)!==y) continue;       /* ★v50 その年のぶんだけ */
       var name=e.chem||'';                  /* ながら記録は肥料名もchemに入る場合がある */
       if(!NG_FERT[name]){                    /* 成分表に無い名前は「その他肥料」扱いで成分0 */
         name=name||'肥料';
@@ -4294,13 +4331,17 @@
     }
     return out;
   }
-  function hyRows(field){
-    var rows=[];
-    for(var i=0;i<hyLog.length;i++){ if(hyLog[i].field===field) rows.push(hyLog[i]); }
-    return rows.concat(hyFromWorklog(field));
+  /* ★v50 その年ぶんだけ返す。画面に「今年あげた栄養」と書いてある以上、
+     コードも年でしぼらないと文言が嘘になる（2年目以降ずっと積み上がっていた） */
+  function hyRows(field, year){
+    var y=(year==null)?hyYear:year, rows=[];
+    for(var i=0;i<hyLog.length;i++){
+      if(hyLog[i].field===field && hyYearOf(hyLog[i].d)===y) rows.push(hyLog[i]);
+    }
+    return rows.concat(hyFromWorklog(field, y));
   }
-  function hyTotals(field){
-    var t={n:0,p:0,k:0}, rows=hyRows(field);
+  function hyTotals(field, year){
+    var t={n:0,p:0,k:0}, rows=hyRows(field, year);
     for(var i=0;i<rows.length;i++){
       var f=NG_FERT[rows[i].fert], kg=rows[i].kg||0;
       if(!f) continue;
@@ -4308,14 +4349,54 @@
     }
     return t;
   }
+  /* ★v50 画面に出していない「前の年」の記録が何件あるか。黙って隠さないために数える。
+     去年は切りかえボタンで見られるので、それより前だけを数える */
+  function hyOlderCount(field){
+    var lim=hyThisYear()-1, n=0, i, y;
+    for(i=0;i<hyLog.length;i++){
+      y=hyYearOf(hyLog[i].d);
+      if(hyLog[i].field===field && y!=null && y<lim) n++;
+    }
+    for(i=0;i<ktLog.length;i++){
+      var e=ktLog[i];
+      if(e.field!==field||e.src==='hiryo'||!e.mass) continue;
+      y=hyYearOf(e.d);
+      if(y!=null && y<lim) n++;
+    }
+    return n;
+  }
+  function hySetYear(y){
+    hyYear=y;
+    hyRender();
+    toast(y===hyThisYear()?('今年（'+y+'年）を見ています'):('去年（'+y+'年）を見ています'));
+  }
+  function hyYearsRender(){
+    var box=document.getElementById('hyYrs');
+    var ty=hyThisYear();
+    if(box){
+      box.innerHTML='<div class="hy-yr'+(hyYear===ty?' on':'')+'" onclick="hySetYear('+ty+')">今年（'+ty+'年）</div>'
+        +'<div class="hy-yr'+(hyYear===ty-1?' on':'')+'" onclick="hySetYear('+(ty-1)+')">去年（'+(ty-1)+'年）</div>';
+    }
+    var n=document.getElementById('hyYrNote');
+    if(n){
+      if(hyYear!==ty){
+        n.style.display='block';
+        n.innerHTML='👀 去年（'+hyYear+'年）を見ています。「＋ 記録する」を押すと、今年（'+ty+'年）に切りかわります。';
+      }else{ n.style.display='none'; n.innerHTML=''; }
+    }
+    var gt=document.getElementById('hyGt');
+    if(gt)gt.textContent=(hyYear===ty?'今年（':'去年（')+hyYear+'年）あげた栄養（合計）';
+  }
   function hyR1(x){ return Math.round(x*10)/10; }
   function hyEnter(){
     hyLoad();
+    hyYear=hyThisYear();          /* ★v50 画面を開いたら必ず今年から見せる */
     var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=hyField;
     var ft=document.getElementById('hyFertName'); if(ft)ft.textContent=hyFert;
     hyRender();
   }
   function hyRender(){
+    hyYearsRender();
     var t=hyTotals(hyField);
     var max=Math.max(t.n,t.p,t.k,0.001);
     var g=document.getElementById('hyGraph');
@@ -4327,16 +4408,18 @@
     }
     if(g)g.innerHTML=bar('n',t.n,'窒素')+bar('p',t.p,'りん酸')+bar('k',t.k,'カリ');
     var note=document.getElementById('hyGnote');
+    var yLab=(hyYear===hyThisYear()?'今年（':'去年（')+hyYear+'年）';
     if(note){
-      if(t.n+t.p+t.k<=0){ note.innerHTML='まだ記録がありません。下から肥料を選んで量を入れると、栄養が自動で計算されます。'; }
-      else{ note.innerHTML='📗 '+hyField+' に今年あげた栄養：窒素 '+hyR1(t.n)+'kg・りん酸 '+hyR1(t.p)+'kg・カリ '+hyR1(t.k)+'kg'; }
+      if(t.n+t.p+t.k<=0){ note.innerHTML=yLab+'の記録はまだありません。下から肥料を選んで量を入れると、栄養が自動で計算されます。'; }
+      else{ note.innerHTML='📗 '+hyField+' に'+yLab+'あげた栄養：窒素 '+hyR1(t.n)+'kg・りん酸 '+hyR1(t.p)+'kg・カリ '+hyR1(t.k)+'kg'; }
     }
     /* 記録リスト */
     var rows=hyRows(hyField), lh='';
     for(var i=rows.length-1;i>=0;i--){
-      var r=rows[i], comp=NG_FERT[r.fert];
+      var r=rows[i], comp=NG_FERT[r.fert], d=fmtMD(r.d);
       var sub=comp?('N'+comp.n+'・P'+comp.p+'・K'+comp.k):'成分不明';
-      lh+='<div class="hy-item"><span class="hy-inm">'+r.fert+'</span>'
+      lh+='<div class="hy-item">'+(d?('<span class="hy-d">'+d+'</span>'):'')
+        +'<span class="hy-inm">'+r.fert+'</span>'
         +'<span class="hy-sub" style="margin-left:8px;">'+sub+'</span>'
         +'<span class="hy-ikg">'+ (r.kg||0) +' kg</span>';
       if(r.fromWl){ lh+='<span class="hy-sub" style="margin-left:8px;">🎤記録（📄記録簿で直せます）</span>'; }
@@ -4344,7 +4427,16 @@
       lh+='</div>';
     }
     var list=document.getElementById('hyList');
-    if(list)list.innerHTML=lh||'<div class="hy-empty">まだ記録はありません</div>';
+    if(list)list.innerHTML=lh||'<div class="hy-empty">'+yLab+'の記録はまだありません</div>';
+    /* ★v50 出していない前の年の記録を、黙って隠さず件数で知らせる */
+    var old=document.getElementById('hyOld');
+    if(old){
+      var oc=hyOlderCount(hyField);
+      if(oc>0){
+        old.style.display='block';
+        old.innerHTML='📁 '+(hyThisYear()-1)+'年より前の記録が '+oc+'件 あります。この画面には出していません（📄記録簿で見られます）。';
+      }else{ old.style.display='none'; old.innerHTML=''; }
+    }
   }
   function hyAdd(){
     var kgEl=document.getElementById('hyKg');
@@ -4355,12 +4447,23 @@
     /* 台帳にも肥料として残す（生産原価・記録簿と連携。作業=追肥） */
     if(typeof wlAdd==='function'){ wlAdd('hogoe', hyField, hyFert+' '+kg+'kg', 'hiryo', {work:'追肥', chem:hyFert, mass:kg}); }
     if(kgEl)kgEl.value='';
+    /* ★v50 去年を見ている最中に記録すると、今日の日付＝今年ぶんなので画面から消えてしまう。
+       記録したものが必ず見えるよう、今年に戻す */
+    var backToNow=(hyYear!==hyThisYear());
+    hyYear=hyThisYear();
     hyRender();
-    toast(hyField+' に '+hyFert+' '+kg+'kg を記録しました');
+    toast(hyField+' に '+hyFert+' '+kg+'kg を記録しました'+(backToNow?'（今年に切りかえました）':''));
   }
   function hyLocalIdx(i){
-    /* iは hyRows の並び。専用ログ内の元番号に変換（🎤記録は台帳側なので対象外） */
-    var localRows=[]; for(var j=0;j<hyLog.length;j++){ if(hyLog[j].field===hyField) localRows.push(j); }
+    /* iは hyRows の並び。専用ログ内の元番号に変換（🎤記録は台帳側なので対象外）
+       ★v50 最重要：hyRows に「年のしぼり」を入れたので、ここも同じ条件でしぼらないと
+         ✏️🗑 が別の記録に当たる（v48.2の★と同じ型の事故になる）。
+         hyRows は「田んぼ一致かつ表示中の年」の順に hyLog を並べているので、
+         ここもまったく同じ条件・同じ順で並べること。 */
+    var localRows=[];
+    for(var j=0;j<hyLog.length;j++){
+      if(hyLog[j].field===hyField && hyYearOf(hyLog[j].d)===hyYear) localRows.push(j);
+    }
     return (i<localRows.length)?localRows[i]:-1;
   }
   function hyDel(i){
@@ -4501,9 +4604,17 @@
   }
 
   /* ============================================================
-     🛡 見張り番(農薬計算 p-pest 内)
-     ・台帳(worklog)の chem を成分別に数え、NG_LIMIT の年間回数・収穫前日数と照合
-     ・NG_LIMIT に無い農薬は「未登録」と表示し、勝手に判定しない（年配UX：ウソを出さない）
+     📋 この農薬をまいた記録(農薬計算 p-pest 内)　★v49で作り替え
+     ・v48.2までの「🛡見張り番」は「あと○回」「収穫まで○日(危険)」を出していたが、
+       法令上の数え方と一致していなかったため廃止した：
+         誤り① 商品名の文字で数えていた（正しくは有効成分ごと）
+         誤り② 全部の田んぼを合算していた（正しくは作物・ほ場ごと）
+         誤り③ 育苗箱処理・種子消毒を数えていなかった（正しくは1回に含む）
+         誤り④ 年○回・収穫○日前を9剤ぶん手打ちしていた（剤型ごとに違う・登録も変わる）
+         誤り⑤ 農場でひとつの収穫予想を全田んぼに当てていた（品種4種・田植え日ばらばら）
+       → 少なく出れば法令違反、多く出れば必要な防除をやめる。どちらも実害があった。
+     ・v49は「判定をしない」。台帳(worklog)の記録を田んぼごとに並べ、
+       何を数えていないかを画面に明記し、国の農薬登録情報へ送るだけにする。
      ============================================================ */
   var mbCurChem='スタークル';   /* いま選んでいる農薬（本来は農薬選択と連動。当面は代表値） */
   var mbHarvest=null;           /* 収穫予定日(Date)。工程表の予想があれば使う */
@@ -4536,9 +4647,12 @@
     pestCalc();
   }
   function pestBaiVal(){
+    /* ★v49：倍率が読めないとき、黙って1000倍にするのをやめた。
+       2000倍の薬なら倍の濃さの答えを何も言わずに出していた（CLAUDE.md「分からない時は
+       分からないと示す」に反する）。読めなければ 0 を返し、呼び出し側で「—」にする。 */
     var b=document.getElementById('pestBai');
     var n=b?parseFloat((b.textContent||'').replace(/[^\d.]/g,'')):0;
-    return n>0?n:1000;
+    return n>0?n:0;
   }
   function pestCalc(){
     var area=fieldAreaA(pestField);       /* a */
@@ -4549,8 +4663,12 @@
     var cEl=document.getElementById('pestChem'); if(cEl)cEl.textContent=(water>0&&chem>0)?chem:'—';
     var note=document.getElementById('pestCalcNote');
     if(note){
-      if(area>0){ note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L　／　'+water+'L ×1000 ÷'+bai+'倍 ＝ '+chem+'mL'; }
-      else { note.textContent='田んぼを選ぶと計算します'; }
+      if(area<=0){ note.textContent='田んぼを選ぶと計算します'; }
+      else if(bai<=0){
+        /* ★v49：倍率が分からないときは薬の量を出さない（勝手に1000倍にしない） */
+        note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L　／　希釈倍率が分からないので、入れる農薬の量は出せません。ラベルで倍率を確かめてください。';
+      }
+      else { note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L　／　'+water+'L ×1000 ÷'+bai+'倍 ＝ '+chem+'mL'; }
     }
   }
   function pestEnter(){
@@ -4560,27 +4678,16 @@
     pestCalc();
     if(typeof mbEnter==='function') mbEnter();
   }
-  function mbCountChem(name){
-    /* 今年、その農薬名を含む記録が台帳に何回あるか（成分の代表名で前方一致） */
-    var y=new Date().getFullYear(), n=0;
-    for(var i=0;i<ktLog.length;i++){
-      var e=ktLog[i]; if(kiYear(e.d)!==y) continue;
-      var c=e.chem||''; if(!c && e.text) c=e.text;
-      if(c.indexOf(name)>=0) n++;
-    }
-    return n;
+  /* ★v49で削除：mbCountChem()（合算して数えていた）／mbHarvestDate()（農場でひとつの
+     収穫予想を全田んぼに当てていた）。どちらも判定のためだけの関数で、判定をやめたため不要。
+     数え直しは mbListChem() の結果を田んぼごとにまとめる形に置き換えた。 */
+  /* 日付の共通整形。農薬の記録一覧と肥料の記録一覧の両方から使う（v50で共通化） */
+  function fmtMD(ds){
+    /* '2026/07/25' も '2026-07-25' も '7/25' にする（v47の書式ズレの教訓） */
+    var m=(''+(ds||'')).match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    return m?(parseInt(m[2],10)+'/'+parseInt(m[3],10)):'';
   }
-  function mbHarvestDate(){
-    /* 工程表の予想（稲刈り）があれば収穫日として使う */
-    try{
-      if(typeof inaCompute==='function' && inaState){
-        var c=inaCompute();
-        if(c&&c.stageDates&&c.stageDates[7]&&c.stageDates[7].date) return c.stageDates[7].date;
-      }
-    }catch(e){}
-    return null;
-  }
-  /* v21 農薬選択→農薬名・希釈倍率・見張り番を連動 */
+  /* v21 農薬選択→農薬名・希釈倍率を連動（v49：回数の判定は廃止したので連動しない） */
   function mbKeyOf(name){
     for(var i=0;i<NG_CHEMS.length;i++){ if(name.indexOf(NG_CHEMS[i])>=0) return NG_CHEMS[i]; }
     return name;
@@ -4593,60 +4700,57 @@
     setTimeout(function(){ go('pest'); }, 700);
   }
   function mbEnter(){
+    /* ★v49：判定をしない。台帳の記録を「田んぼごと」に並べるだけ。
+       全部の田んぼを足して「あと○回」と出すのをやめた（法令はほ場ごと）。 */
     var box=document.getElementById('mbBox'); if(!box)return;
-    var lim=NG_LIMIT[mbCurChem];
-    if(!lim){
-      box.innerHTML='<div class="mb-card"><div class="mb-ttl">🛡 見張り番</div>'
-        +'<div class="mb-unreg">この農薬はまだ見張り番に登録されていません。使用回数・収穫前日数はチェックできません。'
-        +'農水省の農薬DBで確認してください。（よく使う農薬は登録できます）</div></div>';
-      return;
+    var info=NG_SEIBUN[mbCurChem];
+    var seibun=(info&&info.seibun)?info.seibun:'';
+    var y=new Date().getFullYear();
+    var det=(typeof mbListChem==='function')?mbListChem(mbCurChem):[];
+
+    /* 田んぼごとにまとめる（順番は最初に出てきた順） */
+    var order=[], byF={};
+    for(var i=0;i<det.length;i++){
+      var f=det[i].f||'田んぼ未記入';
+      if(!byF[f]){ byF[f]={n:0, ds:[]}; order.push(f); }
+      byF[f].n++;
+      var md=fmtMD(det[i].d); if(md) byF[f].ds.push(md);
     }
-    var used=mbCountChem(mbCurChem);
-    var left=lim.max-used;
-    var pct=Math.max(0,Math.min(100, Math.round(left/lim.max*100)));
-    var cntWarn = left<=0;
-    var h='<div class="mb-card"><div class="mb-ttl">🛡 見張り番（'+mbCurChem+'｜成分：'+lim.seibun+'）</div>';
-    /* 回数メーター */
-    h+='<div class="mb-meter'+(cntWarn?' warn':'')+'">'
-      +'<div class="mb-top"><span>年間の使用回数</span><span class="mb-r">'+(left>0?('あと '+left+' 回'):'上限に達しました')+'</span></div>'
-      +'<div class="mb-bar"><div class="mb-fill" style="width:'+pct+'%"></div></div>'
-      +'<div class="mb-cap">この成分は年 '+lim.max+' 回まで。今年すでに '+used+' 回。'+(cntWarn?'これ以上まくと基準を超えます。':'')+'</div></div>';
-    /* 収穫前日数メーター */
-    var hd=mbHarvestDate();
-    if(hd){
-      var today=new Date(); today.setHours(0,0,0,0);
-      var days=Math.ceil((hd-today)/86400000);
-      var phiWarn = days < lim.phi;
-      var ppct=Math.max(0,Math.min(100, Math.round((days-lim.phi)/Math.max(lim.phi,1)*50)+50));
-      if(phiWarn)ppct=Math.max(6,Math.round(days/Math.max(lim.phi,1)*30));
-      h+='<div class="mb-meter'+(phiWarn?' warn':'')+'">'
-        +'<div class="mb-top"><span>収穫まで</span><span class="mb-r">あと '+days+' 日'+(phiWarn?'（危険）':'')+'</span></div>'
-        +'<div class="mb-bar"><div class="mb-fill" style="width:'+ppct+'%"></div></div>'
-        +'<div class="mb-cap">この農薬は収穫 '+lim.phi+' 日前まで。'+(phiWarn?'今まくと収穫までに間に合いません。':'今ならまだ使えます。')+'</div></div>';
+
+    var h='<div class="kk-card">';
+    h+='<div class="kk-ttl">📋 この農薬をまいた記録</div>';
+    h+='<div class="kk-sub">'+memEsc(mbCurChem)+(seibun?(' ／ 成分：'+memEsc(seibun)):'')+' ／ 今年（'+y+'年）</div>';
+    h+='<div class="kk-sum">記録 '+det.length+'件 ・ 田んぼ '+order.length+'枚</div>';
+
+    if(!det.length){
+      h+='<div class="kk-none">今年の記録は見つかりませんでした。<br>'
+        +'下の「✅ この内容で記録する」を押すと、ここに出ます。</div>';
     }else{
-      h+='<div class="mb-cap" style="margin-top:8px;">📋 収穫予定日が未設定です。工程表で品種・移植日を入れると、収穫前チェックも出せます。（この農薬は収穫 '+lim.phi+' 日前まで）</div>';
-    }
-    /* ★v43：回数の「内訳」を必ず出す。
-       使用回数は法令にかかわる数字なので、合計だけ見せて信じてもらうのは危険。
-       どの日・どの田んぼの記録を数えたのかを並べ、実際と違えば気づけるようにする
-       （本人報告：履歴では1回なのに見張り番は5回と出ていた）。 */
-    var _det=mbListChem(mbCurChem);
-    h+='<div class="mb-cap" style="margin-top:10px;font-weight:700">📋 「'+used+'回」の内訳（今年ぶん）</div>';
-    if(!_det.length){
-      h+='<div class="mb-cap">記録は見つかりませんでした。</div>';
-    }else{
-      h+='<div class="mb-cap">';
-      for(var _q=0;_q<_det.length;_q++){
-        h+='・'+(_det[_q].d||'日付なし')+'　'+(_det[_q].f||'田んぼなし')+'　'+(_det[_q].t||'')+'<br>';
+      h+='<div class="kk-list">';
+      for(var k=0;k<order.length;k++){
+        var g=byF[order[k]];
+        h+='<div class="kk-row"><span class="kk-f">'+memEsc(order[k])+'</span>'
+          +'<span class="kk-n">'+g.n+'回</span>'
+          +'<span class="kk-d">'+memEsc(g.ds.join('・'))+'</span></div>';
       }
       h+='</div>';
-      h+='<div class="mb-cap">この一覧と実際にまいた回数が違うときは、'
-        +'「記録の確認」で消し忘れ・重複がないか確かめてください。</div>';
     }
+
+    /* ★何を数えていないかを必ず書く（年配のUX：ウソを出さない） */
+    h+='<div class="kk-warn"><span class="t">⚠️ これは「記録した件数」です</span>'
+      +'法律で数える使用回数は、<br>'
+      +'① 有効成分ごと（商品名ごとではない）<br>'
+      +'② 作物ごと・田んぼごと・栽培期間ぜんぶ<br>'
+      +'③ 育苗箱処理・種子消毒も１回にふくむ<br>'
+      +'で数えます。上の一覧には<b>箱処理・種子消毒や、同じ成分の別の商品は入っていません</b>。<br>'
+      +'回数の上限・収穫前日数は<b>剤型（顆粒水溶剤・粒剤・豆つぶ・液剤）ごとに違い</b>、登録内容も変わります。'
+      +'<b>必ず国の登録内容とラベルで確かめてください。</b></div>';
+
+    h+='<div class="kk-db" onclick="openSite(\'https://pesticide.maff.go.jp/\')">🏛 国の登録内容を調べる（無料）</div>';
     h+='</div>';
     box.innerHTML=h;
   }
-  /* ★v43：回数の内訳を返す（mbCountChem と同じ数え方でそろえる） */
+  /* ★v43：今年の記録を返す（v49：mbEnter がこれを田んぼごとにまとめて表示する。合算はしない） */
   function mbListChem(name){
     var y=new Date().getFullYear(), out=[];
     for(var i=0;i<ktLog.length;i++){
@@ -4657,7 +4761,7 @@
     return out;
   }
   function pestRecord(){
-    /* 記録：台帳に散布として残す→見張り番のカウントに反映。農薬代は生産原価へ */
+    /* 記録：台帳に散布として残す→「この農薬をまいた記録」に出る。農薬代は生産原価へ */
     var fld=pestField||(typeof recField!=='undefined'?recField:defaultFieldName());
     var yEl=document.getElementById('pestYen');
     var yen=yEl?(parseInt((''+yEl.value).replace(/[^\d]/g,''),10)||0):0;
@@ -4666,7 +4770,7 @@
     if(typeof wlAdd==='function'){ wlAdd('shussui', fld, mbCurChem+' 散布(農薬計算)', 'pest', extra); }
     if(yEl)yEl.value='';
     mbEnter();
-    toast(yen>0?('記録しました（農薬代 '+yen.toLocaleString()+'円は生産原価へ）'):'計算結果を記録しました（見張り番に反映）');
+    toast(yen>0?('記録しました（農薬代 '+yen.toLocaleString()+'円は生産原価へ）'):'計算結果を記録しました（記録簿に残ります）');
   }
 
   /* ============================================================
@@ -4711,11 +4815,13 @@
   /* 肥料の栄養→円は難しいので、ここでは肥料代の目安=各田んぼ合計kg×概算単価。
      厳密な金額は手入力の「石灰・複合など」で調整可能。窒素/りん酸/カリの成分量から概算する。 */
   function costFertKg(){
-    /* 全田んぼの肥料記録から成分別kg合計 */
-    var tot={n:0,p:0,k:0};
+    /* 全田んぼの肥料記録から成分別kg合計
+       ★v50 必ず「今年」で数える。肥料画面で去年を見ている最中に原価を開いても、
+         原価が去年の数字に引きずられないようにする（農薬費・機械費は今年ぶんなので、そろえる）。 */
+    var tot={n:0,p:0,k:0}, ty=hyThisYear();
     hyLoad();
     var fields={}; for(var i=0;i<KT_FIELDS.length;i++)fields[KT_FIELDS[i].n]=1;
-    for(var f in fields){ var t=hyTotals(f); tot.n+=t.n; tot.p+=t.p; tot.k+=t.k; }
+    for(var f in fields){ var t=hyTotals(f, ty); tot.n+=t.n; tot.p+=t.p; tot.k+=t.k; }
     return tot;
   }
   var COST_FERT_YEN={n:250,p:200,k:180}; /* 成分1kgあたりの概算円(目安) */
@@ -5372,6 +5478,39 @@
     try{ _syncHash[TOMB_LS]=''; }catch(e){}  /* 次の同期で必ず送るよう印だけリセット */
   }
   function tombFor(syncKey){ var o=_tombLoad(); return o[syncKey]||{}; }
+  /* ★v48.2：記録を「消す」のではなく「直す」ときに呼ぶ。
+     ── 直すたびに tombAdd を呼んでいたのが重大な不具合の原因だった。
+     削除印は id を持つ記録では 'id:〇〇' という形で付く。id は直しても変わらないので、
+     直した後の記録にも印が一致してしまい、次の同期で **本体ごと消えていた**。
+     （★を押したら記録が消え、画面が読み込み直されてホームに戻る、の正体）
+     id がある記録は「同じ id なら _m（更新時刻）が新しい方が勝つ」しくみが _mergeVal にあるので、
+     削除印は付けず _m を新しくするだけでよい。
+     id が無い古い記録は印が JSON 全文なので、直せば別物になり、従来どおり印が正しく効く。 */
+  /* ★v48.2：すでに付いてしまった「誤った削除印」を掃除する。
+     考え方：台帳にまだ残っている記録に削除印が付いていたら、それは★や編集で
+     誤って付いたもの。本当に消した記録は台帳から消えているので、ここには一致しない。
+     ※サーバーの印は union（足すだけ）で戻ってくるので、同期のたびに掃除する。 */
+  function tombFixStale(){
+    var o=_tombLoad(), m=o[KT_LS]; if(!m)return false;
+    var changed=false;
+    try{
+      for(var i=0;i<ktLog.length;i++){
+        var sg=_sig(ktLog[i]);
+        if(m[sg]){ delete m[sg]; changed=true; }
+      }
+    }catch(e){ return false; }
+    if(changed){
+      if(!Object.keys(m).length)delete o[KT_LS];
+      _tombSave(o);
+      try{ _syncHash[TOMB_LS]=''; }catch(e){}   /* 掃除した版を家族にも配る */
+    }
+    return changed;
+  }
+  function tombEdit(syncKey, item){
+    if(!item)return;
+    if(item.id){ item._m=Date.now(); }   /* 新しい版として勝たせる */
+    else { tombAdd(syncKey, item); }     /* 古い記録：旧版のJSONに印を付ける */
+  }
   /* サーバーの削除印を取り込む：印は消さず union、同じ印は新しい時刻を採用 */
   function tombMergeServer(serverStr){
     var S; try{ S=JSON.parse(serverStr); }catch(e){ S=null; }
@@ -5468,6 +5607,8 @@
         }
         /* v30 まず削除印を取り込む（この後の配列マージで参照するため先に反映） */
         if(data[TOMB_LS]!=null){ if(tombMergeServer(data[TOMB_LS]))changed=true; try{ _syncHash[TOMB_LS]=_hash(localStorage.getItem(TOMB_LS)||'{}'); }catch(e){} }
+        /* ★v48.2:誤った削除印を、記録に当てる前に取り除く（当ててしまうと記録が消える） */
+        try{ tombFixStale(); }catch(e){}
         for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue; if(k===TOMB_LS)continue;
           var loc; try{ loc=localStorage.getItem(k); }catch(e){ loc=null; }
           var m=_mergeVal(loc==null?'null':loc, data[k], k);
@@ -6592,7 +6733,8 @@
   }
   function kyoStar(i){
     if(i<0||i>=ktLog.length)return;
-    tombAdd(KT_LS,ktLog[i]); ktLog[i].star=!ktLog[i].star; ktSave();
+    tombEdit(KT_LS,ktLog[i]);          /* ★v48.2:削除印ではなく「直した」印にする */
+    ktLog[i].star=!ktLog[i].star; ktSave();
     try{ kyoRender(); }catch(e){}
     if(typeof histRender==='function'){ try{ histRender(); }catch(e){} }   /* v48 */
     toast(ktLog[i].star?'★ 教科書に残しました（来年の同じ月に出ます）':'★を外しました');
@@ -6719,6 +6861,7 @@
   }
   /* ---- v21 初期読み込み ---- */
   hasLoad(); kyoLoad(); hyGoalLoad();   /* v47:geoLoad() は近くの田んぼ機能とともに削除 */
+  try{ tombFixStale(); }catch(e){}      /* ★v48.2:起動時にも誤った削除印を掃除 */
 
 </script>
 </body>
