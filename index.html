@@ -567,16 +567,7 @@
   .hitoshare{font-size:13px;font-weight:700;color:#A8843A;margin-top:8px;text-align:center;line-height:1.5;}
   /* v47:記録の確認では .sc{gap:11px} が効くので、自分の下余白は消す（二重防止） */
   #p-hist .hitobox{margin-bottom:0;}
-  /* ★v48 うちの教科書への入口。CLAUDE.mdの基準色（深緑背景・白の大きい太字・1行）*/
-  .kyobtn{background:var(--green-deep);border-radius:14px;padding:15px 16px;
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    box-shadow:0 6px 14px rgba(33,63,41,.25);cursor:pointer;}
-  .kyobtn .tx{color:#fff;font-size:20px;font-weight:800;letter-spacing:.02em;white-space:nowrap;}
-  .kyobtn .sb{color:#CFE0D3;font-size:13px;font-weight:700;margin-top:1px;white-space:nowrap;}
-  .kyobtn .chv{color:#fff;font-size:24px;font-weight:800;flex:0 0 auto;}
-  .kyo-close{background:#fff;border:1.5px solid var(--green-deep);border-radius:14px;padding:13px;
-    text-align:center;font-size:16px;font-weight:800;color:var(--green-deep);cursor:pointer;}
-  #kyoWrap{display:flex;flex-direction:column;gap:10px;}
+  /* v48.1:記録の確認の中の入口(.kyobtn)は廃止。専用ボタン「📜去年の今ごろ」に一本化した */
   /* 切りかえ帯 */
   /* v47:切りかえ帯(.recsw)は廃止。ひとことは「📝記録の確認」に移した */
   /* ★v47：作業を記録のカードがくっついていた原因。
@@ -1343,13 +1334,17 @@
           <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
         </div>
         <div class="hist-lead">上で書いた<b>ひとこと</b>と、🎤や🚜で記録したことが、<b>新しい順に上から</b>ぜんぶ並びます。「いつ・どの田んぼ・何を・いくら」が一目で分かります。</div>
-        <!-- ===== v48 うちの教科書をここに統合（深緑の大きなボタンで開閉） ===== -->
-        <div class="kyobtn" id="kyoBtn" onclick="kyoToggle()">
-          <div><div class="tx">🕰 去年の同じ月を見る</div>
-               <div class="sb" id="kyoBtnSub">📝 この月の反省メモもここです</div></div>
-          <span class="chv" id="kyoBtnChv">›</span>
-        </div>
-        <div id="kyoWrap" style="display:none;">
+        <div class="hist-chips" id="histChips"></div>
+        <div class="hist-fieldbar" id="histFieldBar"></div>
+        <div id="histBody"></div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+
+    <!-- ===== 🕰 去年の同じ月（v48.1：折りたたみをやめ、他の19画面と同じ「別画面＋戻る」に戻した） ===== -->
+    <div class="page" id="p-kyoka">
+      <div class="sc">
+        <div class="hy-lead"><b>去年の自分が先生</b>になる場所です。★を付けた作業と📝反省メモが、<b>来年の同じ月</b>にここへ出てきます。<br>★は「<b>📝記録の確認</b>」の各行から押せます。</div>
         <div class="kyo-nav"><span class="ar" onclick="kyoMove(-1)">‹ 前の月</span><span id="kyoTitle">…</span><span class="ar" onclick="kyoMove(1)">次の月 ›</span></div>
         <div id="kyoPast"><!-- 過去の同じ月(JS) --></div>
         <div class="kyo-memoc">
@@ -1357,11 +1352,6 @@
           <textarea class="kyo-memo" id="kyoMemo" placeholder="例）梅雨明けが早く、中干しを3日早めた。来年もこの時期でよい。" onchange="kyoMemoSave(this.value)"></textarea>
           <div class="kyo-msub">来年の同じ月のページに自動で出ます</div>
         </div>
-          <div class="kyo-close" onclick="kyoToggle()">⌃ とじる</div>
-        </div>
-        <div class="hist-chips" id="histChips"></div>
-        <div class="hist-fieldbar" id="histFieldBar"></div>
-        <div id="histBody"></div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -1399,7 +1389,7 @@
       </div>
     </div>
 
-    <!-- ===== 📖 うちの教科書(新) ===== -->
+    <!-- ===== 📜 去年の今ごろ（旧「うちの教科書」。v48で改名） ===== -->
     <!-- ===== 🚜 機械の維持費(新) ===== -->
     <div class="page" id="p-kikai">
       <div class="sc">
@@ -1808,7 +1798,7 @@
            || window.matchMedia('(display-mode: standalone)').matches;
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
-  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',hist:'p-hist'};
+  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',kyoka:'p-kyoka',hist:'p-hist'};
   var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
@@ -1856,6 +1846,7 @@
     map:   navHdr('home','ホーム','圃場マップ'),
     kroku: navHdr('voice','話して記録','栽培管理記録簿'),
     hist:  navHdr('home','ホーム','記録の確認'),
+    kyoka: navHdr('home','戻る','📜 去年の今ごろ'),
     hiryo: navHdr('home','ホーム','肥料の栄養バランス'),
     kikai: navHdr('home','ホーム','機械の維持費'),
     menu:  navHdr(null,null,'メニュー'),
@@ -1865,7 +1856,7 @@
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
     cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home',kroku:'voice',
-    hiryo:'home',kikai:'home',hist:'home'};
+    hiryo:'home',kikai:'home',hist:'home',kyoka:'home'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
@@ -1942,8 +1933,8 @@
     if(n==='rec'&&typeof recEnter==='function')recEnter();
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
     if(n==='hist'){ if(typeof hitoDateShow==='function')hitoDateShow();
-                    if(typeof kyoReset==='function')kyoReset();
                     if(typeof histRender==='function')histRender(); }
+    if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
     highlightTab(n);
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
   var lastMemo='';
@@ -4948,19 +4939,20 @@
     cost: {cls:'t-red',   ic:'📊', tx:'生産原価'},
     hiryo:{cls:'t-green2',ic:'🌾', tx:'肥料の栄養'},
     kikai:{cls:'t-teal',  ic:'🚜', tx:'機械の維持費'},
+    kyoka:{cls:'t-gold',  ic:'📜', tx:'去年の今ごろ'},
     hist: {cls:'t-orange',ic:'📝', tx:'記録の確認'},
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'}
   };
   /* v25.4:設定は下タブに固定になったのでボタン/タブの候補からは外す(重複させない)。 */
-  var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','koutei'];
+  var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','koutei'];
   /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
   /* ★v36.4：ご家族に配布したときの初期の並び。実機の画面どおりにした。
      1ページ目=作業を記録／田んぼ・マップ／AI病害虫診断／KSAS連携／米づくり工程表／肥料の栄養
-     2ページ目=話して記録／うちの教科書／記録の確認／機械の維持費／生産原価／ドローン散布
+     2ページ目=話して記録／去年の今ごろ／記録の確認／機械の維持費／生産原価／ドローン散布
      ※タブに使う ai・cal・pest はボタンからは自動で除かれる（重複させない仕様）。 */
   var HOME_ORDER_DEFAULT=['rec','fields','diag','ksas','koutei','hiryo',
-                          'voice','hist','kikai','cost','drone',
+                          'voice','kyoka','hist','kikai','cost','drone',
                           'ai','pest','cal','team'];
   var TILE_LS_KEY='gyotokuHomeOrder_v1';
   function loadHomeOrder(){
@@ -5118,7 +5110,7 @@
   /* v25.1:ksas等が抜けていてタブが「undefined」になっていたので全部そろえる */
   var TAB_SHORT={rec:'作業',voice:'記録',drone:'ドローン',diag:'診断',ai:'相談',map:'マップ',
                  pest:'農薬',fields:'田んぼ',team:'共有',cal:'予定',cost:'原価',set:'設定',
-                 ksas:'KSAS',koutei:'工程表',hiryo:'肥料',kikai:'機械',kroku:'記録簿',hist:'履歴'};
+                 ksas:'KSAS',koutei:'工程表',hiryo:'肥料',kikai:'機械',kyoka:'去年',kroku:'記録簿',hist:'履歴'};
   var TAB_ALIAS={rec:'voice', voice:'rec'}; /* 記録系はどちらでも同じタブを点灯 */
   /* ★v36.4：ご家族に配布したときの初期タブ。実機の並び（相談・予定・農薬）に合わせた。
      localStorage は端末ごとなので、配布先には必ずこの初期値が出る。 */
@@ -6420,7 +6412,7 @@
      v21：あい作＋レイミー統合
      - 🔮病気の予報＋🩺カルテ式診断＋📕ミニ図鑑（🔍診断）
      - 🐛発生記録（田んぼ単位・新キー gyotoku.hassei.v1）
-     - 📖うちの教科書（v48で「📝記録の確認」に統合・★印＋反省メモ gyotoku.kyoka.v1）
+     - 📜去年の今ごろ（旧「うちの教科書」。★印は記録の確認から／反省メモ gyotoku.kyoka.v1）
      - 🎯肥料の目標まであと◯kg（gyotoku.hygoal.v1）
      ★AIの有料APIは不使用（辞書照合＋端末内計算のみ）＝課金ゼロ維持
      ========================================================= */
@@ -6579,7 +6571,7 @@
   }
   function dgEnter(){ yhRender(); dgRender(); dgHist(); }
 
-  /* ---- 📖 うちの教科書 ---- */
+  /* ---- 📜 去年の今ごろ（旧「うちの教科書」） ---- */
   var KYO_KEY='gyotoku.kyoka.v1', kyoMemos={}, kyoDate=new Date();
   function kyoLoad(){ try{var t=localStorage.getItem(KYO_KEY); kyoMemos=t?JSON.parse(t):{};}catch(e){kyoMemos={};} if(typeof kyoMemos!=='object'||!kyoMemos)kyoMemos={}; }
   function kyoSave(){ try{localStorage.setItem(KYO_KEY,JSON.stringify(kyoMemos));}catch(e){} }
@@ -6607,29 +6599,8 @@
   }
   function kyoMove(d){ kyoDate=new Date(kyoDate.getFullYear(),kyoDate.getMonth()+d,1); kyoRender(); }
   function kyoEnter(){ kyoLoad(); kyoDate=new Date(); kyoRender(); }
-  /* ★v48：うちの教科書は「📝記録の確認」の中に入った。深緑のボタンで開け閉めする。
-     開いた時だけ中身を作るので、ふだんの表示は今までどおり軽い。 */
-  function kyoToggle(){
-    var w=document.getElementById('kyoWrap'); if(!w)return;
-    /* ★v48の不具合を修正：以前は open の判定に `!w.style.display` を入れていたため、
-       開いたあと display が空文字になると「とじている」と誤判定し、
-       何度押しても開くだけで「とじる」が効かなかった。
-       とじている＝'none' だけで見分け、開くときは 'flex' をはっきり入れる
-       （#kyoWrap は CSS で display:flex なので、それに合わせる）。 */
-    var open=(w.style.display==='none');
-    w.style.display = open ? 'flex' : 'none';
-    var sub=document.getElementById('kyoBtnSub'), chv=document.getElementById('kyoBtnChv');
-    if(sub)sub.textContent = open ? '押すと、とじます' : '📝 この月の反省メモもここです';
-    if(chv)chv.textContent = open ? '⌄' : '›';
-    if(open){ try{ kyoEnter(); }catch(e){} }
-  }
-  /* 記録の確認をひらき直したら、教科書はとじた状態に戻す（年配の方が迷わないよう毎回同じ形で始める） */
-  function kyoReset(){
-    var w=document.getElementById('kyoWrap'); if(w)w.style.display='none';
-    var sub=document.getElementById('kyoBtnSub'), chv=document.getElementById('kyoBtnChv');
-    if(sub)sub.textContent='📝 この月の反省メモもここです';
-    if(chv)chv.textContent='›';
-  }
+  /* v48.1：折りたたみ(kyoToggle/kyoReset)は撤去。本番で「アプリが閉じる」現象が出たため、
+     他の19画面と同じ「別画面＋戻る」の実績ある形に戻した。深緑ボタンは go('kyoka') を呼ぶ。 */
   function kyoMemoSave(v){
     kyoMemos[kyoYm(kyoDate.getFullYear(),kyoDate.getMonth()+1)]=v; kyoSave();
     toast('📝 反省メモを保存しました（来年の同じ月に出ます）');
@@ -6664,7 +6635,8 @@
         past+=nm.join('、')+'</span></div></div>';
       }
     }
-    if(!found)past='<div class="kyo-empty">📖 教科書はこれからです。<b>今年の記録が1ページ目</b>。来年の今ごろ、ここに「去年の自分」が出てきます。</div>';
+    if(!found)past='<div class="kyo-empty">📜 <b>去年の'+m+'月の記録は、まだありません。</b><br>'
+      +'今年つけた★と📝メモが、<b>来年の'+m+'月にここへ出てきます</b>。</div>';
     var pb=document.getElementById('kyoPast'); if(pb)pb.innerHTML=past;
     /* --- 反省メモ（表示中の年月ぶん） --- */
     var mm=document.getElementById('kyoMemo'); if(mm)mm.value=kyoMemos[kyoYm(y,m)]||'';
