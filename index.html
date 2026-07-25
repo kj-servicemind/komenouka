@@ -2,6 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
+     JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
+<meta name="app-ver" content="v54">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1649,7 +1652,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v53(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v54(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -6642,11 +6645,151 @@
   })();
 
   /* ===== PWA:Service Worker登録(オフライン対応) ===== */
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',function(){
-      try{ navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){}
-    });
+  /* ★★v54 新しい版が出たら、家族の端末が自分で入れかわる ★★
+     ── なぜ要るか ──
+     家族はホーム画面に追加したPWAで使う。iPhoneは一度読み込んだページをしまい込むので、
+     GitHubに新しい index.html を上げても、古い画面のまま何日も変わらないことがある。
+     （実際に、同じ時刻に片方の端末だけ「うちの教科書」が残っていた）
+     年配の方に「読み込み直してください」は通じない。だからアプリが自分で気づいて入れかわる。
+     ── どうやるか ──
+     ・軽い問い合わせ(HEAD)で、サーバーの index.html の指紋(ETag)だけを見る。中身は落とさない
+     ・「この版のときに見た指紋」を端末に控えておき、違うものが出たら新しい版が出たと判断する
+       ★「最初に見た指紋」と比べてはいけない。古い画面のまま起動すると、
+         最初に見る指紋がすでに新しい版のものになり、永久に入れかわらなくなる
+     ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
+     ・書きかけの文があるときは入れかわらない（打ったものを消さない）
+     ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
+  var APP_VER='v54';                        /* この版の名前。版を上げるたびにここも上げる */
+  var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
+  var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
+  var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
+  var _verPend=null, _verLast=0, _verBusy=false;
+  var VER_RANGE='gyotoku.verRange.v1';  /* 「先頭だけはもらえない」と分かったら控える */
+  var _verRangeOK=null;   /* null=未確認 / true=先頭だけもらえる / false=もらえない */
+  try{ if(localStorage.getItem(VER_RANGE)==='0') _verRangeOK=false; }catch(e){}
+
+  /* 書きかけの文があるか。あるうちは入れかわらない */
+  function verTyping(){
+    try{
+      var a=document.activeElement;
+      if(a && (a.tagName==='TEXTAREA' || a.tagName==='INPUT')) return true;
+      var ids=['hitoIn','recMemoIn','kyoMemo','aiQ','hyKg'], i, el;
+      for(i=0;i<ids.length;i++){
+        el=document.getElementById(ids[i]);
+        if(el && el.value && (''+el.value).replace(/^\s+|\s+$/g,'')!=='') return true;
+      }
+    }catch(e){}
+    return false;
   }
+  /* 実際に入れかわる。URLに時刻を付けるのは、付けないと古いものが出てくるため */
+  function verApply(){
+    if(verTyping()) return false;                 /* 書きかけ → 次の機会に */
+    var last=0;
+    try{ last=parseInt(localStorage.getItem(VER_RELOADED)||'0',10)||0; }catch(e){}
+    if(Date.now()-last < 180000) return false;    /* 3分に1回まで */
+    try{ localStorage.setItem(VER_RELOADED, String(Date.now())); }catch(e){}
+    try{ localStorage.setItem(VER_FLAG,'1'); }catch(e){}
+    try{ location.replace(location.pathname+'?v='+Date.now()); }catch(e){ try{ location.reload(); }catch(e2){} }
+    return true;
+  }
+  /* ★★v54(改) いちばん確かなやり方＝サーバーの index.html の「版の名前」を直に読む。
+     指紋(ETag)は「中身が変わった」しか分からず、通信のしかたで揺れることもある。
+     版の名前どうしを比べれば、いま自分が古いかどうかを**まちがいなく**判断できる。
+     ── 通信量 ──
+     先頭1KBだけをくださいと頼む(Range)。1MBのファイルを毎回落とすことはしない。
+     もし先頭だけをもらえないサーバーだったら、以降は軽い問い合わせ(HEAD)の
+     指紋くらべに切りかえ、指紋が変わったときだけ版の名前を読みにいく。 */
+  function verRemember(tag){
+    _verPend=null;
+    if(!tag) return;
+    try{ localStorage.setItem(VER_KEY, JSON.stringify({v:APP_VER, t:tag})); }catch(e){}
+  }
+  /* サーバーの版の名前を読む。tag を渡すと「版は同じだった」ときに控え直す */
+  function verFetchVer(tag){
+    try{
+      fetch(location.pathname+'?vg='+Date.now(), {cache:'no-store', headers:{'Range':'bytes=0-1023'}})
+        .then(function(r){
+          if(!r || !(r.ok || r.status===206)) return null;
+          if(_verRangeOK===null){
+            _verRangeOK=(r.status===206);
+            /* ★1MB丸ごと落ちるサーバーだと分かったら控えておく。
+               控えないと、アプリを開くたびに毎回1MB落ちてしまう（家族の通信量） */
+            if(!_verRangeOK){ try{ localStorage.setItem(VER_RANGE,'0'); }catch(e){} }
+          }
+          return r.text();
+        })
+        .then(function(t){
+          if(t==null) return;
+          var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
+          if(!m) return;                            /* 読めない → 何もしない（誤作動させない） */
+          if(m[1]!==APP_VER){ verApply(); return; } /* ★版がちがう＝古い画面を見ている。確実 */
+          verRemember(tag);                         /* 版は同じ＝指紋が揺れただけ。控え直す */
+        })
+        .catch(function(){})
+        .then(function(){ _verBusy=false; }, function(){ _verBusy=false; });
+    }catch(e){ _verBusy=false; }
+  }
+  /* 指紋くらべ（先頭だけもらえないサーバー用の控え） */
+  function verSee(tag){
+    if(!tag) return;
+    var st=null;
+    try{ st=JSON.parse(localStorage.getItem(VER_KEY)||'null'); }catch(e){ st=null; }
+    if(st && st.v===APP_VER && st.t && st.t!==tag){ verFetchVer(tag); return; }
+    verRemember(tag);
+  }
+  function verCheck(force){
+    if(_verBusy) return;
+    var now=Date.now();
+    if(!force && now-_verLast < 60000) return;     /* 1分に1回まで */
+    _verLast=now; _verBusy=true;
+    try{
+      if(_verRangeOK===false){
+        /* 先頭だけもらえないサーバー：軽い問い合わせで指紋を見る */
+        fetch(location.pathname+'?vc='+now, {method:'HEAD', cache:'no-store'})
+          .then(function(r){
+            try{
+              if(!r || !r.ok) return;
+              verSee(r.headers.get('etag') || r.headers.get('last-modified') || '');
+            }catch(e){}
+          })
+          .catch(function(){})
+          .then(function(){ _verBusy=false; }, function(){ _verBusy=false; });
+      } else {
+        verFetchVer(null);   /* _verBusy は verFetchVer の中で戻す */
+      }
+    }catch(e){ _verBusy=false; }
+  }
+
+  /* ★v54 sw.js の登録をやめた。
+     このアプリは index.html 1枚で配っており、sw.js は GitHub に上げていない。
+     登録は毎回失敗して黙って捨てられるだけの空回りだった。
+     さらに、昔このファイルを一度でも置いたことがあると、その古い版が端末に住み着き、
+     いつまでも古い画面を出し続ける（今回の「片方の端末だけ古い」の容疑者）。
+     そこで登録はやめ、残っている古いものがあれば消して一度だけ入れかわる。 */
+  if('serviceWorker' in navigator){
+    try{
+      navigator.serviceWorker.getRegistrations().then(function(rs){
+        if(!rs || !rs.length) return;
+        for(var i=0;i<rs.length;i++){ try{ rs[i].unregister(); }catch(e){} }
+        try{ if(window.caches && caches.keys) caches.keys().then(function(ks){
+          for(var j=0;j<ks.length;j++){ try{ caches.delete(ks[j]); }catch(e){} } }).catch(function(){}); }catch(e){}
+        try{ localStorage.setItem(VER_FLAG,'1'); }catch(e){}
+        setTimeout(function(){ try{ location.replace(location.pathname+'?v='+Date.now()); }catch(e){ try{ location.reload(); }catch(e2){} } }, 900);
+      }).catch(function(){});
+    }catch(e){}
+  }
+
+  /* 見張りの動かし方：起動3秒後・アプリに戻った時・10分ごと */
+  setTimeout(function(){ try{ verCheck(true); }catch(e){} }, 3000);
+  setInterval(function(){ try{ verCheck(); }catch(e){} }, 600000);
+  try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ verCheck(); }catch(e){} } }); }catch(e){}
+  /* 入れかわった直後だけ、小さく知らせる（黙って変わると壊れたと思われるため） */
+  try{
+    if(localStorage.getItem(VER_FLAG)){
+      localStorage.removeItem(VER_FLAG);
+      setTimeout(function(){ try{ toast('✅ 最新版になりました'); }catch(e){} }, 1500);
+    }
+  }catch(e){}
 
 /* =========================================================
      v21：あい作＋レイミー統合
