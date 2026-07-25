@@ -563,10 +563,20 @@
   .hitomic{background:#fff;border:1.5px solid var(--green-deep);color:var(--green-deep);}
   .hitosave{background:var(--green-deep);border:1.5px solid var(--green-deep);color:#fff;}
   .hitoshare{font-size:13px;font-weight:700;color:#A8843A;margin-top:8px;text-align:center;line-height:1.5;}
+  /* v47:記録の確認では .sc{gap:11px} が効くので、自分の下余白は消す（二重防止） */
+  #p-hist .hitobox{margin-bottom:0;}
   /* 切りかえ帯 */
-  .recsw{display:flex;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:#F0EEE4;margin-bottom:10px;}
-  .recsw > div{flex:1;text-align:center;padding:12px 4px;font-size:15.5px;font-weight:800;color:#6B6656;}
-  .recsw > div.on{background:var(--green-deep);color:#fff;}
+  /* v47:切りかえ帯(.recsw)は廃止。ひとことは「📝記録の確認」に移した */
+  /* ★v47：作業を記録のカードがくっついていた原因。
+     他の画面のカードは .sc の直接の子なので .sc{gap:11px} で11px空くが、
+     ここは #recFormWrap という中間の箱に入っていて、その箱に gap の指定が無かった（＝0px）。 */
+  #recFormWrap{display:flex;flex-direction:column;gap:11px;}
+  /* 中の開閉パネルは閉じている間 display:none なので gap は増えないが、
+     開いた時に自分の margin-bottom と gap が二重になる。この箱の中だけ0にする。 */
+  #recFormWrap > .fsheet,
+  #recFormWrap > .usesheet-amt,
+  #recFormWrap > .recmemo-box,
+  #recFormWrap > .whopick{margin-bottom:0;}
   /* だれが */
   .whopick{background:#fff;border:2px solid var(--green-deep);border-radius:16px;padding:14px;margin-bottom:10px;display:none;}
   .whopick.on{display:block;}
@@ -647,7 +657,9 @@
   /* ===== 稲作先生 ===== */
   .tile.inasaku{background:linear-gradient(140deg,#3A7048,#213F29);border-color:#213F29;}
   .tile.inasaku .tx{color:#fff;}
-  .ina-wrap{padding:14px 14px 18px;}
+  /* v47：外側の .sc に左右18pxがあるのに、ここでも14px足していたので左右32pxになっていた
+     （工程表だけ余白が広い原因）。左右は .sc にまかせ、下の余白だけ残す。 */
+  .ina-wrap{padding:0 0 18px;}
   .ina-form-lbl{text-align:center;font-family:var(--mincho);font-size:17px;font-weight:800;margin:14px 0 8px;letter-spacing:.03em;}
   .ina-sel{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:14px 16px;
     font-size:17px;font-weight:700;color:var(--ink);-webkit-appearance:none;appearance:none;
@@ -916,7 +928,6 @@
   .kyo-memo{width:100%;min-height:70px;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;font-family:var(--gothic);box-sizing:border-box;}
   .kyo-msub{font-size:13px;color:#5c7060;margin-top:4px;}
   .kyo-empty{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:14px;font-size:15px;color:#6b6f66;margin-bottom:8px;line-height:1.6;}
-  .fld-geo{background:var(--blue-soft);border:1px solid #CADDE8;border-radius:10px;padding:10px;text-align:center;font-weight:700;font-size:15px;margin:8px 0;color:var(--blue);}
   /* ===== v22 実用化2.0 ===== */
   /* ① 肥料一覧シート */
 
@@ -1091,7 +1102,7 @@
   .usesheet-amt .ua .ual{font-size:13px;color:#8A8472;font-weight:700;margin-bottom:2px;}
   .usesheet-amt .ua input{width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:10px;padding:10px;font-size:16.5px;}
   .fgroup{padding:9px 14px 4px;font-size:13.5px;font-weight:800;color:#8a6a2a;background:#FBF7EC;border-top:1px solid #E7E3D8;}
-  /* ===== 🗓️ 記録の履歴 v27（#p-hist 内だけに限定） ===== */
+  /* ===== 📝 記録の確認 v27（#p-hist 内だけに限定） ===== */
   #p-hist .hist-lead{font-size:15px;line-height:1.7;color:#374151;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px 14px;margin:2px 0 12px;}
   #p-hist .hist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
   #p-hist .hist-chip{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #d1d5db;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
@@ -1177,22 +1188,6 @@
     <!-- ===== ③ 作業を記録 ===== -->
     <div class="page" id="p-rec">
       <div class="sc">
-        <div class="banner" id="recGeoBanner" onclick="recNearField(false)">📍 近くの田んぼをさがす（タップ）</div>
-        <!-- ===== v37 今日ひとこと ===== -->
-        <div class="hitobox" id="hitoBox">
-          <div class="hl">✍️ 今日ひとこと</div>
-          <div class="hs" id="hitoDate">田んぼをえらばず、ひとことだけ残せます</div>
-          <textarea id="hitoIn" placeholder="例：雨で作業は休み。西の田でうんかを少し見かけた" enterkeyhint="done"></textarea>
-          <div class="hitorow">
-            <div class="hitomic" onclick="hitoMic()">🎤 話して書く</div>
-            <div class="hitosave" onclick="hitoSave()">書きとめる</div>
-          </div>
-          <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
-        </div>
-        <div class="recsw">
-          <div class="on" id="recSwA" onclick="recSw('rec')">📝 作業を記録する</div>
-          <div id="recSwB" onclick="recSw('hito')">✍️ ひとことだけ</div>
-        </div>
         <div id="recFormWrap">
         <div class="fld datefld"><div class="lb">① いつ?（押すと日付を選べます）</div><div class="v"><span id="recDateV">今日</span><span class="chv">›</span></div><input type="date" id="recDateIn" onchange="recDateSet(this.value)"></div>
         <div class="fld" onclick="recPickField()"><div class="lb">② どの田んぼ?（📍か、押して変更）</div><div class="v"><span id="recFieldV">西 3 39.81a・にじのきらめき</span><span class="chv">›</span></div></div>
@@ -1237,7 +1232,6 @@
     <!-- ===== ④ 話して記録 ===== -->
     <div class="page" id="p-voice">
       <div class="sc">
-        <div class="banner" onclick="recNearField(true)">📍 近くの田んぼをさがす（話す前にどうぞ）</div>
         <div class="micbig" id="mic" onclick="toggleRec()">🎤</div>
         <div class="miclabel" id="miclabel">押して話す(手が汚れててもOK)</div>
         <div class="cheat">
@@ -1306,10 +1300,21 @@
       </div>
     </div>
 
-    <!-- ===== 🗓️ 記録の履歴(時系列・新しい順) v27 ===== -->
+    <!-- ===== 📝 記録の確認(ひとこと＋時系列・新しい順) v47 ===== -->
     <div class="page" id="p-hist">
       <div class="sc">
-        <div class="hist-lead">🎤や🚜で記録したことが、<b>新しい順に上から</b>ぜんぶ並びます。「いつ・どの田んぼ・何を・いくら」が一目で分かります。</div>
+        <!-- ===== v47 今日ひとこと（作業を記録から移動）。書く所と読む所を1つにした ===== -->
+        <div class="hitobox" id="hitoBox">
+          <div class="hl">✍️ 今日ひとこと</div>
+          <div class="hs" id="hitoDate">田んぼをえらばず、ひとことだけ残せます</div>
+          <textarea id="hitoIn" placeholder="例：雨で作業は休み。西の田でうんかを少し見かけた" enterkeyhint="done"></textarea>
+          <div class="hitorow">
+            <div class="hitomic" onclick="hitoMic()">🎤 話して書く</div>
+            <div class="hitosave" onclick="hitoSave()">書きとめる</div>
+          </div>
+          <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
+        </div>
+        <div class="hist-lead">上で書いた<b>ひとこと</b>と、🎤や🚜で記録したことが、<b>新しい順に上から</b>ぜんぶ並びます。「いつ・どの田んぼ・何を・いくら」が一目で分かります。</div>
         <div class="hist-chips" id="histChips"></div>
         <div class="hist-fieldbar" id="histFieldBar"></div>
         <div id="histBody"></div>
@@ -1827,7 +1832,7 @@
     ai:    navHdr('home','戻る','AIに相談する'),
     map:   navHdr('home','ホーム','圃場マップ'),
     kroku: navHdr('voice','話して記録','栽培管理記録簿'),
-    hist:  navHdr('home','ホーム','記録の履歴'),
+    hist:  navHdr('home','ホーム','記録の確認'),
     hiryo: navHdr('home','ホーム','肥料の栄養バランス'),
     kikai: navHdr('home','ホーム','機械の維持費'),
     kyoka: navHdr('home','ホーム','うちの教科書'),
@@ -1915,7 +1920,8 @@
     if(n==='rec'&&typeof recEnter==='function')recEnter();
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
-    if(n==='hist'&&typeof histRender==='function')histRender();
+    if(n==='hist'){ if(typeof hitoDateShow==='function')hitoDateShow();
+                    if(typeof histRender==='function')histRender(); }
     highlightTab(n);
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
   var lastMemo='';
@@ -2063,7 +2069,13 @@
     var byField={};                 /* 田んぼ名 → 最も早い田植え日(ISO) */
     for(var i=0;i<ktLog.length;i++){
       var e=ktLog[i]; if(e.step!=='taue')continue;
-      var d=(e.d||'').slice(0,10); if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue;
+      /* ★v47：日付の書き方のズレを直した。
+         書く側(wlAdd→inaFmtFull／手で選んだ日)は '2026/07/25'（スラッシュ）なのに、
+         ここの判定が '2026-07-25'（ハイフン）だけを通していたので永久に不一致 →
+         何枚田植えを記録しても出穂・収穫の予想が一度も出なかった。
+         どちらの書き方で入っていてもスラッシュにそろえてから判定する。
+         ※すでに保存ずみの記録もこれで生き返る（記録し直しは不要）。 */
+      var d=(e.d||'').slice(0,10).replace(/-/g,'/'); if(!/^\d{4}\/\d{2}\/\d{2}$/.test(d))continue;
       if(!byField[e.field]||d<byField[e.field])byField[e.field]=d;
     }
     return byField;
@@ -2285,7 +2297,7 @@
     var c=(inaState&&typeof inaCompute==='function')?inaCompute():null;
     var today=new Date(); today.setHours(0,0,0,0);
     var TOTAL=ktRiceCount(), RSET=ktRiceSet();
-    var arr=[], doneCount=0, nowIdx=-1, warnIdx=-1;
+    var arr=[], doneCount=0, nowIdx=-1, warnIdx=-1, growIdx=-1;
     for(var i=0;i<KT_STEPS.length;i++){
       var st=KT_STEPS[i], dnAll=ktDoneFields(st.k), dn={}, n=0;
       for(var kk in dnAll){ if(RSET[kk]){ dn[kk]=true; n++; } }  /* 稲の田んぼの記録だけ数える */
@@ -2295,19 +2307,30 @@
       }
       if(TOTAL>0&&n>=TOTAL){ o.cls='done'; o.stx='✅ 済み'; doneCount++; }
       else if(n>0){ o.cls='warn'; o.stx='⚠️ 残りあり ›'; if(warnIdx<0)warnIdx=i; }
-      else if(st.type==='grow'&&c&&st.ina===c.curIdx){ o.cls='now'; o.stx='📍 今ここ ›'; nowIdx=i; }
+      else if(st.type==='grow'&&c&&st.ina===c.curIdx){ growIdx=i; }   /* v47:ここでは印を付けず、後でまとめて1つだけ決める */
       arr.push(o);
     }
-    /* 生育計算がまだ工程表の生育系ステージに達していない期間(例:活着期)でも
-       「今ここ」を必ず1つ出す:最初の未完了工程を今の位置とする */
-    if(nowIdx<0){
-      for(var q=0;q<arr.length;q++){
-        if(arr[q].cls!=='done'){
-          nowIdx=q;
-          if(arr[q].cls==='todo'){ arr[q].cls='now'; arr[q].stx='📍 今ここ ›'; }
-          break;
-        }
+    /* ★v47：「今ここ」の決め方を直した。
+       これまでは「最初の未完了工程」だった。ところが①種まき・育苗は苗代でまとめてやる作業で、
+       田んぼ65枚ぶんを1枚ずつ記録することがない → ①は永久に未完了 →
+       一年中「1/12 種まき・育苗」のまま動かず、作業記録③の初期値も一年中これになっていた。
+       新しい決まり（本人承認ずみ）：
+         ・記録が1つも無い → ①（稲作先生の入力があればそこ）
+         ・記録がある → その中で いちばん後ろの工程 を「今ここ」にする
+         ・その工程が65枚そろっていれば、次の工程へ進める
+       ※弱点：まちがえて⑨稲刈りを押すと今ここが⑨へ飛ぶ。記録簿から消せば戻る。 */
+    var lastRec=-1;
+    for(var q=0;q<arr.length;q++){ if(arr[q].doneN>0) lastRec=q; }
+    if(lastRec<0){
+      nowIdx=(growIdx>=0)?growIdx:0;                  /* 記録ゼロ：稲作先生 → 無ければ① */
+    }else{
+      nowIdx=lastRec;
+      if(arr[lastRec].total>0 && arr[lastRec].doneN>=arr[lastRec].total && lastRec+1<arr.length){
+        nowIdx=lastRec+1;                             /* そろっているので次の工程へ */
       }
+    }
+    if(nowIdx>=0 && arr[nowIdx] && arr[nowIdx].cls!=='done'){
+      arr[nowIdx].cls='now'; arr[nowIdx].stx='📍 今ここ ›';
     }
     /* ★v42：進み率の計算を直した。
        これまでは「今いる工程の番号(0始まり)÷12」だけだったので、
@@ -2389,7 +2412,12 @@
         meta=(lastSrc?inaFmt(new Date(lastSrc.d))+' 済み・'+o.total+'枚すべて <span class="kt-src">'+ktSrcLabel(lastSrc.src)+'</span>':'済み');
         if(ktKsasDone(o.st.k))meta+='<span class="kt-ksasmini">◆KSAS済</span>';}
       else if(o.cls==='warn'){meta=(o.total-o.doneN)+'枚が未実施';}
-      else if(o.cls==='now'){meta='📍今ここ'+(o.date?' ／ '+inaFmt(o.date)+'ごろ〜':'');}
+      /* v47：今ここの工程に途中まで記録がある場合、「残り◯枚」が消えないようにする */
+      else if(o.cls==='now'){
+        var ex=(o.doneN>0&&o.total>0&&o.doneN<o.total) ? ' ／ 残り'+(o.total-o.doneN)+'枚'
+             : (o.date? ' ／ '+inaFmt(o.date)+'ごろ〜' : '');
+        meta='📍今ここ'+ex;
+      }
       else if(o.date){meta=inaFmt(o.date)+'ごろ予想';}
       else{meta='記録すると✅に変わります';}
       h+='<div class="ina-stg '+o.cls+'" onclick="ktOpenStep('+i+')">'
@@ -3073,6 +3101,8 @@
     wlAdd('furikaeri', '', tx, 'hito', {hito:true, who:who});
     if(t)t.value='';
     toast('✅ 書きとめました（家族全員に共有されます）');
+    /* v47:書いたら、そのすぐ下の一覧に並ぶようにする（届いたことが目で分かる） */
+    if(typeof histRender==='function'){ try{ histRender(); }catch(e){} }
     if(typeof renderCal==='function'){ try{ renderCal(); }catch(e){} }
   }
   function hitoMic(){
@@ -3088,22 +3118,10 @@
       r.start(); toast('🎤 どうぞ話してください');
     }catch(e){ toast('音声入力を start できませんでした'); }
   }
-  function recSw(which){
-    var a=document.getElementById('recSwA'), b=document.getElementById('recSwB');
-    var box=document.getElementById('hitoBox'), form=document.getElementById('recFormWrap');
-    if(which==='hito'){
-      if(a)a.classList.remove('on'); if(b)b.classList.add('on');
-      if(box)box.style.display=''; if(form)form.style.display='none';
-    } else {
-      if(a)a.classList.add('on'); if(b)b.classList.remove('on');
-      if(box)box.style.display='none'; if(form)form.style.display='';
-    }
-  }
   function memBoot(){
     try{ memRender(); }catch(e){}
     try{ whoRender(); whoApply(); }catch(e){}
     try{ hitoDateShow(); }catch(e){}
-    try{ recSw('rec'); }catch(e){}
   }
   function naeOvKey(){ return 'gyotoku.naeov.v1'; }
   function naeOvArr(){
@@ -3860,7 +3878,7 @@
 
   /* ===== 📄 栽培管理記録簿(JA提出用)：台帳を田んぼ別・日付順に表へ並べるだけ ===== */
   function krokuOpen(){ go('kroku'); krokuRender(); }
-  /* ===== 🗓️ 記録の履歴(時系列・新しい順) v27 =====
+  /* ===== 📝 記録の確認(ひとこと＋時系列・新しい順) v47 =====
      記録簿(ktLog=作業/農薬/肥料)＋機械台帳(kiLog=維持費)を1本にまとめて新しい順に並べる。
      二重計上を避けるため、肥料は主に ktLog(追肥) から拾う(kiLog は別台帳)。 */
   var histFilter='all'; /* all / yaku / hiryo / kikai / sagyo */
@@ -4185,7 +4203,6 @@
       h+='<span class="fld-soil-tag add" onclick="soilTagAdd(\''+f.n+'\')">＋ 特徴を足す</span></div>';
       h+='<textarea class="fld-soil-memo" placeholder="例）日当たり良い。梅雨に水がたまりやすい。" '
         +'onchange="soilMemoSet(\''+f.n+'\',this.value)">'+(sd.memo||'')+'</textarea>';
-      h+='<div class="fld-geo" onclick="geoLearn(\''+f.n+'\')">📍 いまの場所をこの田んぼとして覚える'+(geoData[f.n]?'（済み・押すと更新）':'')+'</div>';
       /* 今年出た虫・病気 */
       h+='<div class="fld-mat-ttl">🐛 今年この田んぼで出た虫・病気</div><div class="fld-mat">';
       var hs=hasList(f.n);
@@ -4602,7 +4619,7 @@
       }
       h+='</div>';
       h+='<div class="mb-cap">この一覧と実際にまいた回数が違うときは、'
-        +'「記録の履歴」で消し忘れ・重複がないか確かめてください。</div>';
+        +'「記録の確認」で消し忘れ・重複がないか確かめてください。</div>';
     }
     h+='</div>';
     box.innerHTML=h;
@@ -4901,7 +4918,7 @@
     hiryo:{cls:'t-green2',ic:'🌾', tx:'肥料の栄養'},
     kikai:{cls:'t-teal',  ic:'🚜', tx:'機械の維持費'},
     kyoka:{cls:'t-gold',  ic:'📖', tx:'うちの教科書'},
-    hist: {cls:'t-orange',ic:'🗓️', tx:'記録の履歴'},
+    hist: {cls:'t-orange',ic:'📝', tx:'記録の確認'},
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'}
   };
@@ -4910,7 +4927,7 @@
   /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
   /* ★v36.4：ご家族に配布したときの初期の並び。実機の画面どおりにした。
      1ページ目=作業を記録／田んぼ・マップ／AI病害虫診断／KSAS連携／米づくり工程表／肥料の栄養
-     2ページ目=話して記録／うちの教科書／記録の履歴／機械の維持費／生産原価／ドローン散布
+     2ページ目=話して記録／うちの教科書／記録の確認／機械の維持費／生産原価／ドローン散布
      ※タブに使う ai・cal・pest はボタンからは自動で除かれる（重複させない仕様）。 */
   var HOME_ORDER_DEFAULT=['rec','fields','diag','ksas','koutei','hiryo',
                           'voice','kyoka','hist','kikai','cost','drone',
@@ -6375,7 +6392,6 @@
      - 🐛発生記録（田んぼ単位・新キー gyotoku.hassei.v1）
      - 📖うちの教科書（新ボタン・⭐印＋反省メモ gyotoku.kyoka.v1）
      - 🎯肥料の目標まであと◯kg（gyotoku.hygoal.v1）
-     - 📍近くの田んぼ（gyotoku.geo.v1・GPSは押した時だけ）
      ★AIの有料APIは不使用（辞書照合＋端末内計算のみ）＝課金ゼロ維持
      ========================================================= */
 
@@ -6653,26 +6669,6 @@
   var hyRenderV20=hyRender;
   hyRender=function(){ hyRenderV20(); hyGoalRender(); };
 
-  /* ---- 📍 近くの田んぼ（GPSは押した時だけ・電池にやさしい） ---- */
-  var GEO_KEY='gyotoku.geo.v1', geoData={};
-  function geoLoad(){ try{var t=localStorage.getItem(GEO_KEY); geoData=t?JSON.parse(t):{};}catch(e){geoData={};} if(typeof geoData!=='object'||!geoData)geoData={}; }
-  function geoSave(){ try{localStorage.setItem(GEO_KEY,JSON.stringify(geoData));}catch(e){} }
-  function geoDist(a,b){
-    var R=6371000, dLa=(b.lat-a.lat)*Math.PI/180, dLo=(b.lng-a.lng)*Math.PI/180;
-    var la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180;
-    var x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLo/2)*Math.sin(dLo/2);
-    return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-  }
-  function geoLearn(fn){
-    if(!navigator.geolocation){ toast('この端末では位置情報が使えません'); return; }
-    toast('📍 場所を確認しています…');
-    navigator.geolocation.getCurrentPosition(function(p){
-      geoData[fn]={lat:p.coords.latitude,lng:p.coords.longitude}; geoSave();
-      toast('📍 '+fn+' の場所を覚えました。次からワンタップで選べます');
-      if(typeof fieldsRender==='function')fieldsRender();
-    },function(){ toast('📍 位置がわかりませんでした。空の見える場所でもう一度どうぞ'); },
-    {enableHighAccuracy:true,timeout:9000,maximumAge:30000});
-  }
   var recField=defaultFieldName()||'西 3';
   function recFieldShow(){
     var v=document.getElementById('recFieldV'); if(!v)return;
@@ -6707,30 +6703,8 @@
     if(e0&&!droneDateSel)e0.textContent=todayStr();
     droneFieldShow();
   }
-  function recNearField(showOnly){
-    var reg=0; for(var k in geoData)reg++;
-    if(!reg){ toast('まず🌾田んぼ一覧を開き、田んぼで「📍場所を覚える」を1回押してください'); return; }
-    if(!navigator.geolocation){ toast('この端末では位置情報が使えません'); return; }
-    var bn=document.getElementById('recGeoBanner'); if(bn&&!showOnly)bn.textContent='📍 さがしています…';
-    navigator.geolocation.getCurrentPosition(function(p){
-      var best=null,bd=1e12,me={lat:p.coords.latitude,lng:p.coords.longitude};
-      for(var k in geoData){ var d=geoDist(me,geoData[k]); if(d<bd){bd=d;best=k;} }
-      if(!best||bd>1500){
-        if(bn&&!showOnly)bn.textContent='📍 近くの田んぼをさがす（タップ）';
-        toast('📍 近く（1.5km以内）に覚えた田んぼがありません'); return;
-      }
-      if(showOnly){ toast('📍 いま近くの田んぼ：'+best+'（そのまま話してOK）'); return; }
-      recField=best; recFieldShow();
-      if(bn)bn.textContent='📍 '+best+' でOK（押すとさがし直し）';
-      toast('📍 '+best+' を選びました');
-    },function(){
-      if(bn&&!showOnly)bn.textContent='📍 近くの田んぼをさがす（タップ）';
-      toast('📍 位置がわかりませんでした。空の見える場所でもう一度どうぞ');
-    },{enableHighAccuracy:true,timeout:9000,maximumAge:30000});
-  }
-
   /* ---- v21 初期読み込み ---- */
-  hasLoad(); kyoLoad(); hyGoalLoad(); geoLoad();
+  hasLoad(); kyoLoad(); hyGoalLoad();   /* v47:geoLoad() は近くの田んぼ機能とともに削除 */
 
 </script>
 </body>
