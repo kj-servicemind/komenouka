@@ -1646,7 +1646,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v49(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v52(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -3921,14 +3921,16 @@
   function krokuOpen(){ go('kroku'); krokuRender(); }
   /* ===== 📝 記録の確認(ひとこと＋時系列・新しい順) v47 =====
      記録簿(ktLog=作業/農薬/肥料)＋機械台帳(kiLog=維持費)を1本にまとめて新しい順に並べる。
-     二重計上を避けるため、肥料は主に ktLog(追肥) から拾う(kiLog は別台帳)。 */
+     ★v51：肥料は ktLog(追肥) からだけ拾う。肥料台帳(hyLog)は ktLog と同じものを持つので
+       足すと必ず二重になる（v51で削除）。 */
   var histFilter='all'; /* all / yaku / hiryo / kikai / sagyo */
   var histField='';     /* '' = ぜんぶの田んぼ。田んぼ名が入ると、その田んぼだけ表示 */
   function histKiMacName(k){ for(var i=0;i<KI_MACS.length;i++)if(KI_MACS[i].k===k)return KI_MACS[i].e+KI_MACS[i].nm; return k||'機械'; }
   function histItems(){
     if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
     if(typeof kiLoad==='function') kiLoad();
-    if(typeof hyLoad==='function') hyLoad();
+    /* ★v52 hyLoad() は不要になった（肥料台帳はもう読まない）。v51で hyLog のループを消し、
+       v52で書き込みも止めたので、肥料は上の ktLog ループから 🌱 として1回だけ出る */
     var out=[], i;
     for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
       var kind = e.hito ? 'hito' : (e.rate ? 'yaku' : (e.mass ? 'hiryo' : 'sagyo'));
@@ -3945,12 +3947,15 @@
       out.push({ d:m.d||'', kind:'kikai', ic:'🚜', ki:-1, star:false, where:histKiMacName(m.mac),
         title:(m.kind||'機械'), sub:'', yen:(m.yen? +m.yen : 0) });
     }
-    /* 肥料台帳(手入力ぶんのみ)。記録簿(追肥)由来は上のktLogループで既に入るので二重計上しない */
-    if(typeof hyLog!=='undefined'){ for(i=0;i<hyLog.length;i++){ var g=hyLog[i];
-      out.push({ d:g.d||'', kind:'hiryo', ic:'🌱', ki:-1, star:false, where:(g.field||'田んぼ不明'),
-        title:'肥料', sub:[(g.fert||''), (g.kg?g.kg+'kg':'')].filter(function(s){return s;}).join('　'),
-        yen:0 });
-    } }
+    /* ★v51 ここにあった「肥料台帳(hyLog)からも足す」処理を削除した。
+       元のコメントは『手入力ぶんのみ。記録簿(追肥)由来は上のktLogループで既に入るので
+       二重計上しない』と書いてあったが、実態と違っていた：
+         肥料台帳に入るのは hyAdd の1か所だけで、その直後に必ず wlAdd で作業台帳にも書く。
+         つまり hyLog の記録は**全件**が ktLog にもある。
+       その結果、1回の記録が「追肥（★が押せる）」と「肥料（★が押せない）」の2行になっていた。
+       肥料は上の ktLog ループで kind='hiryo'・🌱 として拾われるので、
+       🌱肥料のしぼり込みもこれまでどおり効く。
+       （見本データ(seed)は無く、hyLog.push も1か所だけなので、消える記録はない） */
     out.sort(function(a,b){ return (a.d<b.d)?1:((a.d>b.d)?-1:0); }); /* 新しい順 */
     return out;
   }
@@ -4306,39 +4311,82 @@
   var hyFert='化成14-14-14';
   function hyLoad(){ try{var s=localStorage.getItem(HY_LS); hyLog=s?JSON.parse(s):[];}catch(e){hyLog=[];}
     if(!(hyLog instanceof Array))hyLog=[]; }
+  /* ★v52 hySave() はもう呼ばれない（肥料台帳へは書かなくなったため）。
+     引っ越し(hyMigrate)が読むだけなので、hyLoad と対で残してある */
   function hySave(){ try{localStorage.setItem(HY_LS,JSON.stringify(hyLog));}catch(e){} }
+  /* ★★v52 引っ越し：昔の版で作業台帳に相方が書かれなかった肥料台帳の記録を、作業台帳へ移す。★★
+     ・起動時に一度だけ走り、終わったら印(HY_MIG)を付けて二度と走らせない
+     ・id は「中身から決まる形」にする。家族の端末がそれぞれ引っ越ししても
+       同じ id になるので、同期で1件にまとまる（バラバラの id だと全台ぶん増える）
+     ・肥料台帳のデータは消さない（万一のとき見られるように残す）。もう読んではいない */
+  var HY_MIG='gyotoku.hiryo.moved.v1';
+  function hyMigrateId(r, occ){
+    return 'hm_'+_hash([r.d,r.field,r.fert,r.kg].join('|'))+'_'+occ;
+  }
+  function hyMigrate(){
+    try{
+      if(localStorage.getItem(HY_MIG)) return 0;
+      hyLoad();
+      /* ★まだ肥料台帳が空なら、印を付けずに何もしない。
+         新しい端末は「空のまま起動 → 印だけ付く → あとから家族のデータが同期で届く」
+         という順になりうる。ここで印を付けてしまうと、届いたぶんを一度も見ないまま終わる。 */
+      if(!hyLog.length) return 0;
+      if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
+      var moved=0, cnt={}, i, j;
+      for(i=0;i<hyLog.length;i++){
+        var r=hyLog[i]; if(!r) continue;
+        var key=[r.d,r.field,r.fert,r.kg].join('|');
+        cnt[key]=(cnt[key]||0)+1;
+        var occ=cnt[key], seen=0, found=false;
+        /* 作業台帳に「同じ中身の occ 回目」があるか照合してから移す */
+        for(j=0;j<ktLog.length;j++){
+          var e=ktLog[j];
+          if(e.field!==r.field || e.d!==r.d) continue;
+          if((e.chem||'')!==(r.fert||'')) continue;
+          if((parseFloat(e.mass)||0)!==(parseFloat(r.kg)||0)) continue;
+          seen++; if(seen>=occ){ found=true; break; }
+        }
+        if(found) continue;
+        ktLog.push({ d:r.d, step:'hogoe', field:r.field, text:(r.fert||'肥料')+' '+(r.kg||0)+'kg',
+          src:'hiryo', ksas:false, work:'追肥', chem:r.fert, mass:r.kg, id:hyMigrateId(r,occ) });
+        moved++;
+      }
+      if(moved && typeof ktSave==='function') ktSave();
+      localStorage.setItem(HY_MIG, String(Date.now()));
+      return moved;
+    }catch(e){ return 0; }
+  }
   /* ★v50 表示している年。既定は今年。hyEnter で毎回いまの年に戻す */
   var hyYear=new Date().getFullYear();
   function hyThisYear(){ return new Date().getFullYear(); }
   function hyYearOf(d){ var m=(''+(d||'')).match(/^(\d{4})/); return m?parseInt(m[1],10):null; }
-  /* 台帳(worklog)から、この田んぼの肥料記録も拾う（🎤話して記録・📝記録画面からのぶん）
-     ★v50：肥料画面の「＋記録する」は肥料台帳と作業台帳の両方に書くため、
-       ここで src==='hiryo' を除かないと自分の書いたぶんを拾い返して二重に数える。
-       （1回20kg入れただけで窒素が倍になり、🗑で消しても片方が残って見えていた） */
-  function hyFromWorklog(field, year){
-    var out=[], y=(year==null)?hyYear:year;
+  /* ★★v52 ここが今回の根本の直し ★★
+     旧 hyFromWorklog() は廃止して hyRows() に吸収した（名前だけ残す＝次の人が探せるように）。
+     ── なぜ直したか ──
+     v51まで、肥料の「＋記録する」は 肥料台帳(hyLog) と 作業台帳(ktLog) の**両方**に
+     1件ずつ書いていた。同じものが2か所にある作りなので、
+       ・読むとき両方数える → 窒素が倍（v50）
+       ・記録の確認に2行出る（v51）
+     と、**同じ根から2回**不具合が出た。読む側で除ける対症療法をやめ、
+     **書く側を作業台帳1本にした**（hyAdd 参照）。
+     作業台帳の記録は v37以降 id を持つので、家族との同期でも編集・削除が正しく効く。 */
+  function hyRows(field, year){
+    var y=(year==null)?hyYear:year, rows=[];
     for(var i=0;i<ktLog.length;i++){
       var e=ktLog[i];
       if(e.field!==field) continue;
-      if(e.src==='hiryo') continue;         /* ★v50 二重計上を止める */
+      if(e.rate) continue;                  /* ★v52 倍率があるものは農薬。記録簿の🌱判定とそろえた */
       if(!e.mass) continue;                 /* kg(mass)が無ければ肥料量ではない */
-      if(hyYearOf(e.d)!==y) continue;       /* ★v50 その年のぶんだけ */
+      if(hyYearOf(e.d)!==y) continue;       /* v50 その年のぶんだけ（画面の「今年あげた栄養」と合わせる） */
       var name=e.chem||'';                  /* ながら記録は肥料名もchemに入る場合がある */
       if(!NG_FERT[name]){                    /* 成分表に無い名前は「その他肥料」扱いで成分0 */
         name=name||'肥料';
       }
-      out.push({d:e.d, field:field, fert:name, kg:parseFloat(e.mass)||0, fromWl:true});
+      /* ki＝作業台帳の元番号。✏️🗑 がどの記録に当たるかは、これで決める
+         （v50の hyLocalIdx のように並び順を数え直すと、しぼりを足した瞬間に狂う） */
+      rows.push({d:e.d, field:field, fert:name, kg:parseFloat(e.mass)||0, ki:i});
     }
-    return out;
-  }
-  /* ★v50 その年ぶんだけ返す。画面に「今年あげた栄養」と書いてある以上、
-     コードも年でしぼらないと文言が嘘になる（2年目以降ずっと積み上がっていた） */
-  function hyRows(field, year){
-    var y=(year==null)?hyYear:year, rows=[];
-    for(var i=0;i<hyLog.length;i++){
-      if(hyLog[i].field===field && hyYearOf(hyLog[i].d)===y) rows.push(hyLog[i]);
-    }
-    return rows.concat(hyFromWorklog(field, y));
+    return rows;
   }
   function hyTotals(field, year){
     var t={n:0,p:0,k:0}, rows=hyRows(field, year);
@@ -4352,14 +4400,11 @@
   /* ★v50 画面に出していない「前の年」の記録が何件あるか。黙って隠さないために数える。
      去年は切りかえボタンで見られるので、それより前だけを数える */
   function hyOlderCount(field){
+    /* ★v52 作業台帳だけを数える（数え方は hyRows と必ず同じにする） */
     var lim=hyThisYear()-1, n=0, i, y;
-    for(i=0;i<hyLog.length;i++){
-      y=hyYearOf(hyLog[i].d);
-      if(hyLog[i].field===field && y!=null && y<lim) n++;
-    }
     for(i=0;i<ktLog.length;i++){
       var e=ktLog[i];
-      if(e.field!==field||e.src==='hiryo'||!e.mass) continue;
+      if(e.field!==field||e.rate||!e.mass) continue;
       y=hyYearOf(e.d);
       if(y!=null && y<lim) n++;
     }
@@ -4389,7 +4434,8 @@
   }
   function hyR1(x){ return Math.round(x*10)/10; }
   function hyEnter(){
-    hyLoad();
+    /* ★v52 肥料は作業台帳(ktLog)を読むようになったので、開くたび最新を読み直す */
+    if(typeof ktLoad==='function') ktLoad();
     hyYear=hyThisYear();          /* ★v50 画面を開いたら必ず今年から見せる */
     var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=hyField;
     var ft=document.getElementById('hyFertName'); if(ft)ft.textContent=hyFert;
@@ -4422,8 +4468,9 @@
         +'<span class="hy-inm">'+r.fert+'</span>'
         +'<span class="hy-sub" style="margin-left:8px;">'+sub+'</span>'
         +'<span class="hy-ikg">'+ (r.kg||0) +' kg</span>';
-      if(r.fromWl){ lh+='<span class="hy-sub" style="margin-left:8px;">🎤記録（📄記録簿で直せます）</span>'; }
-      else{ lh+='<span class="rowbtn mod" onclick="hyEdit('+i+')">✏️</span><span class="rowbtn del" onclick="hyDel('+i+')">🗑</span>'; }
+      /* ★v52 台帳が1本になったので、🎤話して記録したぶんもこの画面で直せる。
+         以前は「🎤記録（📄記録簿で直せます）」と案内するだけだった */
+      lh+='<span class="rowbtn mod" onclick="hyEdit('+i+')">✏️</span><span class="rowbtn del" onclick="hyDel('+i+')">🗑</span>';
       lh+='</div>';
     }
     var list=document.getElementById('hyList');
@@ -4442,10 +4489,11 @@
     var kgEl=document.getElementById('hyKg');
     var kg=parseFloat(kgEl&&kgEl.value);
     if(!kg||kg<=0){ toast('量（kg）を入れてください'); return; }
-    hyLog.push({d:inaFmtFull(new Date()), field:hyField, fert:hyFert, kg:kg});
-    hySave();
-    /* 台帳にも肥料として残す（生産原価・記録簿と連携。作業=追肥） */
-    if(typeof wlAdd==='function'){ wlAdd('hogoe', hyField, hyFert+' '+kg+'kg', 'hiryo', {work:'追肥', chem:hyFert, mass:kg}); }
+    /* ★★v52 書き込み口は作業台帳(ktLog)の1本だけ。肥料台帳(hyLog)へはもう書かない。★★
+       2か所に書くと必ず二重に数える日が来る（v50・v51で2回起きた）。
+       作業台帳の記録は id を持つので、家族との同期でも編集・削除が正しく効く。 */
+    if(typeof wlAdd!=='function'){ toast('記録できませんでした。もう一度お試しください'); return; }
+    wlAdd('hogoe', hyField, hyFert+' '+kg+'kg', 'hiryo', {work:'追肥', chem:hyFert, mass:kg});
     if(kgEl)kgEl.value='';
     /* ★v50 去年を見ている最中に記録すると、今日の日付＝今年ぶんなので画面から消えてしまう。
        記録したものが必ず見えるよう、今年に戻す */
@@ -4454,32 +4502,40 @@
     hyRender();
     toast(hyField+' に '+hyFert+' '+kg+'kg を記録しました'+(backToNow?'（今年に切りかえました）':''));
   }
-  function hyLocalIdx(i){
-    /* iは hyRows の並び。専用ログ内の元番号に変換（🎤記録は台帳側なので対象外）
-       ★v50 最重要：hyRows に「年のしぼり」を入れたので、ここも同じ条件でしぼらないと
-         ✏️🗑 が別の記録に当たる（v48.2の★と同じ型の事故になる）。
-         hyRows は「田んぼ一致かつ表示中の年」の順に hyLog を並べているので、
-         ここもまったく同じ条件・同じ順で並べること。 */
-    var localRows=[];
-    for(var j=0;j<hyLog.length;j++){
-      if(hyLog[j].field===hyField && hyYearOf(hyLog[j].d)===hyYear) localRows.push(j);
-    }
-    return (i<localRows.length)?localRows[i]:-1;
+  /* ★v52 hyLocalIdx() は廃止した（肥料台帳をやめたため。名前はここに残す＝次の人が
+     「消えた関数」を探して同じものを作り直さないように）。
+     いまは hyRows() の各行が作業台帳の元番号 ki を持っているので、それを使う。 */
+  function hyRowAt(i){
+    var rows=hyRows(hyField), r=rows[i];
+    if(!r || r.ki==null) return null;
+    var e=ktLog[r.ki];
+    if(!e) return null;
+    return {r:r, e:e};
   }
   function hyDel(i){
-    var li=hyLocalIdx(i); if(li<0)return;
-    var r=hyLog[li];
-    if(!confirm('本当に消しますか？\n'+r.fert+' '+(r.kg||0)+'kg')) return;
-    tombAdd(HY_LS,r); hyLog.splice(li,1); hySave(); hyRender(); toast('🗑 削除しました');
+    var h=hyRowAt(i); if(!h)return;
+    if(!confirm('本当に消しますか？\n'+h.r.fert+' '+(h.r.kg||0)+'kg')) return;
+    /* 作業台帳から消す＝📄記録簿の「追肥」も同時に消える（v51までは片方だけ消えていた） */
+    tombAdd(KT_LS, h.e);
+    ktLog.splice(h.r.ki,1); ktSave();
+    hyRender(); toast('🗑 削除しました');
   }
   function hyEdit(i){
-    var li=hyLocalIdx(i); if(li<0)return;
-    var r=hyLog[li];
-    var v=prompt(r.fert+' の量（kg）を直す',r.kg||'');
+    var h=hyRowAt(i); if(!h)return;
+    var e=h.e;
+    var v=prompt(h.r.fert+' の量（kg）を直す', h.r.kg||'');
     if(v==null)return;
     var kg=parseFloat(v);
     if(!kg||kg<=0){ toast('量（kg）は数字で入れてください'); return; }
-    tombAdd(HY_LS,r); r.kg=kg; hySave(); hyRender(); toast('✏️ '+r.fert+' を '+kg+'kg に直しました');
+    /* ★直す前に呼ぶこと。id が無い古い記録は「直す前のJSON」に印を付ける必要がある。
+       ここで tombAdd を使ってはいけない：id は直しても変わらないので本体まで消える（v48.2の重大不具合） */
+    var oldText=(e.chem||'')+' '+e.mass+'kg';
+    tombEdit(KT_LS, e);
+    e.mass=kg;
+    /* 「肥料名 ○kg」の形で作られた文だけ直す。🎤話して記録した文はさわらない */
+    if(e.text===oldText) e.text=(e.chem||h.r.fert)+' '+kg+'kg';
+    ktSave(); hyRender();
+    toast('✏️ '+h.r.fert+' を '+kg+'kg に直しました');
   }
   function hyPickField(){
     fieldSheetOpen(function(n){ hyField=n;
@@ -4819,7 +4875,8 @@
        ★v50 必ず「今年」で数える。肥料画面で去年を見ている最中に原価を開いても、
          原価が去年の数字に引きずられないようにする（農薬費・機械費は今年ぶんなので、そろえる）。 */
     var tot={n:0,p:0,k:0}, ty=hyThisYear();
-    hyLoad();
+    /* ★v52 肥料は作業台帳から数えるので、読むのは ktLog */
+    if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
     var fields={}; for(var i=0;i<KT_FIELDS.length;i++)fields[KT_FIELDS[i].n]=1;
     for(var f in fields){ var t=hyTotals(f, ty); tot.n+=t.n; tot.p+=t.p; tot.k+=t.k; }
     return tot;
@@ -6862,6 +6919,7 @@
   /* ---- v21 初期読み込み ---- */
   hasLoad(); kyoLoad(); hyGoalLoad();   /* v47:geoLoad() は近くの田んぼ機能とともに削除 */
   try{ tombFixStale(); }catch(e){}      /* ★v48.2:起動時にも誤った削除印を掃除 */
+  try{ hyMigrate(); }catch(e){}         /* ★v52:肥料台帳→作業台帳の引っ越し（一度だけ） */
 
 </script>
 </body>
