@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v56">
+<meta name="app-ver" content="v57">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1608,8 +1608,6 @@
           <h4 id="memSheetT">✏️ この人を直す</h4>
           <div class="k">名前</div>
           <input class="mi" id="memName" type="text" placeholder="例：久保田 三郎" enterkeyhint="done">
-          <div class="k">立場（押してえらぶ）</div>
-          <div class="memchips" id="memRoles"></div>
           <div class="k">丸の色（押してえらぶ）</div>
           <div class="memcols" id="memColors"></div>
           <div class="memrow2">
@@ -1653,11 +1651,12 @@
         <div class="setcard">
           <div class="setrow">営農組織<span class="sv">行徳農園(5人)</span></div>
           <div class="setrow" onclick="openKsas('地図・AI診断・共有がつかえます')">KSASを開く<span class="sv">›</span></div>
-          <div class="setrow" onclick="go('team')">メンバーを確認<span class="sv">5人 ›</span></div>
+          <div class="setrow" onclick="go('team')">メンバーを確認<span class="sv" id="memCountV">－</span></div>
         </div>
         <div class="sethead">🔄 家族と共有・自動バックアップ</div>
         <div class="setcard">
           <div class="setrow">状態<span class="sv" id="syncState">…確認中</span></div>
+          <div class="setrow" onclick="evShow()">データの出来事<span class="sv" id="evCountV">－</span></div>
           <div class="setrow">まだ送れていない記録<span class="sv" id="setUnsent">—</span></div>
           <div class="setrow" onclick="syncNow()">今すぐ同期する<span class="sv">記録・予定・メモ ›</span></div>
           <div class="setrow" onclick="syncDiag()">つながりを調べる<span class="sv">診断 ›</span></div>
@@ -1675,7 +1674,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v56(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v57(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2981,6 +2980,63 @@
        削除は tombstone を使わず v:null（消した印）を残す。
        tombstone は「二度と復活しない印」なので、同じ人をもう一度足せなくなるため。
      ★window に持たせて起動順の事故を防ぐ（v33の教訓）。 */
+  /* ===== ★v57 出来事の記録（この端末だけ・同期しない・リセットでも消さない） =====
+     ── なぜ要るか ──
+       名簿の5人が1人に減った時、証拠が何も残っておらず、
+       親方の写真1枚が無ければ原因にたどり着けなかった。
+       「いつ・何が・何件から何件になったか」を控えておけば、次は推測でなく記録で分かる。
+     ── 決めごと ──
+       ・この端末の中だけ。サーバーへは送らない（増やすと同期の穴も増える）
+       ・リセットでも、リセットの合図でも消さない（消えると意味が無い）
+       ・最新50件だけ持つ（増やし続けない） */
+  var EV_LS='gyotoku.evlog.v1';
+  var EV_MAX=50;
+  function evArr(){
+    var a=null; try{ a=JSON.parse(localStorage.getItem(EV_LS)||'[]'); }catch(e){ a=null; }
+    return (a instanceof Array)?a:[];
+  }
+  function evLog(kind, text){
+    try{
+      var a=evArr();
+      a.push({t:Date.now(), k:String(kind||''), x:String(text||'')});
+      if(a.length>EV_MAX)a=a.slice(a.length-EV_MAX);
+      localStorage.setItem(EV_LS, JSON.stringify(a));
+      var c=document.getElementById('evCountV'); if(c)c.textContent=a.length+'件 ›';
+    }catch(e){}
+  }
+  function evFmt(t){
+    try{ var d=new Date(t);
+      return (d.getMonth()+1)+'/'+d.getDate()+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+    }catch(e){ return '?'; }
+  }
+  function evShow(){
+    var a=evArr();
+    if(!a.length){ alert('まだ何も起きていません。\n\n（データが消える・戻る・合流するといった出来事が起きた時に、ここへ控えます）'); return; }
+    var s='📋 データの出来事（新しい順・最新'+Math.min(a.length,10)+'件）\n\n', i, n=0;
+    for(i=a.length-1;i>=0 && n<10;i--,n++){ s+='・'+evFmt(a[i].t)+'　'+a[i].x+'\n'; }
+    s+='\n※この端末の中だけの控えです。家族には送りません。';
+    alert(s);
+  }
+  function evPaint(){
+    var c=document.getElementById('evCountV'); if(!c)return;
+    c.textContent=evArr().length+'件 ›';
+  }
+  /* 記録の「書かれた時刻」を推し量る。_m があればそれ、無ければ id の中の時刻を使う。
+     （作業台帳は id が 'w'+Date.now()+'_'+乱数、予定は 'u'+Date.now()、名簿は 'm'+…） */
+  function _recTime(it){
+    if(!it||typeof it!=='object')return 0;
+    var m=parseInt(it._m,10); if(m>0)return m;
+    var id=(it.id==null)?'':String(it.id);
+    var g=id.match(/(\d{12,})/);
+    return g?parseInt(g[1],10):0;
+  }
+  /* まだ誰も触っていない「自動で入れた規定値」か？（_m が 0 のままの fam1〜fam5）
+     誰かが名前や色を直すと _m が今の時刻になるので、その時点で「本物のデータ」になる。 */
+  function _isAutoDefault(it){
+    if(!it||typeof it!=='object')return false;
+    if(!/^fam\d+$/.test(String(it.id||'')))return false;
+    return !(parseInt(it._m,10)>0);
+  }
   var MEM_LS='gyotoku.members.v1';
   /* ===== v39★ リセット直後の見きわめ（すべての「見本データ」より前に置くこと） =====
      ★v39で判明した本当の原因：
@@ -3017,13 +3073,50 @@
     return left>0?Math.ceil(left/1000):0;
   }
 
-  var MEM_ROLES=['代表','家族','従業員','パート'];
+  /* ★v57 立場（代表・家族・従業員・パート）は親方の指示で廃止。
+     すでに登録されている人の r（立場）の中身は**消さずに残す**（画面に出さないだけ）。
+     消すと二度と戻らないため。 */
   var MEM_COLORS=['var(--green)','var(--blue)','var(--orange)','var(--purple)','var(--red)'];
+  /* ===== ★★v57 家族5人の規定値（親方の指示・リセットしても戻る）★★ =====
+     ── v39で消したのは「架空の見本（久保田さんたち5人）」。あれは嘘の情報だったので正しい。
+        ここに入れるのは**本物の家族**なので、リセット後に戻ってくるのが正しい動き。
+        CLAUDE.md 5節（v36.4）の鉄則「みんなに同じ見た目で届けたいものは、
+        必ずコードの初期値（デフォルト定数）そのものを直す」に従う。
+     ── 「消しても戻る」（v39の事故）を再発させないしくみ ──
+        5人に**変わらない番号（fam1〜fam5）**を持たせ、
+        「その番号が保存箱に一度も出てこない時だけ」足す。
+        名簿から消すと v:null の消した印が同じ番号で残るので、**二度と戻らない**。
+        名前を直しても番号は同じなので、**直したまま**（元に戻らない）。
+     ── _m は 0 にしておく。誰かが直した瞬間に _m が今の時刻になり、合流で必ず勝つ。 */
+  var MEM_DEFAULT=[
+    {id:'fam1', n:'俊明',   c:'var(--green)'},
+    {id:'fam2', n:'麻杜',   c:'var(--blue)'},
+    {id:'fam3', n:'友晴',   c:'var(--orange)'},
+    {id:'fam4', n:'かほる', c:'var(--purple)'},
+    {id:'fam5', n:'文子',   c:'var(--red)'}
+  ];
+  /* 規定値のうち、まだ保存箱に一度も出てこない番号だけを足す。
+     ★window._mem に入れた「あと」に呼ぶこと（memArr から呼ぶので入れ子にならない） */
+  function memEnsureDefaults(){
+    var a=window._mem; if(!(a instanceof Array))return;
+    var has={}, i;
+    for(i=0;i<a.length;i++){ if(a[i]&&a[i].id)has[a[i].id]=1; }   /* 消した印(v:null)も id を持つので拾える */
+    var add=[];
+    for(i=0;i<MEM_DEFAULT.length;i++){ var d=MEM_DEFAULT[i];
+      if(!has[d.id]) add.push({id:d.id, n:d.n, c:d.c, _m:0}); }
+    if(!add.length)return;
+    for(i=0;i<add.length;i++) a.push(add[i]);
+    window._memList=null;
+    try{ localStorage.setItem(MEM_LS, JSON.stringify(a)); }catch(e){}
+    try{ evLog('mem','名簿に規定の家族を入れました（'+add.length+'人：'+add.map(function(m){return m.n;}).join('・')+'）'); }catch(e){}
+    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){}
+  }
   function memArr(){
     if(!window._mem){
       var a=null; try{ a=JSON.parse(localStorage.getItem(MEM_LS)||'null'); }catch(e){ a=null; }
-      if(!(a instanceof Array)){ a=[]; }  /* ★v41：見本の5人は作らない。最初から空 */
+      if(!(a instanceof Array)){ a=[]; }  /* ★v41：架空の見本は作らない */
       window._mem=a;
+      try{ memEnsureDefaults(); }catch(e){}   /* ★v57：本物の家族5人はここで足す */
     }
     return window._mem;
   }
@@ -3061,34 +3154,31 @@
   function memInitial(n){ n=(''+(n||'')).replace(/^\s+/,''); return n?n.charAt(0):'？'; }
   function memEsc(t){ return (''+(t==null?'':t)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function memRender(){
+    try{ memCountPaint(); }catch(e){}   /* ★v56 人数の表示も一緒に塗り直す */
     var box=document.getElementById('memBody'); if(!box)return;
     var a=memList(), h='', i;
     if(!a.length){ box.innerHTML='<div class="ngnote" style="margin:0;">まだ登録がありません。「＋ 人をふやす」から足してください。</div>'; return; }
     for(i=0;i<a.length;i++){ var m=a[i];
       h+='<div class="memcard" style="margin-top:8px;">'+
            '<div class="avatar" style="background:'+memEsc(m.c||'var(--green)')+';">'+memEsc(memInitial(m.n))+'</div>'+
-           '<div class="info"><div class="nm">'+memEsc(m.n)+'</div><div class="role">'+memEsc(m.r||'')+'</div></div>'+
+           '<div class="info"><div class="nm">'+memEsc(m.n)+'</div></div>'+
            '<span class="ed" onclick="memEdit(\''+memEsc(m.id)+'\')">✏️ 直す</span>'+
          '</div>';
     }
     box.innerHTML=h;
   }
-  var memCur=null, memRoleSel='', memColSel='';
+  var memCur=null, memColSel='';
   function memChipsRender(){
-    var h='', i;
-    for(i=0;i<MEM_ROLES.length;i++){ h+='<div class="memchip'+(memRoleSel===MEM_ROLES[i]?' on':'')+'" onclick="memPickRole(\''+MEM_ROLES[i]+'\')">'+MEM_ROLES[i]+'</div>'; }
-    var e=document.getElementById('memRoles'); if(e)e.innerHTML=h;
-    h='';
+    var h='', i, e;
     for(i=0;i<MEM_COLORS.length;i++){ h+='<div class="memdot'+(memColSel===MEM_COLORS[i]?' on':'')+'" style="background:'+MEM_COLORS[i]+';" onclick="memPickCol('+i+')"></div>'; }
     e=document.getElementById('memColors'); if(e)e.innerHTML=h;
   }
-  function memPickRole(r){ memRoleSel=r; memChipsRender(); }
   function memPickCol(i){ memColSel=MEM_COLORS[i]; memChipsRender(); }
   function memEdit(id){
     var a=memList(), i, f=null;
     for(i=0;i<a.length;i++)if(a[i].id===id)f=a[i];
     if(!f)return;
-    memCur=id; memRoleSel=f.r||MEM_ROLES[0]; memColSel=f.c||MEM_COLORS[0];
+    memCur=id; memColSel=f.c||MEM_COLORS[0];
     var n=document.getElementById('memName'); if(n)n.value=f.n||'';
     var t=document.getElementById('memSheetT'); if(t)t.textContent='✏️ この人を直す';
     var d=document.getElementById('memDelBtn'); if(d)d.style.display='';
@@ -3096,7 +3186,7 @@
     var sh=document.getElementById('memSheet'); if(sh){ sh.classList.add('on'); if(typeof scrollIntoBody==='function')scrollIntoBody(sh); }
   }
   function memAdd(){
-    memCur=null; memRoleSel=MEM_ROLES[2]; memColSel=MEM_COLORS[memList().length%MEM_COLORS.length];
+    memCur=null; memColSel=MEM_COLORS[memList().length%MEM_COLORS.length];
     var n=document.getElementById('memName'); if(n)n.value='';
     var t=document.getElementById('memSheetT'); if(t)t.textContent='＋ 人をふやす';
     var d=document.getElementById('memDelBtn'); if(d)d.style.display='none';
@@ -3109,7 +3199,12 @@
     var nm=n?(''+n.value).replace(/^\s+|\s+$/g,''):'';
     if(!nm){ toast('名前を入れてください'); if(n)n.focus(); return; }
     var id=memCur||('m'+Date.now()+'_'+Math.floor(Math.random()*1000));
-    memPut({id:id, n:nm, r:memRoleSel||MEM_ROLES[2], c:memColSel||MEM_COLORS[0]});
+    /* ★v57 立場は画面から消したが、すでに入っている中身は消さずに引き継ぐ */
+    var _old=null, _la=memList(), _q;
+    if(memCur){ for(_q=0;_q<_la.length;_q++){ if(_la[_q].id===memCur)_old=_la[_q]; } }
+    var _rec={id:id, n:nm, c:memColSel||MEM_COLORS[0]};
+    if(_old && _old.r) _rec.r=_old.r;
+    memPut(_rec);
     memClose(); memRender(); whoRender();
     toast('✅ 保存しました（家族全員に共有されます）');
   }
@@ -3261,10 +3356,20 @@
       r.start(); toast('🎤 どうぞ話してください');
     }catch(e){ toast('音声入力を start できませんでした'); }
   }
+  /* ★v56 設定の「メンバーを確認」に、本当の人数を出す。
+     v55まで「5人 ›」と決め打ちで書いてあり、1人しか登録が無くても5人と嘘をついていた
+     （CLAUDE.md 3.5「分からない時に既定値でごまかさない」）。 */
+  function memCountPaint(){
+    var el=document.getElementById('memCountV'); if(!el)return;
+    var n=0; try{ n=memList().length; }catch(e){ n=-1; }
+    el.textContent=(n<0)?'－ ›':(n===0?'まだ0人 ›':n+'人 ›');
+  }
   function memBoot(){
     try{ memRender(); }catch(e){}
     try{ whoRender(); whoApply(); }catch(e){}
     try{ hitoDateShow(); }catch(e){}
+    try{ memCountPaint(); }catch(e){}
+    try{ evPaint(); }catch(e){}
   }
   function naeOvKey(){ return 'gyotoku.naeov.v1'; }
   function naeOvArr(){
@@ -5586,7 +5691,7 @@
        「リセット直後だから同期を止める」判断ができなくなり、元の不具合に戻る。 */
     var KEEP={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
               'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1,
-              'gyotoku.resetAt.v1':1,'gyotoku.resetEpoch.v1':1};
+              'gyotoku.resetAt.v1':1,'gyotoku.resetEpoch.v1':1,'gyotoku.evlog.v1':1};
     var del=[];
     for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('gyotoku')===0&&!KEEP[k]) del.push(k); }
     for(var j=0;j<del.length;j++){ try{ localStorage.removeItem(del[j]); }catch(e){} }
@@ -5828,10 +5933,20 @@
     _soonT=setTimeout(function(){
       _soonT=null;
       if(typeof inResetQuiet==='function'&&inResetQuiet())return;   /* リセット直後は送らない(v39) */
-      syncPushAll(function(ok){
-        unsentPaint();
-        if(!ok){ try{ toast('💾 保存しました。まだ家族に送れていません（電波が戻れば自動で送ります）'); }catch(e){} }
-      });
+      /* ★★v57 送る前に必ず読む★★
+         v56まで：書いた瞬間の送信は push だけだった。/api/sync-put はただの上書きなので、
+                  少ない配列を持った端末が、サーバーの多いほうを潰せてしまった
+                  （偽サーバーで再現ずみ：サーバー5人 → 1人）。
+         v57から ：先に読んで合流してから送る。合流は足し算なので、少ないほうが多いほうを潰せない。
+                  30秒ごとの同期(syncTick)は、もともと「読む→送る」だった。そこへそろえただけ。
+                  ただし書いた直後に画面が読み込み直されると入力の流れが切れるので、
+                  この下読みでは画面を動かさない（quiet=true）。 */
+      syncPull(function(){
+        syncPushAll(function(ok){
+          unsentPaint();
+          if(!ok){ try{ toast('💾 保存しました。まだ家族に送れていません（電波が戻れば自動で送ります）'); }catch(e){} }
+        });
+      }, true);
     },1200);
   }
   /* 閉じる・隠れる時に送る。keepalive を付けないと、閉じかけの送信は捨てられる。
@@ -5863,7 +5978,7 @@
     }
     if(dirty)syncSoon();
   }
-  function syncPull(done){
+  function syncPull(done, quiet){
     var qs='/api/sync-list?keys='+encodeURIComponent(SYNC_READ_KEYS.join(','));
     fetch(qs,{headers:{'x-photo-pass':_syncPass()}})
       .then(function(r){ return r.json(); })
@@ -5879,19 +5994,61 @@
           try{ var _o=JSON.parse(data[RESET_EPOCH_LS]); _se=(_o&&_o.t)?_o.t:0; }catch(e){}
           try{ _me=parseInt(localStorage.getItem(RESET_EPOCH_LS)||'0',10)||0; }catch(e){}
           if(_se>_me){
-            /* まだこのリセットに従っていない端末。自分のぶんを消す（設定・並び順は残す） */
+            /* ★★v57 ここが「9:15に登録した5人が消えた」現場★★
+               v56まで：合図が届くと、この端末の gyotoku* を**見境なく全部**消していた。
+                        合図より“後”に書いたものまで巻き込まれる。
+                        さらに、まっさらな保存箱（ホーム画面に追加し直した直後・
+                        Safariとアプリの別箱）は合図を知らない扱いなので、
+                        **必ず一度、直前に書いたものごと消される**。
+               v57から ：① 消すものが何も無い箱は、消さずに合図を受け取るだけ
+                        ② 配列の記録は「合図より後に書かれたもの」を残す（_recTime）
+                        ③ 何を残して何を消したかを、出来事として控える */
             var _keep={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
                        'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1,
-                       'gyotoku.resetAt.v1':1,'gyotoku.resetEpoch.v1':1};
+                       'gyotoku.resetAt.v1':1,'gyotoku.resetEpoch.v1':1,'gyotoku.evlog.v1':1};
             var _d=[];
             try{ for(var _i=0;_i<localStorage.length;_i++){ var _k=localStorage.key(_i);
               if(_k&&_k.indexOf('gyotoku')===0&&!_keep[_k]) _d.push(_k); } }catch(e){}
-            for(var _j2=0;_j2<_d.length;_j2++){ try{ localStorage.removeItem(_d[_j2]); }catch(e){} }
+            /* ★先に選り分けてから、「本当に何か捨てたか」で分かれる。
+               「鍵があるか」で分けてはいけない：v57はまっさらな箱にも規定の家族5人を
+               自動で入れるので、鍵は必ず存在してしまう（＝まっさらでも消す側に落ちる）。 */
+            var _kept=0, _dropped=0, _j2, _v, _arr, _keepArr, _q, _it, _isUser;
+            for(_j2=0;_j2<_d.length;_j2++){
+              /* ★「捨てた」と数えるのは本物のデータ（共有する台帳）だけ。
+                 送信控え(pushed)のような帳簿まで数えると、まっさらな箱でも
+                 「消しました」と脅かしてしまう。削除印(tomb)も本人の仕事ではない。 */
+              _isUser = !!SYNC_SET[_d[_j2]] && _d[_j2]!==TOMB_LS;
+              _v=null; try{ _v=localStorage.getItem(_d[_j2]); }catch(e){ _v=null; }
+              _arr=null; try{ _arr=JSON.parse(_v==null?'null':_v); }catch(e){ _arr=null; }
+              _keepArr=null;
+              if(_arr instanceof Array){
+                _keepArr=[];
+                for(_q=0;_q<_arr.length;_q++){ _it=_arr[_q];
+                  if(_recTime(_it)>_se){ _keepArr.push(_it); if(_isUser)_kept++; }
+                  else if(_isUser && !_isAutoDefault(_it)){ _dropped++; }   /* 自動で入れた規定値は数えない */
+                }
+              } else if(_arr!=null && _isUser){ _dropped++; }
+              if(_keepArr && _keepArr.length){
+                try{ localStorage.setItem(_d[_j2], JSON.stringify(_keepArr)); }catch(e){}
+              } else {
+                try{ localStorage.removeItem(_d[_j2]); }catch(e){}
+              }
+            }
             try{ localStorage.setItem(RESET_EPOCH_LS, String(_se)); }catch(e){}
-            try{ _syncHash={}; }catch(e){}   /* 送信済み記録も忘れる（古い値を送り返さない） */
             try{ window._mem=null; window._memList=null; }catch(e){}
-            alert('家族の誰かが「入力内容のリセット」をしました。\nこの端末の記録も、あわせて消しました。\n\n画面を読み込み直します。');
-            location.reload(); return;
+            if(!_dropped){
+              /* ①捨てたものが無い＝まっさらな箱（ホーム画面に追加し直した直後など）。
+                 合図を受け取るだけ。脅かさないし、読み込み直しもしない。 */
+              try{ memArr(); }catch(e){}   /* 規定の家族を入れ直す */
+              try{ evLog('epoch','リセットの合図を受け取りました（この端末に消すものは無く、何も消していません）'); }catch(e){}
+            } else {
+              try{ _syncHash={}; }catch(e){}   /* 送信済み記録も忘れる（古い値を送り返さない） */
+              try{ evLog('epoch','リセットの合図で消しました（消した '+_dropped+'件／合図より後に書いたぶん '+_kept+'件は残しました）'); }catch(e){}
+              alert('家族の誰かが「入力内容のリセット」をしました。\nこの端末の記録も、あわせて消しました。'
+                    +(_kept?'\n\n※リセットより後に書いた '+_kept+'件は残しています。':'')
+                    +'\n\n画面を読み込み直します。');
+              location.reload(); return;
+            }
           }
         }
         /* v30 まず削除印を取り込む（この後の配列マージで参照するため先に反映） */
@@ -5901,10 +6058,20 @@
         for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue; if(k===TOMB_LS)continue;
           var loc; try{ loc=localStorage.getItem(k); }catch(e){ loc=null; }
           var m=_mergeVal(loc==null?'null':loc, data[k], k);
-          if(m.changed){ _lsSetRaw(k,m.str); if(k===MEM_LS){ window._mem=null; window._memList=null; } _syncHash[k]=_hash(m.str); changed=true; }
-          else { _syncHash[k]=_hash(loc==null?'null':loc); }
+          if(m.changed){ _lsSetRaw(k,m.str); if(k===MEM_LS){ window._mem=null; window._memList=null; } changed=true; }
+          /* ★★v57 送信済みの印は「この中身がサーバーにある」という意味。
+             v56まで：合流したあと、合流後の中身に印を付けていた。
+                      しかしサーバーに在るのは“サーバーのぶん”であって合流後の中身ではない。
+                      印が付くと syncPushAll は「送る必要なし」と判断するため、
+                      **この端末にしか無い記録が、次に何か書くまで永久に送られなかった。**
+                      （その状態で端末が消されると、どこにも残らない）
+             v57から ：サーバーと同じ時だけ印を付ける。違えば印を消して必ず送る。 */
+          var _cur=null; try{ _cur=localStorage.getItem(k); }catch(e){ _cur=null; }
+          var _curS=(_cur==null?'null':_cur);
+          if(_curS===String(data[k])) _syncHash[k]=_hash(_curS);
+          else { try{ delete _syncHash[k]; }catch(e){ _syncHash[k]=null; } }
         }
-        if(changed) _syncApply();
+        if(changed && !quiet) _syncApply();   /* ★v57 quiet＝書いた直後の下読み。画面は動かさない */
         if(done)done(true);
       })
       .catch(function(){ _syncBadge(false); if(done)done(false); });
@@ -6877,7 +7044,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v56';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v57';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
