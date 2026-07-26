@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v54">
+<meta name="app-ver" content="v56">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -265,6 +265,21 @@
   .fld.autofill{border-color:#BCD3C0;background:#F4F9F5;}
   .fld.autofill .v>span:first-child{color:var(--green);}
   .autotag{display:inline-block;font-size:12px;color:#fff;background:#3A7A4A;border-radius:8px;padding:1px 8px;margin-left:8px;vertical-align:middle;font-weight:700;}
+  /* ===== v55 肥料の種類（元肥／穂肥）。★はじめから選ばれた状態にはしない＝アプリが決めつけない ===== */
+  .hy-kindlb{font-size:15px;color:#4A4A40;margin:12px 0 6px;font-weight:700;}
+  .hy-kindrow{display:flex;gap:9px;}
+  .hy-kind{flex:1;border:2px solid #C8C4B4;border-radius:12px;padding:13px 8px;text-align:center;
+           font-size:17px;font-weight:700;color:#4A4A40;background:#fff;}
+  .hy-kind.on{border-color:var(--green);background:var(--green);color:#fff;}
+  .hy-kindnote{font-size:13px;color:#8A8578;margin:6px 0 0;line-height:1.6;}
+  /* ===== v55 まだ家族に送れていない記録の知らせ ===== */
+  /* 深緑の帯は「押させるボタン」に取ってあるので、知らせは注意色（山吹）にする。
+     色だけに頼らず「送れていない」と必ず文字で書く（年配UX） */
+  .hist-unsent{border:2px solid #D99100;background:#FFF6E5;border-radius:12px;padding:11px 12px;
+               font-size:16px;font-weight:700;color:#8A5A00;margin:0 0 10px;}
+  .hist-unsent small{display:block;font-weight:400;font-size:13px;color:#8A6A2A;margin-top:3px;}
+  .hist-sent{border:1px solid #9CC0A5;background:#F2F8F3;border-radius:12px;padding:9px 12px;
+             font-size:15px;color:var(--green);margin:0 0 10px;}
   .primary-btn{background:linear-gradient(157deg,#356A43,#254A2F);color:#fff;border:none;border-radius:14px;
     padding:15px;font-size:20px;font-weight:800;text-align:center;box-shadow:0 6px 14px rgba(33,63,41,.25);cursor:pointer;letter-spacing:.03em;}
   .ghost{background:#fff;border:1.5px dashed var(--line);border-radius:14px;padding:12px;
@@ -1364,6 +1379,7 @@
           <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
         </div>
         <div class="hist-lead">上で書いた<b>ひとこと</b>と、🎤や🚜で記録したことが、<b>新しい順に上から</b>ぜんぶ並びます。「いつ・どの田んぼ・何を・いくら」が一目で分かります。</div>
+        <div id="histUnsent"></div>
         <div class="hist-chips" id="histChips"></div>
         <div class="hist-fieldbar" id="histFieldBar"></div>
         <div id="histBody"></div>
@@ -1406,6 +1422,12 @@
           <input class="fsearch" id="hyFertSearch" type="text" placeholder="🔍 肥料の名前でしぼる（例：化成／尿素）" oninput="hyFertSheetRender()">
           <div id="hyFertOpts"></div>
         </div>
+        <div class="hy-kindlb">これは？</div>
+        <div class="hy-kindrow">
+          <div class="hy-kind" id="hyKindMoto" onclick="hyKindPick('moto')">元肥</div>
+          <div class="hy-kind" id="hyKindHo" onclick="hyKindPick('ho')">穂肥（追肥）</div>
+        </div>
+        <div class="hy-kindnote" id="hyKindNote">※ えらばなくても記録できます。えらぶと工程表の「⑥穂肥」に反映されます。</div>
         <div class="hy-amtrow">
           <div class="fld hy-amt"><div class="lb">量（kg）</div><input class="hy-inp" id="hyKg" type="number" inputmode="decimal" placeholder="20" enterkeyhint="done"></div>
           <div class="hy-addbtn" onclick="hyAdd()">＋ 記録する</div>
@@ -1636,6 +1658,7 @@
         <div class="sethead">🔄 家族と共有・自動バックアップ</div>
         <div class="setcard">
           <div class="setrow">状態<span class="sv" id="syncState">…確認中</span></div>
+          <div class="setrow">まだ送れていない記録<span class="sv" id="setUnsent">—</span></div>
           <div class="setrow" onclick="syncNow()">今すぐ同期する<span class="sv">記録・予定・メモ ›</span></div>
           <div class="setrow" onclick="syncDiag()">つながりを調べる<span class="sv">診断 ›</span></div>
         </div>
@@ -1652,7 +1675,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v54(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v56(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2302,7 +2325,9 @@
   var ktLog=[];
   function ktLoad(){ try{var s=localStorage.getItem(KT_LS); ktLog=s?JSON.parse(s):[];}catch(e){ktLog=[];}
     if(!(ktLog instanceof Array))ktLog=[]; }
-  function ktSave(){ try{localStorage.setItem(KT_LS,JSON.stringify(ktLog));}catch(e){} }
+  function ktSave(){ try{localStorage.setItem(KT_LS,JSON.stringify(ktLog));}catch(e){}
+    /* ★v55 書いたら、その場で送る。30秒待つと閉じられて届かないことがある（7/25の事故） */
+    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){} }
   /* 全機能はこの1関数で台帳に書き込む(連携連動の背骨) */
   function wlAdd(stepK, fieldN, text, src, extra){
     var e={d:inaFmtFull(new Date()), step:stepK, field:fieldN, text:text||'', src:src||'rec', ksas:false};
@@ -2351,52 +2376,58 @@
       if(st.type==='grow'&&c&&c.stageDates[st.ina]&&c.stageDates[st.ina].date){
         o.date=c.stageDates[st.ina].date; o.src=KT_SRC.ina;
       }
+      /* ★v55：気温の計算が示す段階は、記録の有無にかかわらず控えておく。
+         （旧版は「記録が0件の時だけ」控えていたので、③田植え後に使えなかった） */
+      if(st.type==='grow'&&c&&st.ina===c.curIdx) growIdx=i;
       if(TOTAL>0&&n>=TOTAL){ o.cls='done'; o.stx='✅ 済み'; doneCount++; }
       else if(n>0){ o.cls='warn'; o.stx='⚠️ 残りあり ›'; if(warnIdx<0)warnIdx=i; }
-      else if(st.type==='grow'&&c&&st.ina===c.curIdx){ growIdx=i; }   /* v47:ここでは印を付けず、後でまとめて1つだけ決める */
       arr.push(o);
     }
-    /* ★v47：「今ここ」の決め方を直した。
-       これまでは「最初の未完了工程」だった。ところが①種まき・育苗は苗代でまとめてやる作業で、
-       田んぼ65枚ぶんを1枚ずつ記録することがない → ①は永久に未完了 →
-       一年中「1/12 種まき・育苗」のまま動かず、作業記録③の初期値も一年中これになっていた。
-       新しい決まり（本人承認ずみ）：
-         ・記録が1つも無い → ①（稲作先生の入力があればそこ）
-         ・記録がある → その中で いちばん後ろの工程 を「今ここ」にする
-         ・その工程が65枚そろっていれば、次の工程へ進める
-       ※弱点：まちがえて⑨稲刈りを押すと今ここが⑨へ飛ぶ。記録簿から消せば戻る。 */
-    var lastRec=-1;
-    for(var q=0;q<arr.length;q++){ if(arr[q].doneN>0) lastRec=q; }
-    if(lastRec<0){
-      nowIdx=(growIdx>=0)?growIdx:0;                  /* 記録ゼロ：稲作先生 → 無ければ① */
+    /* ★★v55 「今ここ」と「今年の進み」の決め方を、根っこから直した（案ウ・本人承認ずみ）★★
+       ── これまでの作り ──
+         ・今ここ ＝「記録がある工程のうち、いちばん後ろ」（v47）
+         ・進み  ＝ その工程番号(1始まり)÷12 で底上げ（v42）
+       この2つが重なると、たった1件の記録で工程表ぜんぶが飛ぶ。
+       実際に起きたこと：肥料を1回入れる →（旧hyAddが必ず⑥穂肥として書く）→ 今ここが⑥ →
+       6÷12＝50%。田植えが「これから」なのに50%と出た。⑫に1件あれば100%にもなった。
+       （v55でハーネスに仕込んで再現ずみ：①1件+⑥1件 → ちょうど50%）
+       ── 新しい決まり ──
+         ① 今ここは順番を飛び越さない ＝「まだ済んでいない、いちばん前の工程」
+         ② ただし①種まき・育苗は、1枚でも記録があれば先へ進める
+            （苗代でまとめてやる作業で、田んぼ65枚を1枚ずつ記録することがない。
+              ここを見落とすと一年中①で止まる＝v47で直した問題がそのまま戻る）
+         ③ ③田植えを記録したあとは、気温の計算（稲作先生）が示す段階を今ここにする
+            （生育の段階は、記録の件数ではなく気温で決まるため）
+         ④ 進みの数字は「実際に記録した枚数」だけで出す。工程番号での底上げはしない */
+    var taueRec=(arr[2]&&arr[2].doneN>0);
+    if(taueRec && growIdx>=0){
+      nowIdx=growIdx;                                   /* ③田植え済み → 気温の計算にまかせる */
     }else{
-      nowIdx=lastRec;
-      if(arr[lastRec].total>0 && arr[lastRec].doneN>=arr[lastRec].total && lastRec+1<arr.length){
-        nowIdx=lastRec+1;                             /* そろっているので次の工程へ */
+      for(var w=0;w<arr.length;w++){
+        var need=(w===0)?1:arr[w].total;                /* ★①だけは1枚で足りる */
+        if(need<=0)need=1;
+        if(arr[w].doneN<need){ nowIdx=w; break; }
       }
+      if(nowIdx<0) nowIdx=arr.length-1;                 /* 全部そろっている */
     }
     if(nowIdx>=0 && arr[nowIdx] && arr[nowIdx].cls!=='done'){
       arr[nowIdx].cls='now'; arr[nowIdx].stx='📍 今ここ ›';
     }
-    /* ★v42：進み率の計算を直した。
-       これまでは「今いる工程の番号(0始まり)÷12」だけだったので、
-       工程①にいる間は何枚記録しても必ず 0% のままだった（画面は「いま 1/12 工程め」なのに 0%）。
-       これからは次の2つを足す：
-         ① 各工程の中の進み具合（88枚のうち何枚終わったか）を小数で数える
-         ② 今いる工程を1始まりで数える（「いま 1/12 工程め」の表示と数字をそろえる）
-       → 1枚記録するたび約0.09%ずつ増え、1工程まるごと終わると8%増える。
-       ※何も記録していなければ0%、全工程が済めば100%。ここは従来どおり。 */
+    /* ★v55 進み率は実績だけ。各工程の中の進み具合（65枚のうち何枚）を足して12で割る。 */
     var earned=0;
     for(var p=0;p<arr.length;p++){
       var tt=arr[p].total>0?arr[p].total:1;
       var f=arr[p].doneN/tt; if(f>1)f=1; if(f<0)f=0;
-      earned+=f;                                   /* ①工程の中の進み具合 */
+      earned+=f;
     }
-    if(earned>0&&nowIdx>=0&&earned<nowIdx+1) earned=nowIdx+1; /* ②今いる工程を1始まりで（何も記録が無いうちは0%のまま） */
     if(earned>KT_STEPS.length) earned=KT_STEPS.length;
-    var pct=Math.round(earned/KT_STEPS.length*100);
-    if(doneCount>=KT_STEPS.length) pct=100;         /* 全工程が済んだら必ず100% */
-    return {list:arr, pct:pct, nowIdx:nowIdx, warnIdx:warnIdx, c:c, doneCount:doneCount};
+    var raw=earned/KT_STEPS.length*100;
+    /* 小さい数字を0%にまるめない。1枚記録するたび動くのが見えるようにする */
+    var pct=(raw>0&&raw<10)?(Math.round(raw*10)/10):Math.round(raw);
+    if(doneCount>=KT_STEPS.length) pct=100;             /* 全工程が済んだら必ず100% */
+    /* バーの幅だけは、0.3%でも見えるように下限を持たせる（数字そのものはいじらない） */
+    var barPct=(pct>0&&pct<2)?2:pct;
+    return {list:arr, pct:pct, barPct:barPct, nowIdx:nowIdx, warnIdx:warnIdx, c:c, doneCount:doneCount};
   }
 
   /* ---- 画面A:工程表 ---- */
@@ -2443,7 +2474,7 @@
       +'<div class="lbl">🌾 '+(new Date()).getFullYear()+'年の米づくり</div>'
       +'<div class="stg-meta">いま '+(s.nowIdx>=0?(s.nowIdx+1):Math.max(1,s.doneCount))+'/'+KT_STEPS.length+' 工程め</div>'
       +'<div class="stg-name">「'+nowNm+'」</div>'
-      +'<div class="kt-bar"><div class="in" style="width:'+s.pct+'%;"></div></div>'
+      +'<div class="kt-bar"><div class="in" style="width:'+(s.barPct!=null?s.barPct:s.pct)+'%;"></div></div>'
       +'<div class="kt-bar-lbl"><span>種まき</span><span>今年の進み '+s.pct+'%</span><span>稲刈り</span></div>'
       +'<div class="kt-ricefoot">稲をつくる '+ktRiceCount()+'枚ぶん（大豆・未定はのぞく）</div>'
       +'</div>';
@@ -2532,16 +2563,44 @@
     el.innerHTML=h;
     ktShowOnly('ktViewStep');
   }
+  /* ★v56 この表で付けた記録か？（他の画面が書いた中身が1つでも入っていたら false）
+     考え方：この表は、この表で付けたぶんしか外せない。
+     農薬・肥料・ひとこと・音声・ドローンの記録を、チェック外しの巻き添えで消さない。 */
+  function ktIsBoardOnly(e){
+    return !!e && e.src==='board' && !e.chem && !e.mass && !e.vol && !e.rate
+        && !e.yen && !e.hito && !e.work && !e.ckind;
+  }
+  /* ★v56 出どころの名前を「文字だけ」で返す。
+     toast は textContent なので、ktSrcLabel（ドローンで <img> を返す）は入れてはいけない。 */
+  function ktSrcPlain(src){
+    var t=KT_SRC[src]||'ほかの記録から';
+    return t.replace('[DRONE]','');
+  }
   /* 田んぼ行タップで済み⇔未を切替(この表で直接入力もできる) */
   function ktToggleField(f){
-    var st=KT_STEPS[ktCurStep], fd=KT_FIELDS[f], dn=ktDoneFields(st.k);
-    if(dn[fd.n]){
-      for(var i=ktLog.length-1;i>=0;i--)if(ktLog[i].step===st.k&&ktLog[i].field===fd.n){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); }
-      ktSave(); toast(fd.n+' を未実施に戻しました');
-    }else{
+    var st=KT_STEPS[ktCurStep], fd=KT_FIELDS[f], dn=ktDoneFields(st.k), i;
+    if(!dn[fd.n]){                                   /* 未 → 済み（v55までと同じ・1つも変えない） */
       wlAdd(st.k, fd.n, st.nm, 'board');
       toast('✅ '+fd.n+' の「'+st.nm+'」を済みにしました');
+      ktOpenStep(ktCurStep); return;
     }
+    var mine=[], others=[];
+    for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
+      if(e.step!==st.k||e.field!==fd.n)continue;
+      if(ktIsBoardOnly(e))mine.push(e); else others.push(e); }
+    if(others.length){                               /* ★他の画面の記録が混ざっている＝1件も消さない */
+      toast('この ✅ は '+ktSrcPlain(others[0].src)+'付いています。ここでは外せません。消すときは 📝記録の確認 から');
+      return;
+    }
+    if(!mine.length){ toast('この ✅ のもとになる記録が見つかりません'); return; }
+    if(!confirm('「'+fd.n+'」の「'+st.nm+'」の ✅ を外しますか？\n\n'
+      +'この表で付けた記録 '+mine.length+'件 を消します。\n'
+      +'消すと家族の端末からも消え、元に戻せません。')) return;
+    for(i=ktLog.length-1;i>=0;i--){
+      var g=ktLog[i];
+      if(g.step===st.k && g.field===fd.n && ktIsBoardOnly(g)){ tombAdd(KT_LS,g); ktLog.splice(i,1); }
+    }
+    ktSave(); toast('✅ を外しました（'+mine.length+'件）');
     ktOpenStep(ktCurStep);
   }
 
@@ -4026,7 +4085,18 @@
   }
   function histFieldPick(){ if(typeof fieldSheetOpen==='function') fieldSheetOpen(function(n){ histField=n; histRender(); }, histField); }
   function histFieldClear(){ histField=''; histRender(); }
+  /* ★v55 まだ家族に送れていない記録を、画面で見えるようにする。
+     色だけに頼らず「送れていない」と文字で書く（年配UX）。深緑の帯は押させるボタン用なので使わない */
+  function histUnsentRender(){
+    var el=document.getElementById('histUnsent'); if(!el)return;
+    var n=0; try{ n=(typeof unsentCount==='function')?unsentCount():0; }catch(e){ n=0; }
+    el.innerHTML = (n>0)
+      ? '<div class="hist-unsent">📤 まだ家族に送れていない記録が '+n+'件 あります'
+        +'<small>電波の届く所でアプリを開いたままにすると、自動で送られます</small></div>'
+      : '<div class="hist-sent">✅ すべて家族に届いています</div>';
+  }
   function histRender(){
+    histUnsentRender();
     histChipRender();
     histFieldRender();
     var items=histItems().filter(function(x){
@@ -4530,6 +4600,31 @@
       }else{ old.style.display='none'; old.innerHTML=''; }
     }
   }
+  /* ★★v55 肥料の工程の決め方を直した。★★
+     これまでは何を入れても必ず 'hogoe'（⑥穂肥）で台帳に書いていた。元肥でも穂肥でも同じ。
+     そのため肥料を1回入れただけで工程表の「今ここ」が⑥へ飛び、
+     田植え前なのに今年の進みが50%になっていた（親方のスクショで判明）。
+     新しい決まり：
+       ・「穂肥（追肥）」をえらんだ時だけ 'hogoe' として工程に結びつける
+       ・「元肥」をえらんだ時は工程に結びつけない（元肥に当たる工程が12工程に無いため。
+         ②耕起・代かき に当てると「②が済んだ」という別の嘘になる）
+       ・何もえらばなければ工程に結びつけない＝**アプリが決めつけない**（0.5節）
+     ★はじめから選ばれた状態にはしない。既定値はごまかしになるため。
+     ★えらばなくても記録は止めない（止めると書く手だてを奪う＝v53の教訓）。 */
+  var hyKind='';   /* '' = えらんでいない / 'moto' = 元肥 / 'ho' = 穂肥（追肥） */
+  function hyKindPick(k){
+    hyKind=(hyKind===k)?'':k;            /* もう一度押すと選び直せる */
+    var a=document.getElementById('hyKindMoto'), b=document.getElementById('hyKindHo');
+    if(a)a.classList.toggle('on',hyKind==='moto');
+    if(b)b.classList.toggle('on',hyKind==='ho');
+    var n=document.getElementById('hyKindNote');
+    if(n)n.textContent=(hyKind==='ho')
+      ? '※ 工程表の「⑥穂肥」に反映されます。'
+      : (hyKind==='moto'
+        ? '※ 元肥は12工程のどれにも当てはめません（記録簿・栄養・原価には残ります）。'
+        : '※ えらばなくても記録できます。えらぶと工程表の「⑥穂肥」に反映されます。');
+  }
+  function hyKindLabel(){ return hyKind==='ho'?'穂肥':(hyKind==='moto'?'元肥':'施肥'); }
   function hyAdd(){
     var kgEl=document.getElementById('hyKg');
     var kg=parseFloat(kgEl&&kgEl.value);
@@ -4538,8 +4633,10 @@
        2か所に書くと必ず二重に数える日が来る（v50・v51で2回起きた）。
        作業台帳の記録は id を持つので、家族との同期でも編集・削除が正しく効く。 */
     if(typeof wlAdd!=='function'){ toast('記録できませんでした。もう一度お試しください'); return; }
-    wlAdd('hogoe', hyField, hyFert+' '+kg+'kg', 'hiryo', {work:'追肥', chem:hyFert, mass:kg});
+    wlAdd((hyKind==='ho')?'hogoe':'', hyField, hyFert+' '+kg+'kg', 'hiryo',
+          {work:hyKindLabel(), chem:hyFert, mass:kg});
     if(kgEl)kgEl.value='';
+    hyKind=''; hyKindPick('');            /* 次の記録に引きずらない＝決めつけ防止 */
     /* ★v50 去年を見ている最中に記録すると、今日の日付＝今年ぶんなので画面から消えてしまう。
        記録したものが必ず見えるよう、今年に戻す */
     var backToNow=(hyYear!==hyThisYear());
@@ -5671,10 +5768,100 @@
     pend.forEach(function(p){
       fetch('/api/sync-put',{method:'POST',headers:{'content-type':'application/json','x-photo-pass':_syncPass()},body:JSON.stringify({key:p.k,value:p.v})})
         .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
-        .then(function(j){ if(j&&j.ok){ _syncHash[p.k]=p.h; } else { okAll=false; } })
+        .then(function(j){ if(j&&j.ok){ _syncHash[p.k]=p.h; try{ pushedMark(p.k,p.v); }catch(e){} } else { okAll=false; } })
         .catch(function(){ okAll=false; })
         .then(function(){ if(--left===0){ if(done)done(okAll); } });
     });
+  }
+  /* ===== ★★v55 「書いた瞬間に送る」（7/25の記録が失われた事故の根本対策）★★ =====
+     ── 何が起きたか（親方の報告とコードで確定させた） ──
+       記録は端末に保存されていた。しかし送るのは 30秒ごとの syncTick() だけで、
+       しかも syncTick() は `if(document.hidden)return` なので **閉じたら送らない**。
+       pagehide も beforeunload も sendBeacon も、v54まで1つも無かった。
+       そのため「記録する → 30秒たたずに閉じる／読み込み直す／ホーム画面に追加し直す」で
+       サーバーに届かないまま、その保存箱ごと置き去りになった。
+       Safari で開いても出てこないことから、**サーバーに届いていない**と確定した。
+     ── 直しかた（読む側の回避ではなく、送る側を直す） ──
+       ① 台帳に書いたら、その場で送る（syncSoon）
+       ② 閉じる・隠れる時にも送る（syncFlush／keepalive付き）
+       ③ ★どの書き込み口から書かれても取りこぼさないよう、見張りを1つ置く（syncWatch）
+          ── 書き込み口は11か所ある（記録・予定・機械・肥料・土・教科書・発生・費用・
+             稲作・目標・名簿）。1か所ずつ呼び出しを足す作りは、**次に増えた口を必ず忘れる**。
+             見張りなら、口が増えても勝手に拾う。
+       ④ 「まだ送れていない件数」を持ち、画面に出す（届いたかを目で確かめられる） */
+  var PUSHED_LS='gyotoku.pushed.v1';   /* {キー:{h:指紋,n:件数}} この端末だけ・同期しない */
+  var UNSENT_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1'];  /* 件数を数えるのはこの2つ */
+  function pushedAll(){
+    try{ var o=JSON.parse(localStorage.getItem(PUSHED_LS)||'{}');
+      return (o&&typeof o==='object'&&!(o instanceof Array))?o:{}; }catch(e){ return {}; }
+  }
+  /* 「この中身はサーバーに届いた」と控える。送信が成功した時だけ呼ぶ（届いていないのに
+     控えると、送れていない記録を「届いた」と嘘をつくことになる） */
+  function pushedMark(k,str){
+    var o=pushedAll(), n=0;
+    try{ var a=JSON.parse(str); if(a instanceof Array)n=a.length; }catch(e){}
+    o[k]={h:_hash(str), n:n};
+    try{ localStorage.setItem(PUSHED_LS, JSON.stringify(o)); }catch(e){}
+  }
+  function unsentCount(){
+    var o=pushedAll(), t=0, i;
+    for(i=0;i<UNSENT_KEYS.length;i++){
+      var k=UNSENT_KEYS[i], v; try{ v=localStorage.getItem(k); }catch(e){ v=null; }
+      if(v==null)continue;
+      var p=o[k]; if(!p)continue;              /* 一度も送れていない＝比べる相手が無いので数えない */
+      if(p.h===_hash(v))continue;              /* サーバーと同じ中身 */
+      var cur=0; try{ var a=JSON.parse(v); if(a instanceof Array)cur=a.length; }catch(e){ continue; }
+      var d=cur-(p.n||0); if(d>0)t+=d;
+    }
+    return t;
+  }
+  function unsentPaint(){
+    try{ if(typeof histUnsentRender==='function')histUnsentRender(); }catch(e){}
+    try{ var el=document.getElementById('setUnsent');
+      if(el){ var n=unsentCount(); el.textContent=(n>0)?(n+'件 ⚠️'):'なし ✅'; } }catch(e){}
+  }
+  var _soonT=null;
+  /* 台帳に書いたあと、その場で送る。1.2秒だけまとめる（続けて入れた時に何度も送らないため） */
+  function syncSoon(){
+    if(_soonT){ try{ clearTimeout(_soonT); }catch(e){} }
+    unsentPaint();
+    _soonT=setTimeout(function(){
+      _soonT=null;
+      if(typeof inResetQuiet==='function'&&inResetQuiet())return;   /* リセット直後は送らない(v39) */
+      syncPushAll(function(ok){
+        unsentPaint();
+        if(!ok){ try{ toast('💾 保存しました。まだ家族に送れていません（電波が戻れば自動で送ります）'); }catch(e){} }
+      });
+    },1200);
+  }
+  /* 閉じる・隠れる時に送る。keepalive を付けないと、閉じかけの送信は捨てられる。
+     ★ここでは _syncHash を書きかえない。届いたか分からないのに「送った」と控えると、
+       次の同期がその鍵を飛ばしてしまい、記録が永久に届かなくなる（今回の事故と同じ型） */
+  function syncFlush(){
+    if(typeof inResetQuiet==='function'&&inResetQuiet())return;
+    var pass=_syncPass();
+    for(var i=0;i<SYNC_KEYS.length;i++){
+      var k=SYNC_KEYS[i], v; try{ v=localStorage.getItem(k); }catch(e){ v=null; }
+      if(v==null)continue;
+      if(_syncHash[k]===_hash(v))continue;     /* すでに届いているぶんは送らない */
+      try{ fetch('/api/sync-put',{method:'POST',keepalive:true,
+        headers:{'content-type':'application/json','x-photo-pass':pass},
+        body:JSON.stringify({key:k,value:v})}).catch(function(){}); }catch(e){}
+    }
+  }
+  /* ★見張り：どの書き込み口から書かれても、5秒以内に送る。口が増えても拾える */
+  var _watchH={};
+  function syncWatch(){
+    if(document.hidden)return;
+    if(typeof inResetQuiet==='function'&&inResetQuiet())return;
+    var dirty=false;
+    for(var i=0;i<SYNC_KEYS.length;i++){
+      var k=SYNC_KEYS[i], v; try{ v=localStorage.getItem(k); }catch(e){ v=null; }
+      if(v==null)continue;
+      var h=_hash(v);
+      if(_watchH[k]!==h){ _watchH[k]=h; if(_syncHash[k]!==h)dirty=true; }
+    }
+    if(dirty)syncSoon();
   }
   function syncPull(done){
     var qs='/api/sync-list?keys='+encodeURIComponent(SYNC_READ_KEYS.join(','));
@@ -5763,6 +5950,14 @@
   setTimeout(function(){ try{ syncTick(); }catch(e){} }, 1800);
   setInterval(function(){ try{ syncTick(); }catch(e){} }, 30000);
   document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ syncTick(); }catch(e){} } });
+  /* ===== ★v55 ここから：書いたものを取りこぼさないための3点 ===== */
+  /* ①見張り（5秒ごと）：どの書き込み口から書かれても拾う。中身が変わった時だけ送るので通信は増えない */
+  setInterval(function(){ try{ syncWatch(); }catch(e){} }, 5000);
+  /* ②閉じる・隠れる時に送る。iPhoneは pagehide のほうが確実に来る */
+  try{ window.addEventListener('pagehide',function(){ try{ syncFlush(); }catch(e){} }); }catch(e){}
+  try{ document.addEventListener('visibilitychange',function(){ if(document.hidden){ try{ syncFlush(); }catch(e){} } }); }catch(e){}
+  /* ③起動したら、まだ送れていない件数を画面に出す */
+  setTimeout(function(){ try{ unsentPaint(); }catch(e){} }, 2500);
 
   renderHomeGrid(); renderSlotRows(); renderTabBar(); renderTabRows();
   (function(){
@@ -5778,14 +5973,37 @@
   /* ===== v2.5 予定データ(ホームTODO・カレンダー共通/localStorageに保存) ===== */
   var PLAN_LS_KEY='gyotoku.plans.v1';
   function ymd(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
-  function savePlans(){try{localStorage.setItem(PLAN_LS_KEY,JSON.stringify(plans));}catch(e){}}
+  /* ★v56 宣言の位置に注意：plansAside は「var plans=loadPlans();」より必ず前に置く。
+     後ろに置くと初期化子の [] が、loadPlans が入れた中身を上書きしてしまう（v33の型）。
+     読めなかった予定を、捨てずに保存箱へ書き戻すためだけに持つ。 */
+  var plansAside=[];
+  function savePlans(){
+    var all=plans;
+    try{ if(plansAside && plansAside.length) all=plans.concat(plansAside); }catch(e){ all=plans; }
+    try{ localStorage.setItem(PLAN_LS_KEY,JSON.stringify(all)); }catch(e){}
+    /* ★v55 予定も、書いたその場で送る（カレンダーの入力が消えた事故と同じ根） */
+    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){} }
+  /* ★v56 読めなかった1件のせいで、読めた予定を捨てない。保存でも捨てない。
+     v55まで：1件でも欠けると null を返し plans=[] になり、次の savePlans() が本物を上書きしていた。 */
   function loadPlans(){
-    try{
-      var raw=localStorage.getItem(PLAN_LS_KEY);
-      if(raw){var a=JSON.parse(raw);
-        if(Array.isArray(a)&&a.length&&a.every(function(p){return p&&p.id&&p.date&&p.title;}))return a;}
-    }catch(e){}
-    return null; /* 壊れたデータは無視して初期データに戻す */
+    var raw=null; try{ raw=localStorage.getItem(PLAN_LS_KEY); }catch(e){ raw=null; }
+    if(!raw) return null;
+    var a=null; try{ a=JSON.parse(raw); }catch(e){ a=null; }
+    if(!(a instanceof Array)) return null;        /* 配列ですらない＝形が違う */
+    var ok=[], aside=[];
+    for(var i=0;i<a.length;i++){
+      var p=a[i];
+      if(p && typeof p==='object' && !(p instanceof Array) && p.id && p.date) ok.push(p);
+      else aside.push(p);                          /* ★捨てない。保存で必ず書き戻す */
+    }
+    plansAside=aside;
+    return (ok.length||aside.length) ? ok : null;  /* 空配列は truthy なので plans=[] のままでよい */
+  }
+  /* ★v56 名前が無いだけの予定も、ちゃんと画面に出す */
+  function planTitle(p){
+    var t=(p && p.title!=null) ? String(p.title) : '';
+    t=t.replace(/^\s+|\s+$/g,'');
+    return t || '（名前のない予定）';
   }
   /* ★v39：ここが「リセットしても消えない」の正体だった。
      予定を消すと loadPlans() が null を返し「初回だ」と判断して、
@@ -5808,7 +6026,7 @@
     }
     box.innerHTML=list.map(function(p){
       return '<div class="titem'+(p.done?' done':'')+'" onclick="todoTap(\''+p.id+'\')">'
-        +'<span class="cb"></span><span class="tt">'+p.title+'</span><span class="fldnm">'+p.field+'</span></div>';
+        +'<span class="cb"></span><span class="tt">'+planTitle(p)+'</span><span class="fldnm">'+(p.field||'')+'</span></div>';
     }).join('');
   }
   function todoTap(id){
@@ -5924,8 +6142,8 @@
       return;
     }
     box.innerHTML=head+list.map(function(p){
-      return '<div class="daycard"><div><div class="nm">'+(p.done?'✅ ':'(予定)')+p.title+'</div>'
-        +'<div class="fi">'+p.field+(p.who?'|担当:'+p.who:'')+'</div>'
+      return '<div class="daycard"><div><div class="nm">'+(p.done?'✅ ':'(予定)')+planTitle(p)+'</div>'
+        +'<div class="fi">'+(p.field||'')+(p.who?'|担当:'+p.who:'')+'</div>'
         +'<div style="margin-top:5px;"><span class="rowbtn mod" style="margin-left:0;" onclick="planEdit(\''+p.id+'\')">✏️ 直す</span><span class="rowbtn del" onclick="planDel(\''+p.id+'\')">🗑 消す</span></div></div>'
         +'<button class="actbtn '+(p.done?'a-undo':'a-do')+'" onclick="todoTap(\''+p.id+'\')">'+(p.done?'予定に戻す':'○ 実績にする')+'</button></div>';
     }).join('');
@@ -5933,7 +6151,7 @@
   /* ===== v22⑥ 予定の 直す・消す ===== */
   function planEdit(id){
     var p=planById(id); if(!p)return;
-    var t=prompt('予定の名前を直す',p.title);
+    var t=prompt('予定の名前を直す',(p.title||''));   /* ★v56「（名前のない予定）」を初期値にしない */
     if(t==null)return;
     t=t.replace(/^\s+|\s+$/g,'');
     if(!t){ toast('予定の名前を入れてください'); return; }
@@ -5943,7 +6161,7 @@
   }
   function planDel(id){
     var p=planById(id); if(!p)return;
-    if(!confirm('本当に消しますか？\n'+p.date.replace(/-/g,'/')+' '+p.title)) return;
+    if(!confirm('本当に消しますか？\n'+String(p.date||'').replace(/-/g,'/')+' '+planTitle(p))) return;
     tombAdd(PLAN_LS_KEY,p); for(var i=0;i<plans.length;i++){ if(plans[i].id===id){ plans.splice(i,1); break; } }
     savePlans();
     renderTodo(); renderCal(); renderDayList(); renderAiTip();
@@ -6659,7 +6877,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v54';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v56';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
