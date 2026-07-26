@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v62">
+<meta name="app-ver" content="v64">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -188,7 +188,7 @@
   .titem:first-of-type{border-top:none;}
   .titem .cb{width:22px;height:22px;border:2px solid #C9C3B2;border-radius:7px;flex-shrink:0;position:relative;}
   .titem.done .cb{background:var(--green);border-color:var(--green);}
-  .titem.done .cb::after{content:"✓";position:absolute;inset:0;color:#fff;font-size:14px;font-weight:800;
+  .titem.done .cb::after{content:"✓";position:absolute;top:0;left:0;right:0;bottom:0;color:#fff;font-size:14px;font-weight:800;
     display:flex;align-items:center;justify-content:center;}
   .titem .tt{font-size:15px;font-weight:800;flex:1;}
   .titem.done .tt{color:#A19C8B;text-decoration:line-through;}
@@ -1043,13 +1043,13 @@
   .ph-bar{display:flex;align-items:center;gap:8px;background:var(--blue-soft);border:1.5px solid #B3CEDB;
     border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1A5A8A;margin-bottom:8px;}
   .ph-bar .rf{margin-left:auto;font-weight:800;}
-  .ph-lb{position:fixed;inset:0;background:rgba(20,18,14,.9);z-index:950;display:none;align-items:center;justify-content:center;padding:14px;}
+  .ph-lb{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(20,18,14,.9);z-index:950;display:none;align-items:center;justify-content:center;padding:14px;}
   .ph-lb.on{display:flex;}
   .ph-lb img{max-width:100%;max-height:78%;border-radius:12px;}
   .ph-lb .cap{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 22px);text-align:center;color:#fff;font-size:14px;font-weight:700;padding:0 20px;line-height:1.6;}
   .ph-lb .x{position:absolute;top:calc(env(safe-area-inset-top) + 12px);right:16px;color:#fff;font-size:15px;font-weight:800;background:rgba(255,255,255,.18);border-radius:99px;padding:8px 14px;}
   /* ===== v24 田んぼ選択シート(88枚対応・共通) ===== */
-  #fpOv{position:fixed;inset:0;background:rgba(30,28,20,.45);z-index:900;display:none;}
+  #fpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:900;display:none;}
   #fpOv.on{display:block;}
   #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:9%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .fp-head{padding:13px 14px 6px;flex-shrink:0;}
@@ -1067,7 +1067,7 @@
   .fp-row .fa2 small{font-size:10px;color:#B8B4A4;}
   .fp-row.cur{background:#F5EEDF;border-color:#E0CFA3;}
   /* v25.4 機能ピッカー(ボタン/タブをスクロールで選ぶ) */
-  #bpOv{position:fixed;inset:0;background:rgba(30,28,20,.45);z-index:905;display:none;}
+  #bpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:905;display:none;}
   #bpOv.on{display:block;}
   #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:14%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .bp-head{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--line);}
@@ -1201,6 +1201,11 @@
   #p-hist .hist-where{font-size:17px;font-weight:700;color:#111827;}
   #p-hist .hist-title{font-size:16px;color:#374151;}
   #p-hist .hist-sub{font-size:14px;color:#6b7280;}
+  /* ★v63 「いつ書いたか」の札。深緑は"押させるボタン"の色なので使わない。
+     ★（教科書に残す）と同じ金色系の、弱い知らせの見せ方にそろえる */
+  #p-hist .hist-wrote{font-size:13px;font-weight:700;color:#8A6712;background:#F5EEDF;
+    border:1px solid #DFCFA8;border-radius:7px;padding:2px 7px;margin-top:4px;align-self:flex-start;}
+  .screen.fs-big #p-hist .hist-wrote{font-size:14px;}
   #p-hist .hist-yen{flex:0 0 auto;font-size:16px;font-weight:700;color:#b45309;white-space:nowrap;align-self:center;}
   #p-hist .hist-empty{font-size:15px;color:#6b7280;background:#f9fafb;border:1px dashed #d1d5db;border-radius:12px;padding:20px 14px;text-align:center;line-height:1.7;}
   /* ===== 生産原価の内訳ドリルダウン v28（#p-cost 内だけに限定） ===== */
@@ -1247,7 +1252,7 @@
   .hscene{flex:1;min-width:0;height:60px;align-self:center;margin:0 10px;
     border-radius:14px;overflow:hidden;position:relative;cursor:pointer;
     border:1px solid var(--green-line);box-shadow:inset 0 1px 2px #fff;background:#DCEFF3;}
-  .hscene>#homeSceneArt{position:absolute;inset:0;}
+  .hscene>#homeSceneArt{position:absolute;top:0;left:0;right:0;bottom:0;}
   .hscene svg{display:block;width:100%;height:100%;}
   .hscene .hs-chip{position:absolute;left:2px;top:2px;background:#FFFFFFE8;border:1px solid var(--green);
     border-radius:7px;padding:1.5px 5.5px;font-size:9px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;line-height:1;
@@ -1639,6 +1644,7 @@
       <div class="sc">
         <div class="fld"><div class="lb">作付名（自動）</div><div class="v" style="font-size:15px;"><span id="costCropName">—</span></div></div>
         <div class="cost-lead">農水省の「米・生産費」と同じ費目にそろえました。<b>分からない費目は空欄でOK</b>（空欄は0円として合計に入りません）。肥料・農薬・燃料は他の画面の記録から自動で入ります。</div>
+        <div class="hy-unk" id="costUnk"><!-- ★v64 金額を入れていない農薬の記録の件数(JS) --></div>
         <div class="cost-total"><span class="t">物財費 合計</span><span class="n" id="costTotal">0円</span></div>
         <div id="costBody"><!-- 費目(JS) --></div>
         <div class="wide" onclick="costCompare()">📊 去年と比べる</div>
@@ -1732,7 +1738,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v62(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v64(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2117,7 +2123,10 @@
   function inaLoad(){
     try{var s=localStorage.getItem(INA_LS); if(s)inaState=JSON.parse(s);}catch(e){inaState=null;}
   }
-  function inaSave(){ try{localStorage.setItem(INA_LS,JSON.stringify(inaState));}catch(e){} }
+  /* ★v63 保存するたびに更新時刻を押す。これが無いと、家族が品種や田植え日を直しても
+     自分の端末に永久に届かない（_mergeVal の「設定の箱」の判定に使う） */
+  function inaSave(){ try{ if(inaState&&typeof inaState==='object')inaState._m=Date.now();
+    localStorage.setItem(INA_LS,JSON.stringify(inaState));}catch(e){} }
 
   /* ある日付の平均気温を返す。直近は予報(WX_CACHE)、それ以外は月別平年値。 */
   function inaTempOn(d){
@@ -4258,11 +4267,11 @@
         where:(e.hito?(e.who||'ひとこと'):(e.field||'田んぼ不明')),
         title:(e.hito?(e.text||'ひとこと'):(e.work||e.text||'記録')),
         sub:(e.hito?'':[(e.chem||''), amt.join(' ')].filter(function(s){return s;}).join('　')),
-        yen:(e.yen? +e.yen : 0) });
+        yen:(e.yen? +e.yen : 0), wrote:histWroteLabel(e) });
     }
     for(i=0;i<kiLog.length;i++){ var m=kiLog[i];
       out.push({ d:m.d||'', kind:'kikai', ic:'🚜', ki:-1, star:false, where:histKiMacName(m.mac),
-        title:(m.kind||'機械'), sub:'', yen:(m.yen? +m.yen : 0) });
+        title:(m.kind||'機械'), sub:'', yen:(m.yen? +m.yen : 0), wrote:'' });   /* 機械の記録は id が無い＝書いた時刻が残っていないので出さない */
     }
     /* ★v51 ここにあった「肥料台帳(hyLog)からも足す」処理を削除した。
        元のコメントは『手入力ぶんのみ。記録簿(追肥)由来は上のktLogループで既に入るので
@@ -4287,6 +4296,29 @@
   function histDayLabel(d){ var s=histDayKey(d), mt=s.match(/(\d+)\/(\d+)\/(\d+)/); if(!mt)return d||'日付なし';
     var dt=new Date(+mt[1],+mt[2]-1,+mt[3]), w=['日','月','火','水','木','金','土'][dt.getDay()];
     return (+mt[2])+'月'+(+mt[3])+'日（'+w+'）'; }
+  /* ★★v63 その記録が「いつ書かれたか」★★
+     ── なぜ要るか ──
+       記録は過去日にさかのぼって書ける（wlAdd の extra.d）。画面には「作業した日」しか
+       出ないので、7/26に書いて日付を6/5にした記録が「6/5の記録」に見える。
+       そのせいで「リセットしたのに6/5の記録が消えない」と1週間ぶん遠回りした（v62で判明）。
+     ── 何を根拠にするか ──
+       id の中の時刻（'w'+作った瞬間のミリ秒）だけを見る。**_m は使わない**：
+       _m は「直した時刻」であって「書いた時刻」ではないため、使うと嘘になる。
+       id を持たない古い記録・機械の記録は、書いた時刻がどこにも残っていない。
+       推測して出すのは鉄則違反（分からない時にごまかさない）なので、**何も出さない**。 */
+  function histWroteMs(e){
+    var id=(e&&e.id!=null)?String(e.id):''; var g=id.match(/(\d{12,})/);
+    return g?parseInt(g[1],10):0;
+  }
+  function histWroteLabel(e){
+    var ms=histWroteMs(e); if(!ms)return '';
+    var wd=new Date(ms); if(isNaN(wd.getTime()))return '';
+    var dkey=histDayKey(e&&e.d||'');
+    if(!/^\d{4}\/\d{2}\/\d{2}$/.test(dkey))return '';   /* 日付の形が読めない＝比べない */
+    var wkey=inaFmtFull(wd);
+    if(dkey===wkey)return '';                            /* 同じ日に書いた＝ふつう。何も出さない */
+    return '✍️ '+(wd.getMonth()+1)+'月'+wd.getDate()+'日に書きました';
+  }
   function histFieldRender(){
     var el=document.getElementById('histFieldBar'); if(!el)return;
     if(histField){
@@ -4335,7 +4367,8 @@
          +'<span class="hist-ic">'+x.ic+'</span>'+
            '<span class="hist-main"><span class="hist-where">'+x.where+'</span>'+
              '<span class="hist-title">'+x.title+'</span>'+
-             (x.sub?'<span class="hist-sub">'+x.sub+'</span>':'')+'</span>'+
+             (x.sub?'<span class="hist-sub">'+x.sub+'</span>':'')+
+             (x.wrote?'<span class="hist-wrote">'+x.wrote+'</span>':'')+'</span>'+
            '<span class="hist-yen">'+(x.yen?histYen(x.yen):'')+'</span>'+st+'</div>';
       /* ★v61 開いた行の下だけに操作を出す。いつも出すと指が当たって消える */
       if(opd && x.ki>=0){
@@ -5188,7 +5221,15 @@
     var yEl=document.getElementById('kiYen');
     var yen=parseInt(yEl&&yEl.value,10);
     if(!yen||yen<=0){ toast('金額（円）を入れてください'); return; }
-    kiLog.push({d:inaFmtFull(new Date()), mac:kiMac, kind:kiKind, yen:yen});
+    /* ★★v64 id を持たせる ★★
+       v63まで機械の記録には id が無く、記録の印は「JSON全文」だった。
+       そのため **同じ日・同じ機械・同じ費目・同じ金額の2件が、同期で1件に減って**いた
+       （軽油5,000円を1日に2回入れる、はふつうに起きる）。
+       さらに片方を消すと、印が一致するので**両方消えて**いた。
+       id を持たせれば、中身が同じでも別物として扱われる。
+       ※古い記録には id が無い。JSON全文の印でこれまでどおり動くので、混ざっても支障はない。 */
+    kiLog.push({id:'k'+Date.now()+'_'+Math.floor(Math.random()*10000),
+                d:inaFmtFull(new Date()), mac:kiMac, kind:kiKind, yen:yen, _m:Date.now()});
     kiSave();
     if(yEl)yEl.value='';
     kiRender();
@@ -5206,7 +5247,12 @@
     if(v==null)return;
     var yen=parseInt(v,10);
     if(!yen||yen<=0){ toast('金額（円）は数字で入れてください'); return; }
-    tombAdd(KI_LS,e); e.yen=yen; kiSave(); kiRender(); toast('✏️ '+e.kind+' を '+kiYen(yen)+' に直しました');
+    /* ★★v64 ここは tombAdd から tombEdit に変えないと、記録が消える ★★
+       v48.2の重大事故とまったく同じ型。削除印は id を持つ記録では 'id:〇〇' で付き、
+       直しても id は変わらないので、**直した本体まで次の同期で消える**。
+       上で機械の記録に id を持たせたので、この行は同時に直さなければならなかった。
+       tombEdit なら、id があれば _m を新しくするだけ／古い記録は今までどおり印を付ける。 */
+    tombEdit(KI_LS,e); e.yen=yen; kiSave(); kiRender(); toast('✏️ '+e.kind+' を '+kiYen(yen)+' に直しました');
   }
 
   /* ============================================================
@@ -5450,6 +5496,37 @@
     return 0;
   }
   /* v26 農薬代を種類別(殺虫mushi/殺菌kin/除草josou)に今年ぶん合計。台帳のyen/ckindから */
+  /* ★★v64 金額を入れていない農薬の記録が、黙って原価から落ちる ★★
+     costChemYen は `if(!e.yen)continue;` で金額の無い記録を捨てている。
+     捨てること自体は正しい（0円として足したら嘘になる）。問題は
+     **画面に何も出ないので、原価が少ないことに誰も気づけない**こと。
+     v59で肥料に対して直したのとまったく同じ型。出口が違うだけで根は同じ。
+     → 捨てた件数を数えて正直に出す（CLAUDE.md 3.5「分からないと言う」）。 */
+  function costChemUnk(){
+    var out={n:0, nms:[]};
+    if(typeof ktLog==='undefined')return out;
+    if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
+    var y=new Date().getFullYear(), seen={};
+    for(var i=0;i<ktLog.length;i++){ var e=ktLog[i];
+      if(!(e.chem||e.ckind||e.rate))continue;      /* 農薬の記録だけを見る */
+      if(kiYear(e.d)!==y)continue;                 /* 今年ぶんだけ */
+      if(e.yen)continue;                           /* 金額が入っている＝原価に乗っている */
+      out.n++;
+      var nm=e.chem||e.work||'農薬';
+      if(!seen[nm]){ seen[nm]=1; out.nms.push(nm); }
+    }
+    return out;
+  }
+  function costUnkRender(){
+    var el=document.getElementById('costUnk'); if(!el)return;
+    var u=costChemUnk();
+    if(!u.n){ el.style.display='none'; el.innerHTML=''; return; }
+    el.style.display='block';
+    el.innerHTML='<b>\u26A0\uFE0F 金額を入れていない農薬の記録が '+u.n+'件 あります</b>'
+      +'<span class="nms">'+u.nms.join('・')+'</span>'
+      +'<span class="how">この分は農薬費に入っていません。'
+      +'\uD83D\uDCDD記録の確認から その記録を \u270F\uFE0F直す で金額を入れると、ここに出ます。</span>';
+  }
   function costChemYen(kind){
     if(typeof ktLog==='undefined')return 0;
     var y=new Date().getFullYear(), s=0;
@@ -5526,6 +5603,7 @@
     }
     body.innerHTML=h;
     var tot=document.getElementById('costTotal'); if(tot)tot.textContent=kiYen(costGrand());
+    costUnkRender();   /* ★v64 金額を入れていない農薬の記録を正直に出す */
   }
   /* v28 費目の内訳:auto集計の元になった記録を返す(¥が記録の合計になっている費目だけ)。fert_*は推計なので対象外(null) */
   function costAutoSources(key){
@@ -6176,9 +6254,25 @@
         out.push(s.indexOf('id:')===0?winner[s]:it); } }
       merged=out;
     } else if(typeof L==='object' && typeof S==='object' && !(L instanceof Array) && !(S instanceof Array)){
-      merged={}; var k;
-      for(k in S){ if(S.hasOwnProperty(k))merged[k]=S[k]; }
-      for(k in L){ if(L.hasOwnProperty(k))merged[k]=L[k]; } /* 同じ鍵はローカル優先 */
+      /* ★★v63 箱型には、性質のちがう2種類がある ★★
+         〈設定の箱〉稲作先生（品種・田植え日）・肥料の目標。
+            中の項目がひとまとまりで初めて意味を持つ。鍵ごとに混ぜると
+            「品種は自分の・田植え日は家族の」というあり得ない組み合わせになる。
+            → 更新時刻(_m)を持たせ、**新しいほうを丸ごと**採る。
+         〈場所ごとの表〉土のメモ・反省メモ・費用の手入力。
+            田んぼ名や月が鍵で、別々の場所は混ぜてよい。→ これまでどおり鍵ごとに足す。
+         見分けかたは「上に _m（数字）があるか」だけ。田んぼ名や月に _m は無いので取り違えない。
+         ※v62まではどちらも一律「同じ鍵はローカル優先」だった。そのため
+           自分が一度でも触った設定に、家族の変更が**永久に届かなかった**。
+           稲作先生は出穂・刈取の予想日の土台なので、端末ごとに違う予想が出ていた。 */
+      var lm=(L&&typeof L._m==='number')?L._m:0, sm=(S&&typeof S._m==='number')?S._m:0;
+      if(lm||sm){
+        merged=(sm>lm)?S:L;                                  /* 設定の箱：新しいほうが丸ごと勝つ */
+      }else{
+        merged={}; var k;
+        for(k in S){ if(S.hasOwnProperty(k))merged[k]=S[k]; }
+        for(k in L){ if(L.hasOwnProperty(k))merged[k]=L[k]; } /* 同じ鍵はローカル優先 */
+      }
     } else {
       merged=L; /* 型がちがう時はローカル優先 */
     }
@@ -6711,7 +6805,9 @@
     var ti=document.getElementById('planTitleIn');
     var title=(ti&&ti.value||'').replace(/^\s+|\s+$/g,'');
     if(!title){ toast('予定の名前を入れてください（例：畦畔の草刈り）'); return; }
-    plans.push({id:'u'+Date.now(), date:calSel, title:title, field:planField, who:'', done:false, _m:Date.now()});
+    /* ★v64 id に乱数を足す。'u'+時刻だけだと、2台が同じ1000分の1秒に予定を入れたとき
+       同じ id になり、片方が消える（作業の記録は v37 から乱数付き。そろえた） */
+    plans.push({id:'u'+Date.now()+'_'+Math.floor(Math.random()*10000), date:calSel, title:title, field:planField, who:'', done:false, _m:Date.now()});
     savePlans();
     var f=document.getElementById('planForm'); if(f)f.classList.remove('on');
     renderTodo(); renderCal(); renderDayList(); renderAiTip();
@@ -7400,7 +7496,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v62';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v64';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -7617,7 +7713,10 @@
   }
   function dgChem(name){ if(typeof setChem==='function')setChem(name,DG_RATE[name]||1000); else go('pest'); }
   function dgHasAdd(name){
-    hasLog.push({d:inaFmtFull(new Date()), f:dgField, name:name});
+    /* ★v64 発生記録にも id を持たせる（機械の記録と同じ型の不具合を防ぐ）。
+       同じ田んぼ・同じ病害虫を別の日でなく同じ日に2回入れても、1件に減らない */
+    hasLog.push({id:'g'+Date.now()+'_'+Math.floor(Math.random()*10000),
+                 d:inaFmtFull(new Date()), f:dgField, name:name, _m:Date.now()});
     hasSave(); dgHist(); yhRender();
     toast('🐛 '+dgField+' に「'+name+'」を記録しました（🌱土メモ・📖教科書・🔮予報にもつながります）');
   }
@@ -7775,7 +7874,9 @@
   /* ---- 🎯 肥料の目標まであと◯kg ---- */
   var HYG_KEY='gyotoku.hygoal.v1', hyGoal={n:8,p:10,k:10}; /* 10aあたりkg・水稲の一般的な目安。設定変更可 */
   function hyGoalLoad(){ try{var t=localStorage.getItem(HYG_KEY); if(t){var o=JSON.parse(t); if(o&&o.n!=null)hyGoal=o;}}catch(e){} }
-  function hyGoalSave(){ try{localStorage.setItem(HYG_KEY,JSON.stringify(hyGoal));}catch(e){} }
+  /* ★v63 肥料の目標も「設定の箱」。稲作先生と同じ型の不具合なので、あわせて時刻を押す */
+  function hyGoalSave(){ try{ if(hyGoal&&typeof hyGoal==='object')hyGoal._m=Date.now();
+    localStorage.setItem(HYG_KEY,JSON.stringify(hyGoal));}catch(e){} }
   function hyFieldArea(name){
     for(var i=0;i<KT_FIELDS.length;i++)if(KT_FIELDS[i].n===name)return parseFloat(KT_FIELDS[i].a)||0;
     return 0;
