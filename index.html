@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v61">
+<meta name="app-ver" content="v62">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1732,7 +1732,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v61(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v62(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2046,7 +2046,8 @@
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
     if(n==='hist'){ if(typeof hitoDateShow==='function')hitoDateShow();
       if(typeof whoApply==='function'){ try{ whoApply(); }catch(e){} }   /* ★v53 だれがの欄を塗る */
-                    if(!_histKeepOpen)histOpen=-1;   /* ★v61 ふつうに開いたら行はとじた状態から */
+                    if(!_histKeepOpen){ histOpen=-1; histField=''; }  /* ★v61.1 ふつうに開いたら
+                       行はとじ、田んぼのしぼりも外す。しぼりが残ると「ぜんぶが出ない」ので */
                     if(typeof histRender==='function')histRender(); }
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
     highlightTab(n);
@@ -2566,8 +2567,14 @@
 
   /* ---- 画面B:工程の詳細(田んぼ別) ---- */
   var ktCurStep=0;
-  function ktOpenStep(i){
-    if(ktCurStep!==i){ ktWhyF=-1; ktWhyMsg=''; }   /* ★v61 別の工程を開いたら案内カードは閉じる */
+  function ktOpenStep(i, keepScroll){
+    /* ★★v61.1 keepScroll＝同じ工程を描き直すだけの時は、見ていた位置を保つ。
+       v61で「✅を押す」経路にも ktOpenStep() を通したため、
+       ktShowOnly() の末尾にある scrollTop=0 で**毎回いちばん上へ飛んでいた**（親方の指摘）。
+       田んぼは88枚あるので、押すたびに先頭へ戻ると探し直しになる。 */
+    var _bd=document.getElementById('body');
+    var _keepTop=(keepScroll&&_bd)?_bd.scrollTop:-1;
+    if(ktCurStep!==i){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; }   /* ★v61 別の工程を開いたら案内カードは閉じる */
     ktCurStep=i;
     var st=KT_STEPS[i], dn=ktDoneFields(st.k);
     var RSET=ktRiceSet(), RC=ktRiceCount(), n=0; for(var k in dn){ if(RSET[k])n++; }  /* v45:稲だけ数える */
@@ -2584,8 +2591,12 @@
          トーストには3つ問題があった：①すぐ消える ②どの記録が原因か書いていない
          ③行き先（記録の確認）に消す機能が無かった。③はこの版で直した */
       if(ktWhyF===f && ktWhyMsg){
+        /* ★★v61.1 田んぼの名前でしぼるのをやめ、**その記録そのもの**へ飛ぶ。
+           v61は名前で照合していたため、名前が1文字でも違うと
+           「記録はまだありません」と出て行き止まりだった（親方の指摘）。
+           原因の記録は既に手元にあるのだから、名前で探し直す必要がない。 */
         h+='<div class="kt-why">'+ktWhyMsg
-          +'<span class="go" onclick="event.stopPropagation();histFocusField(\''+String(fd.n).replace(/'/g,"\\'")+'\')">📝 その記録を見る ›</span></div>';
+          +'<span class="go" onclick="event.stopPropagation();histFocusRec('+ktWhyKi+')">📝 その記録を見る ›</span></div>';
       }
     }
     /* v35 田植えの工程だけ:苗箱の枚数計算への入口 */
@@ -2628,6 +2639,7 @@
     h+='<div class="ina-link" onclick="ktBackToBoard()" style="margin-top:14px;">‹ 工程表へ戻る</div>';
     el.innerHTML=h;
     ktShowOnly('ktViewStep');
+    if(_keepTop>=0 && _bd) _bd.scrollTop=_keepTop;   /* ★v61.1 先頭へ飛ばさない */
   }
   /* ★v56 この表で付けた記録か？（他の画面が書いた中身が1つでも入っていたら false）
      考え方：この表は、この表で付けたぶんしか外せない。
@@ -2643,31 +2655,31 @@
     return t.replace('[DRONE]','');
   }
   /* ★v61 「なぜ外せないか」を出しておく行と、その文（トーストの置きかえ） */
-  var ktWhyF=-1, ktWhyMsg='';
+  var ktWhyF=-1, ktWhyMsg='', ktWhyKi=-1;   /* ★v61.1 ktWhyKi＝原因になっている記録の台帳番号 */
   /* 田んぼ行タップで済み⇔未を切替(この表で直接入力もできる) */
   function ktToggleField(f){
     var st=KT_STEPS[ktCurStep], fd=KT_FIELDS[f], dn=ktDoneFields(st.k), i;
-    if(ktWhyF===f){ ktWhyF=-1; ktWhyMsg=''; ktOpenStep(ktCurStep); return; }  /* もう一度押したら閉じる */
-    ktWhyF=-1; ktWhyMsg='';
+    if(ktWhyF===f){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktOpenStep(ktCurStep,true); return; }  /* もう一度押したら閉じる */
+    ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1;
     if(!dn[fd.n]){                                   /* 未 → 済み（v55までと同じ・1つも変えない） */
       wlAdd(st.k, fd.n, st.nm, 'board');
       toast('✅ '+fd.n+' の「'+st.nm+'」を済みにしました');
-      ktOpenStep(ktCurStep); return;
+      ktOpenStep(ktCurStep,true); return;
     }
-    var mine=[], others=[];
+    var mine=[], others=[], othersKi=[];
     for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
       if(e.step!==st.k||e.field!==fd.n)continue;
-      if(ktIsBoardOnly(e))mine.push(e); else others.push(e); }
+      if(ktIsBoardOnly(e))mine.push(e); else { others.push(e); othersKi.push(i); } }
     if(others.length){                               /* ★他の画面の記録が混ざっている＝1件も消さない */
       /* ★v61 いつの・どの記録が原因かまで書く。理由も添える（突き放さない） */
       var o=others[0];
-      ktWhyF=f;
+      ktWhyF=f; ktWhyKi=othersKi[0];      /* ★v61.1 その記録の台帳番号を覚える */
       ktWhyMsg='⚠️ この ✅ は <b>'+krMd(o.d)+'「'+(o.work||o.text||st.nm)+'」</b>の記録から付いています'
              +'（'+ktSrcPlain(o.src)+'）。<br>'
              +'ここでは外せません。農薬や肥料の記録まで巻き添えで消さないためです。<br>'
              +'<b>その記録を消すと、✅ も消えます。</b>'
              +((others.length>1)?('<br>※この田んぼのこの工程には記録が '+others.length+'件 あります'):'');
-      ktOpenStep(ktCurStep);
+      ktOpenStep(ktCurStep,true);
       return;
     }
     if(!mine.length){ toast('この ✅ のもとになる記録が見つかりません'); return; }
@@ -2679,7 +2691,7 @@
       if(g.step===st.k && g.field===fd.n && ktIsBoardOnly(g)){ tombAdd(KT_LS,g); ktLog.splice(i,1); }
     }
     ktSave(); toast('✅ を外しました（'+mine.length+'件）');
-    ktOpenStep(ktCurStep);
+    ktOpenStep(ktCurStep,true);
   }
 
   /* ---- 画面C:KSASへ記録(コピー&ジャンプ) ---- */
@@ -3758,9 +3770,9 @@
     for(var i=0;i<ids.length;i++){var e=document.getElementById(ids[i]); if(e)e.style.display=(ids[i]===id)?'block':'none';}
     var b=document.getElementById('body'); if(b)b.scrollTop=0;
   }
-  function ktBackToBoard(){ ktWhyF=-1; ktWhyMsg=''; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
+  function ktBackToBoard(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 開くたび必ず最初のビュー(工程表)から(v15確立の共通ルール) */
-  function ktEnter(){ ktWhyF=-1; ktWhyMsg=''; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
+  function ktEnter(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 横スワイプ:内部ビュー→工程表→ホーム(段階的に戻る/v15確立の共通ルール) */
   function ktSwipeBack(){
     var vis=function(id){var e=document.getElementById(id);return e&&e.style.display!=='none';};
@@ -4379,18 +4391,33 @@
     krEdit(ki);
     toast('📄 記録簿を開きました。ここで直せます（‹戻るで記録の確認へ）');
   }
-  /* ★v61 工程表から「その記録を見る ›」で呼ばれる。その田んぼだけにしぼって開く */
-  function histFocusField(fieldName){
+  /* ★★v61.1 工程表から「その記録を見る ›」で呼ばれる。
+     ── v61 の作りと、どこが違うか ──
+     v61は「田んぼの名前でしぼる」やり方だった。名前が1文字でも食い違うと
+     「『池末の 2』の記録はまだありません」と出て**行き止まり**になった（親方の指摘）。
+     しかも**しぼりが残る**ので、次に記録の確認を開いても中身が出ない、という二重の困り方をした。
+     ── 直し方 ──
+     ・原因の記録は工程表の時点で分かっている。**その台帳番号で直に開く**（名前で探し直さない）
+     ・**しぼりは掛けない**。ぜんぶ出したうえで、その1件を開いて画面内に送る
+     ・見つからない時は、しぼった空っぽの画面に置き去りにしない */
+  function histFocusRec(ki){
     histFilter='all';
-    histField=fieldName||'';
+    histField='';                       /* ★しぼりは掛けない（残って困るのを防ぐ） */
     histOpen=-1;
     _histKeepOpen=true;                 /* go('hist') に「とじるな」と伝える */
     go('hist');
     _histKeepOpen=false;
-    var items=histVisible();
-    if(items.length===1 && items[0].ki>=0) histOpen=0;   /* 1件だけなら開いた状態で見せる */
+    var items=histVisible(), at=-1;
+    for(var i=0;i<items.length;i++){ if(items[i].ki===ki){ at=i; break; } }
+    if(at<0){ histRender(); toast('その記録が見つかりませんでした'); return; }
+    histOpen=at;
     histRender();
-    if(!items.length) toast('この田んぼの記録は見つかりませんでした');
+    /* 開いた行を画面の中に送る。scrollIntoView は使わない（v36.3の鉄則） */
+    try{
+      var box=document.getElementById('histBody');
+      var rows=box?box.getElementsByClassName('hist-row'):null;
+      if(rows&&rows[at]&&typeof scrollIntoBody==='function') scrollIntoBody(rows[at]);
+    }catch(e){}
   }
   function krokuRender(){
     if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
@@ -7373,7 +7400,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v61';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v62';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
