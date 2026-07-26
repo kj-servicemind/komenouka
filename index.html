@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v59">
+<meta name="app-ver" content="v61">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -272,6 +272,19 @@
            font-size:17px;font-weight:700;color:#4A4A40;background:#fff;}
   .hy-kind.on{border-color:var(--green);background:var(--green);color:#fff;}
   .hy-kindnote{font-size:13px;color:#8A8578;margin:6px 0 0;line-height:1.6;}
+  /* ===== v60 「kg／反」で入れられるようにする ===== */
+  .hy-unitrow{display:flex;gap:9px;}
+  .hy-unit{flex:1;border:2px solid #C8C4B4;border-radius:12px;padding:12px 6px;text-align:center;
+           font-size:15px;font-weight:800;color:#4A4A40;background:#fff;line-height:1.35;}
+  .hy-unit.on{border-color:var(--green);background:var(--green);color:#fff;font-weight:900;}
+  /* 自動で計算した値＝深緑の帯にはしない。緑の細枠＋薄い緑（CLAUDE.md 6節） */
+  .hy-conv{display:none;border:1.5px solid #C9DCC9;background:#F1F6F1;border-radius:11px;
+           padding:10px 12px;margin-top:8px;font-size:14px;font-weight:800;color:var(--green);line-height:1.65;}
+  .hy-conv b{font-size:16px;color:var(--green-deep);}
+  .hy-conv.warn{border-color:#E3D2A6;background:var(--gold-soft);color:#8A6A2E;}
+  .hy-conv.warn b{color:#7A5A1E;}
+  .screen.fs-big .hy-unit{font-size:16.5px;} .screen.fs-huge .hy-unit{font-size:18px;}
+  .screen.fs-big .hy-conv{font-size:15.5px;} .screen.fs-huge .hy-conv{font-size:17px;}
   /* ===== v55 まだ家族に送れていない記録の知らせ ===== */
   /* 深緑の帯は「押させるボタン」に取ってあるので、知らせは注意色（山吹）にする。
      色だけに頼らず「送れていない」と必ず文字で書く（年配UX） */
@@ -1203,6 +1216,30 @@
   #p-hist .hist-fld{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #d1d5db;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
   #p-hist .hist-fld.on{background:#166534;border-color:#166534;color:#fff;font-weight:700;}
   #p-hist .hist-fld.clr{color:#b91c1c;border-color:#f3c0c0;background:#fff;}
+  /* ===== v61 記録の確認から「直す・消す」ができるようにする =====
+     きっかけ：工程表が「消すときは 📝記録の確認 から」と案内するのに、
+     この画面には 🗑 も ✏️ も無く、行を押しても何も起きなかった＝行き止まり。
+     ★いつも🗑を出すのではなく「押してから開く」形にする。
+       88枚ぶんの記録を指でなぞるとき、当たって消えるのを防ぐため（年配UX）。 */
+  #p-hist .hist-tap{font-size:12.5px;font-weight:800;color:#9a958a;margin:-4px 2px 10px;}
+  #p-hist .hist-row.opd{border-bottom-color:transparent;border-radius:12px 12px 0 0;margin-bottom:0;}
+  #p-hist .hist-ops{background:#F7F6F0;border:1px solid #e5e7eb;border-top:none;
+    border-radius:0 0 12px 12px;margin:0 0 8px;padding:11px 13px 12px;display:flex;gap:9px;}
+  #p-hist .hist-ops .ob{flex:1;text-align:center;border-radius:12px;padding:13px 6px;font-size:16px;font-weight:900;
+    cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  #p-hist .hist-ops .ob.mod{background:#EAF1F5;color:#2E6E8E;border:2px solid #CADDE8;}
+  #p-hist .hist-ops .ob.del{background:#F6EAE7;color:#B34A3E;border:2px solid #EBCFC9;}
+  #p-hist .hist-ops .ob.cls{background:#fff;color:#6B6656;border:2px solid #e5e7eb;}
+  /* ===== v61 工程表：数秒で消えるトーストをやめ、消えない案内カードにする ===== */
+  .kt-frow.opd{border-color:#E3D2A6;border-bottom-color:transparent;border-radius:13px 13px 0 0;margin-bottom:0;}
+  .kt-why{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-top:none;
+    border-radius:0 0 13px 13px;padding:12px 13px;margin:0 0 9px;
+    font-size:14px;font-weight:800;color:#8A6A2E;line-height:1.7;}
+  .kt-why b{color:#7A5A1E;font-size:15px;}
+  .kt-why .go{display:block;margin-top:10px;background:var(--green);color:#fff;border-radius:12px;
+    padding:13px 10px;text-align:center;font-size:16px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .screen.fs-big .kt-why{font-size:15.5px;} .screen.fs-huge .kt-why{font-size:17px;}
+  .screen.fs-big #p-hist .hist-ops .ob{font-size:17.5px;} .screen.fs-huge #p-hist .hist-ops .ob{font-size:19px;}
     /* ===== v31: ヘッダーの田んぼ(稲の成長ストーリー) =====
      行徳農園ロゴ と 天気 の間に小さな田んぼ。工程が進むと株が育ち・秋は金色。
      絵はCSSのみ(画像通信ゼロ)。段階は inaCompute() の生育ステージ、無い時は月で判定。
@@ -1430,7 +1467,7 @@
         </div>
         <div class="hy-goalcard" id="hyGoalCard"><!-- 🎯目標(JS) --></div>
         <div class="hy-addttl">➕ 肥料を足す</div>
-        <div class="fld" onclick="hyPickFert()"><div class="lb">肥料をえらぶ（押すと一覧が出ます）</div><div class="v"><span id="hyFertName">化成14-14-14</span><span class="chv">›</span></div></div>
+        <div class="fld" onclick="hyPickFert()"><div class="lb">肥料をえらぶ（押すと一覧が出ます）</div><div class="v"><span id="hyFertName">水稲一発200号</span><span class="chv">›</span></div></div>
         <div class="fsheet" id="hyFertSheet">
           <div class="sh">肥料をえらんでください<span class="x" onclick="hyFertSheetClose()">✕</span></div>
           <input class="fsearch" id="hyFertSearch" type="text" placeholder="🔍 肥料の名前でしぼる（例：化成／尿素）" oninput="hyFertSheetRender()">
@@ -1442,10 +1479,17 @@
           <div class="hy-kind" id="hyKindHo" onclick="hyKindPick('ho')">穂肥（追肥）</div>
         </div>
         <div class="hy-kindnote" id="hyKindNote">※ えらばなくても記録できます。えらぶと工程表の「⑥穂肥」に反映されます。</div>
+        <!-- ★v60 作業日誌は「45kg／反」で書く。アプリの合計kgと食い違うと4分の1になる -->
+        <div class="hy-kindlb">入れかた</div>
+        <div class="hy-unitrow">
+          <div class="hy-unit on" id="hyUnitAll" onclick="hyUnitPick('all')">kg（この田んぼ合計）</div>
+          <div class="hy-unit" id="hyUnitTan" onclick="hyUnitPick('tan')">kg／反</div>
+        </div>
         <div class="hy-amtrow">
-          <div class="fld hy-amt"><div class="lb">量（kg）</div><input class="hy-inp" id="hyKg" type="number" inputmode="decimal" placeholder="20" enterkeyhint="done"></div>
+          <div class="fld hy-amt"><div class="lb" id="hyKgLb">量（kg）</div><input class="hy-inp" id="hyKg" type="number" inputmode="decimal" placeholder="20" enterkeyhint="done" oninput="hyConvRender()"></div>
           <div class="hy-addbtn" onclick="hyAdd()">＋ 記録する</div>
         </div>
+        <div class="hy-conv" id="hyConv"></div>
         <div class="hy-list" id="hyList"></div>
         <div class="hy-old" id="hyOld" style="display:none;"></div>
         <div class="kroku-why">
@@ -1688,7 +1732,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v59(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v61(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2002,6 +2046,7 @@
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
     if(n==='hist'){ if(typeof hitoDateShow==='function')hitoDateShow();
       if(typeof whoApply==='function'){ try{ whoApply(); }catch(e){} }   /* ★v53 だれがの欄を塗る */
+                    if(!_histKeepOpen)histOpen=-1;   /* ★v61 ふつうに開いたら行はとじた状態から */
                     if(typeof histRender==='function')histRender(); }
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
     highlightTab(n);
@@ -2522,6 +2567,7 @@
   /* ---- 画面B:工程の詳細(田んぼ別) ---- */
   var ktCurStep=0;
   function ktOpenStep(i){
+    if(ktCurStep!==i){ ktWhyF=-1; ktWhyMsg=''; }   /* ★v61 別の工程を開いたら案内カードは閉じる */
     ktCurStep=i;
     var st=KT_STEPS[i], dn=ktDoneFields(st.k);
     var RSET=ktRiceSet(), RC=ktRiceCount(), n=0; for(var k in dn){ if(RSET[k])n++; }  /* v45:稲だけ数える */
@@ -2531,9 +2577,16 @@
       +'<div class="badge">'+(RC>0&&n>=RC?'✅ '+RC+'枚すべて済み':(n>0?'⚠️ '+RC+'枚のうち '+(RC-n)+'枚が残っています':'これからの工程です'))+'</div></div>';
     for(var f=0;f<KT_FIELDS.length;f++){
       var fd=KT_FIELDS[f], isDone=!!dn[fd.n];
-      h+='<div class="kt-frow" onclick="ktToggleField('+f+')">'
+      h+='<div class="kt-frow'+((ktWhyF===f)?' opd':'')+'" onclick="ktToggleField('+f+')">'
         +'<span class="fn">'+fd.n+' <span class="fs">'+fd.a+'</span></span>'
         +'<span class="kt-b '+(isDone?'done':'no')+'">'+(isDone?'✅ 済み':'タップで済みに')+'</span></div>';
+      /* ★v61 「ここでは外せません」を、数秒で消えるトーストから消えないカードに変えた。
+         トーストには3つ問題があった：①すぐ消える ②どの記録が原因か書いていない
+         ③行き先（記録の確認）に消す機能が無かった。③はこの版で直した */
+      if(ktWhyF===f && ktWhyMsg){
+        h+='<div class="kt-why">'+ktWhyMsg
+          +'<span class="go" onclick="event.stopPropagation();histFocusField(\''+String(fd.n).replace(/'/g,"\\'")+'\')">📝 その記録を見る ›</span></div>';
+      }
     }
     /* v35 田植えの工程だけ:苗箱の枚数計算への入口 */
     if(st.k==='taue'){
@@ -2589,9 +2642,13 @@
     var t=KT_SRC[src]||'ほかの記録から';
     return t.replace('[DRONE]','');
   }
+  /* ★v61 「なぜ外せないか」を出しておく行と、その文（トーストの置きかえ） */
+  var ktWhyF=-1, ktWhyMsg='';
   /* 田んぼ行タップで済み⇔未を切替(この表で直接入力もできる) */
   function ktToggleField(f){
     var st=KT_STEPS[ktCurStep], fd=KT_FIELDS[f], dn=ktDoneFields(st.k), i;
+    if(ktWhyF===f){ ktWhyF=-1; ktWhyMsg=''; ktOpenStep(ktCurStep); return; }  /* もう一度押したら閉じる */
+    ktWhyF=-1; ktWhyMsg='';
     if(!dn[fd.n]){                                   /* 未 → 済み（v55までと同じ・1つも変えない） */
       wlAdd(st.k, fd.n, st.nm, 'board');
       toast('✅ '+fd.n+' の「'+st.nm+'」を済みにしました');
@@ -2602,7 +2659,15 @@
       if(e.step!==st.k||e.field!==fd.n)continue;
       if(ktIsBoardOnly(e))mine.push(e); else others.push(e); }
     if(others.length){                               /* ★他の画面の記録が混ざっている＝1件も消さない */
-      toast('この ✅ は '+ktSrcPlain(others[0].src)+'付いています。ここでは外せません。消すときは 📝記録の確認 から');
+      /* ★v61 いつの・どの記録が原因かまで書く。理由も添える（突き放さない） */
+      var o=others[0];
+      ktWhyF=f;
+      ktWhyMsg='⚠️ この ✅ は <b>'+krMd(o.d)+'「'+(o.work||o.text||st.nm)+'」</b>の記録から付いています'
+             +'（'+ktSrcPlain(o.src)+'）。<br>'
+             +'ここでは外せません。農薬や肥料の記録まで巻き添えで消さないためです。<br>'
+             +'<b>その記録を消すと、✅ も消えます。</b>'
+             +((others.length>1)?('<br>※この田んぼのこの工程には記録が '+others.length+'件 あります'):'');
+      ktOpenStep(ktCurStep);
       return;
     }
     if(!mine.length){ toast('この ✅ のもとになる記録が見つかりません'); return; }
@@ -3693,9 +3758,9 @@
     for(var i=0;i<ids.length;i++){var e=document.getElementById(ids[i]); if(e)e.style.display=(ids[i]===id)?'block':'none';}
     var b=document.getElementById('body'); if(b)b.scrollTop=0;
   }
-  function ktBackToBoard(){ ktRenderBoard(); ktShowOnly('ktViewBoard'); }
+  function ktBackToBoard(){ ktWhyF=-1; ktWhyMsg=''; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 開くたび必ず最初のビュー(工程表)から(v15確立の共通ルール) */
-  function ktEnter(){ ktRenderBoard(); ktShowOnly('ktViewBoard'); }
+  function ktEnter(){ ktWhyF=-1; ktWhyMsg=''; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 横スワイプ:内部ビュー→工程表→ホーム(段階的に戻る/v15確立の共通ルール) */
   function ktSwipeBack(){
     var vis=function(id){var e=document.getElementById(id);return e&&e.style.display!=='none';};
@@ -4034,7 +4099,24 @@
   /* ===== v20 🌾肥料の栄養バランス：肥料名→成分％(N窒素/P りん酸/K カリ) =====
      ※代表的な肥料だけ内蔵。無い肥料は成分不明として扱い、勝手に数値を作らない。
         「◯kg使った」×％で、窒素◯kg…を自動計算する。使う肥料が増えたら1行足すだけ。 */
+  /* ★★v60 成分表の作り直し ★★
+     ── 消したもの ──
+     '穂肥':{n:12,p:0,k:12} と '元肥':{n:14,p:14,k:14} を**削除**した。
+     この2つは**肥料の名前ではなく「いつまくか」の呼び方**で、成分％に根拠が無い。
+     選ぶと⚠️の札も出ないまま、それらしい嘘の数字が出ていた（実測ずみ）：
+       45kgの元肥 → 正しくは N9.00/P4.50/K4.50 なのに N6.30/P6.30/K6.30
+       ＝窒素が3割少なく、りん酸・カリが4割多い。しかも気づく手だてが無い。
+     「分からない」より「それらしい嘘」の方が危ない（CLAUDE.md v39.1の鉄則）。
+     ※元肥・穂肥は画面の「これは？」ボタンで今までどおり選べる（そちらは成分と無関係）
+     ※すでにこの名前で記録したぶんは、v59の⚠️「成分不明」に変わる＝正直な表示になる
+     ── 足したもの ──
+     '水稲一発200号'…**袋の保証票の写真で確認ずみ**（九州油糧工業／窒素全量20.0・
+       可溶性りん酸10.0・水溶性加里10.0）。行徳農園の元肥はこれ（45kg/反）。
+     ★「高度化成444」はまだ入れていない。袋の表書きしか確認できていないため。
+       裏の保証票が撮れたら {n:14,p:14,k:14} で足す（TODO 19）。
+       それまでは⚠️「成分不明」と正直に出る＝嘘はつかない。 */
   var NG_FERT={
+    '水稲一発200号':{n:20,p:10,k:10},   /* ★保証票で確認ずみ（写真） */
     '尿素':{n:46,p:0,k:0},
     '硫安':{n:21,p:0,k:0},
     '過リン酸石灰':{n:0,p:17,k:0},
@@ -4044,11 +4126,10 @@
     'CDU化成':{n:15,p:15,k:15},
     'BB肥料':{n:14,p:14,k:14},
     '苦土石灰':{n:0,p:0,k:0},
-    'ケイ酸':{n:0,p:0,k:0},
-    '穂肥':{n:12,p:0,k:12},
-    '元肥':{n:14,p:14,k:14}
+    'ケイ酸':{n:0,p:0,k:0}
   };
-  var NG_FERT_NAMES=['化成14-14-14','化成8-8-8','過リン酸石灰','苦土石灰','塩化カリ','CDU化成','BB肥料','ケイ酸','尿素','硫安','穂肥','元肥'];
+  /* 並び順＝えらぶ一覧に出る順。うちで使うものを先頭に置く */
+  var NG_FERT_NAMES=['水稲一発200号','化成14-14-14','化成8-8-8','過リン酸石灰','苦土石灰','塩化カリ','CDU化成','BB肥料','ケイ酸','尿素','硫安'];
   /* 作業の辞書 */
   var NG_WORKS=[
     {re:/粗起|荒起|耕起/,w:'耕起'},{re:/代掻|しろかき|代かき/,w:'代かき'},
@@ -4219,17 +4300,17 @@
     histUnsentRender();
     histChipRender();
     histFieldRender();
-    var items=histItems().filter(function(x){
-        if(histFilter==='all')return true;
-        if(histFilter==='star')return !!x.star;      /* v48:★を付けたものだけ */
-        return x.kind===histFilter; })
-                         .filter(function(x){ return !histField || x.where===histField; });
+    /* ★v61 並びの条件は histVisible() の1か所だけに書く。
+       ここと histRowTap で別々に書くと、番号がずれて「別の記録を消す」事故になる */
+    var items=histVisible();
     var box=document.getElementById('histBody'); if(!box)return;
     if(!items.length){
       var msg = histField ? ('「'+histField+'」の記録はまだありません。') : 'まだ記録がありません。🎤話して記録や🚜機械の維持費に入れると、ここに新しい順で並びます。';
       box.innerHTML='<div class="hist-empty">'+msg+'</div>'; return;
     }
     var h='', curDay='';
+    /* ★v61 押せることを、色ではなく文字で伝える（年配UX） */
+    h+='<div class="hist-tap">※ 記録を押すと「✏️直す・🗑消す」が出ます</div>';
     for(var i=0;i<items.length;i++){ var x=items[i], day=histDayKey(x.d);
       if(day!==curDay){ curDay=day; h+='<div class="hist-day">'+histDayLabel(x.d)+'</div>'; }
       /* v48:台帳の記録には★（教科書に残す）を付ける。機械・肥料台帳には付けない */
@@ -4237,13 +4318,79 @@
         ? '<span class="hist-star'+(x.star?' on':'')+'" onclick="event.stopPropagation();kyoStar('+x.ki+')">'
           +'<span class="k">'+(x.star?'★':'☆')+'</span><span class="t">'+(x.star?'残した':'残す')+'</span></span>'
         : '';
-      h+='<div class="hist-row'+(x.hito?' hito':'')+(x.star?' star':'')+'"><span class="hist-ic">'+x.ic+'</span>'+
+      var opd=(histOpen===i);
+      h+='<div class="hist-row'+(x.hito?' hito':'')+(x.star?' star':'')+(opd?' opd':'')+'" onclick="histRowTap('+i+')">'
+         +'<span class="hist-ic">'+x.ic+'</span>'+
            '<span class="hist-main"><span class="hist-where">'+x.where+'</span>'+
              '<span class="hist-title">'+x.title+'</span>'+
              (x.sub?'<span class="hist-sub">'+x.sub+'</span>':'')+'</span>'+
            '<span class="hist-yen">'+(x.yen?histYen(x.yen):'')+'</span>'+st+'</div>';
+      /* ★v61 開いた行の下だけに操作を出す。いつも出すと指が当たって消える */
+      if(opd && x.ki>=0){
+        h+='<div class="hist-ops">'
+          +'<div class="ob mod" onclick="event.stopPropagation();histEdit('+x.ki+')">✏️ 直す</div>'
+          +'<div class="ob del" onclick="event.stopPropagation();histDel('+x.ki+')">🗑 消す</div>'
+          +'<div class="ob cls" onclick="event.stopPropagation();histRowTap(-1)">とじる</div>'
+          +'</div>';
+      }
     }
     box.innerHTML=h;
+  }
+  /* ★★v61 ここから：記録の確認の行き止まりをなくす ★★
+     工程表は「消すときは 📝記録の確認 から」と案内していたのに、
+     この画面には消す機能が無かった（消せるのは 🎤話して記録→📄記録簿を出す の中だけ）。
+     案内の書き先に機能があるかを確かめずに出したのが原因。
+     ── 直し方 ──
+     ・消す本体は krDel／直す本体は krEdit を**そのまま使い回す**（同じことを2か所に書かない）
+     ・🚜機械の記録は台帳の作りが別でここからは直せない。黙って無反応にせず、行き先を言う */
+  var histOpen=-1;                       /* いま開いている行（表示上の番号）。画面を出るたび閉じる */
+  var _histKeepOpen=false;               /* ★v61 工程表からとんだ時だけ true。go() が行をとじないようにする
+                                            ★v33の鉄則：起動時に走る go() より前に置くこと（var は巻き上げで undefined になる） */
+  function histRowTap(i){
+    if(i>=0){
+      var items=histVisible(), x=items[i];
+      if(x && x.ki<0){                   /* 機械の記録 */
+        toast('🚜 機械の記録は「機械の維持費」から直します');
+        return;
+      }
+    }
+    histOpen=(histOpen===i)?-1:i;
+    histRender();
+  }
+  /* いま画面に出ている並びを、histRender と同じ条件で作る（番号がずれないように1か所にまとめる） */
+  function histVisible(){
+    return histItems().filter(function(x){
+        if(histFilter==='all')return true;
+        if(histFilter==='star')return !!x.star;
+        return x.kind===histFilter; })
+      .filter(function(x){ return !histField || x.where===histField; });
+  }
+  function histDel(ki){
+    var before=ktLog.length;
+    krDel(ki);                            /* 消す本体は1つだけ（tomb・保存・同期もそこで面倒を見る） */
+    if(ktLog.length!==before) histOpen=-1; /* 消えた時だけ閉じる。やめた時は開いたまま */
+    histRender();
+  }
+  function histEdit(ki){
+    /* 直す入力欄は 📄記録簿(p-kroku) の中にある。ここに作り直すと二重管理になるので、
+       その画面へ移って開く。戻るは履歴式なので「‹戻る」で記録の確認へ帰ってこられる */
+    histOpen=-1;
+    go('kroku'); if(typeof krokuRender==='function')krokuRender();
+    krEdit(ki);
+    toast('📄 記録簿を開きました。ここで直せます（‹戻るで記録の確認へ）');
+  }
+  /* ★v61 工程表から「その記録を見る ›」で呼ばれる。その田んぼだけにしぼって開く */
+  function histFocusField(fieldName){
+    histFilter='all';
+    histField=fieldName||'';
+    histOpen=-1;
+    _histKeepOpen=true;                 /* go('hist') に「とじるな」と伝える */
+    go('hist');
+    _histKeepOpen=false;
+    var items=histVisible();
+    if(items.length===1 && items[0].ki>=0) histOpen=0;   /* 1件だけなら開いた状態で見せる */
+    histRender();
+    if(!items.length) toast('この田んぼの記録は見つかりませんでした');
   }
   function krokuRender(){
     if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
@@ -4543,7 +4690,7 @@
   var HY_LS='gyotoku.hiryo.v1';
   var hyLog=[];              /* [{d,field,fert,kg}] */
   var hyField=defaultFieldName()||'西 3';
-  var hyFert='化成14-14-14';
+  var hyFert='水稲一発200号';   /* ★v60 うちの元肥。えらび直す手間を1回減らす */
   function hyLoad(){ try{var s=localStorage.getItem(HY_LS); hyLog=s?JSON.parse(s):[];}catch(e){hyLog=[];}
     if(!(hyLog instanceof Array))hyLog=[]; }
   /* ★v52 hySave() はもう呼ばれない（肥料台帳へは書かなくなったため）。
@@ -4702,6 +4849,7 @@
     hyYear=hyThisYear();          /* ★v50 画面を開いたら必ず今年から見せる */
     var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=hyField;
     var ft=document.getElementById('hyFertName'); if(ft)ft.textContent=hyFert;
+    if(typeof hyUnitSync==='function') hyUnitSync();   /* ★v60 入れかたの表示をそろえる */
     hyRender();
   }
   function hyRender(){
@@ -4791,17 +4939,71 @@
         : '※ えらばなくても記録できます。えらぶと工程表の「⑥穂肥」に反映されます。');
   }
   function hyKindLabel(){ return hyKind==='ho'?'穂肥':(hyKind==='moto'?'元肥':'施肥'); }
+  /* ★★v60 「kg／反」で入れられるようにする ★★
+     きっかけ：作業日誌は「水稲一発200号 45kg／反」で書かれているのに、
+     アプリの「量（kg）」は**その田んぼ全部の合計kg**だった。
+     西3(39.81a)に45kg/反なら入れる数字は179kg。うっかり45と入れると**4分の1**しか数えない。
+     しかもv59の⚠️札はこのズレを拾えない（肥料名は分かっているため）。
+     ── 直し方 ──
+     ・合計kg か kg／反 かを**必ず画面に出して選ばせる**（既定は今までどおり「合計kg」＝
+       これまでの入れ方を変えない。変えると過去の習慣が全部ズレるため）
+     ・**どちらを選んでも、もう片方に直した値を必ず見せる**。
+       これが本当の安全網＝押す前に「179.1kg」「11.3kg／反」が見えるので、取り違えに気づける
+     ・台帳に書く mass は**今までどおり合計kg**。下流（栄養・目標・原価）は一切変えない
+     ・面積の分からない田んぼでは kg／反 を選べないようにする（推測で計算しない） */
+  var hyUnit='all';                 /* 'all'=合計kg ／ 'tan'=kg／反。この画面を開いている間だけ覚える */
+  function hyUnitPick(u){
+    var ar=hyFieldArea(hyField);
+    if(u==='tan' && !ar){ toast('この田んぼは面積が分からないので、合計kgで入れてください'); return; }
+    hyUnit=(u==='tan')?'tan':'all';
+    var a=document.getElementById('hyUnitAll'), t=document.getElementById('hyUnitTan');
+    if(a)a.classList.toggle('on', hyUnit==='all');
+    if(t)t.classList.toggle('on', hyUnit==='tan');
+    var lb=document.getElementById('hyKgLb');
+    if(lb)lb.textContent=(hyUnit==='tan')?'量（kg／反）':'量（kg）';
+    hyConvRender();
+  }
+  /* 入れた数字を、台帳に書く「合計kg」に直す。反=10a */
+  function hyToTotalKg(v){
+    if(hyUnit!=='tan') return v;
+    var ar=hyFieldArea(hyField); if(!ar) return v;
+    return Math.round(v*(ar/10)*10)/10;
+  }
+  function hyConvRender(){
+    var box=document.getElementById('hyConv'); if(!box)return;
+    var el=document.getElementById('hyKg'), v=parseFloat(el&&el.value);
+    var ar=hyFieldArea(hyField);
+    if(!v||v<=0){ box.style.display='none'; box.innerHTML=''; box.classList.remove('warn'); return; }
+    box.style.display='block';
+    if(!ar){
+      box.classList.add('warn');
+      box.innerHTML='⚠️ '+hyField+' は面積が分からないので、<b>合計 '+hyR1(v)+'kg</b> として記録します';
+      return;
+    }
+    box.classList.remove('warn');
+    if(hyUnit==='tan'){
+      box.innerHTML='📗 '+hyField+'（'+ar+'a）に <b>'+hyR1(v)+'kg／反</b>'
+        +'<br>　→ 記録するのは <b>合計 '+hyR1(hyToTotalKg(v))+'kg</b> です';
+    }else{
+      box.innerHTML='📗 '+hyField+'（'+ar+'a）に <b>合計 '+hyR1(v)+'kg</b>'
+        +'<br>　→ 反あたりでは <b>'+hyR1(v/(ar/10))+'kg／反</b> です';
+    }
+  }
   function hyAdd(){
     var kgEl=document.getElementById('hyKg');
-    var kg=parseFloat(kgEl&&kgEl.value);
-    if(!kg||kg<=0){ toast('量（kg）を入れてください'); return; }
+    var raw=parseFloat(kgEl&&kgEl.value);
+    if(!raw||raw<=0){ toast('量を入れてください'); return; }
+    /* ★v60 台帳に書くのは合計kg。入れかたが kg／反 でもここで必ず直してから書く */
+    var kg=hyToTotalKg(raw);
+    var perTan=(hyUnit==='tan')?(' '+hyR1(raw)+'kg/反'):'';
     /* ★★v52 書き込み口は作業台帳(ktLog)の1本だけ。肥料台帳(hyLog)へはもう書かない。★★
        2か所に書くと必ず二重に数える日が来る（v50・v51で2回起きた）。
        作業台帳の記録は id を持つので、家族との同期でも編集・削除が正しく効く。 */
     if(typeof wlAdd!=='function'){ toast('記録できませんでした。もう一度お試しください'); return; }
-    wlAdd((hyKind==='ho')?'hogoe':'', hyField, hyFert+' '+kg+'kg', 'hiryo',
+    wlAdd((hyKind==='ho')?'hogoe':'', hyField, hyFert+' '+kg+'kg'+perTan, 'hiryo',
           {work:hyKindLabel(), chem:hyFert, mass:kg});
     if(kgEl)kgEl.value='';
+    hyConvRender();
     hyKind=''; hyKindPick('');            /* 次の記録に引きずらない＝決めつけ防止 */
     /* ★v50 去年を見ている最中に記録すると、今日の日付＝今年ぶんなので画面から消えてしまう。
        記録したものが必ず見えるよう、今年に戻す */
@@ -4848,7 +5050,20 @@
   function hyPickField(){
     fieldSheetOpen(function(n){ hyField=n;
       var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=n;
+      /* ★v60 田んぼが変わると面積も変わる。kg／反 のまま面積の無い田んぼへ移ると
+         推測で計算することになるので、合計kgへ戻す。変換の表示も作り直す */
+      hyUnitSync();
       hyRender(); toast('田んぼ：'+n); }, hyField);
+  }
+  /* 入れかたのボタンと変換の表示を、いまの田んぼに合わせて作り直す */
+  function hyUnitSync(){
+    if(hyUnit==='tan' && !hyFieldArea(hyField)) hyUnit='all';
+    var a=document.getElementById('hyUnitAll'), t=document.getElementById('hyUnitTan');
+    if(a)a.classList.toggle('on', hyUnit==='all');
+    if(t)t.classList.toggle('on', hyUnit==='tan');
+    var lb=document.getElementById('hyKgLb');
+    if(lb)lb.textContent=(hyUnit==='tan')?'量（kg／反）':'量（kg）';
+    hyConvRender();
   }
   /* ===== v22① 肥料をえらぶ:一覧シート(順送りを廃止) ===== */
   function hyFertFilter(q){
@@ -5793,6 +6008,11 @@
         else if(photoN<0) msg+='\n※みんなの写真はネットにつながらず消せませんでした。';
         msg+='\n\n※消えたものが元に戻らないよう、これから'+Math.round(RESET_QUIET_MS/1000)+'秒ほど共有の同期を止めます。';
       }
+      /* ★v61 リセットしたこと自体を出来事に控える（出来事はリセットでも消えない）。
+         これが無かったので「いつリセットしたか」すら後から分からなかった */
+      try{ evLog('reset','入力内容をリセットしました（この端末 '+del.length+'件'
+            +((syncDel>=0)?('／共有 '+syncDel+'件'):(syncNg?'／共有は消せず':''))
+            +(photoN>0?('／写真 '+photoN+'枚'):'')+'）'); }catch(e){}
       alert(msg+'\n画面を読み込み直します。'); location.reload();
     };
     if(alsoServer && typeof fetch==='function'){
@@ -6139,7 +6359,22 @@
         for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue; if(k===TOMB_LS)continue;
           var loc; try{ loc=localStorage.getItem(k); }catch(e){ loc=null; }
           var m=_mergeVal(loc==null?'null':loc, data[k], k);
-          if(m.changed){ _lsSetRaw(k,m.str); if(k===MEM_LS){ window._mem=null; window._memList=null; } changed=true; }
+          if(m.changed){
+            /* ★v61 家族から何が・何件入ってきたかを出来事に控える。
+               v57で作った出来事は3種類しか控えておらず、
+               「リセットしたのに記録が戻る」を推測でしか語れなかった（親方の指摘）。
+               ここを控えれば、次からは記録で原因が分かる。 */
+            try{
+              var _before=null, _after=null;
+              try{ _before=JSON.parse(loc==null?'null':loc); }catch(e2){ _before=null; }
+              try{ _after=JSON.parse(m.str); }catch(e2){ _after=null; }
+              if((_after instanceof Array)&&(!(_before instanceof Array)||_after.length!==_before.length)){
+                var _b=(_before instanceof Array)?_before.length:0;
+                evLog('sync','家族から届きました：'+_lsName(k)+' '+_b+'件 → '+_after.length+'件'
+                      +((_after.length>_b)?('（'+(_after.length-_b)+'件ふえた）'):('（'+(_b-_after.length)+'件へった）')));
+              }
+            }catch(e2){}
+            _lsSetRaw(k,m.str); if(k===MEM_LS){ window._mem=null; window._memList=null; } changed=true; }
           /* ★★v57 送信済みの印は「この中身がサーバーにある」という意味。
              v56まで：合流したあと、合流後の中身に印を付けていた。
                       しかしサーバーに在るのは“サーバーのぶん”であって合流後の中身ではない。
@@ -6159,6 +6394,14 @@
   }
   /* 家族の新しいデータが入った時だけ、画面をやさしく更新する。
      入力中・シートを開いている時・直前に更新した時は見送る(次の同期でやる)。 */
+  /* ★v61 保存キーを親方に分かる言葉にする（出来事の記録で使う） */
+  function _lsName(k){
+    var N={'gyotoku.worklog.v1':'作業の記録','gyotoku.plans.v1':'予定','gyotoku.members.v1':'名簿',
+           'gyotoku.kikai.v1':'機械の記録','gyotoku.photos.v1':'写真','gyotoku.soil.v1':'土のメモ',
+           'gyotoku.kyoka.v1':'反省メモ','gyotoku.cost.v1':'生産原価','gyotoku.hygoal.v1':'肥料の目標',
+           'gyotoku.hassei.v1':'発生予察','gyotoku.inasaku.v1':'稲作先生','gyotoku.tomb.v1':'消した印'};
+    return N[k]||k;
+  }
   function _syncApply(){
     var ae=document.activeElement;
     if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'||ae.isContentEditable))return;
@@ -7130,7 +7373,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v59';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v61';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
