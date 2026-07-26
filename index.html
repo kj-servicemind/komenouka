@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v57">
+<meta name="app-ver" content="v58">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1674,7 +1674,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v57(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v58(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2712,7 +2712,7 @@
   var PH_LS='gyotoku.photos.v1';    /* 一覧キャッシュ(オフラインでも見える) */
   var PH_WHO_LS='gyotoku.who.v1';   /* 自分の名前 */
   var PH_PASS_LS='gyotoku.phpass.v1'; /* 家族の合言葉(設定していれば) */
-  var phItems=[], phByDate={}, phLoaded=false, phBusy=false, phErr='';
+  var phItems=[], phByDate={}, phLoaded=false, phBusy=0, phErr='';
 
   function phWho(){ try{ return localStorage.getItem(PH_WHO_LS)||''; }catch(e){ return ''; } }
   function phWhoSet(v){ try{ localStorage.setItem(PH_WHO_LS,v); }catch(e){} }
@@ -2744,19 +2744,20 @@
   }
   /* サーバーから一覧を取り直す */
   function phLoad(force){
-    if(phBusy)return;
+    /* ★v58 札は時刻で持つ（同期・版の見張りと同じ理由。掛かりっぱなしで永久停止しないように） */
+    if(phBusy && Date.now()-phBusy < 45000)return;
     if(phLoaded&&!force)return;
-    phBusy=true; phErr='';
+    phBusy=Date.now(); phErr='';
     fetch('/api/photo-list?max=200',{headers:phHeaders(),cache:'no-store'})
       .then(function(r){ return r.json(); })
       .then(function(j){
-        phBusy=false;
+        phBusy=0;
         if(!j||!j.ok){ phErr=(j&&j.error)||'写真を読めませんでした'; phRenderTeam(); return; }
         phItems=j.items||[]; phLoaded=true; phIndex(); phCacheSave();
         if(curScreen==='cal'&&typeof renderCal==='function'){ renderCal(); renderDayList(); }
         phRenderTeam();
       })
-      .catch(function(e){ phBusy=false;
+      .catch(function(e){ phBusy=0;
         phErr='通信できませんでした：'+(e&&e.message?e.message:'原因不明')+'（/api/photo-list を開くと詳しい理由が見られます）';
         phRenderTeam(); });
   }
@@ -5753,7 +5754,12 @@
      さらに通常データとして送り合ってしまうため）。 */
   var SYNC_READ_KEYS=SYNC_KEYS.concat([RESET_EPOCH_LS]);
   var _syncHash={};      /* key -> 直近に送った内容のハッシュ(無駄な送信を防ぐ) */
-  var _syncBusy=false;
+  /* ★v58 「作業中」の札は 真偽 ではなく “いつ掛けたか(時刻)” で持つ。
+     返事の来ない通信（電波切れ・アプリが裏で凍る）が1回でも起きると、
+     真偽の札は掛かりっぱなしになり、**同期が二度と動かなくなっていた**。
+     直るのはアプリを終了して作り直した時だけ＝「スワイプで消さないと反映されない」の正体。
+     45秒たった札は無効とみなし、次の見回りを必ず出せるようにする。 */
+  var _syncBusy=0;
   function _lsSetRaw(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
   function _syncPass(){ try{ return localStorage.getItem('gyotoku.phpass.v1')||''; }catch(e){ return ''; } }
   function _hash(s){ var h=0,i,c; if(!s)return '0'; for(i=0;i<s.length;i++){ c=s.charCodeAt(i); h=((h<<5)-h+c)|0; } return h+'_'+s.length; }
@@ -6097,7 +6103,12 @@
     toast('同期しています…'); syncPull(function(ok){ syncPushAll(function(){ toast(ok?'同期しました':'サーバーにつながりませんでした'); }); });
   }
   function syncTick(){
-    if(_syncBusy)return; if(document.hidden)return;
+    /* ★v58 45秒たっても返事の無い札は捨てる（掛かりっぱなしで永久停止しないように） */
+    if(_syncBusy){
+      if(Date.now()-_syncBusy < 45000) return;
+      try{ evLog('sync','前の同期から返事が来なかったので、やり直しました'); }catch(e){}
+    }
+    if(document.hidden)return;
     /* ★v39：リセット直後は同期しない。
        ここで止めないと、まだ消える前の古いデータをKVから読んで書き戻してしまう。
        push（送る）も pull（読む）も両方止めるのが肝心。片方だけでは戻ってくる。 */
@@ -6105,7 +6116,7 @@
     /* ★v43：先に読む→あとで送る、の順にした。
        送ってから読むと、リセットの合図を受け取る前に自分の古いデータを
        サーバーへ上書きしてしまい、消したはずの記録が全台に戻る。 */
-    _syncBusy=true; syncPull(function(){ syncPushAll(function(){ _syncBusy=false; }); });
+    _syncBusy=Date.now(); syncPull(function(){ syncPushAll(function(){ _syncBusy=0; }); });
   }
   function syncDiag(){
     fetch('/api/sync-ping').then(function(r){ return r.json(); }).then(function(j){
@@ -7044,11 +7055,11 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v57';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v58';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
-  var _verPend=null, _verLast=0, _verBusy=false;
+  var _verPend=null, _verLast=0, _verBusy=0;   /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
   var VER_RANGE='gyotoku.verRange.v1';  /* 「先頭だけはもらえない」と分かったら控える */
   var _verRangeOK=null;   /* null=未確認 / true=先頭だけもらえる / false=もらえない */
   try{ if(localStorage.getItem(VER_RANGE)==='0') _verRangeOK=false; }catch(e){}
@@ -7111,8 +7122,8 @@
           verRemember(tag);                         /* 版は同じ＝指紋が揺れただけ。控え直す */
         })
         .catch(function(){})
-        .then(function(){ _verBusy=false; }, function(){ _verBusy=false; });
-    }catch(e){ _verBusy=false; }
+        .then(function(){ _verBusy=0; }, function(){ _verBusy=0; });
+    }catch(e){ _verBusy=0; }
   }
   /* 指紋くらべ（先頭だけもらえないサーバー用の控え） */
   function verSee(tag){
@@ -7123,10 +7134,14 @@
     verRemember(tag);
   }
   function verCheck(force){
-    if(_verBusy) return;
+    /* ★v58 45秒たっても返事の無い札は捨てる。捨てないと新版に永久に気づけない */
+    if(_verBusy){
+      if(Date.now()-_verBusy < 45000) return;
+      try{ evLog('ver','版の見張りから返事が来なかったので、やり直しました'); }catch(e){}
+    }
     var now=Date.now();
     if(!force && now-_verLast < 60000) return;     /* 1分に1回まで */
-    _verLast=now; _verBusy=true;
+    _verLast=now; _verBusy=Date.now();
     try{
       if(_verRangeOK===false){
         /* 先頭だけもらえないサーバー：軽い問い合わせで指紋を見る */
@@ -7138,11 +7153,11 @@
             }catch(e){}
           })
           .catch(function(){})
-          .then(function(){ _verBusy=false; }, function(){ _verBusy=false; });
+          .then(function(){ _verBusy=0; }, function(){ _verBusy=0; });
       } else {
         verFetchVer(null);   /* _verBusy は verFetchVer の中で戻す */
       }
-    }catch(e){ _verBusy=false; }
+    }catch(e){ _verBusy=0; }
   }
 
   /* ★v54 sw.js の登録をやめた。
