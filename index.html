@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v58">
+<meta name="app-ver" content="v59">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -417,6 +417,19 @@
   .hy-old{background:#F3F1E9;border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;
     margin-top:9px;font-size:13px;font-weight:800;color:#6B6656;line-height:1.6;}
   .screen.fs-big .hy-yr{font-size:17px;} .screen.fs-huge .hy-yr{font-size:19px;}
+  /* ===== v59 成分の分からない肥料を、黙って0にせず正直に知らせる札 =====
+     深緑（強い色）は使わない。押させるボタンではないため（CLAUDE.md 6節）。
+     ①栄養グラフの下 ②🎯目標カード ③生産原価 の3か所で同じ言い方にそろえる */
+  .hy-unk{display:none;background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:11px;
+    padding:11px 13px;margin-top:10px;font-size:14px;font-weight:800;color:#8A6A2E;line-height:1.65;}
+  .hy-unk b{font-size:15.5px;color:#7A5A1E;}
+  .hy-unk .nms{display:block;margin-top:4px;font-size:13px;font-weight:800;color:#8A6A2E;}
+  .hy-unk .how{display:block;margin-top:6px;font-size:13px;font-weight:800;color:#6B6656;}
+  .hyg-unk{font-size:12.5px;font-weight:800;color:#8A6A2E;line-height:1.6;margin-top:2px;}
+  .cs-unk{font-size:12.5px;font-weight:800;color:#8A6A2E;line-height:1.6;margin:5px 2px 0;}
+  .hy-item.unk{border-color:#E3D2A6;background:#FDFAF3;}
+  .hy-item.unk .hy-sub{color:#8A6A2E;font-weight:800;}
+  .screen.fs-big .hy-unk{font-size:15.5px;} .screen.fs-huge .hy-unk{font-size:17px;}
 
   /* ===== v20 🚜機械の維持費 ===== */
   .ki-tabs{display:flex;gap:8px;margin:2px 0 10px;flex-wrap:wrap;}
@@ -1413,6 +1426,7 @@
           <div class="hy-gt" id="hyGt">今年あげた栄養（合計）</div>
           <div class="hy-graph" id="hyGraph"></div>
           <div class="hy-gnote" id="hyGnote"></div>
+          <div class="hy-unk" id="hyUnk"><!-- v59 成分の分からない肥料の件数(JS) --></div>
         </div>
         <div class="hy-goalcard" id="hyGoalCard"><!-- 🎯目標(JS) --></div>
         <div class="hy-addttl">➕ 肥料を足す</div>
@@ -1674,7 +1688,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v58(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v59(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -4609,14 +4623,42 @@
     }
     return rows;
   }
+  /* ★★v59 ここが今回の根本の直し ★★
+     v58まで、成分表(NG_FERT)に無い肥料は `if(!f) continue;` で**黙って捨てて**いた。
+     まいたのに「今年あげた栄養」に1kgも乗らず、しかも画面に何も出ないので気づけない。
+     ── 直し方 ──
+     ・数字は勝手に作らない（0.5節「分からない時に既定値でごまかさない」）
+     ・かわりに **捨てたぶんを件数・kg・肥料名で持ち帰る**（uc / ukg / un）
+     ・この数字を読んでいる場所は全部で3つ（鉄則③の出口一覧）。3か所とも札を出す：
+         ① hyRender()      … 栄養グラフの下（#hyUnk）
+         ② hyGoalRender()  … 🎯目標カードの中（.hyg-unk）
+         ③ costRender()    … 生産原価の肥料費3行（.cs-unk）
+     ★成分が「0と分かっている」肥料（苦土石灰・ケイ酸）は NG_FERT に有るので
+       ここには入らない。「分からない」と「0と分かっている」は別もの。 */
+  function hyUnkPush(list, name, kg){
+    for(var i=0;i<list.length;i++){ if(list[i].nm===name){ list[i].kg+=kg; return; } }
+    list.push({nm:name, kg:kg});
+  }
   function hyTotals(field, year){
-    var t={n:0,p:0,k:0}, rows=hyRows(field, year);
+    var t={n:0,p:0,k:0,uc:0,ukg:0,un:[]}, rows=hyRows(field, year);
     for(var i=0;i<rows.length;i++){
       var f=NG_FERT[rows[i].fert], kg=rows[i].kg||0;
-      if(!f) continue;
+      if(!f){ t.uc++; t.ukg+=kg; hyUnkPush(t.un, rows[i].fert, kg); continue; }
       t.n+=kg*f.n/100; t.p+=kg*f.p/100; t.k+=kg*f.k/100;
     }
     return t;
+  }
+  /* 3か所で同じ言い方にそろえる（言い方がずれると別の話に見える） */
+  function hyUnkHead(t){
+    if(!t||!t.uc) return '';
+    return '成分の分からない肥料が '+t.uc+'件（'+hyR1(t.ukg)+'kg）あります。';
+  }
+  function hyUnkNames(t, max){
+    if(!t||!t.un||!t.un.length) return '';
+    var m=max||3, s=[], i, n=Math.min(m, t.un.length);
+    for(i=0;i<n;i++) s.push('・'+t.un[i].nm+' '+hyR1(t.un[i].kg)+'kg');
+    if(t.un.length>n) s.push('・ほか '+(t.un.length-n)+'種類');
+    return s.join('　');
   }
   /* ★v50 画面に出していない「前の年」の記録が何件あるか。黙って隠さないために数える。
      去年は切りかえボタンで見られるので、それより前だけを数える */
@@ -4677,15 +4719,33 @@
     var note=document.getElementById('hyGnote');
     var yLab=(hyYear===hyThisYear()?'今年（':'去年（')+hyYear+'年）';
     if(note){
-      if(t.n+t.p+t.k<=0){ note.innerHTML=yLab+'の記録はまだありません。下から肥料を選んで量を入れると、栄養が自動で計算されます。'; }
+      /* ★v59 成分の分からない肥料だけがある時に「記録はまだありません」と言わない。
+         記録は有る。数えられていないだけ。ここを直さないと札と文が食い違う */
+      if(t.n+t.p+t.k<=0){
+        note.innerHTML=(t.uc>0)
+          ? ('📗 '+hyField+' に'+yLab+'あげた栄養：まだ数えられていません（下をご覧ください）')
+          : (yLab+'の記録はまだありません。下から肥料を選んで量を入れると、栄養が自動で計算されます。');
+      }
       else{ note.innerHTML='📗 '+hyField+' に'+yLab+'あげた栄養：窒素 '+hyR1(t.n)+'kg・りん酸 '+hyR1(t.p)+'kg・カリ '+hyR1(t.k)+'kg'; }
+    }
+    /* ★v59 出口① 成分の分からない肥料を、件数・kg・名前まで正直に出す */
+    var unk=document.getElementById('hyUnk');
+    if(unk){
+      if(t.uc>0){
+        unk.style.display='block';
+        unk.innerHTML='⚠️ <b>'+hyUnkHead(t)+'</b>'
+          +'<span class="nms">'+hyUnkNames(t,3)+'</span>'
+          +'<span class="how">この'+hyR1(t.ukg)+'kgは<b>上の棒グラフに入っていません</b>。実際の栄養はこれより多いはずです。<br>'
+          +'下の一覧の「✏️」から、成分の分かる肥料名にえらび直すと計算に入ります。</span>';
+      }else{ unk.style.display='none'; unk.innerHTML=''; }
     }
     /* 記録リスト */
     var rows=hyRows(hyField), lh='';
     for(var i=rows.length-1;i>=0;i--){
       var r=rows[i], comp=NG_FERT[r.fert], d=fmtMD(r.d);
-      var sub=comp?('N'+comp.n+'・P'+comp.p+'・K'+comp.k):'成分不明';
-      lh+='<div class="hy-item">'+(d?('<span class="hy-d">'+d+'</span>'):'')
+      /* ★v59 「成分不明」だけでは"だから何なのか"が伝わらない。合計に入っていないことまで書く */
+      var sub=comp?('N'+comp.n+'・P'+comp.p+'・K'+comp.k):'⚠️ 成分不明（計算に入っていません）';
+      lh+='<div class="hy-item'+(comp?'':' unk')+'">'+(d?('<span class="hy-d">'+d+'</span>'):'')
         +'<span class="hy-inm">'+r.fert+'</span>'
         +'<span class="hy-sub" style="margin-left:8px;">'+sub+'</span>'
         +'<span class="hy-ikg">'+ (r.kg||0) +' kg</span>';
@@ -5122,11 +5182,16 @@
     /* 全田んぼの肥料記録から成分別kg合計
        ★v50 必ず「今年」で数える。肥料画面で去年を見ている最中に原価を開いても、
          原価が去年の数字に引きずられないようにする（農薬費・機械費は今年ぶんなので、そろえる）。 */
-    var tot={n:0,p:0,k:0}, ty=hyThisYear();
+    var tot={n:0,p:0,k:0,uc:0,ukg:0,un:[]}, ty=hyThisYear();
     /* ★v52 肥料は作業台帳から数えるので、読むのは ktLog */
     if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
     var fields={}; for(var i=0;i<KT_FIELDS.length;i++)fields[KT_FIELDS[i].n]=1;
-    for(var f in fields){ var t=hyTotals(f, ty); tot.n+=t.n; tot.p+=t.p; tot.k+=t.k; }
+    for(var f in fields){ var t=hyTotals(f, ty);
+      tot.n+=t.n; tot.p+=t.p; tot.k+=t.k;
+      /* ★v59 田んぼをまたいで合算する。肥料名は同じものをまとめる */
+      tot.uc+=t.uc; tot.ukg+=t.ukg;
+      for(var u=0;u<t.un.length;u++) hyUnkPush(tot.un, t.un[u].nm, t.un[u].kg);
+    }
     return tot;
   }
   var COST_FERT_YEN={n:250,p:200,k:180}; /* 成分1kgあたりの概算円(目安) */
@@ -5195,6 +5260,16 @@
             +'onchange="costSet(\''+sub.k+'\',this.value)" enterkeyhint="done">';
         }
         h+='</div>';
+        /* ★v59 出口③ 肥料費も同じ数字を使っている。3行(N/P/K)まとめて最後に1回だけ出す。
+           （3行それぞれに出すと画面がうるさくなる＝CLAUDE.md 6節「強調は1画面1〜2か所」） */
+        if(sub.auto==='fert_k'){
+          var cft=costFertKg();
+          if(cft.uc>0){
+            h+='<div class="cs-unk">⚠️ '+hyUnkHead(cft)+'この'+hyR1(cft.ukg)
+              +'kgぶんの肥料代は<b>入っていません</b>。実際の肥料費はこれより多いはずです<br>'
+              +hyUnkNames(cft,3)+'</div>';
+          }
+        }
         if(sub.type==='auto'){
           var srcs=(typeof costAutoSources==='function')?costAutoSources(sub.auto):null;
           if(srcs&&srcs.length){
@@ -7055,7 +7130,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v58';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v59';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -7462,6 +7537,10 @@
       +hyGoalRow('窒素 N',t.n,hyGoal.n*k10)
       +hyGoalRow('りん酸 P',t.p,hyGoal.p*k10)
       +hyGoalRow('カリ K',t.k,hyGoal.k*k10)
+      /* ★v59 出口② ここが実害はいちばん大きい。数えられていないぶん「あと○kg」が
+         多めに出る＝まいたのに足りないと思って**入れすぎる**方向へ間違える */
+      +((t.uc>0)?('<div class="hyg-unk">⚠️ '+hyUnkHead(t)+'この'+hyR1(t.ukg)
+        +'kgは、この棒に入っていません。実際は<b>これより足りています</b>。「あと○kg」は多めに出ています</div>'):'')
       +'<div class="hyg-note">目安：10aあたり N'+hyGoal.n+'・P'+hyGoal.p+'・K'+hyGoal.k+'kg（水稲の一般的な値）× この田んぼの広さで計算。勘で多めにまかず、計算どおりに。</div>';
   }
   var hyRenderV20=hyRender;
