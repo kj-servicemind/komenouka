@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v67">
+<meta name="app-ver" content="v69">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -902,6 +902,10 @@
   .kt-setup .edit.dchg{color:#fff;background:#C62828;text-decoration:none;border-radius:8px;padding:6px 11px;white-space:nowrap;}
   .kt-setup.warn{background:#FBF4E4;border-color:#E6D6B8;}
   .kt-setup.warn .tx b{color:#8A611C;}
+  /* ★v69 自動で入った値の見せ方（CLAUDE.md 6.の共通ルール：緑の細枠＋薄い緑背景＋小さな札）。
+     深緑×白の強い色は「押させたいボタン」に取っておき、自動値と競合させない。 */
+  .kt-setup.auto{background:var(--green-soft);border-color:#9DBBA6;}
+  .kt-setup .tx .kt-flag{margin-left:6px;vertical-align:1px;}
   /* ===== v35: 苗箱の枚数計算 ===== */
   .nae-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
   .nae-lbl{font-size:14px;font-weight:800;color:#5F5B4E;margin-bottom:9px;}
@@ -1759,6 +1763,8 @@
           <div class="setrow">営農組織<span class="sv">行徳農園(5人)</span></div>
           <div class="setrow" onclick="openKsas('地図・AI診断・共有がつかえます')">KSASを開く<span class="sv">›</span></div>
           <div class="setrow" onclick="go('team')">メンバーを確認<span class="sv" id="memCountV">－</span></div>
+          <!-- ★v68 上スワイプで閉じなくても、ここを押せばすぐ最新になる -->
+          <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
         </div>
         <div class="sethead">🔄 家族と共有・自動バックアップ</div>
         <div class="setcard">
@@ -1781,7 +1787,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v67(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v69(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -1929,6 +1935,7 @@
               大刀洗町の気温をもとに、今どの時期かを毎日計算します。田や県が使う予測と同じしくみ。
             </div>
             <span class="ina-link" onclick="ktShowWhy()">▷ 予想のしくみをくわしく見る</span>
+            <span class="ina-link" id="inaAutoBack" style="display:none;" onclick="inaBackToAuto()">↩ 自動（田植えの記録）に戻す</span>
           </div>
           <!-- view E: 予想のしくみ＋実出穂日の補正(旧・稲作先生の信頼性説明を吸収) -->
           <div id="ktViewWhy" style="display:none;"></div>
@@ -2298,6 +2305,40 @@
       return b.area-a.area;
     });
     return out;
+  }
+  /* ===== ★v69 品種・田植え日を、田植えの記録から自動で決める（入力ゼロ） =====
+     なぜ要るか：工程表⑤〜⑨（中干し・穂肥・出穂・落水・稲刈り）の予想日と「今ここ」は、
+     この値を燃料に気温で計算している。空だと⑤〜⑨に日付が出ず、今ここも進まない
+     （v69の証明テスト t_prove.js で実測ずみ：無いと5工程とも日付が出ない）。
+     基準＝**いちばん早く出穂する品種**。
+       理由：作業は早い田から来る。早い方に合わせておけば、どの田の適期も取りこぼさない。
+       遅い方に合わせて外すと穂肥・中干しの適期を過ぎる（収量・品質に直結）が、
+       早い方に合わせて外れても「まだ早かった」で済む。損の大きさが正反対。
+       ※🌼予想カードが「いちばん早い」の札を付ける田と、必ず同じものになる（画面同士が食い違わない）。 */
+  function inaAutoPick(){
+    var arr=inaVarietyPredict();
+    for(var i=0;i<arr.length;i++){ if(arr[i].head&&arr[i].tp)return arr[i]; }
+    return null;                      /* 田植えの記録がまだ無い＝あてずっぽうを入れない */
+  }
+  /* ★書くのは「中身が本当に変わったとき」だけ。
+     毎回書くと inaSave() が _m(更新時刻)を押し、家族5台が30秒ごとに互いを上書きし合って
+     全員の画面がホームへ戻り続ける（v65で起きた型の事故）。 */
+  function inaAutoSync(){
+    if(inaState&&inaState.auto===false)return false;      /* 手で直した値には触らない */
+    var p=inaAutoPick(); if(!p)return false;
+    var vk=p.key, tp=String(p.tp).replace(/\//g,'-');     /* 入力欄と同じハイフン書式にそろえる */
+    if(inaState&&inaState.variety===vk&&inaState.transplant===tp&&inaState.auto===true)return false;
+    var keepHead=(inaState&&inaState.transplant===tp)?inaState.actualHead:null;
+    inaState={variety:vk, transplant:tp, actualHead:keepHead||null, viewStage:null, auto:true};
+    inaSave();
+    return true;
+  }
+  /* 手入力から自動へ戻す */
+  function inaBackToAuto(){
+    if(inaState)inaState.auto=true;
+    if(!inaAutoSync())inaSave();      /* 中身が同じでも「自動」の印は必ず残す */
+    toast('✅ 田植えの記録から自動で入れます');
+    if(typeof ktBackToBoard==='function')ktBackToBoard();
   }
   /* 品種名 → 田んぼ一覧と同じ色（丸バッジ用） */
   var INA_CROP_COLOR={ 'つやおとめ':'#D4A017','ひのひかり':'#2E7D32','にこまる':'#6B4FA0',
@@ -2669,6 +2710,39 @@
       +'</div></div>';
     return h;
   }
+  /* ★v69 品種の表示名は熟期の括弧を落として短くする（1行に収めるため） */
+  function ktVarNameShort(k){
+    var v=INA_VMAP[k]; if(!v)return String(k||'');
+    return String(v.n).replace(/（[^）]*）/g,'');
+  }
+  function ktMdShort(iso){
+    var s=String(iso||'').replace(/-/g,'/');
+    var m=s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/); if(!m)return s;
+    return (+m[2])+'月'+(+m[3])+'日';
+  }
+  /* ★v69 品種と田植え日の帯。押すと入力画面へ（入口が1つも無かったのを塞ぐ）。
+     入っているとき＝緑の細枠＋薄い緑＋札（自動／手で入力）。押させたい赤は「入れる」だけに使う。 */
+  function ktSetupRowHTML(){
+    if(!(inaState&&inaState.variety&&inaState.transplant)){
+      return '<div class="kt-setup" onclick="ktShowSetup()"><span class="ic">🌡</span>'
+        +'<span class="tx"><span class="tx-line"><b>品種と田植え日</b></span>'
+        +'<span class="tx-line">田植えを記録すると自動で入ります</span></span>'
+        +'<span class="edit dchg">入れる ›</span></div>';
+    }
+    var auto=(inaState.auto!==false);
+    return '<div class="kt-setup'+(auto?' auto':'')+'" onclick="ktShowSetup()"><span class="ic">🌡</span>'
+      +'<span class="tx"><span class="tx-line"><b>品種と田植え日</b>'
+      +(auto?'<span class="kt-flag">自動</span>':'<span class="kt-flag l">手で入力</span>')+'</span>'
+      +'<span class="tx-line">'+ktVarNameShort(inaState.variety)+' ／ '+ktMdShort(inaState.transplant)+'</span></span>'
+      +'<span class="edit">直す ›</span></div>';
+  }
+  /* ★v69 ⑤〜⑨が「どの田を基準にした日か」を必ず書く。
+     書かないと「全部の田がこの日」と読まれる（CLAUDE.md 3.5：予想は前提を画面に書く）。 */
+  function ktBasisNoteHTML(){
+    if(!(inaState&&inaState.variety&&inaState.transplant))return '';
+    return '<div class="kt-pnote" style="margin:-4px 3px 8px;">⑤〜⑨の日は <b>'
+      +ktVarNameShort(inaState.variety)+'（いちばん早く出穂する田）</b>を基準にした予想です。</div>';
+  }
   function ktRenderBoard(){
     var el=document.getElementById('ktViewBoard'); if(!el)return;
     var s=ktStatus(), c=s.c;
@@ -2684,7 +2758,9 @@
       +'</div>';
     /* v45：品種ごとの出穂・収穫予想。入力ゼロ。田植え記録から自動。 */
     h+=ktPredictCardHTML();
+    h+=ktSetupRowHTML();                       /* ★v69 品種・田植え日の帯（自動で埋まる） */
     h+='<div class="ina-seclbl">全'+KT_STEPS.length+'工程（記録・気温の計算から自動反映）</div>';
+    h+=ktBasisNoteHTML();                      /* ★v69 ⑤〜⑨が何を基準にした日かを明記 */
     for(var i=0;i<s.list.length;i++){
       var o=s.list[i];
       var badge=(o.st.type==='grow')?'<span class="kt-growbadge">🌡気温で計算</span>':'';
@@ -3917,7 +3993,10 @@
   }
   function ktBackToBoard(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 開くたび必ず最初のビュー(工程表)から(v15確立の共通ルール) */
-  function ktEnter(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
+  function ktEnter(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1;
+    /* ★v69 開くたびに自動反映。田植えを記録した直後でも、開けば必ず追いつく */
+    try{ inaAutoSync(); }catch(e){}
+    ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 横スワイプ:内部ビュー→工程表→ホーム(段階的に戻る/v15確立の共通ルール) */
   function ktSwipeBack(){
     var vis=function(id){var e=document.getElementById(id);return e&&e.style.display!=='none';};
@@ -3945,12 +4024,16 @@
     var dt=document.getElementById('inaDate');
     if(inaState){ if(sel)sel.value=inaState.variety; if(dt)dt.value=inaState.transplant; }
     else if(dt&&!dt.value){ var t=new Date(); dt.value=inaFmtFull(t); }
+    /* ★v69 「自動に戻す」は、手で入れた人にだけ出す（自動の人には要らない出口） */
+    var ab=document.getElementById('inaAutoBack');
+    if(ab)ab.style.display=(inaState&&inaState.auto===false)?'block':'none';
   }
   function ktShowSetup(){ ktInitSetup(); ktShowOnly('ktViewSetup'); }
   function ktCalc(){
     var sel=document.getElementById('inaVariety'), dt=document.getElementById('inaDate');
     if(!dt.value){ toast('田植えした日を選んでください'); return; }
-    inaState={variety:sel.value, transplant:dt.value, actualHead:(inaState&&inaState.transplant===dt.value?inaState.actualHead:null), viewStage:null};
+    /* ★v69 auto:false ＝ 手で入れた印。以後アプリは田植え記録で上書きしない。 */
+    inaState={variety:sel.value, transplant:dt.value, actualHead:(inaState&&inaState.transplant===dt.value?inaState.actualHead:null), viewStage:null, auto:false};
     inaSave(); toast('✅ 予想を更新しました'); ktBackToBoard();
   }
   /* ---- 予想のしくみ＋実出穂日の補正（旧・稲作先生の信頼性説明を吸収） ---- */
@@ -6823,6 +6906,8 @@
     },{passive:true});
   })();
   if(typeof inaLoad==='function')inaLoad();
+  /* ★v69 起動時に、田植えの記録から品種・田植え日を自動で入れる（中身が変わった時だけ書く） */
+  if(typeof inaAutoSync==='function'){ try{ inaAutoSync(); }catch(e){} }
 
   /* ===== v2.5 予定データ(ホームTODO・カレンダー共通/localStorageに保存) ===== */
   var PLAN_LS_KEY='gyotoku.plans.v1';
@@ -7733,7 +7818,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v67';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v69';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -7742,16 +7827,29 @@
   var _verRangeOK=null;   /* null=未確認 / true=先頭だけもらえる / false=もらえない */
   try{ if(localStorage.getItem(VER_RANGE)==='0') _verRangeOK=false; }catch(e){}
 
-  /* 書きかけの文があるか。あるうちは入れかわらない */
+  /* ★★v68 ここが「片方の端末だけ新しくならない」の真犯人だった ★★
+     ── 何が起きていたか（実測で再現ずみ）
+     v67まではここで **5つの欄に文字が入っていないか** を見ていた。
+     ところが「欄に文字がある」は「いま書いている」ではない。
+     とくに 📜去年の今ごろ の反省メモ欄(kyoMemo)は、**保存ずみの文をアプリが自動で入れる**。
+     つまり **その画面を一度開いただけで、その端末は二度と自動更新されなくなっていた。**
+     肥料のkg欄・AIの質問欄も、一度書いて画面を離れると同じことが起きる。
+     アプリを上スワイプで閉じると直るのは、閉じると欄が空の状態から作り直されるため。
+
+     ── 直しかた（根本）
+     材料そのものを取りかえる。「欄に文字があるか」ではなく
+     **「いま人が打っているか」**を見る。
+       ① いま欄に触れている（activeElement が入力欄）
+       ② 直前2分以内に実際にキーを打った（input の合図を記録）
+     これなら、保存ずみの文が欄に入っていても更新を止めない。
+     2分にしたのは、打ち終わってすぐ入れかわると書きかけが消えるため。 */
+  var _verTypedAt=0;
+  try{ document.addEventListener('input', function(){ _verTypedAt=Date.now(); }, true); }catch(e){}
   function verTyping(){
     try{
       var a=document.activeElement;
-      if(a && (a.tagName==='TEXTAREA' || a.tagName==='INPUT')) return true;
-      var ids=['hitoIn','recMemoIn','kyoMemo','aiQ','hyKg'], i, el;
-      for(i=0;i<ids.length;i++){
-        el=document.getElementById(ids[i]);
-        if(el && el.value && (''+el.value).replace(/^\s+|\s+$/g,'')!=='') return true;
-      }
+      if(a && (a.tagName==='TEXTAREA' || a.tagName==='INPUT')) return true;   /* いま触れている */
+      if(_verTypedAt && (Date.now()-_verTypedAt) < 120000) return true;       /* 2分以内に打った */
     }catch(e){}
     return false;
   }
@@ -7810,6 +7908,34 @@
     try{ st=JSON.parse(localStorage.getItem(VER_KEY)||'null'); }catch(e){ st=null; }
     if(st && st.v===APP_VER && st.t && st.t!==tag){ verFetchVer(tag); return; }
     verRemember(tag);
+  }
+  /* ★v68 設定の「今すぐ最新にする」。上スワイプで閉じなくてもよくするための出口。
+     ・最新なら「最新です」と出す（黙って何も起きないと壊れたと思われるため）
+     ・古ければその場で入れかわる
+     ・3分に1回の制限や、書きかけの見張りはここでも守る（勝手に消さない） */
+  function verNow(){
+    var lb=document.getElementById('verNowV');
+    if(lb)lb.textContent='確かめています…';
+    try{
+      fetch(location.pathname+'?vn='+Date.now(), {cache:'no-store', headers:{'Range':'bytes=0-1023'}})
+        .then(function(r){ return (r&&(r.ok||r.status===206))?r.text():null; })
+        .then(function(t){
+          if(t==null){ if(lb)lb.textContent='確かめる ›'; toast('電波が届かないようです'); return; }
+          var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
+          if(!m){ if(lb)lb.textContent='確かめる ›'; toast('確かめられませんでした'); return; }
+          if(m[1]===APP_VER){ if(lb)lb.textContent='最新です'; toast('✅ すでに最新です（'+APP_VER+'）'); return; }
+          if(lb)lb.textContent='新しい版があります';
+          toast('新しい版（'+m[1]+'）に入れかわります');
+          /* ★書きかけがあるときは消さない。verApply が false を返したら理由を伝える */
+          setTimeout(function(){
+            if(!verApply()){
+              if(lb)lb.textContent='あとで ›';
+              toast('書きかけの文があるので、少し待ってからもう一度押してください');
+            }
+          }, 700);
+        })
+        .catch(function(){ if(lb)lb.textContent='確かめる ›'; toast('電波が届かないようです'); });
+    }catch(e){ if(lb)lb.textContent='確かめる ›'; }
   }
   function verCheck(force){
     /* ★v58 45秒たっても返事の無い札は捨てる。捨てないと新版に永久に気づけない */
