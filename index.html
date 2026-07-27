@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v64">
+<meta name="app-ver" content="v67">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -831,6 +831,49 @@
   .kt-ksasmini{display:inline-block;font-size:12px;font-weight:800;color:#fff;background:#5B8A72;border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:1px;}
   .ina-stg.warn{border:2px solid #D9A54A;background:#FBF4E4;}
   .ina-stg.warn .st{color:#8A611C;}
+  /* ===== ★v67 草刈り（別画面） ===== */
+  /* ★親方の指示「日付の1行は折り返さないで」への答え。
+     文字を小さくしたり言葉を削るのではなく、**その1行に横幅を全部あげる**。
+     ボタンは上の段に置き、日付の文は下の段でカード幅いっぱいを使う。
+     カード幅 393-36(画面余白)-26(カード余白)=331px。13.5pxの日本語で約24字ぶん。
+     「✅ 6月28日に刈りました（29日前）」は約18字なので、余裕をもって1行に収まる。 */
+  .kusa-row{background:#fff;border:1px solid var(--line);border-radius:13px;
+    padding:12px 13px;margin-bottom:7px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .kusa-top{display:flex;align-items:center;gap:9px;}
+  .kusa-nm{flex:1;min-width:0;font-size:16px;font-weight:800;}
+  .kusa-a{font-size:13.5px;color:#6E6A5C;font-weight:700;}
+  .kusa-last{font-size:13.5px;font-weight:700;color:#8A8472;margin-top:7px;line-height:1.5;}
+  .kusa-last.done{color:var(--green);}
+  .kusa-hero{text-align:center;padding:14px 0 2px;}
+  .kusa-hero .no{font-family:var(--mincho);font-size:15px;font-weight:800;color:var(--green);letter-spacing:.1em;}
+  .kusa-hero .nm{font-family:var(--mincho);font-size:30px;font-weight:800;letter-spacing:.04em;margin-top:4px;}
+  .kusa-hero .badge{display:inline-block;margin-top:10px;background:var(--green);color:#fff;
+    font-size:15px;font-weight:800;padding:9px 22px;border-radius:999px;}
+  .kusa-dash{border-top:1px dashed #D9D4C4;margin:14px 0 12px;}
+  .kusa-note{background:var(--blue-soft);border:1px solid #CBDEE6;border-radius:13px;
+    padding:12px 13px;font-size:13px;line-height:1.85;color:#15303B;font-weight:600;margin-top:12px;}
+  .kusa-note b{color:var(--blue);}
+
+  /* ===== ★v67 文字の折り返しをアプリ全体で整える（親方の指示） =====
+     「キリが良い所で改行し、可能なら一行にまとめたい。アプリ内全ての文字に反映させて」
+
+     ① line-break:strict … 禁則処理。行の先頭に「）」「。」「、」「っ」「ゃ」等が
+        来ないようにする。**iOS Safari で今すぐ効く。**
+     ② text-wrap:pretty  … 最後の行に1〜2文字だけ取り残されるような不格好な折り返しを避け、
+        行の長さをそろえる。**Safari 26 以降で効く。**
+        対応していない端末では、これまでどおりの折り返しに戻るだけで壊れない。
+     ③ text-wrap:balance … 見出しは2行になるとき上下の長さをそろえる。Safari 17.5 以降。
+
+     ★入れなかったもの：word-break:auto-phrase（日本語を文節で折り返す）
+       これが本当の「キリのいい所で改行」だが、2026年6月時点で Safari は
+       開発者向けプレビュー版で有効になったばかりで、**家族のiPhoneでは効かない**。
+       さらに、今入れておくと Apple が対応した日に
+       **こちらが一度も見ていない見た目へ勝手に変わる**。対応が届いてから、
+       実機で確かめたうえで入れる。 */
+  .screen{line-break:strict;-webkit-line-break:strict;text-wrap:pretty;}
+  .navhead .title,.kusa-hero .nm,.ina-hero .nm,.kt-pcard .ti,.krtit,.hy-gt,.kk-ttl,
+  .ina-info .tt,.ina-now .nm,.rowcard .nm,.tile .tx,.stepcard .nm{text-wrap:balance;}
+
   .kt-frow{background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px 13px;margin-bottom:7px;display:flex;align-items:center;gap:9px;cursor:pointer;}
   .kt-frow .fn{flex:1;font-size:16px;font-weight:800;}
   .kt-frow .fs{font-size:13.5px;color:#6E6A5C;font-weight:700;}
@@ -1738,7 +1781,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v64(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v67(本番)</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -1848,6 +1891,7 @@
       <div class="sc">
         <div class="rowcard" onclick="go('hist')"><div><div class="nm">📝 記録の確認</div><div class="ar">ひとこと・今までの記録・去年の同じ月</div></div><span class="badge" style="background:var(--gold);">開く ›</span></div>
         <div class="rowcard" onclick="go('koutei')"><div><div class="nm">📋 米づくり工程表</div><div class="ar">種まき〜稲刈りの進み＋出穂・収穫の予想</div></div><span class="badge" style="background:#33586B;">開く ›</span></div>
+        <div class="rowcard" onclick="go('kusa')"><div><div class="nm">🌿 草刈り</div><div class="ar">田んぼごとに、刈ったらタップ</div></div><span class="badge" style="background:var(--green);">開く ›</span></div>
         <div class="rowcard" onclick="go('pest')"><div><div class="nm">🧪 農薬を計算</div><div class="ar">希釈・薬量を自動計算(農水省DB)</div></div><span class="badge" style="background:var(--gold);">開く ›</span></div>
         <div class="rowcard" onclick="go('fields')"><div><div class="nm">🌾 田んぼ一覧</div><div class="ar">色バッジで進み具合がわかる</div></div><span class="badge" style="background:var(--purple);">開く ›</span></div>
         <div class="rowcard" onclick="go('team')"><div><div class="nm">👥 みんなと共有</div><div class="ar">5〜6人で記録と写真を共有</div></div><span class="badge" style="background:var(--orange);">開く ›</span></div>
@@ -1856,6 +1900,11 @@
         <div class="rowcard" onclick="go('set')"><div><div class="nm">⚙️ 設定</div><div class="ar">文字の大きさ・ホームのボタン入替</div></div><span class="badge" style="background:#6B6656;">開く ›</span></div>
         <div class="spacer"></div>
       </div>
+    </div>
+
+    <!-- ===== ★v67 草刈り（工程表とは別画面。順送りには入れない） ===== -->
+    <div class="page" id="p-kusa">
+      <div class="sc" id="kusaBody"></div>
     </div>
 
     <!-- ===== ⑰ 米づくり工程表(v16新規) ===== -->
@@ -1916,7 +1965,7 @@
            || window.matchMedia('(display-mode: standalone)').matches;
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
-  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',kyoka:'p-kyoka',hist:'p-hist'};
+  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',kyoka:'p-kyoka',hist:'p-hist',kusa:'p-kusa'};
   var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
@@ -1956,6 +2005,7 @@
     diag:  navHdr('home','ホーム','病害虫を診断'),
     drug:  navHdr('pest','農薬計算','農薬を検索'),
     cal:   navHdr('home','ホーム','カレンダー'),
+    kusa:  navHdr('home','戻る','草刈り'),                 /* ★v67 */
     cost:  navHdr('home','ホーム','生産原価'),
     team:  navHdr('home','ホーム','みんなと共有'),
     set:   navHdr('home','ホーム','設定'),
@@ -1974,7 +2024,7 @@
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
     cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home',kroku:'voice',
-    hiryo:'home',kikai:'home',hist:'home',kyoka:'home'};
+    hiryo:'home',kikai:'home',hist:'home',kyoka:'home',kusa:'home'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
@@ -2039,6 +2089,7 @@
     if(n==='home'&&typeof applyWeather==='function')applyWeather();
     if(n==='home'&&typeof applyScene==='function')applyScene();
     if(n==='koutei'&&typeof ktEnter==='function')ktEnter();
+    if(n==='kusa'&&typeof kusaEnter==='function')kusaEnter();      /* ★v67 */
     if(n==='fields'&&typeof fieldsEnter==='function')fieldsEnter();
     if(n==='hiryo'&&typeof hyEnter==='function')hyEnter();
     if(n==='kikai'&&typeof kiEnter==='function')kiEnter();
@@ -2372,11 +2423,24 @@
     {k:'hogoe',    no:'⑥',  nm:'穂肥',               type:'grow', ina:4, dtl:'⑤'},
     {k:'shussui',  no:'⑦',  nm:'出穂・防除',         type:'grow', ina:5, dtl:'⑥'},
     {k:'rakusui',  no:'⑧',  nm:'落水',               type:'grow', ina:6, dtl:'⑦'},
-    {k:'inekari',  no:'⑨',  nm:'稲刈り',             type:'grow', ina:7, dtl:'⑧'},
-    {k:'kansou',   no:'⑩',  nm:'乾燥・もみすり',     type:'rec',  dtl:'⑧'},
-    {k:'shukka',   no:'⑪',  nm:'出荷',               type:'rec',  dtl:null},
-    {k:'furikaeri',no:'⑫',  nm:'振り返り',           type:'rec',  dtl:null}
+    {k:'inekari',  no:'⑨',  nm:'稲刈り',             type:'grow', ina:7, dtl:'⑧'}
   ];
+  /* ★v67 ⑩乾燥・もみすり／⑪出荷／⑫振り返り は、親方の指示で工程表から外した。
+     ・記録そのものは消えていない（記録簿にはこれまでどおり残る）。表に出さないだけ。
+     ・ホームの「ひとこと」は step:'furikaeri' で保存されている。工程表から外しても
+       ひとこと機能は今までどおり動く（KT_STEPS に無いキーは表に出ないだけ）。 */
+  /* ★v67 草刈り。**KT_STEPS には入れない**（親方の指示「工程表には連動させないで」）。
+     理由：草刈りは一年に何度もやる作業。①〜⑨の順送りに入れると
+     「まだ済んでいない一番前の工程」＝草刈りで『今ここ』が一年中止まり、
+     進み率も草刈りに引っぱられて意味の無い数字になる。 */
+  var KUSA_STEP='kusakari';
+  /* ★v67 「工程表のどれでもない」置き場。ホームのひとこと、および
+     どの工程にも当てはめられなかった記録がここに入る。
+     v66まではこれが⑫振り返りという実在の工程だったが、⑫を外したので
+     **工程表には出ない置き場**になった。記録簿には今までどおり残る。
+     ★ここを実在の工程（例：⑨稲刈り）にすると、ひとことを書いただけで
+       稲刈りが済みになる＝嘘の数字になるので、実在の工程は使わない。 */
+  var ETC_STEP='furikaeri';
   var KT_SMAP={}; (function(){for(var i=0;i<KT_STEPS.length;i++)KT_SMAP[KT_STEPS[i].k]=i;})();
   /* 反映元ラベルを描画（ドローンだけ絵文字でなく写真に差し替え） */
   function ktSrcLabel(src){
@@ -2496,6 +2560,78 @@
     /* バーの幅だけは、0.3%でも見えるように下限を持たせる（数字そのものはいじらない） */
     var barPct=(pct>0&&pct<2)?2:pct;
     return {list:arr, pct:pct, barPct:barPct, nowIdx:nowIdx, warnIdx:warnIdx, c:c, doneCount:doneCount};
+  }
+
+  /* ===== ★v67 草刈り（工程表とは別画面・順送りには入れない） =====
+     親方の指示：「作業を記録などで草刈りをえらぶと、ここにも反映される。
+                   ただし工程表には連動させない」
+     数えかたも親方が選択：「最後に刈った日を出し、何度でも押せる」
+     ★『今年ぶん』だけを見る。草刈りは毎年やるので、去年ぶんまで数えると
+       『最後に刈った日』が去年の日付になり、数字が嘘になるため。 */
+  function kusaParseD(str){
+    var m=(''+(str||'')).match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
+    if(!m)return null;
+    return new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+  }
+  function kusaLast(fieldN){
+    var y=(new Date()).getFullYear(), best=null;
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i];
+      if(e.step!==KUSA_STEP||e.field!==fieldN)continue;
+      var d=kusaParseD(e.d);
+      if(!d||d.getFullYear()!==y)continue;
+      if(!best||d>best)best=d;
+    }
+    return best;
+  }
+  function kusaAgo(d){
+    var t=new Date(); t.setHours(0,0,0,0);
+    var n=Math.round((t-d)/86400000);
+    return n<0?0:n;
+  }
+  function kusaTap(i){
+    var f=KT_FIELDS[i]; if(!f)return;
+    /* ★何度でも押せる。押すたびに新しい記録になる（済みを外す操作は無い）。
+       消したいときは「記録の確認」から消す＝消し方を1本にしておく。 */
+    wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
+    toast('✅ '+f.n+' の草刈りを記録しました');
+    kusaRender();
+  }
+  function kusaEnter(){
+    try{ if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad(); }catch(e){}
+    kusaRender();
+  }
+  function kusaRender(){
+    var el=document.getElementById('kusaBody'); if(!el)return;
+    var y=(new Date()).getFullYear(), done=0, rows='';
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var f=KT_FIELDS[i], last=kusaLast(f.n), sub;
+      if(last){
+        done++;
+        sub='<div class="kusa-last done">✅ '+(last.getMonth()+1)+'月'+last.getDate()+'日に刈りました（'+kusaAgo(last)+'日前）</div>';
+      }else{
+        sub='<div class="kusa-last">まだ記録がありません</div>';
+      }
+      rows+='<div class="kusa-row" onclick="kusaTap('+i+')">'
+          +   '<div class="kusa-top">'
+          +     '<div class="kusa-nm">'+f.n+' <span class="kusa-a">'+f.a+'</span></div>'
+          +     '<div class="kt-b no">刈ったらタップ</div>'
+          +   '</div>'+sub
+          + '</div>';
+    }
+    el.innerHTML =
+      '<div class="kusa-hero">'
+    +   '<div class="no">くり返す作業</div>'
+    +   '<div class="nm">草刈り</div>'
+    +   '<div class="badge">'+y+'年 '+done+' / '+KT_FIELDS.length+' 枚</div>'
+    + '</div>'
+    + '<div class="kusa-dash"></div>'
+    + rows
+    + '<div class="kusa-note">💡 草刈りは一年に何度もやる作業なので、'
+    +   '<b>米づくり工程表の順番や進み具合には入れていません</b>。ここだけで数えます。<br>'
+    +   '📝作業を記録・🎤話して記録で「畦畔の草刈り」をえらんでも、ここに出ます。<br>'
+    +   '数字は<b>'+y+'年ぶん</b>です。年が変わると数え直します。</div>'
+    + '<div class="spacer"></div>';
   }
 
   /* ---- 画面A:工程表 ---- */
@@ -3437,7 +3573,7 @@
       if(typeof whoOpen==='function') whoOpen('hito');
       return;
     }
-    wlAdd('furikaeri', '', tx, 'hito', {hito:true, who:who});
+    wlAdd(ETC_STEP, '', tx, 'hito', {hito:true, who:who});   /* ★v67 工程表には出ない置き場 */
     if(t)t.value='';
     toast('✅ 書きとめました（家族全員に共有されます）');
     /* v47:書いたら、そのすぐ下の一覧に並ぶようにする（届いたことが目で分かる） */
@@ -3860,13 +3996,17 @@
     {e:'💧',n:'水管理・中干し',step:'nakaboshi'},
     {e:'🧪',n:'追肥・穂肥',step:'hogoe'},
     {e:'🐛',n:'防除・散布',step:'shussui'},
-    {e:'🚜',n:'畦畔の草刈り',step:''},
+    {e:'🚜',n:'畦畔の草刈り',step:'kusakari'},   /* ★v67 草刈り画面に反映される */
     {e:'🌾',n:'収穫・稲刈り',step:'inekari'}
   ];
   function recStepOf(workName){
-    /* えらんだ作業→工程キー。該当が無い/工程表に無いキーは今の生育推定に任せる */
+    /* えらんだ作業→工程キー。該当が無い/どこにも無いキーは今の生育推定に任せる */
     for(var i=0;i<REC_WORKS.length;i++){
       if(REC_WORKS[i].n===workName&&REC_WORKS[i].step){
+        /* ★v67 草刈りは工程表(KT_STEPS)には無いが、正しいキーとして通す。
+           v66まではここで弾かれて ktGuessStep() に落ち、草刈りの記録が
+           その時の生育段階（例：①種まき）の『済み』になっていた（実測で確認）。 */
+        if(REC_WORKS[i].step===KUSA_STEP)return KUSA_STEP;
         for(var j=0;j<KT_STEPS.length;j++)if(KT_STEPS[j].k===REC_WORKS[i].step)return REC_WORKS[i].step;
       }
     }
@@ -4035,7 +4175,7 @@
     var s=ktStatus();
     if(s.nowIdx>=0)return KT_STEPS[s.nowIdx].k;
     for(var i=0;i<s.list.length;i++)if(s.list[i].cls!=='done')return KT_STEPS[i].k;
-    return 'furikaeri';
+    return ETC_STEP;   /* ★v67 全部そろっている時。実在の工程を返すと嘘の済みが付く */
   }
 
   /* ===== 本物の音声認識(Web Speech API) ===== */
@@ -4719,18 +4859,27 @@
     var wrap=document.getElementById('fw'+i), det=document.getElementById('fd'+i);
     if(wrap)wrap.classList.toggle('open'); if(det)det.classList.toggle('open');
   }
+  /* ★v66 土のメモは「項目ごと型」。タグとメモに別々の更新時刻を押す。
+     こうしないと、家族がメモを書いた時にこちらのタグまで入れ替わってしまう。 */
+  function soilStamp(field,prop){
+    var d=soilData[field]; if(!d)return;
+    if(!d._m||typeof d._m!=='object')d._m={};
+    d._m[prop]=Date.now();
+  }
   function soilTagAdd(field){
     if(!soilData[field])soilData[field]={tags:[],memo:''};
     var cur=soilData[field].tags||[];
     /* 未使用のタグから次を1つ足す（シンプル：プールを順に） */
     for(var i=0;i<SOIL_TAG_POOL.length;i++){ if(cur.indexOf(SOIL_TAG_POOL[i])<0){ cur.push(SOIL_TAG_POOL[i]); break; } }
-    soilData[field].tags=cur; soilSave(); fieldsRerenderOpen(field);
+    soilData[field].tags=cur; soilStamp(field,'tags'); soilSave(); fieldsRerenderOpen(field);
   }
   function soilTagRemove(field,tag){
     if(!soilData[field])return; var cur=soilData[field].tags||[];
-    var idx=cur.indexOf(tag); if(idx>=0)cur.splice(idx,1); soilData[field].tags=cur; soilSave(); fieldsRerenderOpen(field);
+    var idx=cur.indexOf(tag); if(idx>=0)cur.splice(idx,1); soilData[field].tags=cur;
+    soilStamp(field,'tags'); soilSave(); fieldsRerenderOpen(field);
   }
-  function soilMemoSet(field,v){ if(!soilData[field])soilData[field]={tags:[],memo:''}; soilData[field].memo=v; soilSave(); }
+  function soilMemoSet(field,v){ if(!soilData[field])soilData[field]={tags:[],memo:''};
+    soilData[field].memo=v; soilStamp(field,'memo'); soilSave(); }
   function fieldsRerenderOpen(field){
     /* タグ変更後、開いていた田んぼを開いたまま再描画 */
     var openIdx=-1;
@@ -5437,6 +5586,18 @@
   function costLoad(){ try{var s=localStorage.getItem(COST_LS); costManual=s?JSON.parse(s):{};}catch(e){costManual={};}
     if(!costManual||typeof costManual!=='object')costManual={}; }
   function costSave(){ try{localStorage.setItem(COST_LS,JSON.stringify(costManual));}catch(e){} }
+  /* ★v66 生産原価の手入力は「丸ごと型」{v:金額, _m:時刻}。
+     v65までは数値をそのまま入れていたので、古いデータも必ず読めるようにする。
+     ★消したときは「消す」のではなく {v:null, _m:時刻} を残す。
+       消してしまうと『消した』と『元から無い』の区別がつかず、
+       サーバーに残っている古い金額が同期のたびに戻ってきていた（v65までの不具合）。 */
+  function costGet(k){
+    var e=costManual[k];
+    if(e==null)return 0;
+    if(typeof e==='object')return parseInt(e.v,10)||0;   /* v66の形（v:null なら 0＝消した） */
+    return parseInt(e,10)||0;                            /* v65までの古い形 */
+  }
+  function costPut(k,n){ costManual[k]=(n>0)?{v:n,_m:Date.now()}:{v:null,_m:Date.now()}; }
   /* 費目定義。auto=自動集計関数キー / manual=手入力 */
   var COST_CATS=[
     {k:'tane', nm:'種苗費', dot:'#43A047', subs:[{k:'tane_nae',nm:'苗代',type:'manual'}]},
@@ -5543,7 +5704,7 @@
       if(macs.indexOf(e.mac)>=0&&kinds.indexOf(e.kind)>=0&&kiYear(e.d)===y)s+=e.yen||0; } return s; }
   function costSubVal(sub){
     if(sub.type==='auto') return costAuto(sub.auto);
-    return parseInt(costManual[sub.k],10)||0;
+    return costGet(sub.k);                               /* ★v66 古い形も読める */
   }
   function costCatTotal(cat){ var s=0; for(var i=0;i<cat.subs.length;i++)s+=costSubVal(cat.subs[i]); return s; }
   function costGrand(){ var s=0; for(var i=0;i<COST_CATS.length;i++)s+=costCatTotal(COST_CATS[i]); return s; }
@@ -5574,7 +5735,7 @@
         if(sub.type==='auto'){
           h+='<span class="cs-auto">自動 '+kiYen(costAuto(sub.auto))+'</span>';
         }else{
-          var v=costManual[sub.k]||'';
+          var v=costGet(sub.k)||'';                      /* ★v66 */
           h+='<input class="cs-in" type="number" inputmode="numeric" placeholder="0" value="'+v+'" '
             +'onchange="costSet(\''+sub.k+'\',this.value)" enterkeyhint="done">';
         }
@@ -5640,7 +5801,7 @@
     var gh=document.getElementById('cgh'+i), sb=document.getElementById('csub'+i);
     if(gh)gh.classList.toggle('open'); if(sb)sb.classList.toggle('open');
   }
-  function costSet(k,v){ var n=parseInt(v,10); if(!n||n<0){ delete costManual[k]; } else { costManual[k]=n; }
+  function costSet(k,v){ var n=parseInt(v,10); if(!n||n<0)n=0; costPut(k,n);   /* ★v66 消しても印を残す */
     costSave();
     var tot=document.getElementById('costTotal'); if(tot)tot.textContent=kiYen(costGrand());
     /* 該当費目の見出し金額も更新 */
@@ -5748,18 +5909,19 @@
     kyoka:{cls:'t-gold',  ic:'📜', tx:'去年の今ごろ'},
     hist: {cls:'t-orange',ic:'📝', tx:'記録の確認'},
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
-    koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'}
+    koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'},
+    kusa: {cls:'t-green2',ic:'🌿', tx:'草刈り'}          /* ★v67 */
   };
   /* v25.4:設定は下タブに固定になったのでボタン/タブの候補からは外す(重複させない)。 */
-  var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','koutei'];
+  var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','koutei','kusa'];
   /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
   /* ★v36.4：ご家族に配布したときの初期の並び。実機の画面どおりにした。
      1ページ目=作業を記録／田んぼ・マップ／AI病害虫診断／KSAS連携／米づくり工程表／肥料の栄養
      2ページ目=話して記録／去年の今ごろ／記録の確認／機械の維持費／生産原価／ドローン散布
      ※タブに使う ai・cal・pest はボタンからは自動で除かれる（重複させない仕様）。 */
-  var HOME_ORDER_DEFAULT=['rec','fields','diag','ksas','koutei','hiryo',
-                          'voice','kyoka','hist','kikai','cost','drone',
-                          'ai','pest','cal','team'];
+  var HOME_ORDER_DEFAULT=['rec','fields','diag','ksas','koutei','kusa',
+                          'voice','kyoka','hist','kikai','cost','hiryo',
+                          'drone','ai','pest','cal','team'];
   var TILE_LS_KEY='gyotokuHomeOrder_v1';
   function loadHomeOrder(){
     var base=HOME_ORDER_DEFAULT.slice();
@@ -6168,9 +6330,19 @@
   /* 台帳の形： { "<同期キー>": { "<記録の印>": 消した時刻ms } }。記録本体は入れない＝軽い */
   function _tombLoad(){ try{ var o=JSON.parse(localStorage.getItem(TOMB_LS)||'{}'); return (o&&typeof o==='object'&&!(o instanceof Array))?o:{}; }catch(e){ return {}; } }
   function _tombSave(o){ try{ localStorage.setItem(TOMB_LS, JSON.stringify(o)); }catch(e){} }
-  /* 掃除：180日より古い印は捨てる／1キーあたり最大500件（KV無料枠にやさしく） */
+  /* 掃除：★v65で「実質そうじしない」に変えた（10年／1キー20000件）
+     ── なぜ変えたか（根本の理由）
+     「消した」という事実は、削除印という**寿命つきの札**でしか持っていない。
+     寿命が切れた後に、その記録をまだ持っている端末（ずっと圏外だった等）が
+     つながると、本体を送り返してくるので **消したはずの記録が復活する**。
+     つまり札に寿命がある限り、いつか必ず復活する＝寿命そのものが原因。
+     旧値の 180日・500件 は根拠のない見込みだった（v30で置いたまま）。
+     実測：20,000件でも 781KB。iPhone の保存上限は約5,000KB なので、
+     この農園の使い方（消すのは年に数百件も無い）では実質いっぱいにならない。
+     ★上限を残してあるのは、万一あふれた時に壊れないための安全弁。
+       あふれた場合は下の tombMergeServer 側でホーム戻りループを止めている。 */
   function tombPrune(o){
-    var CUT=Date.now()-180*24*3600*1000, CAP=500;
+    var CUT=Date.now()-3650*24*3600*1000, CAP=20000;
     for(var key in o){ if(!o.hasOwnProperty(key))continue;
       var m=o[key], arr=[];
       for(var s in m){ if(m.hasOwnProperty(s)){ if(m[s]>=CUT)arr.push([s,m[s]]); } }
@@ -6225,13 +6397,27 @@
   function tombMergeServer(serverStr){
     var S; try{ S=JSON.parse(serverStr); }catch(e){ S=null; }
     if(!S||typeof S!=='object'||S instanceof Array)return false;
-    var o=_tombLoad(), changed=false;
+    var o=_tombLoad(), got=false;
+    /* ★v65：掃除する前の姿を控えておく。
+       ── なぜ要るか（根本の理由）
+       v63でサーバーを「足し算」に変えたので、サーバーは札を自分から捨てない。
+       一方こちらは tombPrune で捨てる。すると捨てた札は次の同期でまた届く。
+       旧版は「届いた」だけで changed=true を返していたため、
+       **捨てる → また届く → 捨てる** が永久に続き、そのたびに
+       呼び出し元が _syncApply() → location.reload() を走らせて
+       **30秒ごとに画面がホームへ戻る**（入力中でも戻される）。
+       → 「届いたか」ではなく「掃除まで済ませた結果が本当に変わったか」で返す。
+       これは案①で上限を広げても、あふれれば同じことが起きるための土台の直し。 */
+    var before=JSON.stringify(o);
     for(var key in S){ if(!S.hasOwnProperty(key))continue; var sm=S[key]; if(!sm||typeof sm!=='object')continue;
       var m=o[key]||(o[key]={});
-      for(var s in sm){ if(!sm.hasOwnProperty(s))continue; if(!(s in m)||sm[s]>m[s]){ m[s]=sm[s]; changed=true; } }
+      for(var s in sm){ if(!sm.hasOwnProperty(s))continue; if(!(s in m)||sm[s]>m[s]){ m[s]=sm[s]; got=true; } }
     }
-    if(changed){ tombPrune(o); _tombSave(o); }
-    return changed;
+    if(!got)return false;                 /* 目新しい札は1つも無かった */
+    tombPrune(o);
+    if(JSON.stringify(o)===before)return false;  /* 掃除したら元どおり＝実質なにも変わっていない */
+    _tombSave(o);
+    return true;
   }
   /* ローカルを壊さずサーバーの分を足す。返り値 {str, changed}。 */
   function _mergeVal(localStr, serverStr, key){
@@ -6269,15 +6455,66 @@
       if(lm||sm){
         merged=(sm>lm)?S:L;                                  /* 設定の箱：新しいほうが丸ごと勝つ */
       }else{
+        /* ★★v66 ここが TODO10 の根本直し ★★
+           v65まではここが「同じ鍵はローカル優先」だった。時刻を持っていないので
+           勝ち負けを決める材料が無く、**自分が必ず勝つ**しかなかった。そのため
+           自分が一度でも触った田んぼ・月・費目には、家族の書き込みが永久に届かなかった。
+           さらに「消した」と「元から無い」の区別もつかず、**消した金額が戻ってきていた**。
+           → v66 で、一つひとつの中身に更新時刻を持たせた（_mergeEntry で勝負をつける）。 */
         merged={}; var k;
         for(k in S){ if(S.hasOwnProperty(k))merged[k]=S[k]; }
-        for(k in L){ if(L.hasOwnProperty(k))merged[k]=L[k]; } /* 同じ鍵はローカル優先 */
+        for(k in L){ if(!L.hasOwnProperty(k))continue;
+          merged[k]=(k in S)? _mergeEntry(L[k],S[k]) : L[k]; }
       }
     } else {
       merged=L; /* 型がちがう時はローカル優先 */
     }
     var ms; try{ ms=JSON.stringify(merged); }catch(e){ ms=localStr; }
     return {str:ms, changed:(ms!==localStr)};
+  }
+  /* ★v66 「場所ごとの表」の中の1件ぶんの勝負をつける。
+     形は2とおりある。どちらも**時刻を中身の内側に持たせてある**ので、
+     サーバーが鍵ごとにどちらかを丸ごと選んでも、値と時刻がちぐはぐにならない。
+     ①丸ごと型  {v:値, _m:時刻}            …反省メモ・生産原価。新しいほうが丸ごと勝つ
+     ②項目ごと型 {tags:[], memo:'', _m:{tags:時刻, memo:時刻}} …土のメモ。項目ごとに勝負
+     ③どちらも時刻を持たない（v65までの古いデータ）→ これまでどおりローカル優先。
+       ★時刻をでっちあげない。「無い＝いちばん古い」として扱うだけ。
+       つまり、どちらか一方でも新しい形で書き直せば、その時点から正しく届くようになる。 */
+  /* 1件ぶんの更新時刻を取り出す。★時刻が無いものは 0（＝いちばん古い）として扱う。
+     でっちあげるのではなく「分からない＝最古」と正直に置くだけ。
+     こうしないと、家族が新しく書き直しても、こちらの古いデータが勝ち続けてしまう。 */
+  function _entryTime(e){
+    if(!e||typeof e!=='object'||(e instanceof Array))return 0;
+    var m=e._m;
+    if(typeof m==='number')return m;
+    if(m&&typeof m==='object'&&!(m instanceof Array)){
+      var mx=0,p; for(p in m){ if(m.hasOwnProperty(p)&&(m[p]||0)>mx)mx=m[p]; } return mx;
+    }
+    return 0;
+  }
+  function _isLeafStamped(e){
+    return !!(e&&typeof e==='object'&&!(e instanceof Array)
+              &&e._m&&typeof e._m==='object'&&!(e._m instanceof Array));
+  }
+  function _mergeEntry(l,s){
+    var lo=(l&&typeof l==='object'&&!(l instanceof Array));
+    var so=(s&&typeof s==='object'&&!(s instanceof Array));
+    /* ②項目ごと型（土のメモ）：どちらか一方でも項目ごとの時刻を持っていれば項目ごとに勝負。
+       片方が古い形でも、持っていない項目は0なので自然に負ける／同点なら手元が残る */
+    if(lo&&so&&(_isLeafStamped(l)||_isLeafStamped(s))){
+      var lmo=_isLeafStamped(l)?l._m:{}, smo=_isLeafStamped(s)?s._m:{};
+      var out={}, mm={}, p;
+      for(p in s){ if(s.hasOwnProperty(p)&&p!=='_m')out[p]=s[p]; }
+      for(p in l){ if(!l.hasOwnProperty(p)||p==='_m')continue;
+        out[p]=(((smo[p]||0)>(lmo[p]||0))&&(p in s))?s[p]:l[p]; }
+      for(p in lmo){ if(lmo.hasOwnProperty(p))mm[p]=lmo[p]; }
+      for(p in smo){ if(smo.hasOwnProperty(p)&&(smo[p]||0)>(mm[p]||0))mm[p]=smo[p]; }
+      out._m=mm;
+      return out;
+    }
+    /* ①丸ごと型（反省メモ・生産原価）／③古い形どうし
+       新しいほうが丸ごと勝つ。同点（両方とも時刻なし＝0 を含む）は手元を残す＝v65までと同じ */
+    return (_entryTime(s)>_entryTime(l))?s:l;
   }
   function _syncBadge(state){
     var el=document.getElementById('syncState'); if(!el)return;
@@ -7496,7 +7733,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v64';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v67';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -7802,6 +8039,18 @@
   var KYO_KEY='gyotoku.kyoka.v1', kyoMemos={}, kyoDate=new Date();
   function kyoLoad(){ try{var t=localStorage.getItem(KYO_KEY); kyoMemos=t?JSON.parse(t):{};}catch(e){kyoMemos={};} if(typeof kyoMemos!=='object'||!kyoMemos)kyoMemos={}; }
   function kyoSave(){ try{localStorage.setItem(KYO_KEY,JSON.stringify(kyoMemos));}catch(e){} }
+  /* ★v66 反省メモは「丸ごと型」{v:文章, _m:時刻}。
+     v65までは文字列をそのまま入れていたので、古いデータも必ず読めるようにする。
+     ★古いデータに時刻は入れない（分からない時刻をでっちあげない）。
+       次にその月を書き直した時から、家族にも正しく届くようになる。 */
+  function kyoGet(ym){
+    var e=kyoMemos[ym];
+    if(e==null)return '';
+    if(typeof e==='string')return e;                     /* v65までの古い形 */
+    if(typeof e==='object'&&typeof e.v==='string')return e.v;
+    return '';
+  }
+  function kyoSet(ym,v){ kyoMemos[ym]={v:String(v==null?'':v), _m:Date.now()}; kyoSave(); }
   function kyoYm(y,m){ return y+'-'+(m<10?'0':'')+m; }
   function kyoLabel(e){
     var lab=e.work||e.text||'';
@@ -7830,7 +8079,7 @@
   /* v48.1：折りたたみ(kyoToggle/kyoReset)は撤去。本番で「アプリが閉じる」現象が出たため、
      他の19画面と同じ「別画面＋戻る」の実績ある形に戻した。深緑ボタンは go('kyoka') を呼ぶ。 */
   function kyoMemoSave(v){
-    kyoMemos[kyoYm(kyoDate.getFullYear(),kyoDate.getMonth()+1)]=v; kyoSave();
+    kyoSet(kyoYm(kyoDate.getFullYear(),kyoDate.getMonth()+1),v);   /* ★v66 更新時刻つきで保存 */
     toast('📝 反省メモを保存しました（来年の同じ月に出ます）');
   }
   function kyoRender(){
@@ -7840,7 +8089,7 @@
     /* --- 過去の同じ月（年ごと・最大3年さかのぼり） --- */
     var past='', found=false;
     for(var py=y-1;py>=y-3;py--){
-      var rows=kyoRowsOf(py,m), memo=kyoMemos[kyoYm(py,m)];
+      var rows=kyoRowsOf(py,m), memo=kyoGet(kyoYm(py,m));          /* ★v66 古い形も読める */
       var hs=hasList(null,py).filter(function(r){return parseInt(r.d.slice(5,7),10)===m;});
       if(!rows.length&&!memo&&!hs.length)continue;
       found=true;
@@ -7867,7 +8116,7 @@
       +'今年つけた★と📝メモが、<b>来年の'+m+'月にここへ出てきます</b>。</div>';
     var pb=document.getElementById('kyoPast'); if(pb)pb.innerHTML=past;
     /* --- 反省メモ（表示中の年月ぶん） --- */
-    var mm=document.getElementById('kyoMemo'); if(mm)mm.value=kyoMemos[kyoYm(y,m)]||'';
+    var mm=document.getElementById('kyoMemo'); if(mm)mm.value=kyoGet(kyoYm(y,m));  /* ★v66 */
     /* v48:今年の記録の一覧と★は「📝記録の確認」本体に移したので、ここでは作らない */
   }
 
