@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v69">
+<meta name="app-ver" content="v71">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -781,6 +781,54 @@
   .kt-flag.l{background:#8A6D1E;}
   .kt-pnote{font-size:13px;color:#8A8472;line-height:1.85;margin-top:9px;}
   .kt-pnote b{color:#6E6A5C;}
+
+  /* ★v70 品種・田植え日の入口の帯。
+     CLAUDE.md 6.の決まりどおり「アプリが自動で入れた値＝緑の細枠＋薄い緑＋札」。
+     深緑ベタは押させたいボタンだけに取っておく（帯を深緑にすると画面が重くなる）。
+     まだ入っていないときだけ、右に赤いバッジ「入れる ›」を出す。 */
+  .kt-setup{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
+    border-radius:14px;padding:12px 13px;margin-bottom:8px;cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .kt-setup.auto{background:var(--green-soft);border:1.5px solid #9DBBA6;box-shadow:none;}
+  .kt-setup .nm{font-size:15.5px;font-weight:800;flex:1;min-width:0;line-height:1.45;}
+  .kt-setup .nm small{display:block;font-size:13px;color:#5F5B4E;font-weight:700;margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kt-setup-tag{font-size:11.5px;font-weight:800;color:var(--green-deep);background:#fff;
+    border:1px solid #9DBBA6;padding:1px 7px;border-radius:999px;margin-left:4px;
+    vertical-align:middle;white-space:nowrap;}
+  .kt-setup-go{font-size:14px;font-weight:800;color:#1D5C8F;flex-shrink:0;white-space:nowrap;}
+  .kt-setup-go.need{color:#fff;background:#B23B2E;padding:4px 10px;border-radius:999px;}
+  .kt-basis{font-size:13px;color:#6E6A5C;line-height:1.8;margin:0 3px 12px;}
+  .kt-basis b{color:var(--green-deep);}
+
+  /* ★v71 草刈り：さがす・地区・見出し・取り消し */
+  .kusa-find{background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:12px 12px 14px;margin-bottom:10px;}
+  .kusa-find .fl{font-size:13px;font-weight:800;color:#5F5B4E;margin:2px 2px 7px;}
+  .kusa-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+  .kusa-chip{font-size:14px;font-weight:800;color:var(--green-deep);background:#F2F0E8;
+    border:1.5px solid var(--line);border-radius:999px;padding:8px 13px;cursor:pointer;
+    white-space:nowrap;}
+  .kusa-chip.on{background:var(--green);border-color:var(--green);color:#fff;}
+  .kusa-qwrap{display:flex;align-items:center;gap:8px;}
+  .kusa-q{flex:1;min-width:0;font-size:16px;font-weight:700;padding:12px 12px;
+    border:1.5px solid var(--line);border-radius:12px;background:#FBFAF6;color:var(--ink);
+    -webkit-appearance:none;appearance:none;}
+  .kusa-qx{font-size:13px;font-weight:800;color:#8A8472;flex-shrink:0;white-space:nowrap;cursor:pointer;}
+  .kusa-gh{position:-webkit-sticky;position:sticky;top:0;z-index:2;
+    display:flex;align-items:baseline;gap:8px;background:var(--paper);
+    padding:9px 4px 7px;margin:6px 0 4px;border-bottom:1.5px solid var(--line);}
+  .kusa-gh .ga{font-family:var(--mincho);font-size:18px;font-weight:800;color:var(--green-deep);}
+  .kusa-gh .gn{font-size:13px;font-weight:800;color:#5F5B4E;}
+  .kusa-gh .gp{margin-left:auto;font-size:12px;font-weight:700;color:#8A8472;white-space:nowrap;}
+  .kusa-ix{font-size:11.5px;font-weight:700;color:#A9A392;margin-left:6px;white-space:nowrap;}
+  .kusa-undo{float:right;font-size:12.5px;font-weight:800;color:#B23B2E;
+    border:1.5px solid #E3C4BF;background:#fff;border-radius:999px;padding:3px 11px;cursor:pointer;}
+  .kusa-none{text-align:center;font-size:15px;font-weight:700;color:#8A8472;
+    line-height:1.9;padding:34px 10px;}
+  .ina-backauto{width:100%;margin-top:12px;background:#fff;border:2px solid var(--green);
+    border-radius:999px;padding:14px;font-size:16px;font-weight:800;color:var(--green-deep);
+    letter-spacing:.04em;cursor:pointer;}
 
   .ina-seclbl{font-size:13.5px;font-weight:800;color:#5F5B4E;letter-spacing:.04em;margin:4px 3px 8px;}
   .ina-stg{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 14px;margin-bottom:8px;
@@ -1781,7 +1829,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v69(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v71(本番)</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -1927,6 +1975,8 @@
             <div class="ina-form-lbl">移植日（田植えした日）</div>
             <input class="ina-date" type="date" id="inaDate">
             <button class="ina-next" onclick="ktCalc()">この内容で予想する ▶</button>
+            <!-- ★v70 手で直したときだけ出る「自動に戻す」出口。ktInitSetup() が出し入れする -->
+            <button class="ina-backauto" id="inaAutoBack" style="display:none;" onclick="inaBackToAuto()">↩ 自動（田植えの記録）に戻す</button>
             <div class="ina-trust">
               <b>🔬 なぜ当たるの？</b><br>
               大刀洗町の気温をもとに、今どの時期かを毎日計算します。田や県が使う予測と同じしくみ。
@@ -2302,6 +2352,72 @@
     });
     return out;
   }
+  /* =========================================================
+     ★v70：品種・田植え日を「田植えの記録」から自動で入れる（入力ゼロ）
+     -----------------------------------------------------------
+     なぜ要るか：工程表⑤中干し〜⑨稲刈りの予想日と「📍今ここ」は、
+     inaState（品種・田植え日）を燃料に気温で計算している。空だと⑤〜⑨に
+     日付が出ず、今ここも④除草剤で止まる。ところが v17 で稲作先生を
+     工程表へ統合して以降、その入力画面を外から開く道が無く、
+     **誰も入れられない・直せない**状態が続いていた（v69で発覚）。
+     → 人に打たせるのではなく、すでにアプリが持っている田植えの記録から拾う。
+
+     どの田を基準にするか＝**いちばん早く出穂する田**。
+     作業は早い田から来るので、早い方に合わせておけばどの田の適期も取りこぼさない。
+     遅い方に外すと穂肥・中干しの適期を過ぎて収量・品質に響くが、
+     早い方に外れても「まだ早かった」で済む。損の大きさが正反対。
+     ※🌼予想カードが「いちばん早い」の札を付ける田と必ず同じものになる
+       （同じ inaVarietyPredict() の並びの先頭を使うため、画面同士が食い違わない）。
+
+     ★書くのは「中身が本当に変わったとき」だけ。毎回書くと inaSave() が
+       _m（更新時刻）を押し、家族5台が30秒ごとに互いを上書きし合って
+       全員の画面がホームへ戻り続ける（v65で実際に起きた型）。
+     ★手で直したものは触らない（auto:false）。戻す道は inaBackToAuto()。
+     ========================================================= */
+  /* 田植えの記録から「いちばん早く出穂する田」の品種と田植え日を拾う。
+     まだ田植えの記録が1件も無ければ null（＝あてずっぽうを出さない）。 */
+  function inaAutoPick(){
+    if(typeof inaVarietyPredict!=='function')return null;
+    var arr=null;
+    try{ arr=inaVarietyPredict(); }catch(e){ return null; }
+    if(!arr||!arr.length)return null;
+    for(var i=0;i<arr.length;i++){
+      var o=arr[i];
+      /* head があるもの＝田植えの記録がある品種。並びは出穂の早い順なので先頭が基準。 */
+      if(o&&o.head&&o.tp&&o.key&&INA_VMAP[o.key]){
+        /* 記録側はスラッシュ（2026/05/20）。<input type="date"> はハイフンでないと読めない */
+        return {variety:o.key, transplant:(''+o.tp).replace(/\//g,'-'), crop:o.crop};
+      }
+    }
+    return null;
+  }
+  /* 自動で inaState に反映する。書いたら true、書かなかったら false。 */
+  function inaAutoSync(){
+    if(inaState&&inaState.auto===false)return false;   /* 手で直した＝以後アプリは触らない */
+    var p=inaAutoPick();
+    if(!p)return false;                                /* 田植えの記録がまだ無い＝何も入れない */
+    var cur=inaState;
+    /* ★中身が同じなら書かない（同期の上書き合戦を起こさないため） */
+    if(cur&&cur.variety===p.variety&&cur.transplant===p.transplant&&cur.auto===true)return false;
+    /* 田植え日が同じなら、実際の出穂日（手で入れた補正）は捨てない */
+    var keepHead=(cur&&cur.transplant===p.transplant&&cur.actualHead)?cur.actualHead:null;
+    inaState={variety:p.variety, transplant:p.transplant, actualHead:keepHead,
+              viewStage:null, auto:true};
+    inaSave();
+    return true;
+  }
+  /* 手で直したあと、自動（田植えの記録）に戻す出口。
+     ★"止める"仕掛けを作ったら、必ず戻す道を用意する（CLAUDE.md 10-2） */
+  function inaBackToAuto(){
+    var p=inaAutoPick();
+    if(!p){ toast('田植えの記録がまだありません'); return; }
+    inaState={variety:p.variety, transplant:p.transplant, actualHead:null,
+              viewStage:null, auto:true};
+    inaSave();
+    toast('✅ 田植えの記録から入れ直しました');
+    ktBackToBoard();
+  }
+
   /* 品種名 → 田んぼ一覧と同じ色（丸バッジ用） */
   var INA_CROP_COLOR={ 'つやおとめ':'#D4A017','ひのひかり':'#2E7D32','にこまる':'#6B4FA0',
     'にじのきらめき':'#1D5C8F','夢つくし':'#D97706','元気つくし':'#0E7C7B','未定':'#9A958A','大豆':'#8B5E3C' };
@@ -2598,43 +2714,152 @@
        消したいときは「記録の確認」から消す＝消し方を1本にしておく。 */
     wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
     toast('✅ '+f.n+' の草刈りを記録しました');
-    kusaRender();
+    /* ★v71 一覧と枚数だけ描き直す（さがす欄に打った文字を消さないため） */
+    kusaListRender(); kusaCountRender();
   }
   function kusaEnter(){
     try{ if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad(); }catch(e){}
     kusaRender();
   }
-  function kusaRender(){
-    var el=document.getElementById('kusaBody'); if(!el)return;
-    var y=(new Date()).getFullYear(), done=0, rows='';
+  /* ★★v71 草刈り画面の作り直し（親方の指示）★★
+     ・田んぼが88枚あって探せない → 地区でしぼる（タップだけ）＋名前でさがす（打ちたい人だけ）
+     ・今どのへんを見ているか分からない → 地区の見出し＋「○〜○枚目 / 全○枚」
+     ・間違えて押したときに直せない → 記録がある行に「取り消す」
+     ★入力欄は、打っている最中に作り直すと文字が消える。
+       そのため**一覧だけを描き直す**（kusaListRender）。入力欄と地区チップは触らない。 */
+  var kusaArea='';   /* しぼり込む地区。'' ＝ すべて */
+  var kusaQ='';      /* 名前でさがす文字 */
+
+  function kusaAreas(){
+    var out=[], seen={};
     for(var i=0;i<KT_FIELDS.length;i++){
-      var f=KT_FIELDS[i], last=kusaLast(f.n), sub;
+      var a=KT_FIELDS[i].area||'その他';
+      if(!seen[a]){ seen[a]=1; out.push(a); }
+    }
+    return out;
+  }
+  function kusaHit(f){
+    if(kusaArea && (f.area||'その他')!==kusaArea)return false;
+    if(kusaQ){
+      var q=(''+kusaQ).replace(/\s+/g,'');
+      if(q && (''+f.n).replace(/\s+/g,'').indexOf(q)<0)return false;
+    }
+    return true;
+  }
+  function kusaSetArea(a){ kusaArea=(kusaArea===a)?'':a; kusaChipsRender(); kusaListRender(); }
+  function kusaSetQ(v){ kusaQ=v||''; kusaListRender(); }
+  function kusaClearQ(){
+    kusaQ=''; var e=document.getElementById('kusaQ'); if(e)e.value='';
+    kusaListRender();
+  }
+  /* ★v71 上の「2026年 ○ / ○ 枚」。記録したときも取り消したときも、必ずここを通す */
+  function kusaCountRender(){
+    var el=document.getElementById('kusaCount'); if(!el)return;
+    var y=(new Date()).getFullYear(), done=0;
+    for(var i=0;i<KT_FIELDS.length;i++)if(kusaLast(KT_FIELDS[i].n))done++;
+    el.textContent=y+'年 '+done+' / '+KT_FIELDS.length+' 枚';
+  }
+  function kusaChipsRender(){
+    var el=document.getElementById('kusaChips'); if(!el)return;
+    var as=kusaAreas(), h='';
+    h+='<div class="kusa-chip'+(kusaArea?'':' on')+'" onclick="kusaSetArea(\'\')">すべて '+KT_FIELDS.length+'</div>';
+    for(var i=0;i<as.length;i++){
+      var a=as[i], n=0;
+      for(var j=0;j<KT_FIELDS.length;j++)if((KT_FIELDS[j].area||'その他')===a)n++;
+      h+='<div class="kusa-chip'+(kusaArea===a?' on':'')+'" onclick="kusaSetArea(\''+a+'\')">'+a+' '+n+'</div>';
+    }
+    el.innerHTML=h;
+  }
+  function kusaListRender(){
+    var el=document.getElementById('kusaList'); if(!el)return;
+    var TOTAL=KT_FIELDS.length, h='', shown=0, curArea=null, gi=0;
+    /* 地区ごとに見出しを立てる。見出しには「全体の何枚目か」を書く */
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var f=KT_FIELDS[i];
+      if(!kusaHit(f))continue;
+      var a=f.area||'その他';
+      if(a!==curArea){
+        curArea=a;
+        /* この地区で、しぼり込みに残っている枚数と、全体での位置 */
+        var cnt=0, first=0, lastPos=0;
+        for(var j=0;j<KT_FIELDS.length;j++){
+          if((KT_FIELDS[j].area||'その他')!==a)continue;
+          if(!kusaHit(KT_FIELDS[j]))continue;
+          cnt++; if(!first)first=j+1; lastPos=j+1;
+        }
+        h+='<div class="kusa-gh"><span class="ga">'+a+'</span>'
+         + '<span class="gn">'+cnt+'枚</span>'
+         + '<span class="gp">'+first+'〜'+lastPos+'枚目 ／ 全'+TOTAL+'枚</span></div>';
+      }
+      shown++; gi=i+1;
+      var last=kusaLast(f.n), sub;
       if(last){
-        done++;
-        sub='<div class="kusa-last done">✅ '+(last.getMonth()+1)+'月'+last.getDate()+'日に刈りました（'+kusaAgo(last)+'日前）</div>';
+        sub='<div class="kusa-last done">✅ '+(last.getMonth()+1)+'月'+last.getDate()+'日に刈りました（'+kusaAgo(last)+'日前）'
+          + '<span class="kusa-undo" onclick="kusaUndo('+i+')">取り消す</span></div>';
       }else{
         sub='<div class="kusa-last">まだ記録がありません</div>';
       }
-      rows+='<div class="kusa-row" onclick="kusaTap('+i+')">'
-          +   '<div class="kusa-top">'
-          +     '<div class="kusa-nm">'+f.n+' <span class="kusa-a">'+f.a+'</span></div>'
-          +     '<div class="kt-b no">刈ったらタップ</div>'
-          +   '</div>'+sub
-          + '</div>';
+      /* ★行ぜんたいではなくボタンだけを押せるようにした（押し間違いを減らすため） */
+      h+='<div class="kusa-row">'
+       +   '<div class="kusa-top">'
+       +     '<div class="kusa-nm">'+f.n+' <span class="kusa-a">'+f.a+'</span>'
+       +       '<span class="kusa-ix">'+gi+'/'+TOTAL+'</span></div>'
+       +     '<div class="kt-b no" onclick="kusaTap('+i+')">刈ったらタップ</div>'
+       +   '</div>'+sub
+       + '</div>';
     }
+    if(!shown){
+      h='<div class="kusa-none">見つかりませんでした。<br>'
+       + '地区の「すべて」を押すか、さがす言葉を消してください。</div>';
+    }
+    el.innerHTML=h;
+  }
+  function kusaUndo(i){
+    var f=KT_FIELDS[i]; if(!f)return;
+    var y=(new Date()).getFullYear(), idx=-1, best=null;
+    for(var k=0;k<ktLog.length;k++){
+      var e=ktLog[k];
+      if(e.step!==KUSA_STEP||e.field!==f.n)continue;
+      var d=kusaParseD(e.d); if(!d||d.getFullYear()!==y)continue;
+      if(!best||d>=best){ best=d; idx=k; }
+    }
+    if(idx<0){ toast('取り消せる記録がありません'); return; }
+    var tgt=ktLog[idx];
+    if(!confirm('「'+f.n+'」の '+(best.getMonth()+1)+'月'+best.getDate()+'日 の草刈りの記録を取り消しますか？\n\nいちばん新しい1件だけを消します。'))return;
+    tombAdd(KT_LS,tgt); ktLog.splice(idx,1); ktSave();
+    /* ★取り消したときも、上の「○/○枚」を直す（片方だけ直すと数が食い違う） */
+    kusaListRender(); kusaCountRender();
+    toast('↩ '+f.n+' の記録を取り消しました');
+  }
+  function kusaRender(){
+    var el=document.getElementById('kusaBody'); if(!el)return;
+    var y=(new Date()).getFullYear(), done=0;
+    for(var i=0;i<KT_FIELDS.length;i++)if(kusaLast(KT_FIELDS[i].n))done++;
     el.innerHTML =
       '<div class="kusa-hero">'
     +   '<div class="no">くり返す作業</div>'
     +   '<div class="nm">草刈り</div>'
-    +   '<div class="badge">'+y+'年 '+done+' / '+KT_FIELDS.length+' 枚</div>'
+    +   '<div class="badge" id="kusaCount">'+y+'年 '+done+' / '+KT_FIELDS.length+' 枚</div>'
+    + '</div>'
+    + '<div class="kusa-find">'
+    +   '<div class="fl">📍 地区でしぼる（押すだけ）</div>'
+    +   '<div class="kusa-chips" id="kusaChips"></div>'
+    +   '<div class="fl">🔍 名前でさがす（打たなくても大丈夫）</div>'
+    +   '<div class="kusa-qwrap">'
+    +     '<input class="kusa-q" id="kusaQ" type="search" inputmode="text" placeholder="例：古賀" oninput="kusaSetQ(this.value)">'
+    +     '<span class="kusa-qx" onclick="kusaClearQ()">✕ 消す</span>'
+    +   '</div>'
     + '</div>'
     + '<div class="kusa-dash"></div>'
-    + rows
+    + '<div id="kusaList"></div>'
     + '<div class="kusa-note">💡 草刈りは一年に何度もやる作業なので、'
     +   '<b>米づくり工程表の順番や進み具合には入れていません</b>。ここだけで数えます。<br>'
-    +   '📝作業を記録・🎤話して記録で「畦畔の草刈り」をえらんでも、ここに出ます。<br>'
+    +   '📝作業を記録・🎤話して記録で「草刈り」をえらんでも、ここに出ます。<br>'
+    +   '間違えて押したときは、その行の<b>「取り消す」</b>で消せます。<br>'
     +   '数字は<b>'+y+'年ぶん</b>です。年が変わると数え直します。</div>'
     + '<div class="spacer"></div>';
+    kusaChipsRender();
+    kusaListRender();
   }
 
   /* ---- 画面A:工程表 ---- */
@@ -2672,6 +2897,38 @@
       +'</div></div>';
     return h;
   }
+  /* ★v70 品種・田植え日の帯（工程表の🌼予想カードの下）。
+     ここが「入力画面へ入る、外からの道」。v69まではこの道が無かった。 */
+  function ktSetupRowHTML(){
+    var ok=!!(inaState&&inaState.variety&&inaState.transplant&&INA_VMAP[inaState.variety]);
+    if(!ok){
+      return '<div class="kt-setup" onclick="ktShowSetup()">'
+        +'<div class="nm">🌡 品種と田植え日<small>⑤〜⑨の予想日を出すのに使います</small></div>'
+        +'<span class="kt-setup-go need">入れる ›</span></div>';
+    }
+    var nm=INA_VMAP[inaState.variety].n.replace(/（[^）]*）/,'');
+    var d=new Date((''+inaState.transplant).replace(/-/g,'/'));
+    var ds=isNaN(d.getTime())?'—':((d.getMonth()+1)+'月'+d.getDate()+'日');
+    var tag=(inaState.auto===false)?'手で入力':'自動';
+    return '<div class="kt-setup auto" onclick="ktShowSetup()">'
+      +'<div class="nm">🌡 品種と田植え日 <span class="kt-setup-tag">'+tag+'</span>'
+      +'<small>'+nm+' ／ '+ds+'</small></div>'
+      +'<span class="kt-setup-go">直す ›</span></div>';
+  }
+  /* ★v70 何を基準にした日かを画面に書く（CLAUDE.md 3.5「予想は前提を画面に書く」）。
+     書かないと「全部の田がこの日」と読まれる。 */
+  function ktBasisNoteHTML(){
+    if(!(inaState&&inaState.variety&&inaState.transplant&&INA_VMAP[inaState.variety]))return '';
+    var nm=INA_VMAP[inaState.variety].n.replace(/（[^）]*）/,'');
+    if(inaState.auto===false){
+      return '<div class="kt-basis">⑤〜⑨の日は <b>'+nm+'（手で入れた品種・田植え日）</b>'
+        +'をもとにした予想です。</div>';
+    }
+    var p=inaAutoPick();
+    if(p&&p.crop)nm=p.crop;
+    return '<div class="kt-basis">⑤〜⑨の日は <b>'+nm+'（いちばん早く出穂する田）</b>'
+      +'を基準にした予想です。</div>';
+  }
   function ktRenderBoard(){
     var el=document.getElementById('ktViewBoard'); if(!el)return;
     var s=ktStatus(), c=s.c;
@@ -2687,6 +2944,9 @@
       +'</div>';
     /* v45：品種ごとの出穂・収穫予想。入力ゼロ。田植え記録から自動。 */
     h+=ktPredictCardHTML();
+    /* ★v70 品種・田植え日の帯＋「何を基準にした日か」の注記 */
+    h+=ktSetupRowHTML();
+    h+=ktBasisNoteHTML();
     h+='<div class="ina-seclbl">全'+KT_STEPS.length+'工程（記録・気温の計算から自動反映）</div>';
     for(var i=0;i<s.list.length;i++){
       var o=s.list[i];
@@ -3920,7 +4180,11 @@
   }
   function ktBackToBoard(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 開くたび必ず最初のビュー(工程表)から(v15確立の共通ルール) */
-  function ktEnter(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktRenderBoard(); ktShowOnly('ktViewBoard'); }
+  /* ★v70 開くたびに、田植えの記録から品種・田植え日を自動で入れ直す。
+     中身が変わったときだけ書くので、同期の上書き合戦にはならない。 */
+  function ktEnter(){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1;
+    try{ inaAutoSync(); }catch(e){}
+    ktRenderBoard(); ktShowOnly('ktViewBoard'); }
   /* 横スワイプ:内部ビュー→工程表→ホーム(段階的に戻る/v15確立の共通ルール) */
   function ktSwipeBack(){
     var vis=function(id){var e=document.getElementById(id);return e&&e.style.display!=='none';};
@@ -3946,14 +4210,22 @@
       sel.innerHTML=hh; sel._built=true;
     }
     var dt=document.getElementById('inaDate');
-    if(inaState){ if(sel)sel.value=inaState.variety; if(dt)dt.value=inaState.transplant; }
-    else if(dt&&!dt.value){ var t=new Date(); dt.value=inaFmtFull(t); }
+    /* ★v70 <input type="date"> はハイフンでないと読めない。
+       記録側はスラッシュ（2026/05/20）なので、必ずそろえてから入れる。 */
+    if(inaState){ if(sel)sel.value=inaState.variety;
+      if(dt)dt.value=(''+(inaState.transplant||'')).replace(/\//g,'-'); }
+    else if(dt&&!dt.value){ var t=new Date(); dt.value=inaFmtFull(t).replace(/\//g,'-'); }
+    /* ★v70 手で直したときだけ「自動に戻す」を出す（戻る道を必ず用意する） */
+    var bk=document.getElementById('inaAutoBack');
+    if(bk)bk.style.display=(inaState&&inaState.auto===false&&inaAutoPick())?'block':'none';
   }
   function ktShowSetup(){ ktInitSetup(); ktShowOnly('ktViewSetup'); }
   function ktCalc(){
     var sel=document.getElementById('inaVariety'), dt=document.getElementById('inaDate');
     if(!dt.value){ toast('田植えした日を選んでください'); return; }
-    inaState={variety:sel.value, transplant:dt.value, actualHead:(inaState&&inaState.transplant===dt.value?inaState.actualHead:null), viewStage:null};
+    /* ★v70 auto:false ＝ 手で入れた印。以後 inaAutoSync() は触らない。
+       戻したいときは入力画面の「↩ 自動（田植えの記録）に戻す」から。 */
+    inaState={variety:sel.value, transplant:dt.value, actualHead:(inaState&&inaState.transplant===dt.value?inaState.actualHead:null), viewStage:null, auto:false};
     inaSave(); toast('✅ 予想を更新しました'); ktBackToBoard();
   }
   /* ---- 予想のしくみ＋実出穂日の補正（旧・稲作先生の信頼性説明を吸収） ---- */
@@ -4302,6 +4574,42 @@
     {re:/防除|農薬|散布|まい|撒/,w:'散布'},{re:/草刈|草か/,w:'草刈り'},{re:/収穫|稲刈|刈っ|刈り/,w:'収穫'}, /* v24:草刈りを収穫と誤判定するバグ修正 */
     {re:/水/,w:'水管理'}
   ];
+  /* ★★v71 ここが「音声で記録した作業が、その時の生育段階に化ける」根っこ ★★
+     作業名の表が**2つ**あって、つなぐ表が無かった。
+       ・音声の表 NG_WORKS  … '草刈り' '収穫' '耕起' '追肥' …（短い言い方）
+       ・記録の表 REC_WORKS … '畦畔の草刈り' '収穫・稲刈り' '耕起（粗起こし）' …（正式名）
+     saveVoice() は聞き取った作業名を**一度も見ずに** ktGuessStep()（今の生育段階）で
+     保存していたため、「古賀1 草刈り」と話すと ⑧落水 の記録になり、
+     草刈り画面には出ず、工程表には嘘の『済み』が付いていた（実測で確認）。
+     v67で「作業を記録」側だけ直し、音声側を見落としていた（同じ型を全数で見ていなかった）。 */
+  var NG_STEP={ '耕起':'kouki', '代かき':'kouki', '田植え':'taue', '除草剤散布':'josou',
+                '中干し':'nakaboshi', '水管理':'nakaboshi', '追肥':'hogoe',
+                '草刈り':KUSA_STEP, '収穫':'inekari' };
+  /* ★'散布'（汎用）は表に入れない。何の薬かで工程が変わるため、
+     決めつけずに今までどおり生育段階の推定へ落とす（CLAUDE.md 3.5「分からない時に既定値でごまかさない」） */
+  function ngStepOf(work){
+    if(work && NG_STEP[work]) return NG_STEP[work];
+    return (typeof ktGuessStep==='function')?ktGuessStep():'taue';
+  }
+  /* ★v71 すでに化けてしまった過去の音声記録を、話した作業どおりに直す（一度だけ）。
+     直すのであって消すのではないので、削除印は使わず _m を新しくして勝たせる
+     （CLAUDE.md：削除印で「直す」と、直した本体まで家族の端末から消える） */
+  function ngMigrate(){
+    var K='gyotoku.ngfix.v1';
+    try{ if(localStorage.getItem(K))return 0; }catch(e){}
+    var n=0;
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i];
+      if(e.src!=='voice'||!e.work)continue;
+      var want=NG_STEP[e.work];
+      if(!want||e.step===want)continue;
+      e.step=want; e._m=Date.now(); n++;
+    }
+    if(n){ try{ ktSave(); }catch(e){}
+      try{ evLog('fix','🎤話して記録した'+n+'件を、話した作業どおりの工程に直しました'); }catch(e){} }
+    try{ localStorage.setItem(K,'1'); }catch(e){}
+    return n;
+  }
   /* 最後に分解した結果(保存・記録簿でそのまま使う) */
   var lastParse=null;
   function ngNum(t,unit){
@@ -4382,7 +4690,8 @@
     var fld=r.field||defaultFieldName()||'西 3';
     var text=(lastMemo||'音声記録');
     var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML=(lastMemo||'(空欄)');
-    wlAdd(ktGuessStep(), fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''});
+    /* ★v71 聞き取った作業名から工程を決める。表に無い言葉だけ生育段階の推定に落とす */
+    wlAdd(ngStepOf(r.work), fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''});
     toast('✅ 保存しました(記録簿・工程表・みんなに反映)'); setTimeout(function(){go('cal');},900);
   }
 
@@ -6826,6 +7135,11 @@
     },{passive:true});
   })();
   if(typeof inaLoad==='function')inaLoad();
+  /* ★v70 起動時にも、田植えの記録から品種・田植え日を自動で入れる。
+     工程表を開かなくても、ホームの絵の段階の札が出るようにするため。 */
+  try{ if(typeof inaAutoSync==='function')inaAutoSync(); }catch(e){}
+  /* ★v71 音声で化けた過去の記録を、話した作業どおりに直す（一度だけ） */
+  try{ if(typeof ngMigrate==='function')ngMigrate(); }catch(e){}
 
   /* ===== v2.5 予定データ(ホームTODO・カレンダー共通/localStorageに保存) ===== */
   var PLAN_LS_KEY='gyotoku.plans.v1';
@@ -7736,7 +8050,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v69';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v71';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
