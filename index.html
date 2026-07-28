@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v71">
+<meta name="app-ver" content="v73">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -801,31 +801,79 @@
   .kt-basis{font-size:13px;color:#6E6A5C;line-height:1.8;margin:0 3px 12px;}
   .kt-basis b{color:var(--green-deep);}
 
-  /* ★v71 草刈り：さがす・地区・見出し・取り消し */
-  .kusa-find{background:#fff;border:1px solid var(--line);border-radius:14px;
-    padding:12px 12px 14px;margin-bottom:10px;}
-  .kusa-find .fl{font-size:13px;font-weight:800;color:#5F5B4E;margin:2px 2px 7px;}
-  .kusa-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
-  .kusa-chip{font-size:14px;font-weight:800;color:var(--green-deep);background:#F2F0E8;
-    border:1.5px solid var(--line);border-radius:999px;padding:8px 13px;cursor:pointer;
-    white-space:nowrap;}
-  .kusa-chip.on{background:var(--green);border-color:var(--green);color:#fff;}
-  .kusa-qwrap{display:flex;align-items:center;gap:8px;}
-  .kusa-q{flex:1;min-width:0;font-size:16px;font-weight:700;padding:12px 12px;
-    border:1.5px solid var(--line);border-radius:12px;background:#FBFAF6;color:var(--ink);
-    -webkit-appearance:none;appearance:none;}
-  .kusa-qx{font-size:13px;font-weight:800;color:#8A8472;flex-shrink:0;white-space:nowrap;cursor:pointer;}
-  .kusa-gh{position:-webkit-sticky;position:sticky;top:0;z-index:2;
-    display:flex;align-items:baseline;gap:8px;background:var(--paper);
-    padding:9px 4px 7px;margin:6px 0 4px;border-bottom:1.5px solid var(--line);}
-  .kusa-gh .ga{font-family:var(--mincho);font-size:18px;font-weight:800;color:var(--green-deep);}
-  .kusa-gh .gn{font-size:13px;font-weight:800;color:#5F5B4E;}
-  .kusa-gh .gp{margin-left:auto;font-size:12px;font-weight:700;color:#8A8472;white-space:nowrap;}
-  .kusa-ix{font-size:11.5px;font-weight:700;color:#A9A392;margin-left:6px;white-space:nowrap;}
-  .kusa-undo{float:right;font-size:12.5px;font-weight:800;color:#B23B2E;
-    border:1.5px solid #E3C4BF;background:#fff;border-radius:999px;padding:3px 11px;cursor:pointer;}
-  .kusa-none{text-align:center;font-size:15px;font-weight:700;color:#8A8472;
-    line-height:1.9;padding:34px 10px;}
+  /* ★v72 草刈り：地区タイル・田んぼ行・まとめて記録・記録シート */
+  .kusa-lbl{font-size:13.5px;font-weight:800;color:#5F5B4E;margin:12px 2px 9px;}
+  .kusa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+  .kusa-tile{background:#fff;border:1.5px solid var(--line);border-radius:13px;
+    padding:11px 6px 10px;text-align:center;cursor:pointer;}
+  .kusa-tile.done{background:var(--green-soft);border-color:#9DBBA6;}
+  .kusa-tile .a{font-family:var(--mincho);font-size:18px;font-weight:800;color:var(--green-deep);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kusa-tile .c{font-size:12px;font-weight:700;color:#8A8472;margin-top:3px;}
+  .kusa-tile .p{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:800;
+    border-radius:999px;padding:2px 9px;}
+  .kusa-tile .p.ok{background:#fff;color:var(--green-deep);border:1px solid #9DBBA6;}
+  .kusa-tile .p.no{background:#F4F2EA;color:#8A8472;border:1px solid var(--line);}
+  .kusa-row{display:flex;align-items:center;gap:11px;background:#fff;border:1.5px solid var(--line);
+    border-radius:13px;padding:12px 13px;margin-bottom:9px;}
+  .kusa-row.on{background:var(--green-soft);border-color:var(--green);}
+  .kusa-ck{width:30px;height:30px;border-radius:8px;border:2.5px solid #C9C4B4;background:#fff;
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;
+    color:#fff;cursor:pointer;}
+  .kusa-ck.on{background:var(--green);border-color:var(--green);}
+  .kusa-rn{flex:1;min-width:0;cursor:pointer;}
+  .kusa-rn .n{font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kusa-rn .n span{font-size:13px;font-weight:700;color:#8A8472;margin-left:6px;}
+  .kusa-rn .s{font-size:12.5px;font-weight:700;color:#8A8472;margin-top:3px;}
+  .kusa-rn .s.ok{color:var(--green-deep);}
+  .kusa-cnt{flex-shrink:0;text-align:center;background:#EEF4FA;border:1.5px solid #C2D8E8;
+    border-radius:11px;padding:7px 9px;min-width:70px;cursor:pointer;}
+  .kusa-cnt .k{font-size:14.5px;font-weight:800;color:#1D5C8F;line-height:1.2;white-space:nowrap;}
+  .kusa-cnt .g{font-size:10.5px;font-weight:800;color:#5E87A8;margin-top:2px;}
+  .kusa-cnt.zero{background:#F4F2EA;border-color:var(--line);}
+  .kusa-cnt.zero .k,.kusa-cnt.zero .g{color:#A9A392;}
+  .kusa-bar{position:-webkit-sticky;position:sticky;bottom:0;background:rgba(251,250,246,.96);
+    border-top:1.5px solid var(--line);padding:11px 0 14px;margin-top:4px;}
+  .kusa-btn{width:100%;background:var(--green);color:#fff;border-radius:999px;padding:16px 10px;
+    text-align:center;font-size:17.5px;font-weight:800;letter-spacing:.03em;cursor:pointer;}
+  .kusa-btn.off{background:#D8D4C8;color:#8A8472;font-size:15px;}
+  .kusa-undobar{position:-webkit-sticky;position:sticky;bottom:74px;background:#232821;color:#fff;
+    border-radius:14px;padding:13px 13px;display:flex;align-items:center;gap:11px;margin-bottom:8px;}
+  .kusa-undobar .tx{flex:1;font-size:15px;font-weight:800;line-height:1.5;}
+  .kusa-undobar .ub{background:#fff;color:#232821;border-radius:999px;padding:10px 15px;
+    font-size:15px;font-weight:800;white-space:nowrap;cursor:pointer;}
+  .kusa-ov{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;
+    background:rgba(35,40,33,.45);display:flex;flex-direction:column;justify-content:flex-end;}
+  .kusa-sheet{background:var(--paper);border-radius:20px 20px 0 0;padding:8px 16px 22px;
+    max-height:86%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .kusa-grip{width:44px;height:5px;border-radius:99px;background:#D6D2C6;margin:4px auto 12px;}
+  .kusa-sh{font-family:var(--mincho);font-size:20px;font-weight:800;text-align:center;margin-bottom:3px;}
+  .kusa-sh2{font-size:13px;font-weight:700;color:#8A8472;text-align:center;margin-bottom:14px;}
+  .kusa-drow{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);
+    border-radius:13px;padding:12px;margin-bottom:9px;}
+  .kusa-dd{flex:1;min-width:0;}
+  .kusa-dd .d{font-size:17px;font-weight:800;color:var(--green-deep);}
+  .kusa-dd .w{font-size:12px;font-weight:700;color:#8A8472;margin-top:2px;}
+  .kusa-bd{font-size:13.5px;font-weight:800;border-radius:999px;padding:9px 13px;
+    flex-shrink:0;white-space:nowrap;cursor:pointer;}
+  .kusa-bd.date{color:#1D5C8F;background:#EEF4FA;border:1.5px solid #C2D8E8;}
+  .kusa-bd.del{color:#B23B2E;background:#fff;border:1.5px solid #E3C4BF;}
+  .kusa-edit{background:#FFF7DC;border:1.5px solid #E6D79A;border-radius:13px;
+    padding:12px;margin:0 0 9px;}
+  .kusa-edit .el{font-size:13px;font-weight:800;color:#8A6D1E;margin-bottom:8px;}
+  .kusa-di{width:100%;font-size:17px;font-weight:700;padding:12px;border:1.5px solid #E6D79A;
+    border-radius:11px;background:#fff;color:var(--ink);-webkit-appearance:none;appearance:none;}
+  .kusa-edit .eb{display:flex;gap:9px;margin-top:10px;}
+  .kusa-edit .eb div{flex:1;text-align:center;padding:13px;border-radius:999px;
+    font-size:15.5px;font-weight:800;cursor:pointer;}
+  .kusa-edit .eb .c{background:#EFEDE4;color:#5F5B4E;}
+  .kusa-edit .eb .o{background:var(--green);color:#fff;}
+  .kusa-add{width:100%;text-align:center;font-size:15px;font-weight:800;color:var(--green);
+    background:#fff;border:2px dashed #9DBBA6;border-radius:13px;padding:14px;cursor:pointer;}
+  .kusa-close{width:100%;text-align:center;font-size:17px;font-weight:800;color:#5F5B4E;
+    background:#EFEDE4;border-radius:999px;padding:15px;margin-top:12px;cursor:pointer;}
+  .kusa-empty{text-align:center;font-size:15px;font-weight:700;color:#8A8472;
+    line-height:1.9;padding:24px 10px;}
   .ina-backauto{width:100%;margin-top:12px;background:#fff;border:2px solid var(--green);
     border-radius:999px;padding:14px;font-size:16px;font-weight:800;color:var(--green-deep);
     letter-spacing:.04em;cursor:pointer;}
@@ -1829,7 +1877,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v71(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v73(本番)</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -1956,6 +2004,10 @@
     <!-- ===== ★v67 草刈り（工程表とは別画面。順送りには入れない） ===== -->
     <div class="page" id="p-kusa">
       <div class="sc" id="kusaBody"></div>
+      <!-- ★v72 その田んぼの草刈り記録を出すシート。iOS対策で inset は使わず4辺を明示 -->
+      <div class="kusa-ov" id="kusaOv" style="display:none;" onclick="kusaSheetBg(event)">
+        <div class="kusa-sheet" id="kusaSheet"></div>
+      </div>
     </div>
 
     <!-- ===== ⑰ 米づくり工程表(v16新規) ===== -->
@@ -2123,6 +2175,13 @@
   var _navSkip=false;
   /* 「戻る」＝直前の画面へ。履歴が空ならホーム */
   function goBack(){
+    /* ★v72 草刈りは1画面の中に「地区一覧」と「田んぼ一覧」があるので、
+       いきなり画面を出てしまわないよう、1段ずつ戻す。
+       ヘッダーの戻るボタンも横スワイプも、どちらもここを通る。 */
+    if(curScreen==='kusa'){
+      if(typeof kusaSheetIdx!=='undefined' && kusaSheetIdx>=0){ kusaSheetClose(); return; }
+      if(typeof kusaView!=='undefined' && kusaView==='fields'){ kusaBackToAreas(); return; }
+    }
     var to=navPop();
     _navSkip=true;          /* 戻る動作そのものは履歴に積まない */
     go(to);
@@ -2708,158 +2767,340 @@
     var n=Math.round((t-d)/86400000);
     return n<0?0:n;
   }
-  function kusaTap(i){
-    var f=KT_FIELDS[i]; if(!f)return;
-    /* ★何度でも押せる。押すたびに新しい記録になる（済みを外す操作は無い）。
-       消したいときは「記録の確認」から消す＝消し方を1本にしておく。 */
-    wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
-    toast('✅ '+f.n+' の草刈りを記録しました');
-    /* ★v71 一覧と枚数だけ描き直す（さがす欄に打った文字を消さないため） */
-    kusaListRender(); kusaCountRender();
-  }
-  function kusaEnter(){
-    try{ if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad(); }catch(e){}
-    kusaRender();
-  }
-  /* ★★v71 草刈り画面の作り直し（親方の指示）★★
-     ・田んぼが88枚あって探せない → 地区でしぼる（タップだけ）＋名前でさがす（打ちたい人だけ）
-     ・今どのへんを見ているか分からない → 地区の見出し＋「○〜○枚目 / 全○枚」
-     ・間違えて押したときに直せない → 記録がある行に「取り消す」
-     ★入力欄は、打っている最中に作り直すと文字が消える。
-       そのため**一覧だけを描き直す**（kusaListRender）。入力欄と地区チップは触らない。 */
-  var kusaArea='';   /* しぼり込む地区。'' ＝ すべて */
-  var kusaQ='';      /* 名前でさがす文字 */
+  /* ==========================================================
+     ★★v72 草刈り画面を「A案（地区を先にえらぶ2段階）」に作り直した ★★
+     -----------------------------------------------------------
+     なぜ作り直したか（v71の失敗）
+       田んぼ88枚に対して地区が28か所ある。v71で地区チップを横に28個並べたら、
+       チップの列そのものが「第二の長い一覧」になり、かえって探しにくくなった。
+       → 一覧を短くするのではなく、**探す必要をなくす**。
+          1画面目は地区だけ。1地区あたり平均3.1枚なので、入れば探すまでもない。
 
-  function kusaAreas(){
+     この画面の決めごと（イメージ図で親方が承認）
+       ① 地区タイルに「✅4 / まだ」を出す → 「今どのあたりか」の悩みが起きない
+       ② 1枚の日も地区まるごとの日も、手順は同じ
+          （チェック → 下の緑ボタンを1回）。日によって枚数がばらつくため
+       ③ 直せる場所を2つ用意する
+          ・押した直後の「↩ 取り消す」（10秒）… その場で気づいたとき用
+          ・「記録 ○件 ›」…あとから気づいたとき用。10秒に頼らない
+       ④ 消すときは必ず1回たしかめる。消えるのは1件だけ
+     ========================================================== */
+  var kusaView='areas';      /* 'areas'=地区一覧 ／ 'fields'=その地区の田んぼ */
+  var kusaCurArea='';
+  var kusaPick={};           /* まとめて記録のチェック { 田んぼの番号:true } */
+  var kusaSheetIdx=-1;       /* 記録シートを開いている田んぼの番号。-1=閉じている */
+  var kusaSheetEditId='';    /* 日にちを直している記録の印 */
+  var kusaSheetAdd=false;    /* 「刈った日をあとから足す」欄を開いているか */
+  var kusaUndoLast=null;     /* 直前のまとめ記録 {ids:[…], n:枚数} */
+  var kusaUndoTimer=null;
+  var KUSA_UNDO_MS=10000;    /* 取り消しが出ている時間 */
+
+  /* ---- 地区の一覧（田んぼの並び順のまま。済み枚数も数える） ---- */
+  function kusaAreaList(){
     var out=[], seen={};
     for(var i=0;i<KT_FIELDS.length;i++){
       var a=KT_FIELDS[i].area||'その他';
-      if(!seen[a]){ seen[a]=1; out.push(a); }
+      if(!seen[a]){ seen[a]={n:a,all:0,done:0}; out.push(seen[a]); }
+      seen[a].all++;
+      if(kusaLast(KT_FIELDS[i].n))seen[a].done++;
     }
     return out;
   }
-  function kusaHit(f){
-    if(kusaArea && (f.area||'その他')!==kusaArea)return false;
-    if(kusaQ){
-      var q=(''+kusaQ).replace(/\s+/g,'');
-      if(q && (''+f.n).replace(/\s+/g,'').indexOf(q)<0)return false;
-    }
-    return true;
+  function kusaIdxOfArea(a){
+    var out=[];
+    for(var i=0;i<KT_FIELDS.length;i++)if((KT_FIELDS[i].area||'その他')===a)out.push(i);
+    return out;
   }
-  function kusaSetArea(a){ kusaArea=(kusaArea===a)?'':a; kusaChipsRender(); kusaListRender(); }
-  function kusaSetQ(v){ kusaQ=v||''; kusaListRender(); }
-  function kusaClearQ(){
-    kusaQ=''; var e=document.getElementById('kusaQ'); if(e)e.value='';
-    kusaListRender();
-  }
-  /* ★v71 上の「2026年 ○ / ○ 枚」。記録したときも取り消したときも、必ずここを通す */
-  function kusaCountRender(){
-    var el=document.getElementById('kusaCount'); if(!el)return;
-    var y=(new Date()).getFullYear(), done=0;
-    for(var i=0;i<KT_FIELDS.length;i++)if(kusaLast(KT_FIELDS[i].n))done++;
-    el.textContent=y+'年 '+done+' / '+KT_FIELDS.length+' 枚';
-  }
-  function kusaChipsRender(){
-    var el=document.getElementById('kusaChips'); if(!el)return;
-    var as=kusaAreas(), h='';
-    h+='<div class="kusa-chip'+(kusaArea?'':' on')+'" onclick="kusaSetArea(\'\')">すべて '+KT_FIELDS.length+'</div>';
-    for(var i=0;i<as.length;i++){
-      var a=as[i], n=0;
-      for(var j=0;j<KT_FIELDS.length;j++)if((KT_FIELDS[j].area||'その他')===a)n++;
-      h+='<div class="kusa-chip'+(kusaArea===a?' on':'')+'" onclick="kusaSetArea(\''+a+'\')">'+a+' '+n+'</div>';
-    }
-    el.innerHTML=h;
-  }
-  function kusaListRender(){
-    var el=document.getElementById('kusaList'); if(!el)return;
-    var TOTAL=KT_FIELDS.length, h='', shown=0, curArea=null, gi=0;
-    /* 地区ごとに見出しを立てる。見出しには「全体の何枚目か」を書く */
-    for(var i=0;i<KT_FIELDS.length;i++){
-      var f=KT_FIELDS[i];
-      if(!kusaHit(f))continue;
-      var a=f.area||'その他';
-      if(a!==curArea){
-        curArea=a;
-        /* この地区で、しぼり込みに残っている枚数と、全体での位置 */
-        var cnt=0, first=0, lastPos=0;
-        for(var j=0;j<KT_FIELDS.length;j++){
-          if((KT_FIELDS[j].area||'その他')!==a)continue;
-          if(!kusaHit(KT_FIELDS[j]))continue;
-          cnt++; if(!first)first=j+1; lastPos=j+1;
-        }
-        h+='<div class="kusa-gh"><span class="ga">'+a+'</span>'
-         + '<span class="gn">'+cnt+'枚</span>'
-         + '<span class="gp">'+first+'〜'+lastPos+'枚目 ／ 全'+TOTAL+'枚</span></div>';
-      }
-      shown++; gi=i+1;
-      var last=kusaLast(f.n), sub;
-      if(last){
-        sub='<div class="kusa-last done">✅ '+(last.getMonth()+1)+'月'+last.getDate()+'日に刈りました（'+kusaAgo(last)+'日前）'
-          + '<span class="kusa-undo" onclick="kusaUndo('+i+')">取り消す</span></div>';
-      }else{
-        sub='<div class="kusa-last">まだ記録がありません</div>';
-      }
-      /* ★行ぜんたいではなくボタンだけを押せるようにした（押し間違いを減らすため） */
-      h+='<div class="kusa-row">'
-       +   '<div class="kusa-top">'
-       +     '<div class="kusa-nm">'+f.n+' <span class="kusa-a">'+f.a+'</span>'
-       +       '<span class="kusa-ix">'+gi+'/'+TOTAL+'</span></div>'
-       +     '<div class="kt-b no" onclick="kusaTap('+i+')">刈ったらタップ</div>'
-       +   '</div>'+sub
-       + '</div>';
-    }
-    if(!shown){
-      h='<div class="kusa-none">見つかりませんでした。<br>'
-       + '地区の「すべて」を押すか、さがす言葉を消してください。</div>';
-    }
-    el.innerHTML=h;
-  }
-  function kusaUndo(i){
-    var f=KT_FIELDS[i]; if(!f)return;
-    var y=(new Date()).getFullYear(), idx=-1, best=null;
-    for(var k=0;k<ktLog.length;k++){
-      var e=ktLog[k];
-      if(e.step!==KUSA_STEP||e.field!==f.n)continue;
+  /* ---- その田んぼの「今年の」草刈り記録。新しい順 ---- */
+  function kusaRecsOf(fieldN){
+    var y=(new Date()).getFullYear(), out=[];
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i];
+      if(e.step!==KUSA_STEP||e.field!==fieldN)continue;
       var d=kusaParseD(e.d); if(!d||d.getFullYear()!==y)continue;
-      if(!best||d>=best){ best=d; idx=k; }
+      out.push({e:e,d:d});
     }
-    if(idx<0){ toast('取り消せる記録がありません'); return; }
-    var tgt=ktLog[idx];
-    if(!confirm('「'+f.n+'」の '+(best.getMonth()+1)+'月'+best.getDate()+'日 の草刈りの記録を取り消しますか？\n\nいちばん新しい1件だけを消します。'))return;
-    tombAdd(KT_LS,tgt); ktLog.splice(idx,1); ktSave();
-    /* ★取り消したときも、上の「○/○枚」を直す（片方だけ直すと数が食い違う） */
-    kusaListRender(); kusaCountRender();
-    toast('↩ '+f.n+' の記録を取り消しました');
+    out.sort(function(a,b){ return b.d-a.d; });
+    return out;
+  }
+  function kusaWd(d){ return ['日','月','火','水','木','金','土'][d.getDay()]; }
+  function kusaSrcName(e){
+    if(e.src==='voice')return '🎤話して記録';
+    if(e.src==='rec')return '📝作業を記録';
+    return 'この画面から';
+  }
+  /* 「2026/07/27」形式へ（保存の書式にそろえる） */
+  function kusaSlash(iso){
+    var m=(''+iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m? (m[1]+'/'+m[2]+'/'+m[3]) : '';
+  }
+  function kusaHyphen(d){
+    if(!d)return '';
+    var mm=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+    return d.getFullYear()+'-'+mm+'-'+dd;
+  }
+
+  /* ================= 画面の出し分け ================= */
+  function kusaEnter(){
+    try{ if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad(); }catch(e){}
+    /* ★開くたびに必ず地区一覧から。前に開いた地区が残っていると迷子になる */
+    kusaView='areas'; kusaCurArea=''; kusaPick={};
+    kusaSheetIdx=-1; kusaSheetEditId=''; kusaSheetAdd=false;
+    kusaClearUndo();
+    kusaSheetClose();
+    kusaRender();
   }
   function kusaRender(){
+    kusaHdr();
+    if(kusaView==='fields')kusaFieldsRender();
+    else kusaAreasRender();
+  }
+  /* ヘッダーの差し替え。田んぼ一覧のときは「‹ 地区」と地区名を出す */
+  function kusaHdr(){
+    var el=document.getElementById('hdr'); if(!el)return;
+    if(kusaView==='fields'){
+      var n=kusaIdxOfArea(kusaCurArea).length;
+      el.innerHTML='<div class="navhead">'
+        +'<button class="back" onclick="kusaBackToAreas()">‹ 地区</button>'
+        +'<span class="title">'+kusaCurArea+'（'+n+'枚）</span></div>';
+    }else{
+      el.innerHTML=HEADERS['kusa']||'';
+    }
+  }
+  function kusaOpenArea(a){
+    kusaCurArea=a; kusaView='fields'; kusaPick={};
+    kusaClearUndo();
+    kusaRender();
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+  function kusaBackToAreas(){
+    kusaView='areas'; kusaCurArea=''; kusaPick={};
+    kusaClearUndo();
+    kusaRender();
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+
+  /* ================= ① 地区一覧 ================= */
+  function kusaAreasRender(){
     var el=document.getElementById('kusaBody'); if(!el)return;
     var y=(new Date()).getFullYear(), done=0;
     for(var i=0;i<KT_FIELDS.length;i++)if(kusaLast(KT_FIELDS[i].n))done++;
-    el.innerHTML =
-      '<div class="kusa-hero">'
-    +   '<div class="no">くり返す作業</div>'
-    +   '<div class="nm">草刈り</div>'
-    +   '<div class="badge" id="kusaCount">'+y+'年 '+done+' / '+KT_FIELDS.length+' 枚</div>'
-    + '</div>'
-    + '<div class="kusa-find">'
-    +   '<div class="fl">📍 地区でしぼる（押すだけ）</div>'
-    +   '<div class="kusa-chips" id="kusaChips"></div>'
-    +   '<div class="fl">🔍 名前でさがす（打たなくても大丈夫）</div>'
-    +   '<div class="kusa-qwrap">'
-    +     '<input class="kusa-q" id="kusaQ" type="search" inputmode="text" placeholder="例：古賀" oninput="kusaSetQ(this.value)">'
-    +     '<span class="kusa-qx" onclick="kusaClearQ()">✕ 消す</span>'
-    +   '</div>'
-    + '</div>'
-    + '<div class="kusa-dash"></div>'
-    + '<div id="kusaList"></div>'
+    var as=kusaAreaList(), h='';
+    for(var k=0;k<as.length;k++){
+      var a=as[k], full=(a.done>=a.all);
+      h+='<div class="kusa-tile'+(full?' done':'')+'" onclick="kusaOpenArea(\''+a.n+'\')">'
+       +   '<div class="a">'+a.n+'</div>'
+       +   '<div class="c">'+a.all+'枚</div>'
+       +   '<div class="p '+(a.done?'ok':'no')+'">'+(a.done?('✅ '+a.done):'まだ')+'</div>'
+       + '</div>';
+    }
+    el.innerHTML=
+      '<div class="kusa-hero"><div class="no">くり返す作業</div><div class="nm">草刈り</div>'
+    +   '<div class="badge" id="kusaCount">'+y+'年 '+done+' / '+KT_FIELDS.length+' 枚</div></div>'
+    + '<div class="kusa-lbl">📍 地区をえらぶ（押すだけ）</div>'
+    + '<div class="kusa-grid">'+h+'</div>'
     + '<div class="kusa-note">💡 草刈りは一年に何度もやる作業なので、'
     +   '<b>米づくり工程表の順番や進み具合には入れていません</b>。ここだけで数えます。<br>'
     +   '📝作業を記録・🎤話して記録で「草刈り」をえらんでも、ここに出ます。<br>'
-    +   '間違えて押したときは、その行の<b>「取り消す」</b>で消せます。<br>'
     +   '数字は<b>'+y+'年ぶん</b>です。年が変わると数え直します。</div>'
     + '<div class="spacer"></div>';
-    kusaChipsRender();
-    kusaListRender();
+  }
+
+  /* ================= ② その地区の田んぼ ================= */
+  function kusaPickN(){ var n=0; for(var k in kusaPick)if(kusaPick[k])n++; return n; }
+  function kusaToggle(i){
+    if(kusaPick[i])delete kusaPick[i]; else kusaPick[i]=true;
+    kusaFieldsRender();
+  }
+  function kusaFieldsRender(){
+    var el=document.getElementById('kusaBody'); if(!el)return;
+    var ids=kusaIdxOfArea(kusaCurArea), h='';
+    for(var q=0;q<ids.length;q++){
+      var i=ids[q], f=KT_FIELDS[i], last=kusaLast(f.n), on=!!kusaPick[i];
+      var recs=kusaRecsOf(f.n), cn=recs.length;
+      var sub = last
+        ? '<div class="s ok">✅ '+(last.getMonth()+1)+'月'+last.getDate()+'日に刈りました（'+kusaAgo(last)+'日前）</div>'
+        : '<div class="s">まだ記録がありません</div>';
+      h+='<div class="kusa-row'+(on?' on':'')+'">'
+       +   '<div class="kusa-ck'+(on?' on':'')+'" onclick="kusaToggle('+i+')">'+(on?'✓':'')+'</div>'
+       +   '<div class="kusa-rn" onclick="kusaToggle('+i+')">'
+       +     '<div class="n">'+f.n+'<span>'+f.a+'</span></div>'+sub
+       +   '</div>'
+       +   '<div class="kusa-cnt'+(cn?'':' zero')+'" onclick="kusaSheetOpen('+i+')">'
+       +     '<div class="k">記録 '+cn+'件</div>'
+       +     '<div class="g">'+(cn?'直す ›':'—')+'</div>'
+       +   '</div>'
+       + '</div>';
+    }
+    var n=kusaPickN();
+    var bar='';
+    if(kusaUndoLast){
+      bar='<div class="kusa-undobar"><div class="tx">✅ '+kusaUndoLast.n+'枚を記録しました</div>'
+        + '<div class="ub" onclick="kusaUndoBatch()">↩ 取り消す</div></div>';
+    }
+    bar+='<div class="kusa-bar">'
+       +   '<div class="kusa-btn'+(n?'':' off')+'" onclick="kusaSavePicked()">'
+       +     (n?('✅ '+n+'枚を「刈った」で記録する'):'刈った田んぼにチェックを入れてください')
+       +   '</div></div>';
+    el.innerHTML=
+      '<div class="kusa-lbl">刈った田んぼにチェックを入れてください</div>'
+    + h
+    + '<div class="kusa-note">💡 <b>1枚だけの日も、地区まるごとの日も手順は同じ</b>です。'
+    +   'チェックを入れて、下の緑のボタンを1回押すだけ。<br>'
+    +   '押し間違えたときは、右の<b>「記録 ○件」</b>から1件ずつ消せます。</div>'
+    + bar;
+  }
+  /* ---- まとめて記録 ---- */
+  function kusaSavePicked(){
+    var ids=[], names=[];
+    for(var k in kusaPick){ if(kusaPick[k])ids.push(parseInt(k,10)); }
+    if(!ids.length){ toast('刈った田んぼにチェックを入れてください'); return; }
+    ids.sort(function(a,b){return a-b;});
+    var made=[];
+    for(var q=0;q<ids.length;q++){
+      var f=KT_FIELDS[ids[q]]; if(!f)continue;
+      wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
+      var e=ktLog[ktLog.length-1];
+      if(e&&e.id)made.push(e.id);
+      names.push(f.n);
+    }
+    kusaPick={};
+    /* ★10秒だけ「取り消す」を出す。これ"だけ"に頼らず、記録シートからも消せる */
+    kusaUndoLast={ids:made, n:names.length};
+    if(kusaUndoTimer)clearTimeout(kusaUndoTimer);
+    kusaUndoTimer=setTimeout(function(){ kusaUndoLast=null;
+      if(curScreen==='kusa'&&kusaView==='fields')kusaFieldsRender(); }, KUSA_UNDO_MS);
+    kusaFieldsRender();
+    toast('✅ '+names.length+'枚の草刈りを記録しました');
+  }
+  function kusaClearUndo(){
+    kusaUndoLast=null;
+    if(kusaUndoTimer){ clearTimeout(kusaUndoTimer); kusaUndoTimer=null; }
+  }
+  function kusaUndoBatch(){
+    if(!kusaUndoLast){ return; }
+    var ids=kusaUndoLast.ids||[], n=0;
+    for(var q=0;q<ids.length;q++){
+      for(var i=ktLog.length-1;i>=0;i--){
+        if(ktLog[i].id===ids[q]){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); n++; break; }
+      }
+    }
+    if(n)ktSave();
+    kusaClearUndo();
+    kusaFieldsRender();
+    toast('↩ '+n+'枚の記録を取り消しました');
+  }
+
+  /* ================= ③ 記録シート（あとから直す） ================= */
+  function kusaSheetOpen(i){
+    var f=KT_FIELDS[i]; if(!f)return;
+    kusaSheetIdx=i; kusaSheetEditId=''; kusaSheetAdd=false;
+    kusaSheetRender();
+  }
+  function kusaSheetClose(){
+    kusaSheetIdx=-1; kusaSheetEditId=''; kusaSheetAdd=false;
+    var ov=document.getElementById('kusaOv'); if(ov)ov.style.display='none';
+  }
+  /* 背景（黒い所）を押したときだけ閉じる。シートの中を押しても閉じない */
+  function kusaSheetBg(ev){
+    var t=ev&&ev.target;
+    if(t&&t.id==='kusaOv'){ kusaSheetClose(); if(kusaView==='fields')kusaFieldsRender(); }
+  }
+  function kusaSheetRender(){
+    var ov=document.getElementById('kusaOv'), el=document.getElementById('kusaSheet');
+    if(!ov||!el)return;
+    if(kusaSheetIdx<0){ ov.style.display='none'; return; }
+    var f=KT_FIELDS[kusaSheetIdx]; if(!f){ ov.style.display='none'; return; }
+    var y=(new Date()).getFullYear(), recs=kusaRecsOf(f.n), h='';
+    for(var q=0;q<recs.length;q++){
+      var r=recs[q], id=r.e.id||('n'+q);
+      h+='<div class="kusa-drow">'
+       +   '<div class="kusa-dd"><div class="d">'+(r.d.getMonth()+1)+'月'+r.d.getDate()+'日（'+kusaWd(r.d)+'）</div>'
+       +     '<div class="w">'+kusaAgo(r.d)+'日前 ／ '+kusaSrcName(r.e)+'</div></div>'
+       +   (r.e.id
+            ? '<div class="kusa-bd date" onclick="kusaDateOpen(\''+r.e.id+'\')">日にち</div>'
+            : '')
+       +   '<div class="kusa-bd del" onclick="kusaRecDel(\''+id+'\','+q+')">消す</div>'
+       + '</div>';
+      if(kusaSheetEditId && r.e.id===kusaSheetEditId){
+        h+='<div class="kusa-edit">'
+         +   '<div class="el">この記録の日にちを直す</div>'
+         +   '<input class="kusa-di" id="kusaDi" type="date" value="'+kusaHyphen(r.d)+'">'
+         +   '<div class="eb"><div class="c" onclick="kusaDateCancel()">やめる</div>'
+         +     '<div class="o" onclick="kusaDateSave(\''+r.e.id+'\')">この日に直す</div></div>'
+         + '</div>';
+      }
+    }
+    if(!recs.length){
+      h='<div class="kusa-empty">今年の草刈りの記録はまだありません。</div>';
+    }
+    var add='';
+    if(kusaSheetAdd){
+      add='<div class="kusa-edit"><div class="el">刈った日をえらんでください</div>'
+        + '<input class="kusa-di" id="kusaAi" type="date" value="'+kusaHyphen(new Date())+'">'
+        + '<div class="eb"><div class="c" onclick="kusaAddCancel()">やめる</div>'
+        + '<div class="o" onclick="kusaAddSave()">この日を足す</div></div></div>';
+    }else{
+      add='<div class="kusa-add" onclick="kusaAddOpen()">＋ 刈った日をあとから足す</div>';
+    }
+    el.innerHTML=
+      '<div class="kusa-grip"></div>'
+    + '<div class="kusa-sh">'+f.n+' の草刈り</div>'
+    + '<div class="kusa-sh2">'+y+'年 ／ '+recs.length+'回 刈りました</div>'
+    + h + add
+    + '<div class="kusa-close" onclick="kusaSheetCloseAndRefresh()">閉じる</div>';
+    ov.style.display='block';
+  }
+  function kusaSheetCloseAndRefresh(){
+    kusaSheetClose();
+    if(kusaView==='fields')kusaFieldsRender();
+  }
+  /* ---- 1件消す（必ず確認。消えるのは1件だけ） ---- */
+  function kusaRecDel(id, q){
+    var f=KT_FIELDS[kusaSheetIdx]; if(!f)return;
+    var recs=kusaRecsOf(f.n), r=null;
+    if(id&&id.charAt(0)!=='n'){ for(var k=0;k<recs.length;k++)if(recs[k].e.id===id)r=recs[k]; }
+    if(!r)r=recs[q];
+    if(!r){ toast('その記録が見つかりませんでした'); kusaSheetRender(); return; }
+    if(!confirm(f.n+' の\n'+(r.d.getMonth()+1)+'月'+r.d.getDate()+'日の草刈りの記録を消しますか？\n\nこの1件だけを消します。'))return;
+    for(var i=ktLog.length-1;i>=0;i--){
+      if(ktLog[i]===r.e){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); break; }
+    }
+    ktSave();
+    kusaSheetRender();
+    toast('🗑 1件消しました');
+  }
+  /* ---- 日にちを直す（★削除印は使わない。使うと直した本体まで家族の端末から消える） ---- */
+  function kusaDateOpen(id){ kusaSheetEditId=id; kusaSheetAdd=false; kusaSheetRender(); }
+  function kusaDateCancel(){ kusaSheetEditId=''; kusaSheetRender(); }
+  function kusaDateSave(id){
+    var el=document.getElementById('kusaDi'); if(!el)return;
+    var v=kusaSlash(el.value);
+    if(!v){ toast('日にちをえらんでください'); return; }
+    var hit=null;
+    for(var i=0;i<ktLog.length;i++)if(ktLog[i].id===id){ hit=ktLog[i]; break; }
+    if(!hit){ toast('その記録が見つかりませんでした'); kusaSheetEditId=''; kusaSheetRender(); return; }
+    hit.d=v;
+    tombEdit(KT_LS,hit);      /* id があるので _m を新しくして家族に勝たせる */
+    ktSave();
+    kusaSheetEditId='';
+    kusaSheetRender();
+    toast('✏️ 日にちを直しました');
+  }
+  /* ---- 刈った日をあとから足す ---- */
+  function kusaAddOpen(){ kusaSheetAdd=true; kusaSheetEditId=''; kusaSheetRender(); }
+  function kusaAddCancel(){ kusaSheetAdd=false; kusaSheetRender(); }
+  function kusaAddSave(){
+    var f=KT_FIELDS[kusaSheetIdx]; if(!f)return;
+    var el=document.getElementById('kusaAi'); if(!el)return;
+    var v=kusaSlash(el.value);
+    if(!v){ toast('日にちをえらんでください'); return; }
+    wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
+    var e=ktLog[ktLog.length-1];
+    if(e){ e.d=v; tombEdit(KT_LS,e); ktSave(); }
+    kusaSheetAdd=false;
+    kusaSheetRender();
+    toast('✅ '+v.replace(/^\d+\//,'').replace('/','月')+'日を足しました');
   }
 
   /* ---- 画面A:工程表 ---- */
@@ -7025,7 +7266,24 @@
         /* v30 まず削除印を取り込む（この後の配列マージで参照するため先に反映） */
         if(data[TOMB_LS]!=null){ if(tombMergeServer(data[TOMB_LS]))changed=true; try{ _syncHash[TOMB_LS]=_hash(localStorage.getItem(TOMB_LS)||'{}'); }catch(e){} }
         /* ★v48.2:誤った削除印を、記録に当てる前に取り除く（当ててしまうと記録が消える） */
-        try{ tombFixStale(); }catch(e){}
+        /* ★★v73 ここで tombFixStale() を呼んではいけない（v48.2からの重大な不具合）★★
+           ── 何が起きていたか（本物のサーバー sync-put.js を読み込んで再現し、確定させた）
+             tombFixStale() は「まだ手元にある記録に削除印が付いていたら、その印は間違い」
+             とみなして印を消す。v48.2で「編集に削除印を使ってしまう不具合」の後始末として
+             入れたもので、**起動時なら正しい**（起動時の ktLog は削除印を適用ずみなので、
+             生きている記録に印が付いていたら、その印は本当に間違いだから）。
+             ところが**同期の取り込みの途中では、話が逆になる**。
+             家族が消した記録の削除印は、**すぐ下の合流より前**に届く。
+             その時点でこの端末にはまだ記録が残っている（ktLog は手元の写しで、合流はまだ）。
+             だから「家族の正しい削除印」を「間違った印」と取り違えて消してしまう。
+             しかも `_syncHash[TOMB_LS]=''` で掃除ずみの印を配り直すので、
+             **家族全員のサーバーからも削除印が消える**。
+             ＝ **誰かが消した記録は、家族の端末では永久に消えない。**（v71以前もずっと同じ）
+           ── 直しかた
+             取り込みの途中では掃除しない。掃除は**起動時だけ**にする（下の方に1か所ある）。
+             起動時なら ktLog は削除印を適用ずみなので、取り違えは起きない。
+           ※v48.2は「サーバーの印は足し算で戻ってくるので毎回掃除が要る」と考えて
+             ここに置いたが、その掃除が正しい削除まで巻き添えにしていた。 */
         for(var k in data){ if(!data.hasOwnProperty(k))continue; if(!SYNC_SET[k])continue; if(k===TOMB_LS)continue;
           var loc; try{ loc=localStorage.getItem(k); }catch(e){ loc=null; }
           var m=_mergeVal(loc==null?'null':loc, data[k], k);
@@ -8050,7 +8308,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v71';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v73';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
