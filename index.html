@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v73">
+<meta name="app-ver" content="v74">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1877,7 +1877,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v73(本番)</span></div>
+          <div class="setrow">バージョン<span class="sv">v74</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2649,8 +2649,119 @@
     /* v37 新しい記録には id を付ける（家族間で編集・削除を見分けるため）。
        既存の記録に id は無いが、_sig が JSON 全文で見分けるので影響しない */
     if(!e.id)e.id='w'+Date.now()+'_'+Math.floor(Math.random()*10000);
+    /* ★★v74【A案】同じ中身の記録がすでにあれば、作らない ★★
+       黙って無視しない。「すでに記録があります（○月○日）」と必ず知らせる。 */
+    var _dup=_dupFind(e);
+    if(_dup){
+      try{ evLog('dup','同じ中身の記録がすでにあったので、作りませんでした（'+(_dup.d||'')+' '+(_dup.field||'')+' '+(_dup.text||'')+'）'); }catch(_x){}
+      try{ toast('すでに記録があります（'+_dupDateJp(_dup.d)+'）'); }catch(_x){}
+      return null;
+    }
     ktLog.push(e);
     ktSave();
+    /* ★v74 作った記録そのものを返す。
+       ── なぜ返り値にしたか（根本の直し）
+       v73まで、呼ぶ側は「いま足したのは ktLog の一番うしろ」と決めつけていた（3か所）。
+       A案で作らない場合が出ると、その決めつけは **関係のない別の記録** を指す。
+       実際に起きたはずのこと：草刈りの「取り消す」が別の記録を消す／
+       「あとから足す」が別の記録の日にちを書きかえる／KSASの印が別の記録に付く。
+       → 一番うしろを見るのをやめ、作った記録を受け取る形に全部そろえた。 */
+    return e;
+  }
+  /* ============================================================
+     ★★v74 同じ田んぼ・同じ日の「重複記録」をなくす ★★
+     ── きっかけ（実機で判明）
+       「家族が池松を消したのに消えていない」。調べると v73 の削除は正常で、
+       真相は **池松1に7月28日の草刈り記録が2件あった**こと。
+       同じ田んぼ・同じ日に何度でも記録できるので、親方と家族がそれぞれ押せば2件になる。
+       同じ端末での二度押しでも2件になる。片方を消しても、もう片方が残る。
+     ── どこまでを「同じ」とみなすか（★ここを緩めてはいけない）
+       **中身が1文字も違わない**ものだけ。
+       step＋田んぼ＋日付だけで同じとみなすと、
+       **同じ日の別の農薬・別の量の肥料まで消える**。
+       比べないもの（中身ではないもの）だけを外す：
+         id  … 記録ごとに必ず違う（比べる意味が無い）
+         _m  … 更新時刻。直せば変わるが中身ではない
+         ksas… KSASへ出した印。あとから付く
+         star… ★の印。あとから付く
+     ── 鍵の並びをそろえる理由
+       JSON.stringify は鍵を入れた順に出す。同じ中身でも作られ方が違えば順が変わり、
+       別物と判定されてしまう。**鍵を並べかえてから**文字にする。
+     ============================================================ */
+  var DUP_IGNORE={id:1, _m:1, ksas:1, star:1};
+  function _dupSig(it){
+    if(!it||typeof it!=='object'||(it instanceof Array))return '';
+    var ks=[], k, i;
+    for(k in it){ if(it.hasOwnProperty(k)&&!DUP_IGNORE[k]&&it[k]!==undefined&&it[k]!==null)ks.push(k); }
+    ks.sort();
+    var a=[]; for(i=0;i<ks.length;i++){ a.push(ks[i]+'\u001f'+String(it[ks[i]])); }
+    return a.join('\u001e');
+  }
+  /* ★v74 「まとめてよい重複」から外すもの（安全のため範囲を狭くする）
+     ①人メモ(ETC_STEP)…同じ言葉を2回書きとめることが実際にある。消すと本人の言葉が消える
+     ②id の無い古い記録…削除印が JSON 全文なので、家族の端末で取り違える恐れがある
+     ★対象は作業台帳(ktLog)だけ。機械台帳・発生記録は今回さわらない。 */
+  function _dupTarget(e){
+    return !!(e && typeof e==='object' && e.step!==ETC_STEP && typeof e.id==='string' && e.id);
+  }
+  function _dupDateJp(dd){
+    var m=String(dd||'').match(/(\d{1,2})\/(\d{1,2})\s*$/);
+    return m?(parseInt(m[1],10)+'月'+parseInt(m[2],10)+'日'):(dd||'日にち不明');
+  }
+  /* 手元の台帳に、同じ中身の記録がすでにあるか */
+  function _dupFind(e){
+    if(!_dupTarget(e))return null;
+    /* ★台帳が読まれていなければ先に読む。読まずに足して保存すると、
+       保存箱の中身を1件で上書きしてしまう（もともと危うかった所もここで塞ぐ） */
+    try{ if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad(); }catch(_x){}
+    var s=_dupSig(e), i, o;
+    if(!s)return null;
+    for(i=0;i<ktLog.length;i++){ o=ktLog[i];
+      if(!_dupTarget(o))continue;
+      if(_dupSig(o)===s)return o; }
+    return null;
+  }
+  /* ★★v74【B案】同じ中身の記録を1件へまとめる ★★
+     ── なぜ A案 だけでは足りないか
+       2台が同時に押すと、どちらの端末にも相手の記録がまだ無いのでA案では防げない。
+       サーバーで合流したあと、はじめて2件そろう。そこで初めて1件にできる。
+     ── どれを残すか（★全端末で必ず同じ結論になる規則にする）
+       **id の文字列がいちばん小さいもの**を残す。
+       時刻で決めると端末ごとに1msずれ、両方が「自分の負け」と判断して
+       **両方消える**ことがある。文字列の大小なら、どの端末でも同じ答えになる。
+     ── 走らせてよい場所（★ここを間違えると v73 と同じ事故になる）
+       ①起動時（合流ずみの中身を読んだあと）
+       ②同期の**合流が終わったあと**
+       合流の**前**に走らせてはいけない。
+     ── 手元の写し(ktLog)ではなく、保存箱から読み直してから数える
+       合流は localStorage に書く。ktLog は古いままなので、
+       ktLog を見て決めると v73 の tombFixStale とまったく同じ取り違えになる。 */
+  function ktDedup(){
+    var raw=null; try{ raw=localStorage.getItem(KT_LS); }catch(_x){ raw=null; }
+    var arr=null; try{ arr=JSON.parse(raw==null?'null':raw); }catch(_x){ arr=null; }
+    if(!(arr instanceof Array)||arr.length<2)return 0;
+    var g={}, i, e, s;
+    for(i=0;i<arr.length;i++){ e=arr[i];
+      if(!_dupTarget(e))continue;
+      s=_dupSig(e); if(!s)continue;
+      if(!g[s])g[s]=[];
+      g[s].push(e); }
+    var kill={}, n=0, s2, list, keep, q;
+    for(s2 in g){ if(!g.hasOwnProperty(s2))continue;
+      list=g[s2]; if(list.length<2)continue;
+      keep=list[0];
+      for(q=1;q<list.length;q++){ if(String(list[q].id)<String(keep.id))keep=list[q]; }
+      for(q=0;q<list.length;q++){ if(list[q]!==keep){ kill[list[q].id]=1; n++; } } }
+    if(!n)return 0;
+    var out=[];
+    for(i=0;i<arr.length;i++){ e=arr[i];
+      if(e&&e.id&&kill[e.id]){ try{ tombAdd(KT_LS,e); }catch(_x){} continue; }
+      out.push(e); }
+    try{ localStorage.setItem(KT_LS, JSON.stringify(out)); }catch(_x){}
+    try{ ktLog=out; }catch(_x){}
+    try{ _syncHash[KT_LS]=''; }catch(_x){}   /* まとめた版を必ず家族へ送る */
+    try{ evLog('dup','同じ中身の記録を1件にまとめました（'+n+'件ぶんを消しました）'); }catch(_x){}
+    return n;
   }
   function ktDoneFields(stepK){
     var m={}; for(var i=0;i<ktLog.length;i++)if(ktLog[i].step===stepK)m[ktLog[i].field]=true;
@@ -2956,13 +3067,15 @@
     for(var k in kusaPick){ if(kusaPick[k])ids.push(parseInt(k,10)); }
     if(!ids.length){ toast('刈った田んぼにチェックを入れてください'); return; }
     ids.sort(function(a,b){return a-b;});
-    var made=[];
+    var made=[], dupN=0;
     for(var q=0;q<ids.length;q++){
       var f=KT_FIELDS[ids[q]]; if(!f)continue;
-      wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
-      var e=ktLog[ktLog.length-1];
-      if(e&&e.id)made.push(e.id);
-      names.push(f.n);
+      /* ★v74 作った記録を受け取る。すでに同じ記録があれば null が返る（A案）。
+         ★「一番うしろ」を見てはいけない：作らなかった時に別の記録の id を
+           取り消しの一覧へ入れてしまい、**関係のない記録が消える**（v74で直した） */
+      var e=wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
+      if(e&&e.id){ made.push(e.id); names.push(f.n); }
+      else { dupN++; }
     }
     kusaPick={};
     /* ★10秒だけ「取り消す」を出す。これ"だけ"に頼らず、記録シートからも消せる */
@@ -2971,7 +3084,10 @@
     kusaUndoTimer=setTimeout(function(){ kusaUndoLast=null;
       if(curScreen==='kusa'&&kusaView==='fields')kusaFieldsRender(); }, KUSA_UNDO_MS);
     kusaFieldsRender();
-    toast('✅ '+names.length+'枚の草刈りを記録しました');
+    /* ★v74 作らなかったぶんも正直に数える（「記録しました」と嘘をつかない） */
+    if(!names.length){ toast('すでに記録があります（'+dupN+'枚とも、その日の記録がすでにあります）'); return; }
+    toast('✅ '+names.length+'枚の草刈りを記録しました'
+          +(dupN?('（'+dupN+'枚はすでに記録がありました）'):''));
   }
   function kusaClearUndo(){
     kusaUndoLast=null;
@@ -3095,9 +3211,14 @@
     var el=document.getElementById('kusaAi'); if(!el)return;
     var v=kusaSlash(el.value);
     if(!v){ toast('日にちをえらんでください'); return; }
-    wlAdd(KUSA_STEP, f.n, '草刈り', 'board');
-    var e=ktLog[ktLog.length-1];
-    if(e){ e.d=v; tombEdit(KT_LS,e); ktSave(); }
+    /* ★★v74 日にちは**作る時に**渡す（あとから書きかえない）★★
+       v73まで：今日の日付で作ってから e.d を書きかえていた。
+       それだと A案 の「同じ中身か」の判定が **今日の日付** で行われ、
+       えらんだ日にすでに記録があっても素通りして、重複がその場で完成してしまう。
+       ★あわせて「一番うしろ」を見るのもやめた（作らなかった時に
+         **関係のない記録の日にちを書きかえて**いた）。 */
+    var e=wlAdd(KUSA_STEP, f.n, '草刈り', 'board', {d:v});
+    if(!e){ kusaSheetAdd=false; kusaSheetRender(); return; }   /* トーストは wlAdd が出す */
     kusaSheetAdd=false;
     kusaSheetRender();
     toast('✅ '+v.replace(/^\d+\//,'').replace('/','月')+'日を足しました');
@@ -3311,8 +3432,9 @@
     if(ktWhyF===f){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktOpenStep(ktCurStep,true); return; }  /* もう一度押したら閉じる */
     ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1;
     if(!dn[fd.n]){                                   /* 未 → 済み（v55までと同じ・1つも変えない） */
-      wlAdd(st.k, fd.n, st.nm, 'board');
-      toast('✅ '+fd.n+' の「'+st.nm+'」を済みにしました');
+      /* ★v74 ここは「その工程にその田んぼの記録が1件も無い」時だけ通るので
+         重複にはならないが、作れなかった時に嘘の「済みにしました」を出さないようにする */
+      if(wlAdd(st.k, fd.n, st.nm, 'board')) toast('✅ '+fd.n+' の「'+st.nm+'」を済みにしました');
       ktOpenStep(ktCurStep,true); return;
     }
     var mine=[], others=[], othersKi=[];
@@ -3669,7 +3791,9 @@
   function ktMarkKsas(){
     var st=KT_STEPS[ktCurStep], hit=false;
     for(var i=0;i<ktLog.length;i++)if(ktLog[i].step===st.k){ktLog[i].ksas=true;hit=true;}
-    if(!hit){wlAdd(st.k,'(全体)',st.nm,'board'); ktLog[ktLog.length-1].ksas=true;}
+    /* ★v74 「一番うしろ」を見るのをやめる（作らなかった時に
+       **関係のない記録に KSAS の印**が付いていた） */
+    if(!hit){ var ke=wlAdd(st.k,'(全体)',st.nm,'board'); if(ke)ke.ksas=true; }
     ktSave(); toast('◆ KSAS済の印をつけました');
     ktRenderBoard(); ktShowOnly('ktViewBoard');
   }
@@ -4077,7 +4201,9 @@
       if(typeof whoOpen==='function') whoOpen('hito');
       return;
     }
-    wlAdd(ETC_STEP, '', tx, 'hito', {hito:true, who:who});   /* ★v67 工程表には出ない置き場 */
+    /* ★v67 工程表には出ない置き場。★v74 人メモは重複まとめの対象外なので必ず作られるが、
+       万一作れなかった時に書いた文を消してしまわないよう受け取ってから確かめる */
+    if(!wlAdd(ETC_STEP, '', tx, 'hito', {hito:true, who:who})) return;
     if(t)t.value='';
     toast('✅ 書きとめました（家族全員に共有されます）');
     /* v47:書いたら、そのすぐ下の一覧に並ぶようにする（届いたことが目で分かる） */
@@ -4667,7 +4793,7 @@
       var dyen=dyEl?(parseInt((''+dyEl.value).replace(/[^\d]/g,''),10)||0):0;
       var dex={d:(droneDateSel||null), work:'ドローン散布', chem:dChem};
       if(dyen>0){ dex.yen=dyen; dex.ckind=(typeof chemKind==='function'?chemKind(dChem):'mushi'); }
-      wlAdd('josou', droneField, 'ドローン散布', 'drone', dex);
+      if(!wlAdd('josou', droneField, 'ドローン散布', 'drone', dex)) return;   /* ★v74 */
       if(dyEl)dyEl.value='';
       toast('✅ 保存しました('+droneField+(dyen>0?('・農薬代'+dyen.toLocaleString()+'円は生産原価へ'):'')+'・みんなに共有・工程表にも反映)'); /* v24.2:カレンダーへ飛ばさずこの画面に留まる */
       return;
@@ -4679,9 +4805,11 @@
     var rate=chem?gv('recRate'):'', vol=chem?gv('recVol'):'', mass=chem?gv('recMass'):'';
     var memo=gv('recMemoIn');
     var text=recWorkSel+(chem?('：'+chem+(rate?' '+rate+'倍':'')+(vol?' '+vol+'L':'')+(mass?' '+mass+'kg':'')):'')+(memo?('。'+memo):'');
-    wlAdd(recStepOf(recWorkSel), recField, text, 'rec',
+    /* ★v74 すでに同じ中身の記録があれば作らない。
+       入力した内容は消さずに残す（打ち直させない） */
+    if(!wlAdd(recStepOf(recWorkSel), recField, text, 'rec',
       {d:(recDateSel||null), work:recWorkSel, chem:chem, rate:rate, vol:vol, mass:mass,
-       who:(typeof whoEffective==='function'?whoEffective().n:'')});
+       who:(typeof whoEffective==='function'?whoEffective().n:'')})) return;
     toast('✅ 保存しました(記録簿・工程表・原価にも反映)');
     recFormReset();
     /* v24.2:保存後にカレンダーへ飛ばさない。この画面に留まって続けて記録できる */
@@ -4932,7 +5060,7 @@
     var text=(lastMemo||'音声記録');
     var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML=(lastMemo||'(空欄)');
     /* ★v71 聞き取った作業名から工程を決める。表に無い言葉だけ生育段階の推定に落とす */
-    wlAdd(ngStepOf(r.work), fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''});
+    if(!wlAdd(ngStepOf(r.work), fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''})) return;   /* ★v74 */
     toast('✅ 保存しました(記録簿・工程表・みんなに反映)'); setTimeout(function(){go('cal');},900);
   }
 
@@ -5762,8 +5890,10 @@
        2か所に書くと必ず二重に数える日が来る（v50・v51で2回起きた）。
        作業台帳の記録は id を持つので、家族との同期でも編集・削除が正しく効く。 */
     if(typeof wlAdd!=='function'){ toast('記録できませんでした。もう一度お試しください'); return; }
-    wlAdd((hyKind==='ho')?'hogoe':'', hyField, hyFert+' '+kg+'kg'+perTan, 'hiryo',
-          {work:hyKindLabel(), chem:hyFert, mass:kg});
+    /* ★v74 同じ田んぼ・同じ日・同じ肥料・同じkg がすでにあれば作らない（二度押し対策）。
+       量がちがえば別の記録なので、これまでどおり2件とも残る */
+    if(!wlAdd((hyKind==='ho')?'hogoe':'', hyField, hyFert+' '+kg+'kg'+perTan, 'hiryo',
+          {work:hyKindLabel(), chem:hyFert, mass:kg})) return;
     if(kgEl)kgEl.value='';
     hyConvRender();
     hyKind=''; hyKindPick('');            /* 次の記録に引きずらない＝決めつけ防止 */
@@ -6121,7 +6251,8 @@
     var yen=yEl?(parseInt((''+yEl.value).replace(/[^\d]/g,''),10)||0):0;
     var extra={work:'散布', chem:mbCurChem};
     if(yen>0){ extra.yen=yen; extra.ckind=chemKind(mbCurChem); }
-    if(typeof wlAdd==='function'){ wlAdd('shussui', fld, mbCurChem+' 散布(農薬計算)', 'pest', extra); }
+    if(typeof wlAdd!=='function'){ toast('記録できませんでした。もう一度お試しください'); return; }
+    if(!wlAdd('shussui', fld, mbCurChem+' 散布(農薬計算)', 'pest', extra)) return;   /* ★v74 */
     if(yEl)yEl.value='';
     mbEnter();
     toast(yen>0?('記録しました（農薬代 '+yen.toLocaleString()+'円は生産原価へ）'):'計算結果を記録しました（記録簿に残ります）');
@@ -7264,7 +7395,27 @@
           }
         }
         /* v30 まず削除印を取り込む（この後の配列マージで参照するため先に反映） */
-        if(data[TOMB_LS]!=null){ if(tombMergeServer(data[TOMB_LS]))changed=true; try{ _syncHash[TOMB_LS]=_hash(localStorage.getItem(TOMB_LS)||'{}'); }catch(e){} }
+        if(data[TOMB_LS]!=null){
+          if(tombMergeServer(data[TOMB_LS]))changed=true;
+          /* ★★v74 ここで「送った」と控えてはいけなかった（v30からの見落とし）★★
+             ── 何が起きていたか（2台＋サーバーの通しで見つけた）
+             削除印を付ける tombAdd() は「次の同期で必ず送る」ため送信ずみの控えを消す。
+             ところが同期は必ず **読む→送る** の順。読んだ直後にここで
+             「いま手元にある削除印＝送信ずみ」と控えてしまうので、
+             付けたばかりの削除印が **一度も送られないまま** 送信ずみ扱いになる。
+             ＝ **2回目以降に消した記録が、家族の端末から消えない。**
+             サーバーの削除印がまだ空だった **1回目だけ** はここを通らないので送れていた。
+             v73で「消える」と確かめられたのは、その1回目の場面だった（TODOに
+             「★2台で、片方で消したものがもう片方からも消えるか（まだ未確認）」と
+             残っていたのは、まさにこの穴）。
+             ── 直しかた（v57で確立ずみの規則にそろえるだけ）
+             **サーバーと中身が同じ時だけ「送った」と控える。違えば控えを消して必ず送る。**
+             すぐ下の配列の合流でも、まったく同じ規則を使っている。 */
+          var _tv=null; try{ _tv=localStorage.getItem(TOMB_LS); }catch(e){ _tv=null; }
+          var _ts=(_tv==null?'{}':_tv);
+          if(_ts===String(data[TOMB_LS])) _syncHash[TOMB_LS]=_hash(_ts);
+          else { try{ delete _syncHash[TOMB_LS]; }catch(e){ _syncHash[TOMB_LS]=null; } }
+        }
         /* ★v48.2:誤った削除印を、記録に当てる前に取り除く（当ててしまうと記録が消える） */
         /* ★★v73 ここで tombFixStale() を呼んではいけない（v48.2からの重大な不具合）★★
            ── 何が起きていたか（本物のサーバー sync-put.js を読み込んで再現し、確定させた）
@@ -7316,6 +7467,11 @@
           if(_curS===String(data[k])) _syncHash[k]=_hash(_curS);
           else { try{ delete _syncHash[k]; }catch(e){ _syncHash[k]=null; } }
         }
+        /* ★★v74【B案】合流が**終わったあと**に、同じ中身の重複を1件へまとめる ★★
+           ★必ず合流の後。前に置くと v73 の tombFixStale とまったく同じ事故になる
+             （手元の写しはまだ古く、家族が消したぶんも残っているため判断できない）。
+           ★ktDedup は保存箱から読み直すので、合流の結果を正しく見られる。 */
+        try{ if(ktDedup()>0) changed=true; }catch(_x){}
         if(changed && !quiet) _syncApply();   /* ★v57 quiet＝書いた直後の下読み。画面は動かさない */
         if(done)done(true);
       })
@@ -8309,7 +8465,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v73';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v74';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -8821,6 +8977,11 @@
   hasLoad(); kyoLoad(); hyGoalLoad();   /* v47:geoLoad() は近くの田んぼ機能とともに削除 */
   try{ tombFixStale(); }catch(e){}      /* ★v48.2:起動時にも誤った削除印を掃除 */
   try{ hyMigrate(); }catch(e){}         /* ★v52:肥料台帳→作業台帳の引っ越し（一度だけ） */
+  /* ★★v74 起動時にも、同じ中身の重複を1件へまとめる ★★
+     ★ここ（いちばん最後）に置く理由：ktDedup は _syncHash（var）を触る。
+       var は名前だけ先に見えて中身は後から入るので、前に置くと中身が undefined で
+       「送り直しの印」を消せない（v33の型）。ktLoad も hyMigrate も済んだ後がいちばん安全。 */
+  try{ ktDedup(); }catch(e){}
 
 </script>
 </body>
