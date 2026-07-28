@@ -119,11 +119,35 @@ export function mergeValue(oldStr, newStr, key, tombObj) {
     return JSON.stringify(out);
   }
 
-  /* 箱型（オブジェクト）：鍵ごとに足す。同じ鍵はあとから届いたほうが勝つ */
+  /* ★★v75 箱型（オブジェクト）には、性質のちがう2種類がある ★★
+     ── v74まで何がずれていたか ──
+       ここは箱型をぜんぶ「鍵ごとに足す／同じ鍵はあとから届いたほうが勝つ」で合わせていた。
+       ところが端末側(_mergeVal)は v63・v66 で2種類に分けてある。そろっていないので：
+       ①〈設定の箱〉稲作先生（品種・田植え日）・肥料の目標は、中身がひとまとまりで
+          初めて意味を持つ。鍵ごとに混ぜると「品種は家族の・田植え日は親方の」という
+          あり得ない箱がサーバーにできる（端末側が v63 でわざわざ禁じた形）。
+       ②〈場所ごとの表〉土のメモ・反省メモ・生産原価は、1件ずつ更新時刻を持っているのに、
+          サーバーはそれを見ずに「あとから届いたほう」を採っていた。
+          そのため**サーバーだけ古い値**を持ち、端末とサーバーが同じ値に落ち着かなかった。
+     ── 見分けかた（端末側とまったく同じ物差し）──
+       箱の**いちばん上に _m（数字）があるか**だけ。田んぼ名や月に _m は無いので取り違えない。
+     ── 引き分けのときは「届いたほう」を採る（★ここだけ端末側と向きが逆で、わざと）──
+       端末側は引き分けなら手元を残す（自分の画面を守るため）。
+       サーバーで手元（＝いま入っているもの）を残すと、時刻を持たない古い形の書き込みが
+       **永久にサーバーへ届かなくなる**。止まったままになる側には倒さない。 */
   if (isPlainObj(O) && isPlainObj(N)) {
+    /* ①〈設定の箱〉丸ごと勝負。古いと分かっているものだけが負ける */
+    const om = (typeof O._m === "number") ? O._m : 0;
+    const nm = (typeof N._m === "number") ? N._m : 0;
+    if (om || nm) return (nm >= om) ? newStr : oldStr;
+
+    /* ②〈場所ごとの表〉鍵ごとに足したうえで、同じ鍵は1件ずつ更新時刻で勝負する */
     const out = {};
     for (const k in O) if (Object.prototype.hasOwnProperty.call(O, k)) out[k] = O[k];
-    for (const k in N) if (Object.prototype.hasOwnProperty.call(N, k)) out[k] = N[k];
+    for (const k in N) {
+      if (!Object.prototype.hasOwnProperty.call(N, k)) continue;
+      out[k] = (Object.prototype.hasOwnProperty.call(O, k)) ? mergeEntry(O[k], N[k]) : N[k];
+    }
     return JSON.stringify(out);
   }
 
@@ -132,6 +156,53 @@ export function mergeValue(oldStr, newStr, key, tombObj) {
 }
 
 function isPlainObj(v) { return v != null && typeof v === "object" && !(v instanceof Array); }
+
+/* ★v75 「場所ごとの表」の1件ぶんの勝負をつける。端末側 _mergeEntry と同じ規則。
+   形は3とおり（端末側の注記のまま）：
+     ①丸ごと型   {v:値, _m:時刻}                              …反省メモ・生産原価
+     ②項目ごと型 {tags:[], memo:'', _m:{tags:時刻, memo:時刻}} …土のメモ
+     ③時刻を持たない古いデータ（v65まで）
+   o＝いまサーバーに入っているもの／n＝いま届いたもの。
+   ★時刻をでっちあげない。「無い＝いちばん古い(0)」として正直に扱うだけ。
+   ★引き分けは n（届いたほう）。理由は上の箱型のところに書いたとおり。 */
+function mergeEntry(o, n) {
+  const oo = isPlainObj(o), no = isPlainObj(n);
+  /* ②項目ごと型：どちらか一方でも項目ごとの時刻を持っていれば、項目ごとに勝負する */
+  if (oo && no && (isLeafStamped(o) || isLeafStamped(n))) {
+    const om = isLeafStamped(o) ? o._m : {}, nm = isLeafStamped(n) ? n._m : {};
+    const out = {}, mm = {};
+    for (const p in o) if (Object.prototype.hasOwnProperty.call(o, p) && p !== "_m") out[p] = o[p];
+    for (const p in n) {
+      if (!Object.prototype.hasOwnProperty.call(n, p) || p === "_m") continue;
+      const keepOld = ((om[p] || 0) > (nm[p] || 0)) && Object.prototype.hasOwnProperty.call(o, p);
+      out[p] = keepOld ? o[p] : n[p];
+    }
+    for (const p in om) if (Object.prototype.hasOwnProperty.call(om, p)) mm[p] = om[p];
+    for (const p in nm) if (Object.prototype.hasOwnProperty.call(nm, p) && (nm[p] || 0) > (mm[p] || 0)) mm[p] = nm[p];
+    out._m = mm;
+    return out;
+  }
+  /* ①丸ごと型／③古い形どうし：新しいほうが丸ごと勝つ。引き分けは届いたほう */
+  return (entryTime(o) > entryTime(n)) ? o : n;
+}
+
+function isLeafStamped(e) {
+  return !!(e && typeof e === "object" && !(e instanceof Array)
+            && e._m && typeof e._m === "object" && !(e._m instanceof Array));
+}
+
+/* 1件ぶんの更新時刻。時刻が無いものは 0（＝いちばん古い）。端末側 _entryTime と同じ */
+function entryTime(e) {
+  if (!e || typeof e !== "object" || (e instanceof Array)) return 0;
+  const m = e._m;
+  if (typeof m === "number") return m;
+  if (m && typeof m === "object" && !(m instanceof Array)) {
+    let mx = 0;
+    for (const p in m) if (Object.prototype.hasOwnProperty.call(m, p) && (m[p] || 0) > mx) mx = m[p];
+    return mx;
+  }
+  return 0;
+}
 
 /* 端末側 _sig と同じ規則：id があれば id、無ければ JSON 全文 */
 function sigOf(it) {
