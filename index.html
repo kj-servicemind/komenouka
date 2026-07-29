@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v74">
+<meta name="app-ver" content="v76">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -122,7 +122,7 @@
   .wx .pp{font-size:9.5px;font-weight:800;color:#2E7DB0;letter-spacing:.02em;margin-top:1px;}
   .wx .sep{width:1px;background:var(--line);margin:3px 0;}
   /* オフライン時に「いつ時点の予報か」を小さく出す帯 */
-  .wxstale{display:none;font-size:10px;font-weight:800;color:#8A8472;background:#F1EEE4;
+  .wxstale{display:none;font-size:10px;font-weight:800;color:#4A463C;background:#F1EEE4;
            border-radius:8px;padding:3px 8px;margin:0 14px 0;text-align:center;}
   .wxstale.on{display:block;}
   /* 警報・注意報バナー(発表中のみ表示) */
@@ -182,7 +182,7 @@
     box-shadow:0 2px 5px rgba(35,40,33,.05);}
   .todo .th{font-size:14px;font-weight:800;color:var(--green-deep);margin-bottom:7px;
     display:flex;align-items:center;gap:7px;letter-spacing:.02em;}
-  .todo .th .src{margin-left:auto;font-size:10.5px;font-weight:800;color:#8A8472;
+  .todo .th .src{margin-left:auto;font-size:10.5px;font-weight:800;color:#4A463C;
     background:var(--green-soft);border:1px solid #CBD9CC;border-radius:8px;padding:2px 8px;}
   .titem{display:flex;align-items:center;gap:10px;padding:8px 2px;border-top:1px solid #F0EDE3;cursor:pointer;}
   .titem:first-of-type{border-top:none;}
@@ -192,7 +192,7 @@
     display:flex;align-items:center;justify-content:center;}
   .titem .tt{font-size:15px;font-weight:800;flex:1;}
   .titem.done .tt{color:#A19C8B;text-decoration:line-through;}
-  .titem .fldnm{font-size:11.5px;font-weight:800;color:#8A8472;background:#F4F2EC;border-radius:8px;padding:3px 8px;white-space:nowrap;}
+  .titem .fldnm{font-size:11.5px;font-weight:800;color:#4A463C;background:#F4F2EC;border-radius:8px;padding:3px 8px;white-space:nowrap;}
   .todo .more{text-align:right;font-size:12.5px;font-weight:800;color:var(--green);margin-top:5px;padding:2px 2px 4px;cursor:pointer;}
 
   /* ===== v2.4 ホーム:本日のAIからの提案 ===== */
@@ -209,7 +209,7 @@
   .ai-card .bot{width:46px;height:46px;border-radius:14px;background:linear-gradient(150deg,#3C7A4C,#254A2F);
     color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .ai-card .ti{font-size:17px;font-weight:800;}
-  .ai-card .sub{font-size:12px;font-weight:700;color:#8A8472;margin-top:2px;}
+  .ai-card .sub{font-size:12px;font-weight:700;color:#4A463C;margin-top:2px;}
   .qbox{width:100%;border:1.5px solid var(--line);border-radius:14px;background:#FBFAF6;padding:12px 13px;
     font-size:16px;font-weight:600;color:var(--ink);font-family:var(--gothic);resize:none;line-height:1.5;}
   .qbox::placeholder{color:#B0AB9A;}
@@ -221,7 +221,7 @@
     display:flex;align-items:center;justify-content:center;gap:7px;border:none;font-family:var(--gothic);}
   .abtn.primary{background:linear-gradient(157deg,#3C7A4C,#254A2F);color:#fff;box-shadow:0 6px 14px rgba(33,63,41,.28);}
   .abtn.ghost{background:#fff;color:var(--green-deep);border:1.5px solid var(--green);}
-  .note-mini{font-size:11.5px;font-weight:600;color:#8A8472;line-height:1.6;margin-top:10px;padding:9px 11px;
+  .note-mini{font-size:11.5px;font-weight:600;color:#4A463C;line-height:1.6;margin-top:10px;padding:9px 11px;
     background:#FBFAF6;border:1px dashed var(--line);border-radius:11px;}
   .sec-h{font-size:13px;font-weight:800;color:#6B6656;letter-spacing:.04em;margin:2px 4px 0;display:flex;align-items:center;gap:6px;}
   .free-badge{display:inline-block;font-size:10.5px;font-weight:800;color:#fff;background:var(--green);border-radius:7px;padding:2px 7px;margin-left:6px;}
@@ -229,7 +229,7 @@
     background:#fff;box-shadow:0 2px 5px rgba(35,40,33,.05);cursor:pointer;}
   .site .emo{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0;}
   .site .tx{flex:1;} .site .nm{font-size:15.5px;font-weight:800;}
-  .site .ds{font-size:12px;font-weight:600;color:#8A8472;margin-top:3px;line-height:1.4;}
+  .site .ds{font-size:12px;font-weight:600;color:#4A463C;margin-top:3px;line-height:1.4;}
   .site .ar{font-size:20px;color:#C9C3B2;font-weight:800;}
   .e-naro{background:#E7F0FB;color:#2E6E8E;} .e-maff{background:#FDF0E4;color:#C56A24;}
   .e-boujo{background:#FBE9E7;color:#B34A3E;} .e-genno{background:#EAF3EA;color:#2F5D3A;}
@@ -244,7 +244,7 @@
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
   .pdfitem .pt{flex:1;}
   .pdfitem .ptt{font-size:14.5px;font-weight:800;line-height:1.35;}
-  .pdfitem .pts{font-size:11.5px;font-weight:600;color:#8A8472;margin-top:2px;}
+  .pdfitem .pts{font-size:11.5px;font-weight:600;color:#4A463C;margin-top:2px;}
   .pdfitem .pd{font-size:19px;color:#C9C3B2;font-weight:800;}
 
   /* ===== v2.4 ドローン散布 ===== */
@@ -537,7 +537,7 @@
   .calnav{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;margin-bottom:8px;}
   .calnav .ar{color:var(--green-deep);font-size:20px;padding:0 6px;cursor:pointer;}
   .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
-  .dow{font-size:12px;font-weight:800;color:#8A8472;padding:3px 0;} .dow.sun{color:var(--red);} .dow.sat{color:var(--blue);}
+  .dow{font-size:12px;font-weight:800;color:#4A463C;padding:3px 0;} .dow.sun{color:var(--red);} .dow.sat{color:var(--blue);}
   .day{font-size:16px;font-weight:800;padding:7px 0 2px;border-radius:8px;position:relative;cursor:pointer;}
   .day.sun{color:var(--red);} .day.sat{color:var(--blue);} .day.dim{color:#C9C3B4;}
   .day.today{background:#F5EAC5;border:1.5px solid var(--gold);}
@@ -684,7 +684,7 @@
 
   /* 農薬検索 */
   .searchbox{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;
-    font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px;color:#8A8472;cursor:pointer;}
+    font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px;color:#4A463C;cursor:pointer;}
   .drugcard{background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:14px 16px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
   .drugcard .nm{font-size:19px;font-weight:800;}
   .drugcard .tag{display:inline-block;background:var(--green-soft);border:1px solid #BDCFC0;color:var(--green-deep);
@@ -764,22 +764,22 @@
   .kt-pcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 13px;margin-bottom:12px;
     box-shadow:0 1px 3px rgba(0,0,0,.04);}
   .kt-pcard .ti{font-size:17px;font-weight:800;margin-bottom:3px;}
-  .kt-pcard .sb{font-size:13px;color:#8A8472;line-height:1.7;margin-bottom:10px;}
+  .kt-pcard .sb{font-size:13px;color:#4A463C;line-height:1.7;margin-bottom:10px;}
   .kt-prow{display:flex;align-items:center;gap:9px;padding:12px 10px;border-radius:12px;
     background:#F7F5EC;margin-bottom:7px;}
   .kt-prow.soon{background:var(--green-soft);border:1.5px solid #9DBBA6;}
   .kt-prow.wait{background:#F2F0E8;}
-  .kt-prow.wait .nm{color:#8A8472;}
+  .kt-prow.wait .nm{color:#6E6A5C;}
   .kt-prow .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
   .kt-prow .nm{font-size:16px;font-weight:800;flex:1;min-width:0;}
-  .kt-prow .nm small{display:block;font-size:12px;color:#8A8472;font-weight:700;margin-top:2px;}
+  .kt-prow .nm small{display:block;font-size:12px;color:#4A463C;font-weight:700;margin-top:2px;}
   .kt-prow .dz{text-align:right;font-size:15.5px;font-weight:800;color:var(--green-deep);flex-shrink:0;line-height:1.5;}
-  .kt-prow .dz small{display:block;font-size:12px;color:#8A8472;font-weight:700;}
-  .kt-prow .wt{font-size:13px;color:#A9A392;font-weight:800;text-align:right;flex-shrink:0;}
+  .kt-prow .dz small{display:block;font-size:12px;color:#4A463C;font-weight:700;}
+  .kt-prow .wt{font-size:13px;color:#4A463C;font-weight:800;text-align:right;flex-shrink:0;}
   .kt-flag{font-size:11.5px;font-weight:800;color:#fff;background:var(--green);padding:2px 8px;
     border-radius:999px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
   .kt-flag.l{background:#8A6D1E;}
-  .kt-pnote{font-size:13px;color:#8A8472;line-height:1.85;margin-top:9px;}
+  .kt-pnote{font-size:13px;color:#4A463C;line-height:1.85;margin-top:9px;}
   .kt-pnote b{color:#6E6A5C;}
 
   /* ★v70 品種・田植え日の入口の帯。
@@ -802,41 +802,41 @@
   .kt-basis b{color:var(--green-deep);}
 
   /* ★v72 草刈り：地区タイル・田んぼ行・まとめて記録・記録シート */
-  .kusa-lbl{font-size:13.5px;font-weight:800;color:#5F5B4E;margin:12px 2px 9px;}
+  .kusa-lbl{font-size:13.5px;font-weight:800;color:#33302A;margin:12px 2px 9px;}
   .kusa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
   .kusa-tile{background:#fff;border:1.5px solid var(--line);border-radius:13px;
     padding:11px 6px 10px;text-align:center;cursor:pointer;}
   .kusa-tile.done{background:var(--green-soft);border-color:#9DBBA6;}
   .kusa-tile .a{font-family:var(--mincho);font-size:18px;font-weight:800;color:var(--green-deep);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .kusa-tile .c{font-size:12px;font-weight:700;color:#8A8472;margin-top:3px;}
+  .kusa-tile .c{font-size:12px;font-weight:700;color:#4A463C;margin-top:3px;}
   .kusa-tile .p{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:800;
     border-radius:999px;padding:2px 9px;}
   .kusa-tile .p.ok{background:#fff;color:var(--green-deep);border:1px solid #9DBBA6;}
-  .kusa-tile .p.no{background:#F4F2EA;color:#8A8472;border:1px solid var(--line);}
+  .kusa-tile .p.no{background:#FBEFE4;color:#7A3B1E;border:1.5px solid #D9B79B;}
   .kusa-row{display:flex;align-items:center;gap:11px;background:#fff;border:1.5px solid var(--line);
     border-radius:13px;padding:12px 13px;margin-bottom:9px;}
   .kusa-row.on{background:var(--green-soft);border-color:var(--green);}
-  .kusa-ck{width:30px;height:30px;border-radius:8px;border:2.5px solid #C9C4B4;background:#fff;
+  .kusa-ck{width:44px;height:44px;border-radius:11px;border:3px solid #9C947F;background:#fff;
     flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;
     color:#fff;cursor:pointer;}
   .kusa-ck.on{background:var(--green);border-color:var(--green);}
   .kusa-rn{flex:1;min-width:0;cursor:pointer;}
   .kusa-rn .n{font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .kusa-rn .n span{font-size:13px;font-weight:700;color:#8A8472;margin-left:6px;}
-  .kusa-rn .s{font-size:12.5px;font-weight:700;color:#8A8472;margin-top:3px;}
+  .kusa-rn .n span{font-size:13px;font-weight:700;color:#4A463C;margin-left:6px;}
+  .kusa-rn .s{font-size:12.5px;font-weight:700;color:#4A463C;margin-top:3px;}
   .kusa-rn .s.ok{color:var(--green-deep);}
   .kusa-cnt{flex-shrink:0;text-align:center;background:#EEF4FA;border:1.5px solid #C2D8E8;
     border-radius:11px;padding:7px 9px;min-width:70px;cursor:pointer;}
   .kusa-cnt .k{font-size:14.5px;font-weight:800;color:#1D5C8F;line-height:1.2;white-space:nowrap;}
-  .kusa-cnt .g{font-size:10.5px;font-weight:800;color:#5E87A8;margin-top:2px;}
+  .kusa-cnt .g{font-size:10.5px;font-weight:800;color:#1D5C8F;margin-top:2px;}
   .kusa-cnt.zero{background:#F4F2EA;border-color:var(--line);}
-  .kusa-cnt.zero .k,.kusa-cnt.zero .g{color:#A9A392;}
+  .kusa-cnt.zero .k,.kusa-cnt.zero .g{color:#4A463C;}
   .kusa-bar{position:-webkit-sticky;position:sticky;bottom:0;background:rgba(251,250,246,.96);
     border-top:1.5px solid var(--line);padding:11px 0 14px;margin-top:4px;}
   .kusa-btn{width:100%;background:var(--green);color:#fff;border-radius:999px;padding:16px 10px;
     text-align:center;font-size:17.5px;font-weight:800;letter-spacing:.03em;cursor:pointer;}
-  .kusa-btn.off{background:#D8D4C8;color:#8A8472;font-size:15px;}
+  .kusa-btn.off{background:#D8D4C8;color:#4A463C;font-size:15px;}
   .kusa-undobar{position:-webkit-sticky;position:sticky;bottom:74px;background:#232821;color:#fff;
     border-radius:14px;padding:13px 13px;display:flex;align-items:center;gap:11px;margin-bottom:8px;}
   .kusa-undobar .tx{flex:1;font-size:15px;font-weight:800;line-height:1.5;}
@@ -848,12 +848,12 @@
     max-height:86%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .kusa-grip{width:44px;height:5px;border-radius:99px;background:#D6D2C6;margin:4px auto 12px;}
   .kusa-sh{font-family:var(--mincho);font-size:20px;font-weight:800;text-align:center;margin-bottom:3px;}
-  .kusa-sh2{font-size:13px;font-weight:700;color:#8A8472;text-align:center;margin-bottom:14px;}
+  .kusa-sh2{font-size:13px;font-weight:700;color:#4A463C;text-align:center;margin-bottom:14px;}
   .kusa-drow{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);
     border-radius:13px;padding:12px;margin-bottom:9px;}
   .kusa-dd{flex:1;min-width:0;}
   .kusa-dd .d{font-size:17px;font-weight:800;color:var(--green-deep);}
-  .kusa-dd .w{font-size:12px;font-weight:700;color:#8A8472;margin-top:2px;}
+  .kusa-dd .w{font-size:12px;font-weight:700;color:#4A463C;margin-top:2px;}
   .kusa-bd{font-size:13.5px;font-weight:800;border-radius:999px;padding:9px 13px;
     flex-shrink:0;white-space:nowrap;cursor:pointer;}
   .kusa-bd.date{color:#1D5C8F;background:#EEF4FA;border:1.5px solid #C2D8E8;}
@@ -872,7 +872,7 @@
     background:#fff;border:2px dashed #9DBBA6;border-radius:13px;padding:14px;cursor:pointer;}
   .kusa-close{width:100%;text-align:center;font-size:17px;font-weight:800;color:#5F5B4E;
     background:#EFEDE4;border-radius:999px;padding:15px;margin-top:12px;cursor:pointer;}
-  .kusa-empty{text-align:center;font-size:15px;font-weight:700;color:#8A8472;
+  .kusa-empty{text-align:center;font-size:15px;font-weight:700;color:#4A463C;
     line-height:1.9;padding:24px 10px;}
   .ina-backauto{width:100%;margin-top:12px;background:#fff;border:2px solid var(--green);
     border-radius:999px;padding:14px;font-size:16px;font-weight:800;color:var(--green-deep);
@@ -938,7 +938,7 @@
   .kusa-top{display:flex;align-items:center;gap:9px;}
   .kusa-nm{flex:1;min-width:0;font-size:16px;font-weight:800;}
   .kusa-a{font-size:13.5px;color:#6E6A5C;font-weight:700;}
-  .kusa-last{font-size:13.5px;font-weight:700;color:#8A8472;margin-top:7px;line-height:1.5;}
+  .kusa-last{font-size:13.5px;font-weight:700;color:#4A463C;margin-top:7px;line-height:1.5;}
   .kusa-last.done{color:var(--green);}
   .kusa-hero{text-align:center;padding:14px 0 2px;}
   .kusa-hero .no{font-family:var(--mincho);font-size:15px;font-weight:800;color:var(--green);letter-spacing:.1em;}
@@ -1091,12 +1091,12 @@
   .yh-warn .t{font-weight:800;font-size:17px;color:var(--red);margin-bottom:2px;}
   .yh-warn .b{font-size:15px;}
   .yh-ok{background:var(--green-soft);border:1px solid #CFE0D2;border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:15px;}
-  .yh-sub{font-size:13px;color:#8A8472;margin:2px 0 12px;}
+  .yh-sub{font-size:13px;color:#4A463C;margin:2px 0 12px;}
   .dg-photo{background:var(--blue-soft);border:1px solid #CADDE8;border-radius:14px;padding:12px;margin-bottom:12px;}
   .dg-pt{font-weight:800;font-size:16px;margin-bottom:4px;}
   .dg-tips{font-size:14px;color:#4a5560;margin-bottom:8px;line-height:1.55;}
   .dg-kttl{font-weight:800;font-size:17px;margin:6px 0 2px;}
-  .dg-ksub{display:block;font-size:13px;color:#8A8472;font-weight:400;margin-bottom:6px;}
+  .dg-ksub{display:block;font-size:13px;color:#4A463C;font-weight:400;margin-bottom:6px;}
   .dg-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;}
   .dg-card.top{background:var(--gold-soft);border-color:#E8D9B8;}
   .dg-rank{font-size:13px;font-weight:800;color:var(--gold);}
@@ -1121,7 +1121,7 @@
   .hyg-bar{height:18px;border-radius:9px;background:#EEECE4;overflow:hidden;margin-top:4px;}
   .hyg-bar i{display:block;height:100%;background:var(--green);border-radius:9px;}
   .hyg-bar i.over{background:var(--red);}
-  .hyg-note{font-size:13px;color:#8A8472;margin-top:6px;line-height:1.55;}
+  .hyg-note{font-size:13px;color:#4A463C;margin-top:6px;line-height:1.55;}
   .kyo-nav{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-weight:800;font-size:17px;}
   .kyo-nav .ar{color:var(--green);font-size:15px;padding:4px 6px;}
   .kyo-sec{font-family:var(--mincho);font-weight:800;color:var(--green-deep);font-size:17px;margin:12px 0 6px;}
@@ -1163,7 +1163,7 @@
      年配の方に見やすくするため。天気の絵文字(.cw 13px)より少し大きくして、
      「この日は写真がある」と一目で分かるようにした。
      枚数の数字は小さいままだと読めないので 8.5px→10px に上げる。 */
-  .cph .n{font-size:10px;color:#8A8472;font-weight:700;vertical-align:1px;}
+  .cph .n{font-size:10px;color:#4A463C;font-weight:700;vertical-align:1px;}
   .ph-strip{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .ph-strip::-webkit-scrollbar{display:none;}
   .ph-th{flex-shrink:0;width:84px;height:84px;border-radius:12px;object-fit:cover;border:1px solid var(--line);background:#EFEBDD;}
@@ -1175,9 +1175,9 @@
   .ph-card img{display:block;width:100%;max-height:280px;object-fit:cover;background:#EFEBDD;}
   .ph-meta{padding:9px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .ph-meta .who{font-size:14.5px;font-weight:800;}
-  .ph-meta .sub{font-size:12px;color:#8A8472;}
+  .ph-meta .sub{font-size:12px;color:#4A463C;}
   .ph-meta .del{margin-left:auto;font-size:12px;font-weight:800;color:var(--red);background:var(--red-soft);border-radius:8px;padding:5px 9px;}
-  .ph-note{font-size:12.5px;color:#8A8472;line-height:1.6;margin:2px 2px 8px;}
+  .ph-note{font-size:12.5px;color:#4A463C;line-height:1.6;margin:2px 2px 8px;}
   .ph-empty{text-align:center;color:#9A957F;font-size:14px;padding:22px 0;}
   .ph-bar{display:flex;align-items:center;gap:8px;background:var(--blue-soft);border:1.5px solid #B3CEDB;
     border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1A5A8A;margin-bottom:8px;}
@@ -1193,11 +1193,11 @@
   #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:9%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .fp-head{padding:13px 14px 6px;flex-shrink:0;}
   .fp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;}
-  .fp-x{margin-left:auto;font-size:14px;color:#8A8472;padding:4px 6px;}
+  .fp-x{margin-left:auto;font-size:14px;color:#4A463C;padding:4px 6px;}
   .fp-search{display:block;width:100%;margin:10px 0 4px;border:1.5px solid #E7E3D8;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;}
   .fp-hint{font-size:11px;color:#9A957F;}
   .fp-list{flex:1;overflow-y:auto;padding:2px 12px 30px;-webkit-overflow-scrolling:touch;}
-  .fp-gh{font-size:12.5px;font-weight:800;color:#8A8472;margin:12px 2px 6px;}
+  .fp-gh{font-size:12.5px;font-weight:800;color:#4A463C;margin:12px 2px 6px;}
   .fp-row{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #E7E3D8;border-radius:12px;padding:12px;margin-bottom:6px;}
   .fp-row .cdot{width:10px;height:10px;border-radius:99px;flex-shrink:0;}
   .fp-row .fn2{font-size:16.5px;font-weight:800;}
@@ -1211,7 +1211,7 @@
   #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:14%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .bp-head{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--line);}
   .bp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;color:#232821;}
-  .bp-x{margin-left:auto;font-size:14px;color:#8A8472;padding:4px 6px;font-weight:700;}
+  .bp-x{margin-left:auto;font-size:14px;color:#4A463C;padding:4px 6px;font-weight:700;}
   .bp-sub{font-size:12px;color:#9A957F;margin-top:3px;line-height:1.5;}
   .bp-list{flex:1;overflow-y:auto;padding:10px 12px 34px;-webkit-overflow-scrolling:touch;}
   .bp-row{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;}
@@ -1300,7 +1300,7 @@
   .kredit .kef input{flex:1;border:1px solid #E7E3D8;border-radius:10px;padding:10px;font-size:16.5px;min-width:0;}
   /* ===== v22② カレンダー2.0 ===== */
   .day .cw{display:block;font-size:13px;line-height:1.15;font-weight:400;}
-  .day .ct2{display:block;font-size:9.5px;line-height:1.2;font-weight:700;color:#8A8472;}
+  .day .ct2{display:block;font-size:9.5px;line-height:1.2;font-weight:700;color:#4A463C;}
   .day .ct2 .h{color:#B34A3E;} .day .ct2 .l{color:#2E6E8E;}
   .cal-wxnote{font-size:13px;color:#6b6f66;margin:6px 2px 0;line-height:1.5;}
   .addplan{border:1.5px dashed var(--green);color:var(--green);border-radius:12px;text-align:center;padding:12px;font-weight:800;margin-top:10px;font-size:15.5px;}
@@ -1325,7 +1325,7 @@
   .usesheet-amt .uat{font-weight:800;font-size:14.5px;color:#6b6f66;margin-bottom:6px;}
   .usesheet-amt .uarow{display:flex;gap:8px;}
   .usesheet-amt .ua{flex:1;min-width:0;}
-  .usesheet-amt .ua .ual{font-size:13px;color:#8A8472;font-weight:700;margin-bottom:2px;}
+  .usesheet-amt .ua .ual{font-size:13px;color:#4A463C;font-weight:700;margin-bottom:2px;}
   .usesheet-amt .ua input{width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:10px;padding:10px;font-size:16.5px;}
   .fgroup{padding:9px 14px 4px;font-size:13.5px;font-weight:800;color:#8a6a2a;background:#FBF7EC;border-top:1px solid #E7E3D8;}
   /* ===== 📝 記録の確認 v27（#p-hist 内だけに限定） ===== */
@@ -1446,12 +1446,12 @@
         <div id="recFormWrap">
         <div class="fld datefld"><div class="lb">① いつ?（押すと日付を選べます）</div><div class="v"><span id="recDateV">今日</span><span class="chv">›</span></div><input type="date" id="recDateIn" onchange="recDateSet(this.value)"></div>
         <div class="fld" onclick="recPickField()"><div class="lb">② どの田んぼ?（📍か、押して変更）</div><div class="v"><span id="recFieldV">西 3 39.81a・にじのきらめき</span><span class="chv">›</span></div></div>
-        <div class="fld" id="recWorkFld" onclick="recWorkOpen()"><div class="lb">③ 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#8A8472;">押して作業をえらぶ</span><span id="recWorkTag"></span><span class="chv">›</span></div></div>
+        <div class="fld" id="recWorkFld" onclick="recWorkOpen()"><div class="lb">③ 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#6E6A5C;">押して作業をえらぶ</span><span id="recWorkTag"></span><span class="chv">›</span></div></div>
         <div class="fsheet" id="recWorkSheet">
           <div class="sh">作業をえらんでください<span class="x" onclick="recWorkClose()">✕</span></div>
           <div id="recWorkOpts"></div>
         </div>
-        <div class="fld" onclick="recUseOpen()"><div class="lb">④ 使ったもの・量（追肥・散布のとき）</div><div class="v" style="font-size:17px;"><span id="recUseV" style="color:#8A8472;">🧪農薬・🌾肥料をえらぶ（無しでもOK）</span><span class="chv">›</span></div></div>
+        <div class="fld" onclick="recUseOpen()"><div class="lb">④ 使ったもの・量（追肥・散布のとき）</div><div class="v" style="font-size:17px;"><span id="recUseV" style="color:#6E6A5C;">🧪農薬・🌾肥料をえらぶ（無しでもOK）</span><span class="chv">›</span></div></div>
         <div class="fsheet" id="recUseSheet">
           <div class="sh">使ったものをえらんでください<span class="x" onclick="recUseClose()">✕</span></div>
           <div id="recUseOpts"></div>
@@ -1465,13 +1465,13 @@
           </div>
           <div class="uat" style="margin:6px 0 0;font-weight:700;">入れた量は 📊生産原価・🌾肥料の栄養にも自動で回ります（二重入力なし）</div>
         </div>
-        <div class="fld" onclick="recMemoToggle()"><div class="lb">メモ（押すと書けます）</div><div class="v" id="recmemo" style="font-size:16px;color:#8A8472;">(空欄)<span class="chv">›</span></div></div>
+        <div class="fld" onclick="recMemoToggle()"><div class="lb">メモ（押すと書けます）</div><div class="v" id="recmemo" style="font-size:16px;color:#6E6A5C;">(空欄)<span class="chv">›</span></div></div>
         <div class="recmemo-box" id="recMemoBox"><textarea id="recMemoIn" placeholder="例：北側だけ生育が遅い。水口を少し開けた。"></textarea></div>
         <div class="ph-take" onclick="document.getElementById('phRecIn').click()">
           <span class="ic">📷</span>写真を撮る（この田んぼ・この日で共有）
           <input id="phRecIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
         </div>
-        <div class="fld" id="recWhoFld" onclick="whoOpen('rec')"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="recWhoV" style="color:#8A8472;">押して名前をえらぶ</span><span id="recWhoTag"></span><span class="chv">›</span></div></div>
+        <div class="fld" id="recWhoFld" onclick="whoOpen('rec')"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="recWhoV" style="color:#6E6A5C;">押して名前をえらぶ</span><span id="recWhoTag"></span><span class="chv">›</span></div></div>
         <div class="whopick" id="whoSheet">
           <h4>👤 だれが</h4>
           <div class="cap">名前を押すだけ。キーボードは出ません</div>
@@ -1563,7 +1563,7 @@
           <div class="hl">✍️ 今日ひとこと</div>
           <div class="hs" id="hitoDate">田んぼをえらばず、ひとことだけ残せます</div>
           <!-- ★v53 だれが書いたかを選ぶ。自動で入った値は緑の細枠＋札（CLAUDE.md 6節の共通ルール） -->
-          <div class="fld" id="hitoWhoFld" onclick="whoOpen('hito')" style="margin-bottom:9px;"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="hitoWhoV" style="color:#8A8472;">押して名前をえらぶ</span><span id="hitoWhoTag"></span><span class="chv">›</span></div></div>
+          <div class="fld" id="hitoWhoFld" onclick="whoOpen('hito')" style="margin-bottom:9px;"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="hitoWhoV" style="color:#6E6A5C;">押して名前をえらぶ</span><span id="hitoWhoTag"></span><span class="chv">›</span></div></div>
           <div class="whopick" id="hitoWhoSheet"><h4>👤 だれが書きますか？</h4><div class="cap">名前を押すだけ。キーボードは出ません</div><div id="hitoWhoOpts"></div></div>
           <textarea id="hitoIn" placeholder="例：雨で作業は休み。西の田でうんかを少し見かけた" enterkeyhint="done"></textarea>
           <div class="hitorow">
@@ -1800,7 +1800,7 @@
           <span class="ic">📷</span>写真を撮る／えらぶ（今日の分）
           <input id="phTeamIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
         </div>
-        <div class="ph-note">あなたの名前：<b id="phWhoV">(未設定)</b>　<span style="color:var(--green);font-weight:800;" onclick="phWhoAsk()">✏️ 名前を決める</span>　<span style="color:#8A8472;" onclick="phPassAsk()">🔑 合言葉</span></div>
+        <div class="ph-note">あなたの名前：<b id="phWhoV">(未設定)</b>　<span style="color:var(--green);font-weight:800;" onclick="phWhoAsk()">✏️ 名前を決める</span>　<span style="color:#4A463C;" onclick="phPassAsk()">🔑 合言葉</span></div>
         <div class="feedtitle">📷 みんなの写真</div>
         <div id="phFeed"></div>
         <div class="sharenote">👥 記録の共有はKSASの無料共有も使えます。だれが何をやったか全員に伝わります。</div>
@@ -1877,7 +1877,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v74</span></div>
+          <div class="setrow">バージョン<span class="sv">v76</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -4148,7 +4148,7 @@
       if(fld)fld.classList.add('autofill');
       if(tag)tag.innerHTML='<span class="autotag">'+(eff.src==='dev'?'この端末':'前回')+'</span>';
     } else {
-      v.textContent='押して名前をえらぶ'; v.style.color='#8A8472';
+      v.textContent='押して名前をえらぶ'; v.style.color='#6E6A5C';
       if(fld)fld.classList.remove('autofill');
       if(tag)tag.innerHTML='';
     }
@@ -4712,7 +4712,7 @@
       if(fld)fld.classList.add('autofill');
       if(tag)tag.innerHTML='<span class="autotag">今ここ</span>';
     } else {
-      if(v){ v.textContent='押して作業をえらぶ'; v.style.color='#8A8472'; }
+      if(v){ v.textContent='押して作業をえらぶ'; v.style.color='#6E6A5C'; }
       if(fld)fld.classList.remove('autofill');
       if(tag)tag.innerHTML='';
     }
@@ -4771,10 +4771,10 @@
     recDateSel=null; recWorkSel=''; recUseSel='';
     recDateSet('');
     var di=document.getElementById('recDateIn'); if(di)di.value='';
-    var wv=document.getElementById('recWorkV'); if(wv){ wv.textContent='押して作業をえらぶ'; wv.style.color='#8A8472'; }
+    var wv=document.getElementById('recWorkV'); if(wv){ wv.textContent='押して作業をえらぶ'; wv.style.color='#6E6A5C'; }
     var wtag=document.getElementById('recWorkTag'); if(wtag)wtag.innerHTML='';
     var wfld=document.getElementById('recWorkFld'); if(wfld)wfld.classList.remove('autofill');
-    var uv=document.getElementById('recUseV'); if(uv){ uv.textContent='🧪農薬・🌾肥料をえらぶ（無しでもOK）'; uv.style.color='#8A8472'; }
+    var uv=document.getElementById('recUseV'); if(uv){ uv.textContent='🧪農薬・🌾肥料をえらぶ（無しでもOK）'; uv.style.color='#6E6A5C'; }
     var amt=document.getElementById('recAmtBox'); if(amt)amt.classList.remove('on');
     ['recRate','recVol','recMass','recMemoIn'].forEach(function(id){ var e=document.getElementById(id); if(e)e.value=''; });
     var mb=document.getElementById('recMemoBox'); if(mb)mb.classList.remove('on');
@@ -7607,7 +7607,7 @@
     var today=ymd(new Date());
     var list=plans.filter(function(p){return p.date===today;});
     if(!list.length){
-      box.innerHTML='<div style="padding:10px 2px;font-size:14.5px;font-weight:800;color:#8A8472;">今日の予定はありません(カレンダーから確認できます)</div>';
+      box.innerHTML='<div style="padding:10px 2px;font-size:14.5px;font-weight:800;color:#4A463C;">今日の予定はありません(カレンダーから確認できます)</div>';
       return;
     }
     box.innerHTML=list.map(function(p){
@@ -7724,7 +7724,7 @@
     var list=plans.filter(function(p){return p.date===calSel;});
     var head=phDayStripHtml(calSel);   /* v25:この日の写真を上に */
     if(!list.length){
-      box.innerHTML=head+'<div class="daycard"><div class="nm" style="color:#8A8472;font-size:15px;">この日の予定はありません</div></div>';
+      box.innerHTML=head+'<div class="daycard"><div class="nm" style="color:#4A463C;font-size:15px;">この日の予定はありません</div></div>';
       return;
     }
     box.innerHTML=head+list.map(function(p){
@@ -8465,7 +8465,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v74';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v76';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -8696,7 +8696,7 @@
   function dgCandHTML(d,rank){
     var h='<div class="dg-card'+(rank===0?' top':'')+'">';
     if(rank===0)h+='<div class="dg-rank">候補①（一番あやしい）</div>';
-    else h+='<div class="dg-rank" style="color:#8A8472;">候補'+('②③④'.charAt(rank-1)||(rank+1))+'</div>';
+    else h+='<div class="dg-rank" style="color:#4A463C;">候補'+('②③④'.charAt(rank-1)||(rank+1))+'</div>';
     h+='<div class="dg-nm">'+d.n+'<span class="dg-kind">'+d.kind+'</span></div>';
     h+='<div class="dg-pt2">🔎 見分けポイント：'+d.pt+'</div>';
     if(d.chems.length){
