@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v78">
+<meta name="app-ver" content="v80">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1881,7 +1881,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v78</span></div>
+          <div class="setrow">バージョン<span class="sv">v80</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -3363,7 +3363,9 @@
   var ktvUndo=null, ktvUndoTimer=null;
 
   function ktvIsRice(f){ return NAE_EXC.indexOf(f.crop)<0; }
-  function ktvDefMode(k){ return (k==='tane'||k==='hogoe'||k==='inekari')?'crop':'area'; }
+  /* ★v79 親方のご指示：品種が先なのは①種まきだけ。⑥穂肥・⑨稲刈りも地区が先にする。
+     （どちらも上のチップでいつでも切り替えられるので、できることは減っていない） */
+  function ktvDefMode(k){ return (k==='tane')?'crop':'area'; }
   function ktvKeyOf(f){ return (ktvMode==='crop')?f.crop:f.area; }
   /* 稲の田んぼだけを、地区（または品種）ごとにまとめる。並び順は台帳のまま */
   function ktvGroups(){
@@ -3977,13 +3979,34 @@
     if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok,ng); }
     else ng();
   }
+  /* ★★v80 ここが「◆KSAS済の印が家族に届かない」の本体だった ★★
+     ── 何が起きていたか（本物の sync-put.js を読み込んで2台で流して確定）
+       印を付けるとき ksas を書きかえるだけで、**tombEdit()（更新時刻 _m を新しくする）を
+       呼んでいなかった。** 同じ記録どうしの勝ち負けは、端末側もサーバー側も
+       「_m が新しいほうが勝つ」。_m がどちらも無いと**先に入っているほうが勝つ**ので、
+       印は永久にサーバーへ入らない。
+       さらに「サーバーと中身が同じ時だけ送信ずみと控える」規則があるため、
+       一致しない → また送る を **30秒ごとに永久に繰り返して**いた。
+     ── 同じことをする他の2か所は正しかった
+       ★の印(kyoStar)・記録の日にち直し(krEditSave) はどちらも tombEdit を呼んでおり、
+       2台の通しで届くことを確認ずみ。**12か所のうちここ1か所だけが抜けていた。**
+     ── ★すでに印がある記録は触らない
+       毎回 _m を押し直すと、家族の台数ぶん上書き合戦になり、
+       全員の画面が30秒ごとにホームへ戻る（v65で実際に起きた型・CLAUDE.md §10-3）。 */
   function ktMarkKsas(){
-    var st=KT_STEPS[ktCurStep], hit=false;
-    for(var i=0;i<ktLog.length;i++)if(ktLog[i].step===st.k){ktLog[i].ksas=true;hit=true;}
+    var st=KT_STEPS[ktCurStep], hit=false, chg=0;
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i]; if(e.step!==st.k)continue;
+      hit=true;
+      if(e.ksas)continue;              /* すでに印がある＝中身は変わらないので触らない */
+      tombEdit(KT_LS,e);               /* ★v80 「直した」印。これが無いと家族に届かない */
+      e.ksas=true; chg++;
+    }
     /* ★v74 「一番うしろ」を見るのをやめる（作らなかった時に
        **関係のない記録に KSAS の印**が付いていた） */
-    if(!hit){ var ke=wlAdd(st.k,'(全体)',st.nm,'board'); if(ke)ke.ksas=true; }
-    ktSave(); toast('◆ KSAS済の印をつけました');
+    if(!hit){ var ke=wlAdd(st.k,'(全体)',st.nm,'board'); if(ke){ ke.ksas=true; chg++; } }
+    if(chg)ktSave();                   /* 変わった時だけ保存＝むだな送り合いを起こさない */
+    toast('◆ KSAS済の印をつけました');
     ktRenderBoard(); ktShowOnly('ktViewBoard');
   }
 
@@ -8658,7 +8681,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v78';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v80';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
