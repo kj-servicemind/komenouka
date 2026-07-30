@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v80">
+<meta name="app-ver" content="v85">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1266,6 +1266,9 @@
   .fsheet .sh .x{margin-left:auto;color:#6b6f66;font-size:19px;padding:0 4px;}
   .fsheet .fsearch{display:block;width:calc(100% - 24px);margin:10px 12px;border:1px solid #E7E3D8;border-radius:10px;padding:11px 12px;font-size:16px;background:#fafafa;box-sizing:border-box;}
   .fsheet .fopt{padding:13px 14px;border-top:1px solid #E7E3D8;display:flex;align-items:center;gap:8px;font-size:17.5px;font-weight:700;color:#232821;}
+  /* ★v82 切りのいい所で改行：文節を小さな箱に入れて、箱の途中で折れないようにする。
+     ※クラス名に .np は使えない（すぐ下の肥料の成分表示で使用中）ため .nb にした */
+  .nb{display:inline-block;}
   .fsheet .fopt .np{font-size:13.5px;color:#8a8f84;margin-left:auto;font-weight:600;}
   .fsheet .fopt.sel{background:#F5EEDF;}
   .fsheet .fopt.sel::after{content:"✔";margin-left:8px;color:#B8893B;font-weight:800;}
@@ -1498,7 +1501,7 @@
           <div class="ex"><b>「西3に</b> スタークルを <b>1000倍で</b> まいた」</div>
           <div class="ex"><b>「池松6の</b> 草刈りをした」</div>
           <div class="ex"><b>「松延121の</b> 化成を <b>20キロ</b> まいた」</div>
-          <div class="cn">田んぼ名 → した作業 →（農薬・肥料と量）の順が聞き取りやすいです。</div>
+          <div class="cn"><span class="nb">田んぼ名 → した作業 →</span><span class="nb">（農薬・肥料と量）の順が</span><span class="nb">聞き取りやすいです。</span></div>
         </div>
         <div class="vmanual" onclick="vmToggle()">⌨️ うまく聞き取れない時は「手で入力」</div>
         <div class="vmanual-box" id="vmBox">
@@ -1525,7 +1528,7 @@
         <div class="save" id="vsave" style="display:none;" onclick="saveVoice()">✅ これで保存する</div>
 
         <!-- 📄 栽培管理記録簿への入口 -->
-        <div class="kroku-enter" onclick="krokuOpen()">📄 記録簿を出す<small>いつ・どこで・何を・どれだけ が表になります（JA提出用）</small></div>
+        <div class="kroku-enter" onclick="krokuOpen()">📄 記録簿を出す<small><span class="nb">いつ・どこで・</span><span class="nb">何を・どれだけ が表になります</span><span class="nb">（JA提出用）</span></small></div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -1533,7 +1536,7 @@
     <!-- ===== 📄 栽培管理記録簿(JA提出用) ===== -->
     <div class="page" id="p-kroku">
       <div class="sc">
-        <div class="kroku-lead">🎤で話した記録が、そのままこの表に並びます。手書きのノートはもう要りません。<b>間違えた行は ✏️直す・🗑消す で見直せます。</b></div>
+        <div class="kroku-lead"><span class="nb">🎤で話した記録が、</span><span class="nb">そのままこの表に</span><span class="nb">並びます。</span><span class="nb">手書きのノートは</span><span class="nb">もう要りません。</span><b><span class="nb">間違えた行は ✏️直す・</span><span class="nb">🗑消す で見直せます。</span></b></div>
         <div class="kredit" id="krEditCard">
           <div class="ket" id="krEditTitle">✏️ この記録を直す</div>
           <div class="kef"><span class="kl">月日</span><input id="krEd" type="text" inputmode="numeric" placeholder="2026/07/20"></div>
@@ -1548,12 +1551,12 @@
           </div>
         </div>
         <div id="krokuBody"></div>
-        <div class="save" onclick="krokuCopy()">① 表をコピーする<small>次に ② LINEやメールでJAへ送る／KSASに貼る</small></div>
+        <div class="save" onclick="krokuCopy()">① 表をコピーする<small><span class="nb">次に ② LINEやメールで</span><span class="nb">JAへ送る／</span><span class="nb">KSASに貼る</span></small></div>
         <div class="kroku-why">
           <div class="wt">🔎 なぜ言葉が分かるの？（しくみ）</div>
-          <div class="item"><span class="num">1</span><span class="wtx"><b>田んぼの名前</b>…このアプリに登録ずみの5枚の名前と照らし合わせます</span></div>
-          <div class="item"><span class="num">2</span><span class="wtx"><b>農薬の名前</b>…農水省の農薬DBの名前と照らし合わせます</span></div>
-          <div class="item"><span class="num">3</span><span class="wtx"><b>倍率・量</b>…「◯◯倍」「◯リットル」「◯キロ」の言い方を数字にします</span></div>
+          <div class="item"><span class="num">1</span><span class="wtx"><b>田んぼの名前</b><span class="nb">…このアプリに</span><span class="nb">登録ずみの5枚の</span><span class="nb">名前と照らし合わせます</span></span></div>
+          <div class="item"><span class="num">2</span><span class="wtx"><b>農薬の名前</b><span class="nb">…農水省の農薬DBの</span><span class="nb">名前と照らし合わせます</span></span></div>
+          <div class="item"><span class="num">3</span><span class="wtx"><b>倍率・量</b><span class="nb">…「◯◯倍」</span><span class="nb">「◯リットル」</span><span class="nb">「◯キロ」の</span><span class="nb">言い方を数字にします</span></span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -1565,7 +1568,7 @@
         <!-- ===== v47 今日ひとこと（作業を記録から移動）。書く所と読む所を1つにした ===== -->
         <div class="hitobox" id="hitoBox">
           <div class="hl">✍️ 今日ひとこと</div>
-          <div class="hs" id="hitoDate">田んぼをえらばず、ひとことだけ残せます</div>
+          <div class="hs" id="hitoDate"><span class="nb">田んぼをえらばず、</span><span class="nb">ひとことだけ残せます</span></div>
           <!-- ★v53 だれが書いたかを選ぶ。自動で入った値は緑の細枠＋札（CLAUDE.md 6節の共通ルール） -->
           <div class="fld" id="hitoWhoFld" onclick="whoOpen('hito')" style="margin-bottom:9px;"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="hitoWhoV" style="color:#6E6A5C;">押して名前をえらぶ</span><span id="hitoWhoTag"></span><span class="chv">›</span></div></div>
           <div class="whopick" id="hitoWhoSheet"><h4>👤 だれが書きますか？</h4><div class="cap">名前を押すだけ。キーボードは出ません</div><div id="hitoWhoOpts"></div></div>
@@ -1576,7 +1579,7 @@
           </div>
           <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
         </div>
-        <div class="hist-lead">上で書いた<b>ひとこと</b>と、🎤や🚜で記録したことが、<b>新しい順に上から</b>ぜんぶ並びます。「いつ・どの田んぼ・何を・いくら」が一目で分かります。</div>
+        <div class="hist-lead">上で書いた<b>ひとこと</b><span class="nb">と、🎤や🚜で</span><span class="nb">記録したことが、</span><b>新しい順に上から</b><span class="nb">ぜんぶ並びます。</span><span class="nb">「いつ・どの田んぼ・</span><span class="nb">何を・いくら」が</span><span class="nb">一目で分かります。</span></div>
         <div id="histUnsent"></div>
         <div class="hist-chips" id="histChips"></div>
         <div class="hist-fieldbar" id="histFieldBar"></div>
@@ -1588,8 +1591,8 @@
     <!-- ===== 🕰 去年の同じ月（v48.1：折りたたみをやめ、他の19画面と同じ「別画面＋戻る」に戻した） ===== -->
     <div class="page" id="p-kyoka">
       <div class="sc">
-        <div class="hy-lead"><b>去年の自分が先生</b>になる場所です。★を付けた作業と📝反省メモが、<b>来年の同じ月</b>にここへ出てきます。<br>★は「<b>📝記録の確認</b>」の各行から押せます。</div>
-        <div class="kyo-nav"><span class="ar" onclick="kyoMove(-1)">‹ 前の月</span><span id="kyoTitle">…</span><span class="ar" onclick="kyoMove(1)">次の月 ›</span></div>
+        <div class="hy-lead"><b>去年の自分が先生</b><span class="nb">になる場所です。</span><span class="nb">★を付けた作業と</span><span class="nb">📝反省メモが、</span><b>来年の同じ月</b><span class="nb">にここへ出てきます。</span><br>★は「<b>📝記録の確認</b>」の各行から押せます。</div>
+        <div class="kyo-nav"><span class="ar" onclick="kyoMove(-1)">‹ <span class="nb">前の月</span></span><span id="kyoTitle">…</span><span class="ar" onclick="kyoMove(1)"><span class="nb">次の月</span> ›</span></div>
         <div id="kyoPast"><!-- 過去の同じ月(JS) --></div>
         <div class="kyo-memoc">
           <div class="kyo-mttl">📝 この月の反省メモ</div>
@@ -1603,7 +1606,7 @@
     <!-- ===== 🌾 肥料の栄養バランス(新) ===== -->
     <div class="page" id="p-hiryo">
       <div class="sc">
-        <div class="hy-lead">🎤で「西3に化成を20キロあげた」と話すか、下から肥料を選んで量を入れるだけ。<b>窒素・りん酸・カリ</b>に自動で分けて、今年あげた栄養がひと目でわかります。</div>
+        <div class="hy-lead"><span class="nb">🎤で</span><span class="nb">「西3に化成を20キロあげた」と</span><span class="nb">話すか、</span><span class="nb">下から肥料を選んで</span><span class="nb">量を入れるだけ。</span><b><span class="nb">窒素・りん酸・カリ</span></b><span class="nb">に自動で分けて、</span><span class="nb">今年あげた栄養が</span><span class="nb">ひと目でわかります。</span></div>
         <div class="fld" onclick="hyPickField()"><div class="lb">田んぼ</div><div class="v"><span id="hyFieldName">西 3</span><span class="chv">›</span></div></div>
         <div class="hy-yrs" id="hyYrs"><!-- v50 今年／去年の切りかえ(JS) --></div>
         <div class="hy-yrnote" id="hyYrNote"></div>
@@ -1626,7 +1629,7 @@
           <div class="hy-kind" id="hyKindMoto" onclick="hyKindPick('moto')">元肥</div>
           <div class="hy-kind" id="hyKindHo" onclick="hyKindPick('ho')">穂肥（追肥）</div>
         </div>
-        <div class="hy-kindnote" id="hyKindNote">※ えらばなくても記録できます。えらぶと工程表の「⑥穂肥」に反映されます。</div>
+        <div class="hy-kindnote" id="hyKindNote"><span class="nb">※ えらばなくても記録できます。</span><span class="nb">えらぶと工程表の</span><span class="nb">「⑥穂肥」に反映されます。</span></div>
         <!-- ★v60 作業日誌は「45kg／反」で書く。アプリの合計kgと食い違うと4分の1になる -->
         <div class="hy-kindlb">入れかた</div>
         <div class="hy-unitrow">
@@ -1642,9 +1645,9 @@
         <div class="hy-old" id="hyOld" style="display:none;"></div>
         <div class="kroku-why">
           <div class="wt">🔎 なぜ栄養がわかるの？（しくみ）</div>
-          <div class="item"><span class="num">1</span><span class="wtx"><b>肥料の名前</b>…登録ずみの肥料の成分表（窒素・りん酸・カリの％）と照らし合わせます</span></div>
-          <div class="item"><span class="num">2</span><span class="wtx"><b>あげた量</b>…「◯kg × 成分％」で、窒素◯kg…を自動で計算します</span></div>
-          <div class="item"><span class="num">3</span><span class="wtx">インターネットの有料AIは使いません（アプリの中だけで計算＝無料）</span></div>
+          <div class="item"><span class="num">1</span><span class="wtx"><b>肥料の名前</b><span class="nb">…登録ずみの</span><span class="nb">肥料の成分表</span><span class="nb">（窒素・りん酸・カリの％）と</span><span class="nb">照らし合わせます</span></span></div>
+          <div class="item"><span class="num">2</span><span class="wtx"><b>あげた量</b><span class="nb">…「◯kg × 成分％」で、</span><span class="nb">窒素◯kg…を</span><span class="nb">自動で計算します</span></span></div>
+          <div class="item"><span class="num">3</span><span class="wtx"><span class="nb">インターネットの</span><span class="nb">有料AIは使いません</span><span class="nb">（アプリの中だけで</span><span class="nb">計算＝無料）</span></span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -1654,7 +1657,7 @@
     <!-- ===== 🚜 機械の維持費(新) ===== -->
     <div class="page" id="p-kikai">
       <div class="sc">
-        <div class="hy-lead">トラクター・軽トラごとに、軽油やオイル交換などのお金を記録します。<b>年間いくらかかったか</b>がわかり、「買う・借りる」の判断に役立ちます。</div>
+        <div class="hy-lead"><span class="nb">トラクター・軽トラごとに、</span><span class="nb">軽油やオイル交換などの</span><span class="nb">お金を記録します。</span><b><span class="nb">年間いくらかかったか</span></b><span class="nb">がわかり、</span><span class="nb">「買う・借りる」の</span><span class="nb">判断に役立ちます。</span></div>
         <div class="ki-tabs" id="kiTabs"></div>
         <div class="ki-sumcard">
           <div class="ki-sum"><span class="ki-suml">今年の合計</span><span class="ki-sumn" id="kiSumNow">0円</span></div>
@@ -1669,7 +1672,7 @@
           <div class="fld hy-amt"><div class="lb">金額（円）</div><input class="hy-inp" id="kiYen" type="number" inputmode="numeric" placeholder="6400" enterkeyhint="done"></div>
           <div class="hy-addbtn" onclick="kiAdd()">＋ 記録する</div>
         </div>
-        <div class="ki-note">💡 記録がたまると、この機械が1年でいくらかかっているかがわかります。維持費が高いなら、次はレンタルやリースの方が安いかもしれません。</div>
+        <div class="ki-note"><span class="nb">💡 記録がたまると、</span><span class="nb">この機械が</span><span class="nb">1年でいくら</span><span class="nb">かかっているかが</span><span class="nb">わかります。</span><span class="nb">維持費が高いなら、</span><span class="nb">次はレンタルや</span><span class="nb">リースの方が</span><span class="nb">安いかもしれません。</span></div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -1682,7 +1685,7 @@
         <div class="fld" onclick="pestWaterAsk()"><div class="lb">まく水の量（10aあたり・押して変更）</div><div class="v"><span id="pestWaterV">100</span> L<span class="chv">›</span></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">ふつうの散布のめやす。国の基準は60〜150L</div></div>
         <div class="fld"><div class="lb">希釈倍率(自動)</div><div class="v"><span id="pestBai">1000</span>倍</div></div>
         <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big" id="pestWater">—</span> L<br>入れる農薬の量:<span class="big" id="pestChem">—</span> mL<br><span id="pestCalcNote" style="font-size:13px;color:#8A6A2E;">田んぼと倍率から計算します</span></div>
-        <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="pestYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">入れると生産原価の「農業薬剤費」に自動で入ります（空欄でもOK）</div></div>
+        <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="pestYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;"><span class="nb">入れると</span><span class="nb">生産原価の</span><span class="nb">「農業薬剤費」に</span><span class="nb">自動で入ります</span><span class="nb">（空欄でもOK）</span></div></div>
         <div id="mbBox"><!-- 📋 この農薬をまいた記録(JS)。国のDBボタンもこの中 --></div>
         <div class="save" onclick="pestRecord()">✅ この内容で記録する</div>
         <div class="wide" onclick="go('drug')">🔍 ほかの農薬をさがす(農水省DB・無料)</div>
@@ -1694,12 +1697,12 @@
     <div class="page" id="p-diag">
       <div class="sc">
         <div id="yhBox"><!-- 🔮病気の予報(JS) --></div>
-        <div class="yh-sub">※アプリ内蔵の条件表と気象庁の気温・天気の照合です。表に無い病気・虫は予報しません。</div>
+        <div class="yh-sub"><span class="nb">※アプリ内蔵の</span><span class="nb">条件表と</span><span class="nb">気象庁の</span><span class="nb">気温・天気の照合です。</span><span class="nb">表に無い</span><span class="nb">病気・虫は</span><span class="nb">予報しません。</span></div>
         <div class="dg-photo">
           <div class="dg-pt">📸 写真で調べるなら（無料アプリ）</div>
           <div class="dg-tips">コツは3つ：<b>①近づいて大きく ②ピントを合わせて ③明るい所で</b>。5枚までまとめて診断できます。</div>
           <div class="dbbtn" onclick="openRaimy()">📸 レイミーAI診断を開く（無料）</div>
-          <div class="dg-tips" style="margin-top:-2px;">※App Storeが開いたら「開く」を押すとレイミーが始まります（未インストールなら入手できます）</div>
+          <div class="dg-tips" style="margin-top:-2px;"><span class="nb">※App Storeが</span><span class="nb">開いたら</span><span class="nb">「開く」を押すと</span><span class="nb">レイミーが始まります</span><span class="nb">（未インストールなら</span><span class="nb">入手できます）</span></div>
           <div class="ksasbtn" onclick="openKsas('無料AI診断を開きます(写真もいっしょに送れます)')">🤖 KSASのAI診断を開く(無料)</div>
         </div>
         <div class="dg-kttl">🩺 見た目で調べる（カルテ式）<span class="dg-ksub">あてはまるものを押すと、候補が絞られます（複数OK）</span></div>
@@ -1712,7 +1715,7 @@
           <div class="sym" onclick="dgSym(this,'weed')">🌿 雑草をしらべる</div>
         </div>
         <div id="dgList"></div>
-        <div class="wide" onclick="dgZukanToggle()">📕 ミニ図鑑を見る（水稲の病気・虫・雑草）</div>
+        <div class="wide" onclick="dgZukanToggle()"><span class="nb">📕 ミニ図鑑を見る</span><span class="nb">（水稲の病気・虫・雑草）</span></div>
         <div id="dgZukan" style="display:none;"></div>
         <div class="ghost" onclick="toast('写真と症状をみんなに共有しました')">👥 みんなに写真で相談する</div>
         <div class="feedtitle">🐛 今年出た記録（田んぼごと）</div>
@@ -1725,24 +1728,24 @@
     <div class="page" id="p-drug">
       <div class="sc">
         <div class="searchbox" onclick="toast('キーボードで農薬名を入力')">🔍 農薬名か病害虫名を入力(例:カメムシ)</div>
-        <div class="dbnote">✅ よく使う稲用農薬の見本です。<b>最新の登録内容(希釈・時期・回数)は必ず製品ラベルか公式データベースで確認</b>してください。</div>
-        <div class="dbbtn" onclick="openSite('https://pesticide.maff.go.jp/')">🏛️ 農水省の公式データベースで最新を調べる(無料)</div>
+        <div class="dbnote">✅ よく使う稲用農薬の見本です。<b><span class="nb">最新の登録内容</span><span class="nb">(希釈・時期・回数)は</span><span class="nb">必ず製品ラベルか</span><span class="nb">公式データベースで</span><span class="nb">確認</span></b>してください。</div>
+        <div class="dbbtn" onclick="openSite('https://pesticide.maff.go.jp/')"><span class="nb">🏛️ 農水省の</span><span class="nb">公式データベースで</span><span class="nb">最新を調べる</span><span class="nb">(無料)</span></div>
         <div class="drugcard">
           <div class="nm">スタークル液剤10</div>
           <span class="tag">稲</span><span class="tag">カメムシ類</span><span class="tag">ウンカ類</span>
-          <div class="row2">希釈:1000倍|使用時期:収穫7日前まで|回数:3回以内</div>
+          <div class="row2"><span class="nb">希釈:1000倍|</span><span class="nb">使用時期:収穫7日前まで|</span><span class="nb">回数:3回以内</span></div>
           <div class="use" onclick="setChem('スタークル液剤10',1000)">🧪 この農薬で計算する</div>
         </div>
         <div class="drugcard">
           <div class="nm">ブラシンフロアブル</div>
           <span class="tag">稲</span><span class="tag">いもち病</span>
-          <div class="row2">希釈:1000倍|使用時期:収穫21日前まで|回数:3回以内</div>
+          <div class="row2"><span class="nb">希釈:1000倍|</span><span class="nb">使用時期:収穫21日前まで|</span><span class="nb">回数:3回以内</span></div>
           <div class="use" onclick="setChem('ブラシンフロアブル',1000)">🧪 この農薬で計算する</div>
         </div>
         <div class="drugcard">
           <div class="nm">アミスタートレボンSE</div>
           <span class="tag">稲</span><span class="tag">いもち病</span><span class="tag">カメムシ類</span>
-          <div class="row2">希釈:1000倍|使用時期:収穫7日前まで|回数:3回以内</div>
+          <div class="row2"><span class="nb">希釈:1000倍|</span><span class="nb">使用時期:収穫7日前まで|</span><span class="nb">回数:3回以内</span></div>
           <div class="use" onclick="setChem('アミスタートレボンSE',1000)">🧪 この農薬で計算する</div>
         </div>
         <div class="spacer"></div>
@@ -1763,7 +1766,7 @@
         <div class="cal">
           <div class="calnav"><span class="ar" onclick="calMove(-1)">« ‹</span><span id="calTitle">…</span><span class="ar" onclick="calMove(1)">› »</span></div>
           <div class="calgrid" id="calGrid"><!-- v2.5:予定データから自動生成(JS) --></div>
-          <div class="cal-wxnote">☀️天気と <span style="color:#B34A3E;font-weight:800;">最高</span>/<span style="color:#2E6E8E;font-weight:800;">最低</span>気温は、気象庁の予報が出ている約1週間ぶんだけ自動で入ります。先の日は空欄のまま（無い予報は作りません）。</div>
+          <div class="cal-wxnote">☀️天気と <span style="color:#B34A3E;font-weight:800;">最高</span>/<span style="color:#2E6E8E;font-weight:800;">最低</span><span class="nb">気温は、</span><span class="nb">気象庁の予報が</span><span class="nb">出ている</span><span class="nb">約1週間ぶんだけ</span><span class="nb">自動で入ります。</span><span class="nb">先の日は空欄のまま</span><span class="nb">（無い予報は</span><span class="nb">作りません）。</span></div>
         </div>
         <div class="dayhead" id="dayTitle">…</div>
         <div id="dayList"><!-- v2.5:選んだ日の予定(JS) --></div>
@@ -1786,12 +1789,12 @@
     <div class="page" id="p-cost">
       <div class="sc">
         <div class="fld"><div class="lb">作付名（自動）</div><div class="v" style="font-size:15px;"><span id="costCropName">—</span></div></div>
-        <div class="cost-lead">農水省の「米・生産費」と同じ費目にそろえました。<b>分からない費目は空欄でOK</b>（空欄は0円として合計に入りません）。肥料・農薬・燃料は他の画面の記録から自動で入ります。</div>
+        <div class="cost-lead"><span class="nb">農水省の</span><span class="nb">「米・生産費」と</span><span class="nb">同じ費目に</span><span class="nb">そろえました。</span><b>分からない費目は空欄でOK</b><span class="nb">（空欄は0円として</span><span class="nb">合計に入りません）。</span><span class="nb">肥料・農薬・燃料は</span><span class="nb">他の画面の記録から</span><span class="nb">自動で入ります。</span></div>
         <div class="hy-unk" id="costUnk"><!-- ★v64 金額を入れていない農薬の記録の件数(JS) --></div>
         <div class="cost-total"><span class="t">物財費 合計</span><span class="n" id="costTotal">0円</span></div>
         <div id="costBody"><!-- 費目(JS) --></div>
         <div class="wide" onclick="costCompare()">📊 去年と比べる</div>
-        <div class="cost-lead" style="margin-top:10px;">※ 労働費（人の作業代）は入れていません。物にかかったお金だけを見る画面です。</div>
+        <div class="cost-lead" style="margin-top:10px;"><span class="nb">※ 労働費</span><span class="nb">（人の作業代）は</span><span class="nb">入れていません。</span><span class="nb">物にかかった</span><span class="nb">お金だけを見る</span><span class="nb">画面です。</span></div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -1807,7 +1810,7 @@
         <div class="ph-note">あなたの名前：<b id="phWhoV">(未設定)</b>　<span style="color:var(--green);font-weight:800;" onclick="phWhoAsk()">✏️ 名前を決める</span>　<span style="color:#4A463C;" onclick="phPassAsk()">🔑 合言葉</span></div>
         <div class="feedtitle">📷 みんなの写真</div>
         <div id="phFeed"></div>
-        <div class="sharenote">👥 記録の共有はKSASの無料共有も使えます。だれが何をやったか全員に伝わります。</div>
+        <div class="sharenote"><span class="nb">👥 記録の共有は</span><span class="nb">KSASの無料共有も</span><span class="nb">使えます。</span><span class="nb">だれが何をやったか</span><span class="nb">全員に伝わります。</span></div>
         <div class="feedtitle">👥 はたらく人（名前を直せます）</div>
         <div id="memBody"><!-- v37 名簿(JS) --></div>
         <div class="memadd" onclick="memAdd()">＋ 人をふやす</div>
@@ -1838,12 +1841,12 @@
           <button id="fs1" onclick="setFs(1)">大きい</button>
           <button id="fs2" onclick="setFs(2)">特大</button>
         </div>
-        <div class="sethead">🔁 ホームのボタン(押すと一覧から機能を選べます／タブに使う機能は自動で外れます)</div>
+        <div class="sethead"><span class="nb">🔁 ホームのボタン</span><span class="nb">(押すと一覧から</span><span class="nb">機能を選べます／</span><span class="nb">タブに使う機能は</span><span class="nb">自動で外れます)</span></div>
         <div class="setcard">
           <div id="slotRows"></div>
           <div class="setrow" onclick="resetTiles()">最初の並びに戻す<span class="sv">リセット ›</span></div>
         </div>
-        <div class="sethead">🔁 下のタブ(真ん中3つ・押すと一覧から機能を選べます／ホームと設定は固定)</div>
+        <div class="sethead"><span class="nb">🔁 下のタブ</span><span class="nb">(真ん中3つ・</span><span class="nb">押すと一覧から</span><span class="nb">機能を選べます／</span><span class="nb">ホームと設定は固定)</span></div>
         <div class="setcard">
           <div class="setrow" onclick="openTabPicker(0)">左のタブ<span class="sv" id="tabv0">話して記録 ›</span></div>
           <div class="setrow" onclick="openTabPicker(1)">真ん中のタブ<span class="sv" id="tabv1">AI相談 ›</span></div>
@@ -1868,7 +1871,7 @@
           <div class="setrow" onclick="syncNow()">今すぐ同期する<span class="sv">記録・予定・メモ ›</span></div>
           <div class="setrow" onclick="syncDiag()">つながりを調べる<span class="sv">診断 ›</span></div>
         </div>
-        <div class="setnote">💡 記録・予定・メモ・工程表の設定などは、家族みんなで<b>自動的に共有・バックアップ</b>されます（数十秒ごと／アプリを開いた時）。ネットが無い時はこの端末で使え、つながると自動で追いつきます。写真はこれまで通り共有アルバムに保存されます。</div>
+        <div class="setnote"><span class="nb">💡 記録・予定・メモ・</span><span class="nb">工程表の設定などは、</span><span class="nb">家族みんなで</span><b>自動的に共有・バックアップ</b><span class="nb">されます</span><span class="nb">（数十秒ごと／</span><span class="nb">アプリを開いた時）。</span><span class="nb">ネットが無い時は</span><span class="nb">この端末で使え、</span><span class="nb">つながると</span><span class="nb">自動で追いつきます。</span><span class="nb">写真はこれまで通り</span><span class="nb">共有アルバムに</span><span class="nb">保存されます。</span></div>
         <div class="sethead">💾 データ（バックアップ・リセット）</div>
         <div class="setcard">
           <div class="setrow">保存場所<span class="sv">このiPhoneの中</span></div>
@@ -1877,11 +1880,11 @@
           <input type="file" id="bkFile" accept="application/json,.json" style="display:none" onchange="backupImportFile(this)">
           <div class="setrow danger" onclick="dataResetAll()">入力内容を全部リセット<span class="sv">はじめから ›</span></div>
         </div>
-        <div class="setnote">💡 記録・予定・メモはこのiPhoneの中に保存され、家族とはサーバー経由で共有されます。機種変更や故障にそなえて、ときどき「バックアップを書き出す」で保存しておくと安心です。<br>⚠️ 写真だけはバックアップに入りません（サーバーにあるため）。「入力内容を全部リセット」で「家族全員ぶんも消す」を選ぶと、みんなの写真も消えます。</div>
+        <div class="setnote"><span class="nb">💡 記録・予定・メモは</span><span class="nb">このiPhoneの中に</span><span class="nb">保存され、</span><span class="nb">家族とは</span><span class="nb">サーバー経由で</span><span class="nb">共有されます。</span><span class="nb">機種変更や故障に</span><span class="nb">そなえて、</span><span class="nb">ときどき</span><span class="nb">「バックアップを書き出す」で</span><span class="nb">保存しておくと</span><span class="nb">安心です。</span><br><span class="nb">⚠️ 写真だけは</span><span class="nb">バックアップに</span><span class="nb">入りません</span><span class="nb">（サーバーにあるため）。</span><span class="nb">「入力内容を全部リセット」で</span><span class="nb">「家族全員ぶんも消す」を</span><span class="nb">選ぶと、</span><span class="nb">みんなの写真も</span><span class="nb">消えます。</span></div>
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v80</span></div>
+          <div class="setrow">バージョン<span class="sv">v85</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -1896,7 +1899,7 @@
         <div class="dronehero"><img id="droneSrc" src="data:image/png;base64,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" alt="ドローン"></div>
         <div class="fld datefld"><div class="lb">① いつ?（押すと日付を選べます）</div><div class="v"><span id="droneDateV">今日</span><span class="chv">›</span></div><input type="date" id="droneDateIn" onchange="droneDateSet(this.value)"></div>
         <div class="fld" onclick="dronePickField()"><div class="lb">② どの田んぼ?（📍か、押して変更）</div><div class="v"><span id="droneFieldV">西 3 39.81a・にじのきらめき</span><span class="chv">›</span></div></div>
-        <div class="fld"><div class="lb">③ 何をまく?</div><div class="v"><span onclick="go('drug')">スタークル液剤</span><span class="chv">›</span></div></div>
+        <div class="fld"><div class="lb">③ 何をまく?（押すと農薬をえらべます）</div><div class="v"><span id="droneChemV" onclick="go('drug')">スタークル</span><span class="chv">›</span></div></div>
         <div class="fld" style="border:none;padding:2px 0;background:none;box-shadow:none;"><div class="lb">飛行前チェック(押して確認)</div></div>
         <div class="symgrid">
           <div class="sym" onclick="symTap(this)">🌬️ 風は強くない</div>
@@ -1904,7 +1907,7 @@
           <div class="sym" onclick="symTap(this)">👀 周りに人がいない</div>
           <div class="sym" onclick="symTap(this)">🧪 薬量を確認した</div>
         </div>
-        <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="droneYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">入れると生産原価の「農業薬剤費」に入ります（空欄でもOK）</div></div>
+        <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="droneYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;"><span class="nb">入れると</span><span class="nb">生産原価の</span><span class="nb">「農業薬剤費」に</span><span class="nb">入ります</span><span class="nb">（空欄でもOK）</span></div></div>
         <div class="primary-btn" onclick="saveWork()">✅ 散布を記録する</div>
         <div class="ksasbtn" onclick="openKsas('航空写真マップを表示します(無料)')">🗺️ 圃場マップで確認(KSASを開く)</div>
         <div class="spacer"></div>
@@ -1918,7 +1921,7 @@
         <div class="ai-card">
           <div class="top">
             <div class="bot">🤖</div>
-            <div><div class="ti">稲作のことをAIに聞く</div><div class="sub">質問を入れて「AIに聞く」を押すと、質問が自動で入って答えが出ます</div></div>
+            <div><div class="ti">稲作のことをAIに聞く</div><div class="sub"><span class="nb">質問を入れて</span><span class="nb">「AIに聞く」を</span><span class="nb">押すと、</span><span class="nb">質問が自動で入って</span><span class="nb">答えが出ます</span></div></div>
           </div>
           <textarea class="qbox" id="aiQ" rows="3" enterkeyhint="search" placeholder="例:コシヒカリの葉先が黄色いです。原因と対策を教えて"></textarea>
           <div class="chips">
@@ -1934,22 +1937,22 @@
         <div class="sec-h" style="margin-top:4px;">🚀 新しい米づくり・稼ぐヒント<span class="free-badge">すべて無料</span></div>
         <div class="site" onclick="openSite('https://smartagri-jp.com/')">
           <div class="emo e-naro">🤖</div>
-          <div class="tx"><div class="nm">SMART AGRI(スマートアグリ)</div><div class="ds">スマート農業専門メディア。ドローン・自動化×米づくりの実践情報</div></div>
+          <div class="tx"><div class="nm">SMART AGRI(スマートアグリ)</div><div class="ds"><span class="nb">スマート農業</span><span class="nb">専門メディア。</span><span class="nb">ドローン・自動化×</span><span class="nb">米づくりの実践情報</span></div></div>
           <div class="ar">›</div>
         </div>
         <div class="site" onclick="openSite('https://www.maff.go.jp/j/kanbo/smart/')">
           <div class="emo e-maff">🚜</div>
-          <div class="tx"><div class="nm">農水省 スマート農業</div><div class="ds">国の実証プロジェクト成果。米農家の省力化・収益改善の実例集</div></div>
+          <div class="tx"><div class="nm">農水省 スマート農業</div><div class="ds"><span class="nb">国の</span><span class="nb">実証プロジェクト成果。</span><span class="nb">米農家の</span><span class="nb">省力化・収益改善の</span><span class="nb">実例集</span></div></div>
           <div class="ar">›</div>
         </div>
         <div class="site" onclick="openSite('https://agri.mynavi.jp/2026_06_12_525669/')">
           <div class="emo e-genno">🌱</div>
-          <div class="tx"><div class="nm">「勘と経験の農業ではいけない」</div><div class="ds">創業12年で150haへ。記録・数値化と省力化で伸ばした米経営(マイナビ農業)</div></div>
+          <div class="tx"><div class="nm">「勘と経験の農業ではいけない」</div><div class="ds"><span class="nb">創業12年で150haへ。</span><span class="nb">記録・数値化と</span><span class="nb">省力化で伸ばした</span><span class="nb">米経営</span><span class="nb">(マイナビ農業)</span></div></div>
           <div class="ar">›</div>
         </div>
         <div class="site acc" id="naroCard" onclick="toggleNaro()">
           <div class="emo e-genno">📚</div>
-          <div class="tx"><div class="nm">水田スマート農業 実証レポート(農研機構)</div><div class="ds">農研機構のスマート農業実証プロジェクト・水田作のレポート6本。タップで一覧が開きます</div></div>
+          <div class="tx"><div class="nm"><span class="nb">水田スマート農業 実証レポート</span><span class="nb">(農研機構)</span></div><div class="ds"><span class="nb">農研機構の</span><span class="nb">スマート農業</span><span class="nb">実証プロジェクト・</span><span class="nb">水田作の</span><span class="nb">レポート6本。</span><span class="nb">タップで</span><span class="nb">一覧が開きます</span></div></div>
           <div class="ar">›</div>
         </div>
         <div class="pdflist" id="naroList">
@@ -1968,7 +1971,7 @@
         </div>
         <div class="site" onclick="openSite('https://www.maff.go.jp/j/syouan/syokubo/gaicyu/yosatu/index.html')">
           <div class="emo e-boujo">🐛</div>
-          <div class="tx"><div class="nm">病害虫の発生予察・防除情報</div><div class="ds">お住まいの都道府県 病害虫防除所へ(全国リンク)</div></div>
+          <div class="tx"><div class="nm">病害虫の発生予察・防除情報</div><div class="ds"><span class="nb">お住まいの都道府県 病害虫防除所へ</span><span class="nb">(全国リンク)</span></div></div>
           <div class="ar">›</div>
         </div>
         <div class="spacer"></div>
@@ -1978,7 +1981,7 @@
     <!-- ===== ⑭ 圃場マップ(v2.4新規・地図は自前で持たない) ===== -->
     <div class="page" id="p-map">
       <div class="sc">
-        <div class="sharenote">🗺️ 航空写真の地図は<b>無料のKSAS</b>を開いて見ます(このアプリは地図を持たない=課金ゼロ)。</div>
+        <div class="sharenote">🗺️ 航空写真の地図は<b>無料のKSAS</b><span class="nb">を開いて見ます</span><span class="nb">(このアプリは</span><span class="nb">地図を持たない</span><span class="nb">=課金ゼロ)。</span></div>
         <div class="ksasbtn" onclick="openKsas('航空写真マップを表示します(無料)')">🗺️ 航空写真マップを開く(KSASを開く)</div>
         <div class="feedtitle">🌾 いまの田んぼの様子</div>
         <div class="rowcard" onclick="go('rec')"><div><div class="nm">西 3</div><div class="ar">39.81a・にじのきらめき</div></div><span class="badge b-here">📍今ここ</span></div>
@@ -1993,7 +1996,7 @@
     <div class="page" id="p-menu">
       <div class="sc">
         <div class="rowcard" onclick="go('hist')"><div><div class="nm">📝 記録の確認</div><div class="ar">ひとこと・今までの記録・去年の同じ月</div></div><span class="badge" style="background:var(--gold);">開く ›</span></div>
-        <div class="rowcard" onclick="go('koutei')"><div><div class="nm">📋 米づくり工程表</div><div class="ar">種まき〜稲刈りの進み＋出穂・収穫の予想</div></div><span class="badge" style="background:#33586B;">開く ›</span></div>
+        <div class="rowcard" onclick="go('koutei')"><div><div class="nm">📋 米づくり工程表</div><div class="ar"><span class="nb">種まき〜稲刈りの進み＋</span><span class="nb">出穂・収穫の予想</span></div></div><span class="badge" style="background:#33586B;">開く ›</span></div>
         <div class="rowcard" onclick="go('kusa')"><div><div class="nm">🌿 草刈り</div><div class="ar">田んぼごとに、刈ったらタップ</div></div><span class="badge" style="background:var(--green);">開く ›</span></div>
         <div class="rowcard" onclick="go('pest')"><div><div class="nm">🧪 農薬を計算</div><div class="ar">希釈・薬量を自動計算(農水省DB)</div></div><span class="badge" style="background:var(--gold);">開く ›</span></div>
         <div class="rowcard" onclick="go('fields')"><div><div class="nm">🌾 田んぼ一覧</div><div class="ar">色バッジで進み具合がわかる</div></div><span class="badge" style="background:var(--purple);">開く ›</span></div>
@@ -2278,10 +2281,10 @@
     '②':{do:'田植え。株間・植付株数を守る。',water:'植え付け後は浅水で活着を促す。',fert:'基肥を施用。',pest:'ジャンボタニシの食害に注意。',tip:'浅植え・浅水で活着を早める。'},
     '③':{do:'分げつを確保する時期。',water:'浅水〜間断で分げつを促す。',fert:'必要なら分げつ肥。',pest:'イネミズゾウムシ等に注意。',tip:'水温を上げて分げつを増やす。'},
     '④':{do:'有効茎が確保できたら中干し(5〜7日)。',water:'落水して土を乾かし、無効分げつを抑える。',fert:'中干し中は追肥を控える。',pest:'紋枯病の発生前チェック。',tip:'中干しのやりすぎに注意。ひび割れ程度で。'},
-    '⑤':{do:'中干しを終え、間断灌漑へ。',water:'穂ができ始める大事な時期。落水させすぎない。',fert:'穂肥のタイミング。幼穂の長さ(1〜2mm)で判断。',pest:'いもち病・カメムシの発生前チェック。',tip:'カメムシ対策は出穂10日前までに畦畔の草刈り。'},
+    '⑤':{do:'中干しを終え、間断灌漑へ。',water:'<span class="nb">穂ができ始める</span><span class="nb">大事な時期。</span><span class="nb">落水させすぎない。</span>',fert:'<span class="nb">穂肥のタイミング。</span><span class="nb">幼穂の長さ</span><span class="nb">(1〜2mm)で判断。</span>',pest:'いもち病・カメムシの発生前チェック。',tip:'<span class="nb">カメムシ対策は</span><span class="nb">出穂10日前までに</span><span class="nb">畦畔の草刈り。</span>'},
     '⑥':{do:'出穂期。開花・受粉の大切な時期。',water:'深水気味にして穂を守る。',fert:'原則追肥はしない。',pest:'穂いもち・カメムシに最警戒。',tip:'高温なら深水で高温障害を防ぐ。'},
     '⑦':{do:'登熟期。籾を充実させる。',water:'間断灌漑。落水は早すぎない。',fert:'施肥はしない。',pest:'カメムシ・トビイロウンカに注意。',tip:'早期落水は胴割れ・品質低下のもと。'},
-    '⑧':{do:'刈取適期の見極めと収穫・乾燥。',water:'収穫直前まで間断灌水。',fert:'—',pest:'刈り遅れによる胴割れに注意。',tip:'出穂後およそ40日・積算約1000℃が目安。籾水分25%前後で刈取。'}
+    '⑧':{do:'刈取適期の見極めと収穫・乾燥。',water:'収穫直前まで間断灌水。',fert:'—',pest:'刈り遅れによる胴割れに注意。',tip:'<span class="nb">出穂後およそ40日・</span><span class="nb">積算約1000℃が目安。</span><span class="nb">籾水分25%前後で</span><span class="nb">刈取。</span>'}
   };
 
   var INA_LS='gyotoku.inasaku.v1';
@@ -2373,6 +2376,9 @@
     var byField={};                 /* 田んぼ名 → 最も早い田植え日(ISO) */
     for(var i=0;i<ktLog.length;i++){
       var e=ktLog[i]; if(e.step!=='taue')continue;
+      /* ★v81【C】今年の田植え日だけを見る。去年の日付で今年の出穂を計算すると、
+         穂肥・中干しの適期が丸ごとズレる（工程表と同じ根の不具合） */
+      if(!ktThisYear(e))continue;
       /* ★v47：日付の書き方のズレを直した。
          書く側(wlAdd→inaFmtFull／手で選んだ日)は '2026/07/25'（スラッシュ）なのに、
          ここの判定が '2026-07-25'（ハイフン）だけを通していたので永久に不一致 →
@@ -2767,13 +2773,41 @@
     try{ evLog('dup','同じ中身の記録を1件にまとめました（'+n+'件ぶんを消しました）'); }catch(_x){}
     return n;
   }
+  /* ============================================================
+     ★★v81【C】工程表は「今年ぶん」だけを見る ★★
+     ── 何が起きていたか（AUDIT_v79 で実測）
+       草刈り(kusaLast)・肥料(hyRows)・生産原価(costChemYen) は全部「今年ぶん」に
+       絞ってあるのに、**工程表だけが全期間**を数えていた。
+       2026年はアプリを使い始めた年なので去年の記録が無く実害ゼロだったが、
+       **2027年3月に工程表を開くと、2026年の記録で①〜⑨が全部「✅済み」**になり、
+       「今年やった／やっていない」が分からなくなる。
+     ── 根本から直す（CLAUDE.md 0.5②：読む側1か所の回避で終わらせない）
+       ktDoneFields だけを直すと、同じ根から他の出口で嘘が出る：
+         ・「✅済み → なぜ ›」カードが**去年の記録**を理由に出す
+         ・◆KSAS済の印が**去年の記録**に付く
+         ・✅を外すと**去年の記録**が消える
+       → **「その工程の、今年の記録か」を1本の関数(ktHitStep)にして、
+          工程表のすべての出口をそれに通す。**（改めた出口＝7か所）
+     ── 年の見かたは、アプリの他の所とまったく同じにそろえる
+       kiYear() は '2026/07/25' でも '2026-07-25' でも先頭4桁を読む。
+       読めない日付は null（＝数えない）。肥料・原価と同じ扱いになる。
+     ============================================================ */
+  function ktThisYear(e){
+    return !!e && (typeof kiYear==='function') && kiYear(e.d)===(new Date()).getFullYear();
+  }
+  /* その工程・今年の記録か。fieldN を渡したときは田んぼ名も一致するものだけ */
+  function ktHitStep(e, stepK, fieldN){
+    if(!e || e.step!==stepK) return false;
+    if(fieldN!=null && e.field!==fieldN) return false;
+    return ktThisYear(e);
+  }
   function ktDoneFields(stepK){
-    var m={}; for(var i=0;i<ktLog.length;i++)if(ktLog[i].step===stepK)m[ktLog[i].field]=true;
+    var m={}; for(var i=0;i<ktLog.length;i++)if(ktHitStep(ktLog[i],stepK))m[ktLog[i].field]=true;
     return m;
   }
   function ktKsasDone(stepK){
     var any=false, all=true, saw=false;
-    for(var i=0;i<ktLog.length;i++)if(ktLog[i].step===stepK){saw=true; if(ktLog[i].ksas)any=true; else all=false;}
+    for(var i=0;i<ktLog.length;i++)if(ktHitStep(ktLog[i],stepK)){saw=true; if(ktLog[i].ksas)any=true; else all=false;}
     return saw&&any&&all;
   }
 
@@ -3015,8 +3049,8 @@
     + '<div class="kusa-lbl">📍 地区をえらぶ（押すだけ）</div>'
     + '<div class="kusa-grid">'+h+'</div>'
     + '<div class="kusa-note">💡 草刈りは一年に何度もやる作業なので、'
-    +   '<b>米づくり工程表の順番や進み具合には入れていません</b>。ここだけで数えます。<br>'
-    +   '📝作業を記録・🎤話して記録で「草刈り」をえらんでも、ここに出ます。<br>'
+    +   '<b><span class="nb">米づくり工程表の</span><span class="nb">順番や進み具合には</span><span class="nb">入れていません</span></b><span class="nb">。</span><span class="nb">ここだけで数えます。</span><br>'
+    +   '<span class="nb">📝作業を記録・</span><span class="nb">🎤話して記録で</span>'+'<span class="nb">「草刈り」をえらんでも、</span><span class="nb">ここに出ます。</span><br>'
     +   '数字は<b>'+y+'年ぶん</b>です。年が変わると数え直します。</div>'
     + '<div class="spacer"></div>';
   }
@@ -3237,7 +3271,7 @@
     var h='<div class="kt-pcard"><div class="ti">🌼 出穂・収穫の予想</div>';
     h+='<div class="sb">'+(anyHead
         ? '記録した田植え日から自動で計算。<b>早い順</b>にならべています。'
-        : '<b>田植えを記録すると、ここに予想が出ます。</b>入力するものはありません。')+'</div>';
+        : '<b>田植えを記録すると、ここに予想が出ます。</b><span class="nb">入力するものは</span><span class="nb">ありません。</span>')+'</div>';
     /* いちばん早い/遅い の札（田植え済みが2つ以上あるときだけ） */
     var heads=[]; for(var i=0;i<arr.length;i++)if(arr[i].head)heads.push(i);
     var firstI=heads.length?heads[0]:-1, lastI=heads.length>1?heads[heads.length-1]:-1;
@@ -3258,8 +3292,8 @@
       }
       h+='</div>';
     }
-    h+='<div class="kt-pnote">※ 気温の積み上げから計算した目安です。<b>未定・大豆は入っていません</b>。'
-      +(anyHead?'<br>※ 出穂を実際に見た日を入れると、そこから先はもっと正確になります（任意）。':'<br>※ 分からないことは「分からない」と出します。あてずっぽうの日付は出しません。')
+    h+='<div class="kt-pnote">※ 気温の積み上げから計算した目安です。<b><span class="nb">未定・大豆は</span><span class="nb">入っていません</span></b>。'
+      +(anyHead?'<br>※ 出穂を実際に見た日を入れると、そこから先はもっと正確になります（任意）。':'<br><span class="nb">※ 分からないことは</span><span class="nb">「分からない」と</span><span class="nb">出します。</span><span class="nb">あてずっぽうの</span><span class="nb">日付は出しません。</span>')
       +'</div></div>';
     return h;
   }
@@ -3318,7 +3352,7 @@
       var o=s.list[i];
       var badge=(o.st.type==='grow')?'<span class="kt-growbadge">🌡気温で計算</span>':'';
       var meta='';
-      if(o.cls==='done'){var lastSrc=null; for(var j=ktLog.length-1;j>=0;j--)if(ktLog[j].step===o.st.k){lastSrc=ktLog[j];break;}
+      if(o.cls==='done'){var lastSrc=null; for(var j=ktLog.length-1;j>=0;j--)if(ktHitStep(ktLog[j],o.st.k)){lastSrc=ktLog[j];break;}
         meta=(lastSrc?inaFmt(new Date(lastSrc.d))+' 済み・'+o.total+'枚すべて <span class="kt-src">'+ktSrcLabel(lastSrc.src)+'</span>':'済み');
         if(ktKsasDone(o.st.k))meta+='<span class="kt-ksasmini">◆KSAS済</span>';}
       else if(o.cls==='warn'){meta=(o.total-o.doneN)+'枚が未実施';}
@@ -3335,7 +3369,7 @@
         +'<div class="nmw"><div class="nm">'+o.st.nm+badge+'</div><div class="dt">'+meta+'</div></div>'
         +'<span class="st">'+o.stx+'</span></div>';
     }
-    h+='<div class="linkcard ina-trust" style="margin-top:14px;">💡 <b>つながり</b>：📝作業記録・🎤話して記録・'+droneMini(18)+'ドローン散布で保存すると、この表も自動で✅に変わります。KSASへも各工程からワンタップで記録できます。</div>';
+    h+='<div class="linkcard ina-trust" style="margin-top:14px;">💡 <b>つながり</b>：📝作業記録・🎤話して記録・'+droneMini(18)+'<span class="nb">ドローン散布で</span><span class="nb">保存すると、</span><span class="nb">この表も自動で</span><span class="nb">✅に変わります。</span><span class="nb">KSASへも</span><span class="nb">各工程から</span><span class="nb">ワンタップで</span><span class="nb">記録できます。</span></div>';
     el.innerHTML=h;
   }
 
@@ -3361,6 +3395,7 @@
   var ktvCur='';
   var ktvPick={};         /* まとめて記録のチェック { 田んぼの番号:true } */
   var ktvUndo=null, ktvUndoTimer=null;
+  var ktvChem='';         /* ★v85 いまえらんでいる薬（''＝えらんでいない＝v84と同じ動き） */
 
   function ktvIsRice(f){ return NAE_EXC.indexOf(f.crop)<0; }
   /* ★v79 親方のご指示：品種が先なのは①種まきだけ。⑥穂肥・⑨稲刈りも地区が先にする。
@@ -3397,7 +3432,7 @@
     ktCurStep=i;
     /* ★開くたびに必ず「えらぶ」から。前に開いた地区が残っていると迷子になる（v72の教訓） */
     if(!keepScroll){
-      ktvView='groups'; ktvCur=''; ktvPick={};
+      ktvView='groups'; ktvCur=''; ktvPick={}; ktvChem='';   /* ★v85 薬も必ず消す */
       ktvMode=ktvDefMode(KT_STEPS[i].k);
       ktvClearUndo();
     }
@@ -3421,20 +3456,20 @@
     }else if(typeof renderHeader==='function'){ renderHeader('koutei'); }
   }
   function ktvOpen(name){
-    ktvCur=name; ktvView='fields'; ktvPick={};
+    ktvCur=name; ktvView='fields'; ktvPick={}; ktvChem='';   /* ★v85 薬も必ず消す */
     ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktvClearUndo();
     ktvRender();
     var b=document.getElementById('body'); if(b)b.scrollTop=0;
   }
   function ktvBack(){
-    ktvView='groups'; ktvCur=''; ktvPick={};
+    ktvView='groups'; ktvCur=''; ktvPick={}; ktvChem='';   /* ★v85 薬も必ず消す */
     ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktvClearUndo();
     ktvRender();
     var b=document.getElementById('body'); if(b)b.scrollTop=0;
   }
   function ktvSetMode(m){
     if(ktvMode===m)return;
-    ktvMode=m; ktvView='groups'; ktvCur=''; ktvPick={}; ktvClearUndo();
+    ktvMode=m; ktvView='groups'; ktvCur=''; ktvPick={}; ktvChem=''; ktvClearUndo();   /* ★v85 */
     ktvRender();
     var b=document.getElementById('body'); if(b)b.scrollTop=0;
   }
@@ -3470,8 +3505,8 @@
         +'<span class="tx-line">今の設定だと ぜんぶで <b>'+naeComma(naeT.sum)+'枚</b></span></span>'
         +'<span class="edit dchg">計算する ›</span></div>';
     }
-    out+='<div class="kusa-note">💡 <b>稲をつくる '+RC+'枚ぶん</b>です（大豆・未定は出しません）。<br>'
-      +  '🎤や'+droneMini(18)+'で「'+KT_FIELDS[2].n+' '+st.nm+'やった」と記録しても、ここは自動で✅に変わります。</div>';
+    out+='<div class="kusa-note">💡 <b>稲をつくる '+RC+'枚ぶん</b><span class="nb">です</span><span class="nb">（大豆・未定は</span><span class="nb">出しません）。</span><br>'
+      +  '🎤や'+droneMini(18)+'で「'+KT_FIELDS[2].n+' '+st.nm+'やった」' + '<span class="nb">と記録しても、</span><span class="nb">ここは自動で✅に変わります。</span></div>';
     /* 稲作先生の栽培アドバイス（この工程に対応するステージの中身） */
     var d=(st.dtl&&INA_DETAIL[st.dtl])?INA_DETAIL[st.dtl]:null;
     if(d){
@@ -3515,7 +3550,7 @@
     if(ktWhyF===f){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktvRender(); return; }
     var st=KT_STEPS[ktCurStep], fd=KT_FIELDS[f], list=[], ki=[], i;
     for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
-      if(e.step===st.k&&e.field===fd.n){ list.push(e); ki.push(i); } }
+      if(ktHitStep(e,st.k,fd.n)){ list.push(e); ki.push(i); } }   /* ★v81 今年ぶんだけ */
     if(!list.length){ toast('この ✅ のもとになる記録が見つかりません'); return; }
     var o=list[0];
     ktWhyF=f; ktWhyKi=ki[0];
@@ -3524,6 +3559,55 @@
            +'<b>ここでは外せません。</b>まちがえたときは、記録そのものを消してください。'
            +((list.length>1)?('<br>※この田んぼのこの工程には記録が '+list.length+'件 あります'):'');
     ktvRender();
+  }
+  /* ================= ★v85 何をまきましたか？（前に使った薬） =================
+     ★表は内蔵しない。**台帳に実際に残っている薬の名前だけ**を出す。
+       内蔵の表を出すと、使わない薬まで並び、しかも古くなることが確定する（§3.5）。
+     ★分からない薬（NG_KINDに無い薬。手で打った名前・音声で聞き取った名前）は
+       ④にも⑦にも出す。「たぶん殺虫剤」と決めつけると、④に永久に出なくなる。
+       そのかわり画面に「種類は分かりません」と正直に書く。 */
+  function ktvChemFits(stepK, chem){
+    var s=ktChemStep(chem);
+    return (s==='')||(s===stepK);
+  }
+  /* 台帳から、この工程に合う薬を「最後にまいた日の新しい順」で最大6つ */
+  function ktvChemList(stepK){
+    var m={}, order=[], i;
+    for(i=0;i<ktLog.length;i++){
+      var e=ktLog[i]; if(!e||!e.chem)continue;
+      var c=(''+e.chem).replace(/^\s+|\s+$/g,''); if(!c)continue;
+      if(!ktvChemFits(stepK,c))continue;
+      var d=e.d||'';
+      if(!m[c]){ m[c]={c:c,d:d}; order.push(c); }
+      else if(d>m[c].d)m[c].d=d;
+    }
+    /* 日付は 'YYYY/MM/DD' なので文字くらべで新しい順になる（端末でズレない） */
+    order.sort(function(a,b){ return (m[b].d>m[a].d)?1:((m[b].d<m[a].d)?-1:0); });
+    var out=[]; for(var q=0;q<order.length&&q<6;q++)out.push(m[order[q]]);
+    return out;
+  }
+  /* 前にまいた日。今年でなければ年も書く（去年の薬を今年の日付と読ませない） */
+  function ktvChemDate(d){
+    if(!d)return '前にまいた日は分かりません';
+    var y=kiYear(d), ny=(new Date()).getFullYear();
+    return '前にまいた日 '+((y&&y!==ny)?(y+'年'):'')+krMd(d);
+  }
+  function ktvChemPick(c){ ktvChem=(ktvChem===c)?'':c; ktvRender(); }
+  function ktvChemHtml(){
+    var st=KT_STEPS[ktCurStep];
+    if(st.k!=='josou'&&st.k!=='shussui')return '';   /* 薬をまく工程だけに出す */
+    var L=ktvChemList(st.k); if(!L.length)return '';
+    var h='<div class="kusa-lbl">🧪 何をまきましたか？<span class="nb">（えらばなくてもOK）</span></div>';
+    for(var q=0;q<L.length;q++){
+      var c=L[q].c, on=(ktvChem===c), un=(ktChemStep(c)==='');
+      h+='<div class="kusa-row'+(on?' on':'')+'" onclick="ktvChemPick(\''+c.replace(/'/g,"\\'")+'\')">'
+       +   '<div class="kusa-ck'+(on?' on':'')+'">'+(on?'✓':'')+'</div>'
+       +   '<div class="kusa-rn"><div class="n">'+c+'</div>'
+       +     '<div class="s">'+ktvChemDate(L[q].d)+(un?'・種類は分かりません':'')+'</div>'
+       +   '</div>'
+       + '</div>';
+    }
+    return h;
   }
   function ktvFieldsHtml(){
     var st=KT_STEPS[ktCurStep], dn=ktDoneFields(st.k);
@@ -3555,15 +3639,20 @@
       bar='<div class="kusa-undobar"><div class="tx">✅ '+ktvUndo.n+'枚を記録しました</div>'
         + '<div class="ub" onclick="ktvUndoBatch()">↩ 取り消す</div></div>';
     }
+    /* ★v85 薬をえらんでいれば、押すボタンにその名前を出す（何が記録されるか押す前に分かる） */
+    var btx;
+    if(!n)btx=st.nm+'をした田んぼにチェックを入れてください';
+    else if(ktvChem)btx='✅ '+n+'枚を「'+ktvChem+'」でまいたと記録する';
+    else btx='✅ '+n+'枚を「'+st.nm+'済み」にする';
     bar+='<div class="kusa-bar">'
-       +   '<div class="kusa-btn'+(n?'':' off')+'" onclick="ktvSavePicked()">'
-       +     (n?('✅ '+n+'枚を「'+st.nm+'済み」にする'):(st.nm+'をした田んぼにチェックを入れてください'))
+       +   '<div class="kusa-btn'+(n?'':' off')+'" onclick="ktvSavePicked()">'+btx
        +   '</div></div>';
     return '<div class="kusa-lbl">'+st.nm+'をした田んぼにチェックを入れてください</div>'
       + h
       + '<div class="kusa-note">💡 <b>1枚だけの日も、地区まるごとの日も手順は同じ</b>です。'
       +   'チェックを入れて、下の緑のボタンを1回押すだけ。<br>'
       +   '<b>済んだ田んぼは、ここでは外せません。</b>まちがえたら「✅ 済み」を押すと理由と行き先が出ます。</div>'
+      + ktvChemHtml()
       + bar;
   }
   /* ---- まとめて記録（草刈りと同じ作り） ---- */
@@ -3573,10 +3662,14 @@
     if(!ids.length){ toast(st.nm+'をした田んぼにチェックを入れてください'); return; }
     ids.sort(function(a,b){return a-b;});
     var made=[], dupN=0;
+    /* ★v85 薬をえらんでいれば、記録に薬の名前を入れる。
+       えらんでいなければ extra を渡さない＝**v84と1文字も変わらない記録**になる。 */
+    var cx=ktvChem, tx=cx?(st.nm+'（'+cx+'）'):st.nm;
     for(var q=0;q<ids.length;q++){
       var f=KT_FIELDS[ids[q]]; if(!f)continue;
       /* ★v74の教訓：作った記録を受け取る。「一番うしろ」を見てはいけない */
-      var e=wlAdd(st.k, f.n, st.nm, 'board');
+      var e=cx?wlAdd(st.k, f.n, tx, 'board', {work:'散布', chem:cx})
+             :wlAdd(st.k, f.n, tx, 'board');
       if(e&&e.id){ made.push(e.id); names.push(f.n); }
       else { dupN++; }
     }
@@ -3587,7 +3680,7 @@
       if(curScreen==='koutei'&&ktvView==='fields')ktvRender(); }, KUSA_UNDO_MS);
     ktvRender();
     if(!names.length){ toast('すでに記録があります（'+dupN+'枚とも、その日の記録がすでにあります）'); return; }
-    toast('✅ '+names.length+'枚の「'+st.nm+'」を記録しました'
+    toast('✅ '+names.length+'枚の「'+(cx||st.nm)+'」を記録しました'
           +(dupN?('（'+dupN+'枚はすでに記録がありました）'):''));
   }
   function ktvUndoBatch(){
@@ -3630,7 +3723,7 @@
     }
     var mine=[], others=[], othersKi=[];
     for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
-      if(e.step!==st.k||e.field!==fd.n)continue;
+      if(!ktHitStep(e,st.k,fd.n))continue;   /* ★v81 今年ぶんだけ */
       if(ktIsBoardOnly(e))mine.push(e); else { others.push(e); othersKi.push(i); } }
     if(others.length){                               /* ★他の画面の記録が混ざっている＝1件も消さない */
       /* ★v61 いつの・どの記録が原因かまで書く。理由も添える（突き放さない） */
@@ -3650,7 +3743,7 @@
       +'消すと家族の端末からも消え、元に戻せません。')) return;
     for(i=ktLog.length-1;i>=0;i--){
       var g=ktLog[i];
-      if(g.step===st.k && g.field===fd.n && ktIsBoardOnly(g)){ tombAdd(KT_LS,g); ktLog.splice(i,1); }
+      if(ktHitStep(g,st.k,fd.n) && ktIsBoardOnly(g)){ tombAdd(KT_LS,g); ktLog.splice(i,1); }   /* ★v81 今年ぶんだけ */
     }
     ktSave(); toast('✅ を外しました（'+mine.length+'件）');
     ktOpenStep(ktCurStep,true);
@@ -3905,7 +3998,7 @@
     var h='<div class="ph-take" onclick="document.getElementById(\'phCalIn\').click()">'
       +'<span class="ic">📷</span>この日の写真を撮る／えらぶ'
       +'<input id="phCalIn" type="file" accept="image/*" onchange="phPicked(event,\'@cal\',\'\')"></div>';
-    if(!list.length)return h+'<div class="ph-note">まだこの日の写真はありません。撮るとみんなのスマホでも見られます。</div>';
+    if(!list.length)return h+'<div class="ph-note"><span class="nb">まだこの日の</span><span class="nb">写真はありません。</span><span class="nb">撮ると</span><span class="nb">みんなのスマホでも</span><span class="nb">見られます。</span></div>';
     var s='<div class="ph-strip">';
     for(var i=0;i<list.length;i++){
       var it=list[i];
@@ -3996,7 +4089,7 @@
   function ktMarkKsas(){
     var st=KT_STEPS[ktCurStep], hit=false, chg=0;
     for(var i=0;i<ktLog.length;i++){
-      var e=ktLog[i]; if(e.step!==st.k)continue;
+      var e=ktLog[i]; if(!ktHitStep(e,st.k))continue;   /* ★v81 今年ぶんだけ */
       hit=true;
       if(e.ksas)continue;              /* すでに印がある＝中身は変わらないので触らない */
       tombEdit(KT_LS,e);               /* ★v80 「直した」印。これが無いと家族に届かない */
@@ -4004,7 +4097,14 @@
     }
     /* ★v74 「一番うしろ」を見るのをやめる（作らなかった時に
        **関係のない記録に KSAS の印**が付いていた） */
-    if(!hit){ var ke=wlAdd(st.k,'(全体)',st.nm,'board'); if(ke){ ke.ksas=true; chg++; } }
+    /* ★★v81【E】記録が1件も無いときに「(全体)」という田んぼの記録を作るのをやめた ★★
+       ── なぜ（AUDIT_v79【E】）
+         KSAS済の印は「どの記録をKSASへ出したか」の覚え書き。
+         出す記録が1件も無いのに記録を1件作ると、📝記録の確認に
+         **実際にはしていない「(全体) 田植え」という行**が出てしまう。
+       ── ★v81【C】で今年ぶんに絞ったので、この場面（今年の記録が0件）は
+         去年の記録しか残っていない春先に**必ず通る**。作らずに、はっきり伝える。 */
+    if(!hit){ toast('この工程には今年の記録がまだありません。先に記録してください'); return; }
     if(chg)ktSave();                   /* 変わった時だけ保存＝むだな送り合いを起こさない */
     toast('◆ KSAS済の印をつけました');
     ktRenderBoard(); ktShowOnly('ktViewBoard');
@@ -4398,7 +4498,9 @@
   function hitoDateShow(){
     var e=document.getElementById('hitoDate'); if(!e)return;
     var d=new Date(), W=['日','月','火','水','木','金','土'];
-    e.textContent=(d.getMonth()+1)+'月'+d.getDate()+'日（'+W[d.getDay()]+'）　田んぼをえらばず、ひとことだけ残せます';
+    /* ★v83 innerHTML にした。入るのは 月・日・曜日 の3つだけで、人が打った文字は入らない */
+    e.innerHTML=(d.getMonth()+1)+'月'+d.getDate()+'日（'+W[d.getDay()]+'）　'
+      +'<span class="nb">田んぼをえらばず、</span><span class="nb">ひとことだけ残せます</span>';
   }
   function hitoSave(){
     var t=document.getElementById('hitoIn');
@@ -5003,15 +5105,26 @@
     var src=(curScreen==='drone')?'drone':'rec';
     if(src==='drone'){
       /* v26:固定の「西 3」をやめ、①②で選んだ日付・田んぼで記録する */
-      /* v26:農薬代(任意)を生産原価の農業薬剤費へ。薬は現状スタークル液剤表示 */
-      var dChem='スタークル';
+      /* ★★v85【不具合B】ここは v84 まで、2つ同時に嘘をついていた ★★
+         ── ①薬の名前　`var dChem='スタークル';` と**書き込んであった**。
+              ③「何をまく?」の画面表示も 'スタークル液剤' の固定文字だったので、
+              別の薬をまいても台帳には「スタークル」と残っていた。
+         ── ②工程　　'josou'（④除草剤）**固定**。ドローンは防除にも使うのに、
+              何をまいても④除草剤に✅が立っていた（実際に動かして確認）。
+         → ③の表示といっしょに、**いまえらんでいる薬（mbCurChem）**を使う。
+            工程も薬から決める。分からない薬は工程を付けない（v81・不具合Aと同じ形）。 */
+      var dChem=(typeof mbCurChem==='string')?mbCurChem:'';
       var dyEl=document.getElementById('droneYen');
       var dyen=dyEl?(parseInt((''+dyEl.value).replace(/[^\d]/g,''),10)||0):0;
-      var dex={d:(droneDateSel||null), work:'ドローン散布', chem:dChem};
+      var dex={d:(droneDateSel||null), work:'ドローン散布'};
+      if(dChem)dex.chem=dChem;
       if(dyen>0){ dex.yen=dyen; dex.ckind=(typeof chemKind==='function'?chemKind(dChem):'mushi'); }
-      if(!wlAdd('josou', droneField, 'ドローン散布', 'drone', dex)) return;   /* ★v74 */
+      var dstep=ktChemStep(dChem);
+      if(!wlAdd(dstep, droneField, 'ドローン散布'+(dChem?('（'+dChem+'）'):''), 'drone', dex)) return;   /* ★v74 */
       if(dyEl)dyEl.value='';
-      toast('✅ 保存しました('+droneField+(dyen>0?('・農薬代'+dyen.toLocaleString()+'円は生産原価へ'):'')+'・みんなに共有・工程表にも反映)'); /* v24.2:カレンダーへ飛ばさずこの画面に留まる */
+      /* ★v85 工程が決まらなかったときに「工程表にも反映」と書いてはいけない（文言はいちばん軽い嘘のつき方・§3.5） */
+      toast('✅ 保存しました('+droneField+(dyen>0?('・農薬代'+dyen.toLocaleString()+'円は生産原価へ'):'')
+            +'・みんなに共有'+(dstep?'・工程表にも反映':'・どの工程かは決めていません')+')'); /* v24.2:カレンダーへ飛ばさずこの画面に留まる */
       return;
     }
     /* v22④:作業を記録2.0 */
@@ -5100,6 +5213,28 @@
     var key=(typeof mbKeyOf==='function')?mbKeyOf(name||''):(name||'');
     return NG_KIND[key]||'mushi';
   }
+  /* ★★v85 薬の名前から工程を決める。ここが3件の不具合の共通の根だった ★★
+     ── v84まで何が起きていたか（実際に動かして確定）
+       ①🧪農薬計算から記録すると、**何の薬でも必ず⑦出穂・防除**になっていた。
+          ラウンドアップ（除草剤）を記録すると ④除草剤は0枚のまま、⑦に嘘の✅が立つ。
+       ②ドローン散布は、**何の薬でも必ず④除草剤**になっていた。
+          しかも薬の名前が 'スタークル' 固定で、まいていない薬の名前が台帳に残っていた。
+       どちらも v81【A】（音声の「散布」）とまったく同じ型。
+       直しかたも同じで、**薬の種類から工程を決める**。表はもう中にある（NG_KIND）。
+     ── ★chemKind とは別の関数にした理由（いちばん大事なところ）
+       chemKind は分からない薬を **'mushi'（殺虫剤）に寄せる**。
+       これは「生産原価の内訳をどこかに入れる」ためには正しいが、
+       **工程を決めるのに使ってはいけない**。知らない薬が全部⑦になり、
+       ④除草剤には永久にたどり着けなくなる＝いちばん質の悪い決めつけになる。
+       → こちらは **寄せない**。分からなければ空を返し、工程を付けない。
+          記録は残り、記録簿・KSASにも出る。工程表の✅だけが立たない（§3.5／v81と同じ形）。 */
+  function ktChemStep(name){
+    var key=(typeof mbKeyOf==='function')?mbKeyOf(name||''):(name||'');
+    var k=NG_KIND[key];
+    if(k==='josou')return 'josou';                  /* 除草剤 → ④除草剤散布 */
+    if(k==='mushi'||k==='kin')return 'shussui';     /* 殺虫剤・殺菌剤 → ⑦出穂・防除 */
+    return '';                                      /* 分からない → 決めつけない */
+  }
   /* ===== v49 農薬の代表名→有効成分の名前（えらぶ画面の表示用） =====
      ★v49で「年◯回まで(max)」「収穫◯日前まで(phi)」を削除した。
         理由：使用回数・収穫前日数は剤型（顆粒水溶剤／粒剤／豆つぶ／液剤）ごとに違い、
@@ -5156,7 +5291,9 @@
     {re:/粗起|荒起|耕起/,w:'耕起'},{re:/代掻|しろかき|代かき/,w:'代かき'},
     {re:/田植/,w:'田植え'},{re:/除草/,w:'除草剤散布'},
     {re:/中干/,w:'中干し'},{re:/追肥|穂肥|施肥|肥料/,w:'追肥'},
-    {re:/防除|農薬|散布|まい|撒/,w:'散布'},{re:/草刈|草か/,w:'草刈り'},{re:/収穫|稲刈|刈っ|刈り/,w:'収穫'}, /* v24:草刈りを収穫と誤判定するバグ修正 */
+    /* ★v81【A】「防除」を「散布」から切り離した。防除は薬の種類によらず⑦出穂・防除。
+       残る '散布' は除草剤(④)にも防除(⑦)にもなるので、工程を決めない（下の ngStepOf） */
+    {re:/防除/,w:'防除'},{re:/農薬|散布|まい|撒/,w:'散布'},{re:/草刈|草か/,w:'草刈り'},{re:/収穫|稲刈|刈っ|刈り/,w:'収穫'}, /* v24:草刈りを収穫と誤判定するバグ修正 */
     {re:/水/,w:'水管理'}
   ];
   /* ★★v71 ここが「音声で記録した作業が、その時の生育段階に化ける」根っこ ★★
@@ -5169,12 +5306,26 @@
      v67で「作業を記録」側だけ直し、音声側を見落としていた（同じ型を全数で見ていなかった）。 */
   var NG_STEP={ '耕起':'kouki', '代かき':'kouki', '田植え':'taue', '除草剤散布':'josou',
                 '中干し':'nakaboshi', '水管理':'nakaboshi', '追肥':'hogoe',
+                '防除':'shussui',                       /* ★v81【A】防除は薬の種類によらず⑦ */
                 '草刈り':KUSA_STEP, '収穫':'inekari' };
-  /* ★'散布'（汎用）は表に入れない。何の薬かで工程が変わるため、
-     決めつけずに今までどおり生育段階の推定へ落とす（CLAUDE.md 3.5「分からない時に既定値でごまかさない」） */
+  /* ★'散布'（汎用）だけは、わざと表に入れない。何の薬かで工程が変わるため。 */
   function ngStepOf(work){
     if(work && NG_STEP[work]) return NG_STEP[work];
-    return (typeof ktGuessStep==='function')?ktGuessStep():'taue';
+    /* ★★v81【A】ここで ktGuessStep()（今の生育段階の推測）に落としてはいけない ★★
+       ── 何が起きていたか（AUDIT_v79 で実測）
+         「西3 防除しました」→ 聞き取った作業は '散布' → 表に無い → 推測 →
+         **⑧落水の記録**になっていた。工程表に**嘘の✅**が立ち、KSASにも間違った工程で出る。
+         ※📝作業を記録から選んだぶんは正しかった（v71の直しの取りこぼし・同じ型が1つ残っていた）
+       ── なぜ推測が嘘になるか
+         '散布' は除草剤(④)にも防除(⑦)にもなる。**薬の名前が分からないと決められない。**
+         コメントには「決めつけない」と書いてあったのに、実際は推測で決めつけていた。
+         CLAUDE.md 3.5「分からない時に既定値でごまかさない。出さない・『—』にする」に反する。
+       ── これから（親方の指示：案3＝案1と案2の両方）
+         ・「防除」と話したとき … 上の表で⑦に確定（薬の種類によらず⑦だから）
+         ・それ以外の「散布」・聞き取れなかった作業 … **工程を付けない（''）**
+           記録そのものは今までどおり残り、記録簿・KSAS・カレンダーにも出る。
+           工程表の✅だけが立たない＝**嘘をつかない**。保存のときに画面でも伝える。 */
+    return '';
   }
   /* ★v71 すでに化けてしまった過去の音声記録を、話した作業どおりに直す（一度だけ）。
      直すのであって消すのではないので、削除印は使わず _m を新しくして勝たせる
@@ -5194,6 +5345,39 @@
       try{ evLog('fix','🎤話して記録した'+n+'件を、話した作業どおりの工程に直しました'); }catch(e){} }
     try{ localStorage.setItem(K,'1'); }catch(e){}
     return n;
+  }
+  /* ★★v81【A】すでに化けてしまった「防除・散布」の記録を直す（一度だけ）★★
+     ── なぜ掃除が要るか（CLAUDE.md §5）
+       直したあとも、**すでに嘘の工程で保存された記録**は端末とサーバーに残る。
+       放っておくと工程表に嘘の✅が立ったままになる。
+     ── どう直すか
+       ・話した言葉に「防除」が入っている … ⑦出穂・防除 にする（薬の種類によらず⑦）
+       ・それ以外の '散布'／聞き取れなかった作業 … **工程を外す**（記録は残す）
+     ── 触らないもの（狭く始める・CLAUDE.md §10-12）
+       ・🎤音声以外の記録（📝作業を記録・この表・肥料・ドローン・人メモ）
+       ・つなぐ表にある作業（耕起・田植え・除草剤散布・追肥・草刈り…）＝v71で正しく直っている
+     ★消すのではなく直すので、削除印は使わず _m を新しくして勝たせる
+       （削除印で「直す」と、直した本体まで家族の端末から消える・v48.2）
+     ★v71 の印(ngfix.v1)はもう立っているので、必ず別の鍵を使う */
+  function ngMigrate2(){
+    var K='gyotoku.ngfix2.v1';
+    try{ if(localStorage.getItem(K))return 0; }catch(e){}
+    var fixed=0, cleared=0;
+    for(var i=0;i<ktLog.length;i++){
+      var e=ktLog[i];
+      if(!e||e.src!=='voice')continue;
+      if(e.work&&e.work!=='散布')continue;            /* 表にある作業＝v71で直っている */
+      var said=''+(e.text||'')+' '+(e.work||'');
+      var want=/防除/.test(said) ? 'shussui' : '';
+      if(e.step===want)continue;
+      e.step=want; e._m=Date.now();
+      if(want)fixed++; else cleared++;
+    }
+    if(fixed||cleared){ try{ ktSave(); }catch(e){}
+      try{ evLog('fix','🎤話して記録のうち '+fixed+'件を⑦出穂・防除に直し、'
+        +cleared+'件は何の薬か分からないため工程表の✅を外しました'); }catch(e){} }
+    try{ localStorage.setItem(K,'1'); }catch(e){}
+    return fixed+cleared;
   }
   /* 最後に分解した結果(保存・記録簿でそのまま使う) */
   var lastParse=null;
@@ -5275,9 +5459,12 @@
     var fld=r.field||defaultFieldName()||'西 3';
     var text=(lastMemo||'音声記録');
     var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML=(lastMemo||'(空欄)');
-    /* ★v71 聞き取った作業名から工程を決める。表に無い言葉だけ生育段階の推定に落とす */
-    if(!wlAdd(ngStepOf(r.work), fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''})) return;   /* ★v74 */
-    toast('✅ 保存しました(記録簿・工程表・みんなに反映)'); setTimeout(function(){go('cal');},900);
+    /* ★v71 聞き取った作業名から工程を決める。★v81 決められない時は工程を付けず、そう伝える */
+    var stepK=ngStepOf(r.work);
+    if(!wlAdd(stepK, fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''})) return;   /* ★v74 */
+    toast(stepK ? '✅ 保存しました(記録簿・工程表・みんなに反映)'
+                : '✅ 保存しました。どの工程かは決めていません（工程表の✅は付きません）');
+    setTimeout(function(){go('cal');},900);
   }
 
   /* ===== 📄 栽培管理記録簿(JA提出用)：台帳を田んぼ別・日付順に表へ並べるだけ ===== */
@@ -5386,7 +5573,7 @@
     var items=histVisible();
     var box=document.getElementById('histBody'); if(!box)return;
     if(!items.length){
-      var msg = histField ? ('「'+histField+'」の記録はまだありません。') : 'まだ記録がありません。🎤話して記録や🚜機械の維持費に入れると、ここに新しい順で並びます。';
+      var msg = histField ? ('「'+histField+'」の記録はまだありません。') : '<span class="nb">まだ記録が</span><span class="nb">ありません。</span><span class="nb">🎤話して記録や</span><span class="nb">🚜機械の維持費に</span><span class="nb">入れると、</span><span class="nb">ここに新しい順で</span><span class="nb">並びます。</span>';
       box.innerHTML='<div class="hist-empty">'+msg+'</div>'; return;
     }
     var h='', curDay='';
@@ -5978,7 +6165,9 @@
       if(t.n+t.p+t.k<=0){
         note.innerHTML=(t.uc>0)
           ? ('📗 '+hyField+' に'+yLab+'あげた栄養：まだ数えられていません（下をご覧ください）')
-          : (yLab+'の記録はまだありません。下から肥料を選んで量を入れると、栄養が自動で計算されます。');
+          : ('<span class="nb">'+yLab+'の記録は</span><span class="nb">まだありません。</span>'
+             +'<span class="nb">下から肥料を選んで</span><span class="nb">量を入れると、</span>'
+             +'<span class="nb">栄養が自動で計算されます。</span>');
       }
       else{ note.innerHTML='📗 '+hyField+' に'+yLab+'あげた栄養：窒素 '+hyR1(t.n)+'kg・りん酸 '+hyR1(t.p)+'kg・カリ '+hyR1(t.k)+'kg'; }
     }
@@ -6038,11 +6227,12 @@
     if(a)a.classList.toggle('on',hyKind==='moto');
     if(b)b.classList.toggle('on',hyKind==='ho');
     var n=document.getElementById('hyKindNote');
-    if(n)n.textContent=(hyKind==='ho')
-      ? '※ 工程表の「⑥穂肥」に反映されます。'
+    /* ★v83 innerHTML にした。入るのは下の3つの決まった文言だけ（人が打った文字は入らない） */
+    if(n)n.innerHTML=(hyKind==='ho')
+      ? '<span class="nb">※ 工程表の</span><span class="nb">「⑥穂肥」に反映されます。</span>'
       : (hyKind==='moto'
-        ? '※ 元肥は12工程のどれにも当てはめません（記録簿・栄養・原価には残ります）。'
-        : '※ えらばなくても記録できます。えらぶと工程表の「⑥穂肥」に反映されます。');
+        ? '<span class="nb">※ 元肥は12工程の</span><span class="nb">どれにも当てはめません</span><span class="nb">（記録簿・栄養・原価には残ります）。</span>'
+        : '<span class="nb">※ えらばなくても記録できます。</span><span class="nb">えらぶと工程表の</span><span class="nb">「⑥穂肥」に反映されます。</span>');
   }
   function hyKindLabel(){ return hyKind==='ho'?'穂肥':(hyKind==='moto'?'元肥':'施肥'); }
   /* ★★v60 「kg／反」で入れられるようにする ★★
@@ -6395,6 +6585,7 @@
   function setChem(name, bai){
     mbCurChem = mbKeyOf(name);
     var nm=document.getElementById('pestChemName'); if(nm)nm.textContent=name;
+    if(typeof droneChemShow==='function')droneChemShow();   /* ★v85 ドローンの③もそろえる */
     if(bai){ var b=document.getElementById('pestBai'); if(b)b.textContent=bai; }
     toast('この農薬をセットしました');
     setTimeout(function(){ go('pest'); }, 700);
@@ -6424,7 +6615,7 @@
 
     if(!det.length){
       h+='<div class="kk-none">今年の記録は見つかりませんでした。<br>'
-        +'下の「✅ この内容で記録する」を押すと、ここに出ます。</div>';
+        +'<span class="nb">下の</span><span class="nb">「✅ この内容で記録する」を</span><span class="nb">押すと、</span><span class="nb">ここに出ます。</span></div>';
     }else{
       h+='<div class="kk-list">';
       for(var k=0;k<order.length;k++){
@@ -6442,9 +6633,11 @@
       +'① 有効成分ごと（商品名ごとではない）<br>'
       +'② 作物ごと・田んぼごと・栽培期間ぜんぶ<br>'
       +'③ 育苗箱処理・種子消毒も１回にふくむ<br>'
-      +'で数えます。上の一覧には<b>箱処理・種子消毒や、同じ成分の別の商品は入っていません</b>。<br>'
-      +'回数の上限・収穫前日数は<b>剤型（顆粒水溶剤・粒剤・豆つぶ・液剤）ごとに違い</b>、登録内容も変わります。'
-      +'<b>必ず国の登録内容とラベルで確かめてください。</b></div>';
+      /* ★v84 意味は落とさずに4文字短くした（「には」→「に」／「や、」→「・」／「入っていません」→「入りません」）。
+       ★残すべき2点＝①箱処理・種子消毒が入っていない ②同じ成分の別の商品が入っていない */
+      +'<span class="nb">で数えます。</span><span class="nb">上の一覧に</span><b><span class="nb">箱処理・種子消毒・</span><span class="nb">同じ成分の別の商品は</span><span class="nb">入りません</span></b>。<br>'
+      +'回数の上限・収穫前日数は<b>剤型（顆粒水溶剤・粒剤・豆つぶ・液剤）ごとに違い</b><span class="nb">、</span><span class="nb">登録内容も変わります。</span>'
+      +'<b><span class="nb">必ず国の登録内容と</span><span class="nb">ラベルで</span><span class="nb">確かめてください。</span></b></div>';
 
     h+='<div class="kk-db" onclick="openSite(\'https://pesticide.maff.go.jp/\')">🏛 国の登録内容を調べる（無料）</div>';
     h+='</div>';
@@ -6468,10 +6661,17 @@
     var extra={work:'散布', chem:mbCurChem};
     if(yen>0){ extra.yen=yen; extra.ckind=chemKind(mbCurChem); }
     if(typeof wlAdd!=='function'){ toast('記録できませんでした。もう一度お試しください'); return; }
-    if(!wlAdd('shussui', fld, mbCurChem+' 散布(農薬計算)', 'pest', extra)) return;   /* ★v74 */
+    /* ★★v85【不具合A】ここは v84 まで 'shussui' 固定だった ★★
+       ラウンドアップ（除草剤）を記録しても⑦出穂・防除の記録になり、
+       ④除草剤散布は0枚のまま、⑦に嘘の✅が立っていた（実際に動かして確認）。
+       → 薬の種類から決める。分からない薬は工程を付けない（記録は残る／✅は立たない）。 */
+    var pstep=ktChemStep(mbCurChem);
+    if(!wlAdd(pstep, fld, mbCurChem+' 散布(農薬計算)', 'pest', extra)) return;   /* ★v74 */
     if(yEl)yEl.value='';
     mbEnter();
-    toast(yen>0?('記録しました（農薬代 '+yen.toLocaleString()+'円は生産原価へ）'):'計算結果を記録しました（記録簿に残ります）');
+    toast(pstep
+      ? (yen>0?('記録しました（農薬代 '+yen.toLocaleString()+'円は生産原価へ）'):'計算結果を記録しました（記録簿に残ります）')
+      : '✅ 記録しました。どの工程かは決めていません（工程表の✅は付きません）');
   }
 
   /* ============================================================
@@ -7419,9 +7619,10 @@
   function _syncBadge(state){
     var el=document.getElementById('syncState'); if(!el)return;
     /* ★v39：リセット直後は理由を文字で出す。年配の方が「壊れた」と思わないように */
-    if(inResetQuiet()){ el.textContent='🕒 リセット直後のため同期をお休み中（あと'+resetQuietLeftSec()+'秒）'; return; }
-    el.textContent = (state===true) ? '✅ つながっています（自動で共有・保存）'
-                   : (state===false) ? '📴 今はオフライン（つながると自動で同期）'
+    /* ★v83 innerHTML にした。入るのは「あと○秒」の数字だけ（人が打った文字は入らない） */
+    if(inResetQuiet()){ el.innerHTML='<span class="nb">🕒 リセット直後のため</span><span class="nb">同期をお休み中</span><span class="nb">（あと'+resetQuietLeftSec()+'秒）</span>'; return; }
+    el.innerHTML = (state===true) ? '<span class="nb">✅ つながっています</span><span class="nb">（自動で共有・保存）</span>'
+                   : (state===false) ? '<span class="nb">📴 今はオフライン</span><span class="nb">（つながると自動で同期）</span>'
                    : '…確認中';
   }
   function syncPushAll(done){
@@ -7771,6 +7972,8 @@
   try{ if(typeof inaAutoSync==='function')inaAutoSync(); }catch(e){}
   /* ★v71 音声で化けた過去の記録を、話した作業どおりに直す（一度だけ） */
   try{ if(typeof ngMigrate==='function')ngMigrate(); }catch(e){}
+  /* ★v81【A】「防除・散布」で化けた記録を直す（一度だけ）。ngMigrate の後に走らせる */
+  try{ if(typeof ngMigrate2==='function')ngMigrate2(); }catch(e){}
 
   /* ===== v2.5 予定データ(ホームTODO・カレンダー共通/localStorageに保存) ===== */
   var PLAN_LS_KEY='gyotoku.plans.v1';
@@ -7823,7 +8026,7 @@
     var today=ymd(new Date());
     var list=plans.filter(function(p){return p.date===today;});
     if(!list.length){
-      box.innerHTML='<div style="padding:10px 2px;font-size:14.5px;font-weight:800;color:#4A463C;">今日の予定はありません(カレンダーから確認できます)</div>';
+      box.innerHTML='<div style="padding:10px 2px;font-size:14.5px;font-weight:800;color:#4A463C;"><span class="nb">今日の予定は</span><span class="nb">ありません</span><span class="nb">(カレンダーから</span><span class="nb">確認できます)</span></div>';
       return;
     }
     box.innerHTML=list.map(function(p){
@@ -8080,7 +8283,7 @@
         4:['🌱 播種・育苗期','<b>密苗・プール育苗</b>を使うと苗箱と水やりの手間が大幅減。今年から一部だけでも試す価値あり。'],
         5:['🚜 田植え最盛期','田植え直後は<b>深水(7〜8cm)</b>で活着促進&ヒエ抑制。<b>基肥一発肥料</b>なら夏の追肥作業をなくせます。'],
         6:['💧 分げつ・中干し期','<b>中干し</b>は田植え後30日・茎数が目標の8割が目安。<b>溝切り</b>を併せると効きが良く秋のコンバインも安全。'],
-        7:['🐛 幼穂形成〜出穂前','カメムシ対策は<b>出穂10日前までに畦畔の草刈り</b>。<b>葉色板</b>で葉色4未満なら穂肥のサインです。'],
+        7:['🐛 幼穂形成〜出穂前','カメムシ対策は<b><span class="nb">出穂10日前までに畦畔の草刈り</span></b>。<b>葉色板</b>で葉色4未満なら穂肥のサインです。'],
         8:['🌾 出穂・登熟期','出穂後の高温は白未熟粒のもと。<b>夜間のかけ流し</b>で水温を下げ、<b>間断かん水</b>で根を元気に保つと粒が太ります。'],
         9:['🌾 収穫期','刈り取りは<b>籾水分24〜25%</b>が目安。<b>収量コンバインのデータ</b>を残すと来年の施肥設計に効きます。'],
         10:['📦 収穫・乾燥調製期','玄米は<b>15℃以下の低温貯蔵</b>で夏まで食味キープ。<b>直販(ネット・ふるさと納税)</b>は単価1.5〜2倍の例も。'],
@@ -8681,7 +8884,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v80';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v85';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -8949,7 +9152,7 @@
   function dgHist(){
     var box=document.getElementById('dgHist'); if(!box)return;
     var rows=hasList(null), h='';
-    if(!rows.length){ box.innerHTML='<div class="kyo-empty">まだ記録はありません。候補カードの「🐛出たと記録する」で残せます。来年の🔮予報が賢くなります。</div>'; return; }
+    if(!rows.length){ box.innerHTML='<div class="kyo-empty"><span class="nb">まだ記録は</span><span class="nb">ありません。</span><span class="nb">候補カードの</span><span class="nb">「🐛出たと記録する」で</span><span class="nb">残せます。</span><span class="nb">来年の🔮予報が</span><span class="nb">賢くなります。</span></div>'; return; }
     for(var i=0;i<rows.length&&i<12;i++){
       h+='<div class="kyo-card"><div class="kyo-row"><span class="kyo-d">'+rows[i].d.slice(5)+'</span>'
         +'<span>'+rows[i].name+'</span><span class="kyo-f">'+rows[i].f+'</span>'
@@ -9009,11 +9212,11 @@
     if(warn.length){
       for(var w=0;w<warn.length&&w<3;w++){
         var d2=warn[w].d, why=[];
-        if(d2.tlo!=null)why.push('平均気温'+Math.round(tp.t)+'℃（'+tp.src+'）が条件に合致');
-        if(d2.wet&&wet)why.push('雨の予報');
-        if(warn[w].last)why.push('去年うちの田んぼで発生');
-        h+='<div class="yh-warn"><div class="t">🔮 今週の注意：'+d2.n+(warn[w].last?'（去年出た）':'')+'</div>'
-          +'<div class="b">'+why.join('・')+'。田んぼの見回りを。🔎見分け方は下のカルテ式で確認できます。</div></div>';
+        if(d2.tlo!=null)why.push('<span class="nb">平均気温'+Math.round(tp.t)+'℃</span><span class="nb">（'+tp.src+'）が条件に合致</span>');
+        if(d2.wet&&wet)why.push('<span class="nb">雨の予報</span>');
+        if(warn[w].last)why.push('<span class="nb">去年うちの田んぼで発生</span>');
+        h+='<div class="yh-warn"><div class="t"><span class="nb">🔮 今週の注意：</span><span class="nb">'+d2.n+(warn[w].last?'（去年出た）':'')+'</span></div>'
+          +'<div class="b">'+why.join('・')+'<span class="nb">。</span><span class="nb">田んぼの見回りを。</span><span class="nb">🔎見分け方は</span><span class="nb">下のカルテ式で</span><span class="nb">確認できます。</span></div></div>';
       }
     }else{
       var wn=[]; for(var q=0;q<watch.length&&q<3;q++)wn.push(watch[q].n);
@@ -9074,7 +9277,11 @@
   function kyoRender(){
     var y=kyoDate.getFullYear(), m=kyoDate.getMonth()+1, nowY=new Date().getFullYear();
     var tt=document.getElementById('kyoTitle');
-    if(tt)tt.textContent=y+'年'+m+'月のページ'+((y===nowY&&m===new Date().getMonth()+1)?'（今月）':'');
+    /* ★v83 innerHTML にした。入るのは 年・月 の数字だけ */
+    /* ★v84 「のページ」を外して短くした。すぐ下に「来年の同じ月のページに自動で出ます」と
+       書いてあるので意味は落ちない。短くすると左右の「‹ 前の月」「次の月 ›」が1行に収まる */
+    if(tt)tt.innerHTML='<span class="nb">'+y+'年'+m+'月</span>'
+      +((y===nowY&&m===new Date().getMonth()+1)?'<span class="nb">（今月）</span>':'');
     /* --- 過去の同じ月（年ごと・最大3年さかのぼり） --- */
     var past='', found=false;
     for(var py=y-1;py>=y-3;py--){
@@ -9102,7 +9309,7 @@
       }
     }
     if(!found)past='<div class="kyo-empty">📜 <b>去年の'+m+'月の記録は、まだありません。</b><br>'
-      +'今年つけた★と📝メモが、<b>来年の'+m+'月にここへ出てきます</b>。</div>';
+      +'<span class="nb">今年つけた★と📝メモが、</span><b><span class="nb">来年の'+m+'月に</span><span class="nb">ここへ出てきます</span></b>。</div>';
     var pb=document.getElementById('kyoPast'); if(pb)pb.innerHTML=past;
     /* --- 反省メモ（表示中の年月ぶん） --- */
     var mm=document.getElementById('kyoMemo'); if(mm)mm.value=kyoGet(kyoYm(y,m));  /* ★v66 */
@@ -9142,7 +9349,7 @@
     var ar=hyFieldArea(hyField);
     if(!ar){ card.innerHTML=''; return; }
     var t=hyTotals(hyField), k10=ar/10;
-    card.innerHTML='<div class="hyg-t" onclick="hyGoalEdit()">🎯 目標まであとどれだけ？（'+hyField+' '+ar+'a・押して目標変更）</div>'
+    card.innerHTML='<div class="hyg-t" onclick="hyGoalEdit()"><span class="nb">🎯 目標まであとどれだけ？</span><span class="nb">（'+hyField+' '+ar+'a・</span><span class="nb">押して目標変更）</span></div>'
       +hyGoalRow('窒素 N',t.n,hyGoal.n*k10)
       +hyGoalRow('りん酸 P',t.p,hyGoal.p*k10)
       +hyGoalRow('カリ K',t.k,hyGoal.k*k10)
@@ -9150,7 +9357,7 @@
          多めに出る＝まいたのに足りないと思って**入れすぎる**方向へ間違える */
       +((t.uc>0)?('<div class="hyg-unk">⚠️ '+hyUnkHead(t)+'この'+hyR1(t.ukg)
         +'kgは、この棒に入っていません。実際は<b>これより足りています</b>。「あと○kg」は多めに出ています</div>'):'')
-      +'<div class="hyg-note">目安：10aあたり N'+hyGoal.n+'・P'+hyGoal.p+'・K'+hyGoal.k+'kg（水稲の一般的な値）× この田んぼの広さで計算。勘で多めにまかず、計算どおりに。</div>';
+      +'<div class="hyg-note"><span class="nb">目安：10aあたり N'+hyGoal.n+'・P'+hyGoal.p+'・K'+hyGoal.k+'kg</span><span class="nb">（水稲の一般的な値）× この田んぼの広さで計算。</span><span class="nb">勘で多めにまかず、</span><span class="nb">計算どおりに。</span></div>';
   }
   var hyRenderV20=hyRender;
   hyRender=function(){ hyRenderV20(); hyGoalRender(); };
@@ -9188,6 +9395,14 @@
     var e0=document.getElementById('droneDateV');
     if(e0&&!droneDateSel)e0.textContent=todayStr();
     droneFieldShow();
+    droneChemShow();   /* ★v85 ③に、いまえらんでいる薬（＝記録に残る薬）を出す */
+  }
+  /* ★v85 画面に出ている薬と、台帳に残る薬を必ず同じにする。
+     ここがずれていたのが【不具合B】の半分だった。 */
+  function droneChemShow(){
+    var el=document.getElementById('droneChemV'); if(!el)return;
+    var c=(typeof mbCurChem==='string'&&mbCurChem)?mbCurChem:'';
+    el.textContent=c||'えらんでください';
   }
   /* ---- v21 初期読み込み ---- */
   hasLoad(); kyoLoad(); hyGoalLoad();   /* v47:geoLoad() は近くの田んぼ機能とともに削除 */
