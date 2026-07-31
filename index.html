@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v89">
+<meta name="app-ver" content="v92">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -777,7 +777,8 @@
   .kt-pcard .sb{font-size:13px;color:#4A463C;line-height:1.7;margin-bottom:10px;}
   .kt-prow{display:flex;align-items:center;gap:9px;padding:12px 10px;border-radius:12px;
     background:#F7F5EC;margin-bottom:7px;}
-  .kt-prow.soon{background:var(--green-soft);border:1.5px solid #9DBBA6;}
+  /* ★v92 行・枠の線は #6B9077（比3.08）にそろえる。タイルの枠と同じ濃さ */
+  .kt-prow.soon{background:var(--green-soft);border:1.5px solid #6B9077;}
   .kt-prow.wait{background:#F2F0E8;}
   .kt-prow.wait .nm{color:#6E6A5C;}
   .kt-prow .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
@@ -799,7 +800,8 @@
   .kt-setup{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
     border-radius:14px;padding:12px 13px;margin-bottom:8px;cursor:pointer;
     box-shadow:0 1px 3px rgba(0,0,0,.04);}
-  .kt-setup.auto{background:var(--green-soft);border:1.5px solid #9DBBA6;box-shadow:none;}
+  /* ★v92 ここは .kt-setup（後ろで再定義あり）より詳しいので、この指定が勝つ */
+  .kt-setup.auto{background:var(--green-soft);border:1.5px solid #6B9077;box-shadow:none;}
   .kt-setup .nm{font-size:15.5px;font-weight:800;flex:1;min-width:0;line-height:1.45;}
   .kt-setup .nm small{display:block;font-size:13px;color:#5F5B4E;font-weight:700;margin-top:3px;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -816,10 +818,15 @@
   .kusa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
   .kusa-tile{background:#fff;border:1.5px solid #9C927C;border-radius:13px;
     padding:11px 6px 10px;text-align:center;cursor:pointer;}
-  .kusa-tile.done{background:var(--green-soft);border-color:#9DBBA6;}
+  /* ★v91 ✅済みのタイルだけ枠が薄く残っていた（#9DBBA6＝比1.80）。
+     ふつうのタイル（#9C927C＝比3.08）と同じ濃さの緑にそろえる。
+     ここは .kusa-tile より後ろにあるので、border-color がこちらで上書きされる（§0.5④） */
+  .kusa-tile.done{background:var(--green-soft);border-color:#6B9077;}
   .kusa-tile .a{font-family:var(--mincho);font-size:18px;font-weight:800;color:var(--green-deep);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .kusa-tile .c{font-size:13.5px;font-weight:700;color:#332F28;margin-top:3px;}
+  /* ★v90 田んぼ一覧のタイルに入れる苗箱の札。.fl-nae は一覧の行(flex)用なので打ち消す */
+  .kusa-tile .fl-nae{display:inline-block;margin:6px 0 0;}
   .kusa-tile .p{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:800;
     border-radius:999px;padding:2px 9px;}
   .kusa-tile .p.ok{background:#fff;color:var(--green-deep);border:1px solid #9DBBA6;}
@@ -1238,7 +1245,8 @@
   .bp-row .bpic{font-size:22px;width:30px;text-align:center;flex-shrink:0;}
   .bp-row .bpic img{height:22px;width:auto;vertical-align:middle;}
   .bp-row .bpnm{font-size:16.5px;font-weight:800;color:#232821;}
-  .bp-row.cur{background:#EAF2EC;border-color:#9DBBA6;}
+  /* ★v92 「いま選択中」は選んだ状態を示す線なので、はっきりさせる（比1.82→3.13） */
+  .bp-row.cur{background:#EAF2EC;border-color:#6B9077;}
   .bp-row.cur::after{content:"いま選択中";margin-left:auto;font-size:11.5px;font-weight:800;color:#356A43;background:#DDECE1;border-radius:99px;padding:5px 10px;white-space:nowrap;}
   .bp-row.used{opacity:.55;}
   .bp-row.used::after{content:"タブで使用中";margin-left:auto;font-size:11px;font-weight:700;color:#4A463C;white-space:nowrap;}
@@ -1902,7 +1910,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v89</span></div>
+          <div class="setrow">バージョン<span class="sv">v92</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2206,6 +2214,11 @@
     if(curScreen==='kusa'){
       if(typeof kusaSheetIdx!=='undefined' && kusaSheetIdx>=0){ kusaSheetClose(); return; }
       if(typeof kusaView!=='undefined' && kusaView==='fields'){ kusaBackToAreas(); return; }
+    }
+    /* ★v90 田んぼ一覧も1画面の中に「タイル」と「その地区の田んぼ」があるので1段ずつ戻す。
+       ヘッダーの戻るも横スワイプも下タブも、どれもここを通る（§10-9） */
+    if(curScreen==='fields'){
+      if(typeof flPick!=='undefined' && flPick){ flBackToTiles(); return; }
     }
     var to=navPop();
     _navSkip=true;          /* 戻る動作そのものは履歴に積まない */
@@ -5879,7 +5892,9 @@
   /* ============================================================
      🌾 田んぼ一覧(p-fields)：土のメモ＋今年まいたもの
      ============================================================ */
-  function fieldsEnter(){ soilLoad(); ktLoad(); fieldsRender(); }
+  function fieldsEnter(){ soilLoad(); ktLoad();
+    flPick='';          /* ★v90 開くたびに必ずタイルから。前に開いた地区が残ると迷子になる（§10-9） */
+    fieldsRender(); }
   function fieldMaterials(field){
     /* 台帳から、この田んぼの農薬・肥料の記録を新しい順で */
     var out=[];
@@ -5895,8 +5910,10 @@
   }
   /* ===== v24 田んぼ一覧2.0:要約+検索+切替+品種チップ+地区たたみ ===== */
   var flQ='', flMode='area', flCrop=null, flOpenG={};
+  /* ★v90 田んぼ一覧を「草刈りと同じ2段」にする。'' ＝地区(品種)のタイル／名前 ＝その中の田んぼ */
+  var flPick='';
   function flQSet(v){ flQ=v; flListDraw(); }
-  function flModeSet(m){ flMode=m; flOpenG={}; flShellModes(); flListDraw(); }
+  function flModeSet(m){ flMode=m; flOpenG={}; flPick=''; flShellModes(); flListDraw(); }
   function flShellModes(){
     var ms=['area','crop','size'];
     for(var i=0;i<ms.length;i++){ var el=document.getElementById('flm-'+ms[i]); if(el)el.classList.toggle('on',flMode===ms[i]); }
@@ -5914,6 +5931,16 @@
   }
   function fieldsRender(){
     var body=document.getElementById('fieldsBody'); if(!body)return;
+    /* ★v90 ②その地区(品種)の田んぼ。草刈り・工程表・田んぼをえらぶと同じ形 */
+    flHdr();
+    var ent=document.querySelector('#p-fields .nae-entry');
+    if(ent)ent.style.display=flPick?'none':'';
+    if(flPick){
+      var arr=flGroupIdx(flPick), hh='<div class="fl-grp open"><div class="fl-glist">';
+      for(var z=0;z<arr.length;z++)hh+=flRowHtml(arr[z]);
+      body.innerHTML=hh+'</div></div><div class="spacer"></div>';
+      return;
+    }
     var totalA=0; for(var i=0;i<KT_FIELDS.length;i++)totalA+=parseFloat(KT_FIELDS[i].a)||0;
     var crops={}; for(var c=0;c<KT_FIELDS.length;c++){ var ck=KT_FIELDS[c].crop||'未定'; crops[ck]=1; }
     /* v36.2バグ修正：「未定」「大豆」を米の品種として数えていたため「7品種」と出ていた。
@@ -5964,9 +5991,70 @@
       +'<span style="margin-left:8px;font-weight:800;color:#6B6552;font-size:14.5px;flex-shrink:0;">'+f.a+'</span></div>'
       +flDetailHtml(i)+'</div>';
   }
+  /* ★v90 ここから：田んぼ一覧の2段（地区(品種)のタイル → その中の田んぼ） =========== */
+  /* その地区(品種)に入る田んぼの番号。flMode で地区／品種を切りかえる */
+  function flGroupIdx(k){
+    var out=[],i,f;
+    for(i=0;i<KT_FIELDS.length;i++){ f=KT_FIELDS[i];
+      if(((flMode==='crop')?(f.crop||'未定'):(f.area||'その他'))===k)out.push(i);
+    }
+    return out;
+  }
+  /* ①タイル。草刈りとまったく同じ .kusa-tile を使い回す（§6 同じCSSクラスを使い回す）。
+     ★草刈りの「まだ／✅」は出さない。田んぼ一覧に「済み・まだ」は無いので出すと嘘になる
+       （v86の田んぼをえらぶシートと同じ判断・§3.5）。3行目は苗箱の枚数にする */
+  function flTilesHtml(){
+    var gs={},order=[],i,j,f,k;
+    for(i=0;i<KT_FIELDS.length;i++){ f=KT_FIELDS[i];
+      k=(flMode==='crop')?(f.crop||'未定'):(f.area||'その他');
+      if(!gs[k]){ gs[k]=[]; order.push(k); }
+      gs[k].push(i);
+    }
+    if(flMode==='crop')order.sort(function(a,b){return gs[b].length-gs[a].length;});
+    else if(typeof areaSort==='function')areaSort(order);
+    var h='';
+    for(i=0;i<order.length;i++){
+      var k2=order[i], arr=gs[k2], sumA=0;
+      for(j=0;j<arr.length;j++)sumA+=parseFloat(KT_FIELDS[arr[j]].a)||0;
+      var ns=(typeof naeSumOf==='function')?naeSumOf(arr):{n:0,sum:0,edited:false};
+      var pill=ns.n ? '<div class="fl-nae">\ud83c\udf31\u82d7 '+naeComma(ns.sum)+'\u679a'+(ns.edited?' \u270f\ufe0f':'')+'</div>'
+                    : '<div class="fl-nae none">\u82d7 \u2014</div>';
+      h+='<div class="kusa-tile" onclick="flOpenPick(\''+String(k2).replace(/'/g,"\\'")+'\')">'
+       +   '<div class="a">'+k2+'</div>'
+       +   '<div class="c">'+arr.length+'\u679a\u30fb'+sumA.toFixed(0)+'a</div>'+pill
+       + '</div>';
+    }
+    return '<div class="kusa-lbl">'+(flMode==='crop'?'\ud83c\udf3e \u54c1\u7a2e\u3092\u3048\u3089\u3076\uff08\u62bc\u3059\u3060\u3051\uff09':'\ud83d\udccd \u5730\u533a\u3092\u3048\u3089\u3076\uff08\u62bc\u3059\u3060\u3051\uff09')+'</div>'
+         + '<div class="kusa-grid">'+h+'</div>';
+  }
+  /* ヘッダーの差し替え。中に入っているときは「‹ 地区」と名前を出す（草刈りとまったく同じ） */
+  function flHdr(){
+    var el=document.getElementById('hdr'); if(!el)return;
+    if(flPick){
+      el.innerHTML='<div class="navhead">'
+        +'<button class="back" onclick="flBackToTiles()">\u2039 '+(flMode==='crop'?'\u54c1\u7a2e':'\u5730\u533a')+'</button>'
+        +'<span class="title">'+flPick+'\uff08'+flGroupIdx(flPick).length+'\u679a\uff09</span></div>';
+    }else{
+      el.innerHTML=HEADERS['fields']||'';
+    }
+  }
+  function flOpenPick(k){
+    flPick=k; fieldsRender();
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+  function flBackToTiles(){
+    flPick=''; fieldsRender();
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+  /* ★v90 ここまで ================================================================== */
   function flListDraw(){
     var el=document.getElementById('flList'); if(!el)return;
     flChipsDraw();
+    /* ★v90 しぼりこんでいない「地区別／品種別」はタイルで出す。
+       🔍名前でさがす・📐広い順・品種チップは地区をまたぐので、今までどおりの一覧のまま */
+    if(!flQ.replace(/[\s\u3000]/g,'') && flCrop===null && (flMode==='area'||flMode==='crop')){
+      el.innerHTML=flTilesHtml(); return;
+    }
     var idxs=flFiltered(), h='';
     var autoOpen=(flQ.replace(/[\s　]/g,'')!==''||flCrop!==null);
     if(flMode==='size'){
@@ -8987,7 +9075,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v89';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v92';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
