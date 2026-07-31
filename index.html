@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v92">
+<meta name="app-ver" content="v94">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1910,7 +1910,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v92</span></div>
+          <div class="setrow">バージョン<span class="sv">v94</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -3386,10 +3386,10 @@
       if(o.cls==='done'){var lastSrc=null; for(var j=ktLog.length-1;j>=0;j--)if(ktHitStep(ktLog[j],o.st.k)){lastSrc=ktLog[j];break;}
         meta=(lastSrc?inaFmt(new Date(lastSrc.d))+' 済み・'+o.total+'枚すべて <span class="kt-src">'+ktSrcLabel(lastSrc.src)+'</span>':'済み');
         if(ktKsasDone(o.st.k))meta+='<span class="kt-ksasmini">◆KSAS済</span>';}
-      else if(o.cls==='warn'){meta=(o.total-o.doneN)+'枚が未実施';}
+      else if(o.cls==='warn'){meta=(o.total-o.doneN)+'枚が未実施'+(o.date?'・'+inaFmt(o.date)+'ごろ':'');}   /* ★v93 作業中に予想日が消えていた。o.date は⑤〜⑨だけが持つので①〜④には付かない */
       /* v47：今ここの工程に途中まで記録がある場合、「残り◯枚」が消えないようにする */
       else if(o.cls==='now'){
-        var ex=(o.doneN>0&&o.total>0&&o.doneN<o.total) ? ' ／ 残り'+(o.total-o.doneN)+'枚'
+        var ex=(o.doneN>0&&o.total>0&&o.doneN<o.total) ? (' ／ 残り'+(o.total-o.doneN)+'枚'+(o.date?'・'+inaFmt(o.date)+'ごろ':''))
              : (o.date? ' ／ '+inaFmt(o.date)+'ごろ〜' : '');
         meta='📍今ここ'+ex;
       }
@@ -5583,6 +5583,22 @@
     setTimeout(function(){go('cal');},900);
   }
 
+  /* ★★v94 その記録の「作業名」を答える、ただ1つの場所 ★★
+     ── 何が起きていたか（親方のスクショ2枚で判明・実際に走らせて確定）──
+       同じ1件の記録なのに、📝記録の確認は「穂肥」、📄記録簿は「—」と出ていた。
+         記録の確認 : e.work || e.text || '記録'   ← text に落ちる
+         記録簿     : e.work || '—'                ← 落ちない
+       記録を書く wlAdd は text を必ず入れるが、work は渡された時だけ入れる。
+       呼び出し11か所を全数見たところ、4か所が work を渡していない：
+         🌿草刈り(2か所)／📋工程表の「済みにする」／📋工程表で薬をえらばなかった時
+       その結果、**JAに出す記録簿の作業欄だけが空**になっていた（§3.5 書類の正しさ）。
+     ── なぜ「読む側」を1本にするのか（書く側を直さないのか）──
+       ktIsBoardOnly() が **!e.work** で「工程表だけの記録」を見分けており、
+       それが 📋工程表の「↩取り消す」(3777行)に使われている。
+       work に値を入れると、その記録は取り消せなくなる。
+       表示だけをそろえれば、**保存データを1文字も変えずに既存の記録もその場で直る**。 */
+  function wlWork(e){ return (e && (e.work || e.text)) || ''; }
+
   /* ===== 📄 栽培管理記録簿(JA提出用)：台帳を田んぼ別・日付順に表へ並べるだけ ===== */
   function krokuOpen(){ go('kroku'); krokuRender(); }
   /* ===== 📝 記録の確認(ひとこと＋時系列・新しい順) v47 =====
@@ -5605,7 +5621,7 @@
       /* v48:★を押せるように、台帳の元番号(ki)と★の有無を持ち歩く */
       out.push({ d:e.d||'', kind:kind, ic:ic, hito:!!e.hito, ki:i, star:!!e.star,
         where:(e.hito?(e.who||'ひとこと'):(e.field||'田んぼ不明')),
-        title:(e.hito?(e.text||'ひとこと'):(e.work||e.text||'記録')),
+        title:(e.hito?(e.text||'ひとこと'):(wlWork(e)||'記録')),
         sub:(e.hito?'':[(e.chem||''), amt.join(' ')].filter(function(s){return s;}).join('　')),
         yen:(e.yen? +e.yen : 0), wrote:histWroteLabel(e) });
     }
@@ -5796,7 +5812,13 @@
     if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
     var byField={};
     for(var i=0;i<ktLog.length;i++){
-      var e=ktLog[i], f=e.field||'（田んぼ不明）';
+      var e=ktLog[i];
+      /* ★v94 📣ひとこと は作業の記録ではないので、JAに出す記録簿には入れない。
+         （v93までは「—」の空行として出ていた。v94で作業名を出すようにした結果
+           『今日は暑い』のような文が提出書類に並ぶことになるため、ここで外す。
+           📝記録の確認には今までどおり 📣 として出る＝消えたわけではない） */
+      if(e.hito) continue;
+      var f=e.field||'（田んぼ不明）';
       (byField[f]=byField[f]||[]).push({e:e,idx:i}); /* v22⑥:台帳の元番号を持ち歩く(直す・消す用) */
     }
     var order=[]; for(var k=0;k<KT_FIELDS.length;k++)if(byField[KT_FIELDS[k].n])order.push(KT_FIELDS[k].n);
@@ -5812,7 +5834,7 @@
       for(var rr=0;rr<rows.length;rr++){
         var e2=rows[rr].e, ix=rows[rr].idx;
         var vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'—');
-        html2+='<tr><td>'+krMd(e2.d)+'</td><td>'+(e2.work||'—')+'</td><td>'+(e2.chem||'—')+
+        html2+='<tr><td>'+krMd(e2.d)+'</td><td>'+(wlWork(e2)||'—')+'</td><td>'+(e2.chem||'—')+
           '</td><td>'+(e2.rate?e2.rate+'倍':'—')+'</td><td>'+vol+'</td>'+
           '<td class="krops"><span class="rowbtn mod" style="margin-left:0;" onclick="krEdit('+ix+')">✏️</span><span class="rowbtn del" onclick="krDel('+ix+')">🗑</span></td></tr>';
       }
@@ -5865,13 +5887,14 @@
   function krokuText(){
     var lines=['【栽培管理記録簿】'];
     var byField={};
-    for(var i=0;i<ktLog.length;i++){ var e=ktLog[i],f=e.field||'（不明）'; (byField[f]=byField[f]||[]).push(e); }
+    for(var i=0;i<ktLog.length;i++){ var e=ktLog[i]; if(e.hito)continue;   /* ★v94 ひとことは出さない（表と同じ） */
+      var f=e.field||'（不明）'; (byField[f]=byField[f]||[]).push(e); }
     for(var f in byField){
       lines.push(''); lines.push('◆'+f);
       var rows=byField[f].slice().sort(function(a,b){return (a.d||'')<(b.d||'')?-1:1;});
       for(var r=0;r<rows.length;r++){
         var e2=rows[r], vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'');
-        lines.push([krMd(e2.d),e2.work||'',e2.chem||'',e2.rate?e2.rate+'倍':'',vol].filter(Boolean).join(' / '));
+        lines.push([krMd(e2.d),wlWork(e2),e2.chem||'',e2.rate?e2.rate+'倍':'',vol].filter(Boolean).join(' / '));
       }
     }
     return lines.join('\n');
@@ -9075,7 +9098,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v92';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v94';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
