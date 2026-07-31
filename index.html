@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v86">
+<meta name="app-ver" content="v87">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -263,6 +263,12 @@
   .fld .v .sub{font-size:14px;color:var(--green);font-weight:800;}
   /* v46 自動で入った値：深緑帯にはせず、緑の細枠＋薄い緑背景＋緑文字＋小さな札で静かに伝える */
   .fld.autofill{border-color:#BCD3C0;background:#F4F9F5;}
+  /* ★v87 作業を記録：④から下は「1行」に畳む。
+     新しい見た目を作らず .fld をそのまま使い回すので、.autofill（緑の細枠＋札）もそのまま効く。 */
+  .fld.one{padding:13px 14px;}
+  .fld.one .v{font-size:16.5px;justify-content:flex-start;gap:8px;}
+  .fld.one .v .chv{margin-left:auto;}
+  .recmemo-box .ph-take{margin-top:10px;}
   .fld.autofill .v>span:first-child{color:var(--green);}
   .autotag{display:inline-block;font-size:12px;color:#fff;background:#3A7A4A;border-radius:8px;padding:1px 8px;margin-left:8px;vertical-align:middle;font-weight:700;}
   /* ===== v55 肥料の種類（元肥／穂肥）。★はじめから選ばれた状態にはしない＝アプリが決めつけない ===== */
@@ -1457,14 +1463,14 @@
     <div class="page" id="p-rec">
       <div class="sc">
         <div id="recFormWrap">
-        <div class="fld datefld"><div class="lb">① いつ?（押すと日付を選べます）</div><div class="v"><span id="recDateV">今日</span><span class="chv">›</span></div><input type="date" id="recDateIn" onchange="recDateSet(this.value)"></div>
-        <div class="fld" onclick="recPickField()"><div class="lb">② どの田んぼ?（📍か、押して変更）</div><div class="v"><span id="recFieldV"></span><span class="chv">›</span></div></div>
-        <div class="fld" id="recWorkFld" onclick="recWorkOpen()"><div class="lb">③ 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#6E6A5C;">押して作業をえらぶ</span><span id="recWorkTag"></span><span class="chv">›</span></div></div>
+        <div class="fld" onclick="recPickField()"><div class="lb">① どの田んぼ?（押すと 地区 → 田んぼ）</div><div class="v"><span id="recFieldV"></span><span class="chv">›</span></div></div>
+        <div class="fld" id="recWorkFld" onclick="recWorkOpen()"><div class="lb">② 何をした?（押すと一覧が出ます）</div><div class="v"><span id="recWorkV" style="color:#6E6A5C;">押して作業をえらぶ</span><span id="recWorkTag"></span><span class="chv">›</span></div></div>
         <div class="fsheet" id="recWorkSheet">
           <div class="sh">作業をえらんでください<span class="x" onclick="recWorkClose()">✕</span></div>
           <div id="recWorkOpts"></div>
         </div>
-        <div class="fld" onclick="recUseOpen()"><div class="lb">④ 使ったもの・量（追肥・散布のとき）</div><div class="v" style="font-size:17px;"><span id="recUseV" style="color:#6E6A5C;">🧪農薬・🌾肥料をえらぶ（無しでもOK）</span><span class="chv">›</span></div></div>
+        <div class="fld datefld" id="recDateFld"><div class="lb">③ いつ?（押すと日付を選べます）</div><div class="v"><span id="recDateV">今日</span><span id="recDateTag"></span><span class="chv">›</span></div><input type="date" id="recDateIn" onchange="recDateSet(this.value)"></div>
+        <div class="fld one" onclick="recUseOpen()"><div class="v"><span id="recUseV" style="color:#6E6A5C;">🧪農薬・🌾肥料を足す（無しでもOK）</span><span class="chv">›</span></div></div>
         <div class="fsheet" id="recUseSheet">
           <div class="sh">使ったものをえらんでください<span class="x" onclick="recUseClose()">✕</span></div>
           <div id="recUseOpts"></div>
@@ -1478,20 +1484,21 @@
           </div>
           <div class="uat" style="margin:6px 0 0;font-weight:700;">入れた量は 📊生産原価・🌾肥料の栄養にも自動で回ります（二重入力なし）</div>
         </div>
-        <div class="fld" onclick="recMemoToggle()"><div class="lb">メモ（押すと書けます）</div><div class="v" id="recmemo" style="font-size:16px;color:#6E6A5C;">(空欄)<span class="chv">›</span></div></div>
-        <div class="recmemo-box" id="recMemoBox"><textarea id="recMemoIn" placeholder="例：北側だけ生育が遅い。水口を少し開けた。"></textarea></div>
-        <div class="ph-take" onclick="document.getElementById('phRecIn').click()">
-          <span class="ic">📷</span>写真を撮る（この田んぼ・この日で共有）
-          <input id="phRecIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
+        <div class="fld one" onclick="recExtraToggle()"><div class="v"><span id="recExtraV" style="color:#6E6A5C;">📷写真・📝メモを足す</span><span class="chv">›</span></div></div>
+        <div class="recmemo-box" id="recMemoBox"><textarea id="recMemoIn" oninput="recExtraShow()" placeholder="例：北側だけ生育が遅い。水口を少し開けた。"></textarea>
+          <div class="ph-take" onclick="document.getElementById('phRecIn').click()">
+            <span class="ic">📷</span>写真を撮る（この田んぼ・この日で共有）
+            <input id="phRecIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
+          </div>
         </div>
-        <div class="fld" id="recWhoFld" onclick="whoOpen('rec')"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="recWhoV" style="color:#6E6A5C;">押して名前をえらぶ</span><span id="recWhoTag"></span><span class="chv">›</span></div></div>
+        <div class="fld one" id="recWhoFld" onclick="whoOpen('rec')"><div class="v">だれが<span id="recWhoV" style="color:#6E6A5C;">押して名前をえらぶ</span><span id="recWhoTag"></span><span class="chv">›</span></div></div>
         <div class="whopick" id="whoSheet">
           <h4>👤 だれが</h4>
           <div class="cap">名前を押すだけ。キーボードは出ません</div>
           <div id="whoOpts"></div>
         </div>
-        <div class="ghost" onclick="go('voice')">🎤 話して入力にする</div>
         <div class="primary-btn" onclick="saveWork()">✅ 保存する</div>
+        <div class="ghost" onclick="go('voice')">🎤 話して入力にする</div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -1890,7 +1897,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v86</span></div>
+          <div class="setrow">バージョン<span class="sv">v87</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -3819,7 +3826,7 @@
     }else{
       el.innerHTML='<div class="fp-ttl">🌾 田んぼをえらぶ<span class="fp-x" onclick="fpClose()">✕ とじる</span></div>'
         +'<input class="fp-search" id="fpQ" type="text" placeholder="名前でさがす（例：池松）" oninput="fpDraw()">'
-        +'<div class="fp-hint">🕘 最近つかった3枚は、下にそのまま出ます</div>';
+;   /* ★v87 案内文は消した。すぐ下に本物の「🕘最近つかった」が出るので、言わなくても分かる */
     }
   }
   /* その地区の田んぼ（KT_FIELDS の並び順のまま。並べ替えない＝他機能への影響ゼロ） */
@@ -5038,11 +5045,19 @@
   }
   function recDateSet(v){
     /* input type=date は 'YYYY-MM-DD' */
-    if(!v){ recDateSel=null; var e0=document.getElementById('recDateV'); if(e0)e0.textContent=todayStr(); return; }
+    if(!v){ recDateSel=null; var e0=document.getElementById('recDateV'); if(e0)e0.textContent=todayStr(); recDateTag(); return; }
     recDateSel=v.replace(/-/g,'/');
     var p=v.split('-'), d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10));
     var el=document.getElementById('recDateV');
     if(el)el.textContent=parseInt(p[1],10)+'月'+parseInt(p[2],10)+'日('+WD[d.getDay()]+')';
+    recDateTag();
+  }
+  /* ★v87 何もえらんでいなければ「今日」で記録される。それを黙って進めず札で伝える。
+     自分で日を選んだら札を外す（§6 自動で入った値＝緑の細枠＋札／手で入れた値には付けない）。 */
+  function recDateTag(){
+    var fld=document.getElementById('recDateFld'), tag=document.getElementById('recDateTag');
+    if(recDateSel){ if(fld)fld.classList.remove('autofill'); if(tag)tag.innerHTML=''; }
+    else { if(fld)fld.classList.add('autofill'); if(tag)tag.innerHTML='<span class="autotag">今日</span>'; }
   }
   /* v46：作業記録の画面を開くたびに、①今ここ／②だれが を最新化する */
   function recEnter(){
@@ -5053,6 +5068,8 @@
     try{ recFieldShow(); }catch(e){}
     try{ recWorkApply(); }catch(e){}
     try{ whoApply(); }catch(e){}
+    try{ recDateTag(); }catch(e){}      /* ★v87 ③いつ の札 */
+    try{ recExtraShow(); }catch(e){}    /* ★v87 写真・メモの1行 */
   }
   function recWorkOpen(){
     var sh=document.getElementById('recWorkSheet'); if(!sh)return;
@@ -5148,10 +5165,21 @@
     if(!t){ toast('名前を入れてください'); return; }
     recUseSet(t);
   }
-  function recMemoToggle(){
+  /* ★v87 写真とメモを1行にまとめた。押すと、メモの欄と📷のボタンが一緒に出る。 */
+  function recExtraToggle(){
     var b=document.getElementById('recMemoBox'); if(!b)return;
     b.classList.toggle('on');
     if(b.classList.contains('on')){ var i=document.getElementById('recMemoIn'); if(i)i.focus(); }
+    recExtraShow();
+  }
+  /* ★v87 その1行に何と書くかを決める場所は、ここ1本だけ。
+     ★書いてある文字ではなく、メモ欄の中身そのものから決める（§10-2 入っている値を証拠にしない）。 */
+  function recExtraShow(){
+    var e=document.getElementById('recExtraV'); if(!e)return;
+    var i=document.getElementById('recMemoIn');
+    var t=(i&&i.value||'').replace(/^\s+|\s+$/g,'');
+    if(t){ e.textContent='📝'+t; e.style.color=''; }
+    else { e.textContent='📷写真・📝メモを足す'; e.style.color='#6E6A5C'; }
   }
   function recFormReset(){
     recDateSel=null; recWorkSel=''; recUseSel='';
@@ -5164,7 +5192,8 @@
     var amt=document.getElementById('recAmtBox'); if(amt)amt.classList.remove('on');
     ['recRate','recVol','recMass','recMemoIn'].forEach(function(id){ var e=document.getElementById(id); if(e)e.value=''; });
     var mb=document.getElementById('recMemoBox'); if(mb)mb.classList.remove('on');
-    var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML='(空欄)<span class="chv">›</span>';
+    if(typeof recExtraShow==='function')recExtraShow();   /* ★v87 メモ欄を空にしたあとで描き直す */
+    if(typeof recDateTag==='function')recDateTag();       /* ★v87 「今日」の札を戻す */
     recWorkClose(); recUseClose();
     if(typeof recWorkApply==='function')recWorkApply();  /* v46①：次の記録も「今ここ」で始める */
   }
@@ -5526,7 +5555,7 @@
     var r=lastParse||{field:null,chem:null,rate:null,vol:null,mass:null,work:null};
     var fld=r.field||defaultFieldName()||'西 3';
     var text=(lastMemo||'音声記録');
-    var rm=document.getElementById('recmemo'); if(rm)rm.innerHTML=(lastMemo||'(空欄)');
+    if(typeof recExtraShow==='function')recExtraShow();   /* ★v87 記録画面の1行は、メモ欄の中身から決める */
     /* ★v71 聞き取った作業名から工程を決める。★v81 決められない時は工程を付けず、そう伝える */
     var stepK=ngStepOf(r.work);
     if(!wlAdd(stepK, fld, text, 'voice', {work:r.work||'', chem:r.chem||'', rate:r.rate||'', vol:r.vol||'', mass:r.mass||''})) return;   /* ★v74 */
@@ -8952,7 +8981,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v86';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v87';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
