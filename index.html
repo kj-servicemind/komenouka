@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v96">
+<meta name="app-ver" content="v101">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -15,7 +15,7 @@
 <title>行徳農園</title>
 <style>
   :root{
-    --ink:#232821; --paper:#FBFAF6; --line:#E7E3D8; --card:#FFFFFF;
+    --ink:#232821; --paper:#FBFAF6; --line:#9C927C; --card:#FFFFFF;
     --green:#2F5D3A; --green-deep:#213F29; --green-soft:#E9F0EA;
     --blue:#2E6E8E; --blue-soft:#EAF1F5;
     --gold:#B8893B; --gold-soft:#F5EEDF;
@@ -120,7 +120,7 @@
   .wx .ic{font-size:19px;line-height:1;margin:1px 0;}
   .wx .tp{font-size:12.5px;font-weight:800;color:var(--ink);}
   .wx .pp{font-size:9.5px;font-weight:800;color:#2E7DB0;letter-spacing:.02em;margin-top:1px;}
-  .wx .sep{width:1px;background:var(--line);margin:3px 0;}
+  .wx .sep{width:1px;background:#E7E3D8;margin:3px 0;}
   /* オフライン時に「いつ時点の予報か」を小さく出す帯 */
   .wxstale{display:none;font-size:10px;font-weight:800;color:#4A463C;background:#F1EEE4;
            border-radius:8px;padding:3px 8px;margin:0 14px 0;text-align:center;}
@@ -142,7 +142,7 @@
   /* ===== ホーム本体 ===== */
   .homebody{padding:12px 14px 8px;display:flex;flex-direction:column;gap:12px;}
   .gps{display:flex;align-items:center;justify-content:center;gap:8px;
-    background:var(--green-soft);border:1.5px solid #CBD9CC;border-radius:14px;padding:10px;
+    background:var(--green-soft);border:1.5px solid #6B9077;border-radius:14px;padding:10px;
     font-size:15px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;}
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
   /* 横スワイプで2ページ(全12機能) */
@@ -162,19 +162,19 @@
   .tile.primary{background:linear-gradient(157deg,#356A43,#254A2F);border-color:var(--green-deep);
     box-shadow:0 8px 18px rgba(33,63,41,.28);}
   .tile.primary .tx{color:#fff;}
-  .t-blue{border-color:#CBDEE6;} .t-blue .tx{color:var(--blue);}
-  .t-gold{border-color:#E6D6B8;} .t-gold .tx{color:var(--gold);}
-  .t-red{border-color:#E6CBC6;} .t-red .tx{color:var(--red);}
-  .t-purple{border-color:#D6CFE0;} .t-purple .tx{color:var(--purple);}
-  .t-orange{border-color:#E8D4C0;} .t-orange .tx{color:var(--orange);}
+  .t-blue{border-color:#6099BA;} .t-blue .tx{color:var(--blue);}
+  .t-gold{border-color:#B8893B;} .t-gold .tx{color:var(--gold);}
+  .t-red{border-color:#CA7F6F;} .t-red .tx{color:var(--red);}
+  .t-purple{border-color:#9C8BB4;} .t-purple .tx{color:var(--purple);}
+  .t-orange{border-color:#BF874F;} .t-orange .tx{color:var(--orange);}
   .memo{display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;
     border:1.5px solid var(--line);border-radius:18px;padding:15px;
     font-size:17px;font-weight:800;letter-spacing:.03em;box-shadow:0 2px 5px rgba(35,40,33,.05);cursor:pointer;}
   .memo .ic{font-size:22px;}
   /* v2.4 新tile色:ドローン=青緑 / AI相談=緑 */
-  .t-teal{border-color:#BFDCDC;} .t-teal .tx{color:var(--teal);}
-  .t-green2{border-color:#C2D6C5;} .t-green2 .tx{color:var(--green);}
-  .t-gray{border-color:#DAD6CC;} .t-gray .tx{color:#6B6656;}
+  .t-teal{border-color:#569E9E;} .t-teal .tx{color:var(--teal);}
+  .t-green2{border-color:#6B9077;} .t-green2 .tx{color:var(--green);}
+  .t-gray{border-color:#9C927C;} .t-gray .tx{color:#6B6656;}
   .tile .ic img{width:44px;height:44px;border-radius:10px;display:block;}
 
   /* ===== v2.4 ホーム:今日のやること(TODO)===== */
@@ -184,7 +184,7 @@
     display:flex;align-items:center;gap:7px;letter-spacing:.02em;}
   .todo .th .src{margin-left:auto;font-size:10.5px;font-weight:800;color:#4A463C;
     background:var(--green-soft);border:1px solid #CBD9CC;border-radius:8px;padding:2px 8px;}
-  .titem{display:flex;align-items:center;gap:10px;padding:8px 2px;border-top:1px solid #F0EDE3;cursor:pointer;}
+  .titem{display:flex;align-items:center;gap:10px;padding:8px 2px;border-top:1px solid #9C927C;cursor:pointer;}
   .titem:first-of-type{border-top:none;}
   .titem .cb{width:22px;height:22px;border:2px solid #9C947F;border-radius:7px;flex-shrink:0;position:relative;}
   .titem.done .cb{background:var(--green);border-color:var(--green);}
@@ -196,7 +196,7 @@
   .todo .more{text-align:right;font-size:12.5px;font-weight:800;color:var(--green);margin-top:5px;padding:2px 2px 4px;cursor:pointer;}
 
   /* ===== v2.4 ホーム:本日のAIからの提案 ===== */
-  .aibox{background:var(--green-soft);border:1.5px solid #C2D6C5;border-radius:18px;padding:12px 16px;}
+  .aibox{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:18px;padding:12px 16px;}
   .aibox .ah{font-size:14px;font-weight:800;color:var(--green-deep);display:flex;align-items:center;gap:8px;margin-bottom:6px;}
   .aibox .ah .bot{width:26px;height:26px;border-radius:9px;background:linear-gradient(150deg,#3C7A4C,#254A2F);
     color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;}
@@ -215,7 +215,7 @@
   .qbox::placeholder{color:#B0AB9A;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin:11px 0 4px;}
   .chip{font-size:12.5px;font-weight:800;color:var(--green-deep);background:var(--green-soft);
-    border:1px solid #CBD9CC;border-radius:20px;padding:7px 13px;cursor:pointer;}
+    border:1px solid #6B9077;border-radius:20px;padding:7px 13px;cursor:pointer;}
   .btn-row{display:flex;gap:10px;margin-top:13px;}
   .abtn{flex:1;border-radius:15px;padding:14px 10px;font-size:15px;font-weight:800;text-align:center;cursor:pointer;
     display:flex;align-items:center;justify-content:center;gap:7px;border:none;font-family:var(--gothic);}
@@ -254,7 +254,7 @@
   /* ===== 下層共通パーツ(タップ後トーン) ===== */
   .sc{padding:14px 18px 8px;display:flex;flex-direction:column;gap:11px;}
   .banner{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--green-soft);
-    border:1.5px solid #BDCFC0;border-radius:14px;padding:11px;font-size:15px;font-weight:800;
+    border:1.5px solid #6B9077;border-radius:14px;padding:11px;font-size:15px;font-weight:800;
     color:var(--green-deep);text-align:center;letter-spacing:.01em;}
   .fld{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:11px 14px;}
   .fld .lb{font-size:14.5px;font-weight:800;color:#4A463B;margin-bottom:4px;letter-spacing:.02em;}
@@ -266,7 +266,7 @@
      親方のご指摘「どの田んぼ?を見落とす」への直し。見た目は .autofill と同じものを共用する
      （§6 同じ意味のものは同じ色にそろえる／同じCSSクラスを使い回す）。
      ★しぼりこみ（🕰去年の今ごろ・記録の確認）は記録が入らないので、緑にしない。 */
-  .fld.autofill,.fld.fieldrow{border-color:#BCD3C0;background:#F4F9F5;}
+  .fld.autofill,.fld.fieldrow{border-color:#6B9077;background:#F4F9F5;}
   /* ★v87 作業を記録：④から下は「1行」に畳む。
      新しい見た目を作らず .fld をそのまま使い回すので、.autofill（緑の細枠＋札）もそのまま効く。 */
   .fld.one{padding:13px 14px;}
@@ -278,20 +278,20 @@
   /* ===== v55 肥料の種類（元肥／穂肥）。★はじめから選ばれた状態にはしない＝アプリが決めつけない ===== */
   .hy-kindlb{font-size:15px;color:#4A4A40;margin:12px 0 6px;font-weight:700;}
   .hy-kindrow{display:flex;gap:9px;}
-  .hy-kind{flex:1;border:2px solid #C8C4B4;border-radius:12px;padding:13px 8px;text-align:center;
+  .hy-kind{flex:1;border:2px solid #9C927C;border-radius:12px;padding:13px 8px;text-align:center;
            font-size:17px;font-weight:700;color:#4A4A40;background:#fff;}
   .hy-kind.on{border-color:var(--green);background:var(--green);color:#fff;}
   .hy-kindnote{font-size:13px;color:#4A463C;margin:6px 0 0;line-height:1.6;}
   /* ===== v60 「kg／反」で入れられるようにする ===== */
   .hy-unitrow{display:flex;gap:9px;}
-  .hy-unit{flex:1;border:2px solid #C8C4B4;border-radius:12px;padding:12px 6px;text-align:center;
+  .hy-unit{flex:1;border:2px solid #9C927C;border-radius:12px;padding:12px 6px;text-align:center;
            font-size:15px;font-weight:800;color:#4A4A40;background:#fff;line-height:1.35;}
   .hy-unit.on{border-color:var(--green);background:var(--green);color:#fff;font-weight:900;}
   /* 自動で計算した値＝深緑の帯にはしない。緑の細枠＋薄い緑（CLAUDE.md 6節） */
-  .hy-conv{display:none;border:1.5px solid #C9DCC9;background:#F1F6F1;border-radius:11px;
+  .hy-conv{display:none;border:1.5px solid #6B9077;background:#F1F6F1;border-radius:11px;
            padding:10px 12px;margin-top:8px;font-size:14px;font-weight:800;color:var(--green);line-height:1.65;}
   .hy-conv b{font-size:16px;color:var(--green-deep);}
-  .hy-conv.warn{border-color:#E3D2A6;background:var(--gold-soft);color:#8A6A2E;}
+  .hy-conv.warn{border-color:#B8893B;background:var(--gold-soft);color:#8A6A2E;}
   .hy-conv.warn b{color:#7A5A1E;}
   .screen.fs-big .hy-unit{font-size:16.5px;} .screen.fs-huge .hy-unit{font-size:18px;}
   .screen.fs-big .hy-conv{font-size:15.5px;} .screen.fs-huge .hy-conv{font-size:17px;}
@@ -301,7 +301,7 @@
   .hist-unsent{border:2px solid #D99100;background:#FFF6E5;border-radius:12px;padding:11px 12px;
                font-size:16px;font-weight:700;color:#8A5A00;margin:0 0 10px;}
   .hist-unsent small{display:block;font-weight:400;font-size:13px;color:#8A6A2A;margin-top:3px;}
-  .hist-sent{border:1px solid #9CC0A5;background:#F2F8F3;border-radius:12px;padding:9px 12px;
+  .hist-sent{border:1px solid #6B9077;background:#F2F8F3;border-radius:12px;padding:9px 12px;
              font-size:15px;color:var(--green);margin:0 0 10px;}
   .primary-btn{background:linear-gradient(157deg,#356A43,#254A2F);color:#fff;border:none;border-radius:14px;
     padding:15px;font-size:20px;font-weight:800;text-align:center;box-shadow:0 6px 14px rgba(33,63,41,.25);cursor:pointer;letter-spacing:.03em;}
@@ -329,22 +329,22 @@
   .fld-wrap.open .rowcard{border-radius:15px 15px 0 0;}
   .fld-soil-ttl{font-size:14px;font-weight:900;color:var(--green-deep);margin-bottom:6px;}
   .fld-soil-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px;}
-  .fld-soil-tag{background:var(--green-soft);border:1.5px solid #C4D6C7;border-radius:999px;padding:6px 13px;
+  .fld-soil-tag{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:999px;padding:6px 13px;
     font-size:14px;font-weight:800;color:var(--green-deep);}
   .fld-soil-tag.add{background:#fff;border-style:dashed;color:#4A463C;}
   .fld-soil-memo{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;font-size:15px;
     font-weight:700;color:#16211B;font-family:var(--mincho);outline:none;min-height:44px;box-sizing:border-box;}
   .fld-mat-ttl{font-size:14px;font-weight:900;color:var(--green-deep);margin:11px 0 5px;}
   .fld-mat{font-size:14px;font-weight:700;color:#16211B;line-height:1.7;}
-  .fld-mat .fm-row{display:flex;padding:4px 0;border-top:1px solid #F0ECE2;}
+  .fld-mat .fm-row{display:flex;padding:4px 0;border-top:1px solid #9C927C;}
   .fld-mat .fm-row:first-child{border-top:none;}
   .fld-mat .fm-d{color:#4A463C;font-weight:800;min-width:48px;}
   .fld-mat-empty{color:#4A463C;font-size:13.5px;font-weight:700;}
 
   /* 農薬計算 */
-  .calcbox{background:var(--gold-soft);border:1.5px solid #E3D2AC;border-radius:14px;padding:14px;
+  .calcbox{background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:14px;padding:14px;
     font-size:17px;font-weight:800;color:#7A5A1E;line-height:1.7;} .calcbox .big{font-size:28px;color:var(--ink);}
-  .calcbox.green{background:var(--green-soft);border-color:#BDCFC0;color:var(--green-deep);}
+  .calcbox.green{background:var(--green-soft);border-color:#6B9077;color:var(--green-deep);}
 
   /* 音声 */
   .micbig{width:150px;height:150px;border-radius:50%;background:linear-gradient(157deg,#356A43,#254A2F);
@@ -356,13 +356,13 @@
   .miclabel{text-align:center;font-size:17px;font-weight:800;letter-spacing:.02em;}
   .transcript{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;
     font-size:18px;font-weight:800;line-height:1.55;min-height:90px;} .transcript .live{color:var(--blue);}
-  .parsed{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:14px;padding:12px 14px;
+  .parsed{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:14px;padding:12px 14px;
     font-size:15px;font-weight:800;line-height:1.6;color:var(--green-deep);}
   /* ながら記録：分解結果の欄 */
   .parsed .lb2{font-size:14px;font-weight:800;color:#4A5248;margin-bottom:6px;}
   .parsed .heardtx{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;
     font-size:15.5px;font-weight:700;color:#222;line-height:1.6;margin-bottom:12px;}
-  .slot{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #CFE0D2;border-radius:12px;
+  .slot{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #6B9077;border-radius:12px;
     padding:11px 12px;margin-bottom:9px;}
   .slot .em{font-size:22px;line-height:1;}
   .slot .stx{flex:1;min-width:0;}
@@ -381,7 +381,7 @@
     padding:14px;text-align:center;font-size:17px;font-weight:900;line-height:1.4;cursor:pointer;}
   .kroku-enter small{display:block;font-size:12.5px;font-weight:700;opacity:.92;margin-top:3px;}
   /* 記録簿画面 */
-  .kroku-lead{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 13px;
+  .kroku-lead{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:12px;padding:11px 13px;
     font-size:15px;font-weight:700;color:var(--green-deep);line-height:1.7;margin-bottom:14px;}
   .krtit{font-family:var(--mincho,serif);font-size:18px;font-weight:900;color:var(--green-deep);
     margin:14px 0 7px;}
@@ -401,7 +401,7 @@
   .kroku-why .wtx b{color:#111;font-weight:900;}
 
   /* ===== v20 🌾肥料の栄養バランス ===== */
-  .hy-lead{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 13px;
+  .hy-lead{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:12px;padding:11px 13px;
     font-size:15px;font-weight:700;color:#16211B;line-height:1.65;margin-bottom:10px;}
   .hy-lead b{color:var(--green-deep);font-weight:900;}
   .hy-graphcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 14px 12px;margin:10px 0;}
@@ -433,7 +433,7 @@
     text-align:center;font-size:15px;font-weight:800;color:#5A5648;cursor:pointer;white-space:nowrap;}
   .hy-yr.on{background:var(--green);border-color:var(--green);color:#fff;font-weight:900;
     box-shadow:0 4px 10px rgba(47,93,58,.20);}
-  .hy-yrnote{display:none;background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:11px;
+  .hy-yrnote{display:none;background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:11px;
     padding:10px 12px;margin:8px 0 2px;font-size:13.5px;font-weight:800;color:#8A6A2E;line-height:1.6;}
   .hy-item .hy-d{font-size:12.5px;font-weight:800;color:#6B6656;background:#F3F1E9;
     border-radius:7px;padding:2px 7px;margin-right:8px;white-space:nowrap;}
@@ -443,14 +443,14 @@
   /* ===== v59 成分の分からない肥料を、黙って0にせず正直に知らせる札 =====
      深緑（強い色）は使わない。押させるボタンではないため（CLAUDE.md 6節）。
      ①栄養グラフの下 ②🎯目標カード ③生産原価 の3か所で同じ言い方にそろえる */
-  .hy-unk{display:none;background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:11px;
+  .hy-unk{display:none;background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:11px;
     padding:11px 13px;margin-top:10px;font-size:14px;font-weight:800;color:#8A6A2E;line-height:1.65;}
   .hy-unk b{font-size:15.5px;color:#7A5A1E;}
   .hy-unk .nms{display:block;margin-top:4px;font-size:13px;font-weight:800;color:#8A6A2E;}
   .hy-unk .how{display:block;margin-top:6px;font-size:13px;font-weight:800;color:#6B6656;}
   .hyg-unk{font-size:12.5px;font-weight:800;color:#8A6A2E;line-height:1.6;margin-top:2px;}
   .cs-unk{font-size:12.5px;font-weight:800;color:#8A6A2E;line-height:1.6;margin:5px 2px 0;}
-  .hy-item.unk{border-color:#E3D2A6;background:#FDFAF3;}
+  .hy-item.unk{border-color:#B8893B;background:#FDFAF3;}
   .hy-item.unk .hy-sub{color:#8A6A2E;font-weight:800;}
   .screen.fs-big .hy-unk{font-size:15.5px;} .screen.fs-huge .hy-unk{font-size:17px;}
 
@@ -460,7 +460,7 @@
     text-align:center;font-size:15px;font-weight:800;color:#6B6656;}
   .ki-tab.on{background:var(--green);border-color:var(--green);color:#fff;}
   .ki-tab .ke{font-size:22px;display:block;margin-bottom:2px;}
-  .ki-sumcard{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:14px;padding:13px 15px;margin-bottom:10px;}
+  .ki-sumcard{background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:14px;padding:13px 15px;margin-bottom:10px;}
   .ki-sum{display:flex;align-items:baseline;}
   .ki-sum.sub{margin-top:5px;}
   .ki-suml{font-size:15px;font-weight:800;color:#8A7318;}
@@ -475,10 +475,10 @@
   .ki-item .ki-del{margin-left:12px;color:#B76A5A;font-size:20px;font-weight:900;padding:0 4px;}
   .ki-empty{text-align:center;color:#4A463C;font-size:14px;font-weight:700;padding:14px 0;}
   .ki-kinds{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
-  .ki-kind{background:var(--green-soft);border:1.5px solid #C4D6C7;border-radius:999px;padding:7px 14px;
+  .ki-kind{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:999px;padding:7px 14px;
     font-size:14px;font-weight:800;color:var(--green-deep);}
   .ki-kind.on{background:var(--green);border-color:var(--green);color:#fff;}
-  .ki-note{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 13px;
+  .ki-note{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:12px;padding:11px 13px;
     font-size:14px;font-weight:700;color:#16211B;line-height:1.6;margin-top:12px;}
 
   /* ===== v49 📋 この農薬をまいた記録(農薬計算内)。★判定はしない =====
@@ -488,15 +488,15 @@
   .kk-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;margin:10px 0;}
   .kk-ttl{font-size:16px;font-weight:900;color:var(--green-deep);margin-bottom:1px;}
   .kk-sub{font-size:13px;font-weight:800;color:#6B6656;margin-bottom:10px;line-height:1.5;}
-  .kk-sum{background:var(--green-soft);border:1.5px solid #C6D8C9;border-radius:12px;padding:9px 12px;
+  .kk-sum{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:12px;padding:9px 12px;
     font-size:15px;font-weight:900;color:var(--green-deep);margin-bottom:9px;}
-  .kk-row{display:flex;align-items:baseline;gap:8px;padding:8px 2px;border-bottom:1px solid #F0EDE3;font-size:15px;}
+  .kk-row{display:flex;align-items:baseline;gap:8px;padding:8px 2px;border-bottom:1px solid #9C927C;font-size:15px;}
   .kk-list .kk-row:last-child{border-bottom:none;}
   .kk-f{font-weight:900;color:#16211B;min-width:86px;}
   .kk-n{font-weight:900;color:var(--green);white-space:nowrap;}
   .kk-d{margin-left:auto;font-size:13px;font-weight:700;color:#6B6656;text-align:right;}
   .kk-none{font-size:14px;font-weight:700;color:#6B6656;padding:8px 2px;line-height:1.6;}
-  .kk-warn{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:12px;padding:11px 13px;
+  .kk-warn{background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:12px;padding:11px 13px;
     margin-top:11px;font-size:13.5px;font-weight:800;color:#8A6A2E;line-height:1.7;}
   .kk-warn .t{font-size:14.5px;font-weight:900;color:#7A5A1E;display:block;margin-bottom:4px;}
   .kk-db{background:var(--green);color:#fff;border-radius:14px;padding:15px 12px;margin-top:12px;
@@ -507,7 +507,7 @@
   .screen.fs-big .hy-inp,.screen.fs-big .hy-amtlab{font-size:22px;} .screen.fs-big .hy-lead,.screen.fs-big .hy-item,.screen.fs-big .ki-item{font-size:17px;}
   .screen.fs-huge .hy-inp,.screen.fs-huge .hy-amtlab{font-size:24px;} .screen.fs-huge .hy-lead,.screen.fs-huge .hy-item,.screen.fs-huge .ki-item{font-size:19px;}
 
-  .safari-tip{background:var(--orange-soft);border:1.5px solid #E0B98F;border-radius:12px;padding:11px 13px;
+  .safari-tip{background:var(--orange-soft);border:1.5px solid #BF874F;border-radius:12px;padding:11px 13px;
     font-size:14px;font-weight:800;color:#8A4A14;line-height:1.5;display:none;}
 
   /* 写真:撮って共有 */
@@ -521,7 +521,7 @@
   .photo-preview img{display:block;width:100%;max-height:320px;object-fit:cover;}
   .photo-remove{position:absolute;top:10px;right:10px;background:rgba(20,20,18,.72);color:#fff;border:none;
     border-radius:12px;padding:8px 12px;font-size:14px;font-weight:800;cursor:pointer;}
-  .photo-cam-tip{background:var(--orange-soft);border:1.5px solid #E0B98F;border-radius:12px;padding:10px 13px;
+  .photo-cam-tip{background:var(--orange-soft);border:1.5px solid #BF874F;border-radius:12px;padding:10px 13px;
     font-size:13px;font-weight:800;color:#8A4A14;line-height:1.5;display:none;}
   .share-team{background:var(--orange);color:#fff;border:none;border-radius:14px;padding:15px;
     font-size:19px;font-weight:800;text-align:center;cursor:pointer;box-shadow:0 6px 14px rgba(197,106,36,.22);letter-spacing:.02em;}
@@ -536,12 +536,12 @@
   .cal-sinp{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:16px;
     font-weight:700;color:#111;font-family:var(--gothic);outline:none;}
   .cal-sresult{margin-top:8px;}
-  .cal-sitem{display:flex;align-items:baseline;padding:8px 2px;font-size:14.5px;font-weight:700;color:#16211B;border-top:1px solid #F0ECE2;}
+  .cal-sitem{display:flex;align-items:baseline;padding:8px 2px;font-size:14.5px;font-weight:700;color:#16211B;border-top:1px solid #9C927C;}
   .cal-sitem:first-child{border-top:none;}
   .cal-sitem .cal-sd{color:var(--green-deep);font-weight:900;min-width:78px;}
   .cal-sitem .cal-sf{color:#4A463C;margin-left:6px;font-weight:800;}
   .cal-sempty{color:#4A463C;font-size:14px;font-weight:700;padding:8px 2px;}
-  .cal-lastyear{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:10px;padding:8px 12px;
+  .cal-lastyear{background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:10px;padding:8px 12px;
     font-size:13.5px;font-weight:800;color:#8A6A2E;margin-bottom:10px;text-align:center;}
   .cal{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
   .calnav{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;margin-bottom:8px;}
@@ -570,13 +570,13 @@
   .leg2{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;padding:6px 4px 2px;font-size:15px;font-weight:800;}
   .dot{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:5px;vertical-align:-1px;}
   .costtable{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 5px rgba(35,40,33,.05);}
-  .crow{display:flex;justify-content:space-between;padding:11px 16px;font-size:17px;font-weight:800;border-bottom:1px solid #EDE9DE;}
+  .crow{display:flex;justify-content:space-between;padding:11px 16px;font-size:17px;font-weight:800;border-bottom:1px solid #9C927C;}
   .crow:last-child{border-bottom:none;} .crow.total{background:var(--gold-soft);font-size:19px;}
   /* ===== v20 生産原価・詳細版 ===== */
-  .cost-lead{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:10px 13px;
+  .cost-lead{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:12px;padding:10px 13px;
     font-size:14px;font-weight:700;color:#16211B;line-height:1.6;margin:10px 0;}
   .cost-lead b{color:var(--green-deep);font-weight:900;}
-  .cost-total{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-radius:14px;padding:13px 16px;
+  .cost-total{background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:14px;padding:13px 16px;
     display:flex;align-items:baseline;margin-bottom:10px;}
   .cost-total .t{font-size:16px;font-weight:800;color:#8A7318;}
   .cost-total .n{margin-left:auto;font-size:24px;font-weight:900;color:var(--green-deep);}
@@ -590,7 +590,7 @@
   .cost-gh.open .cg-chv{transform:rotate(90deg);}
   .cost-sub{display:none;padding:2px 14px 6px 34px;}
   .cost-sub.open{display:block;}
-  .cost-srow{display:flex;align-items:center;padding:8px 0;font-size:14.5px;font-weight:700;color:#4a5048;border-top:1px solid #F0ECE2;}
+  .cost-srow{display:flex;align-items:center;padding:8px 0;font-size:14.5px;font-weight:700;color:#4a5048;border-top:1px solid #9C927C;}
   .cost-srow:first-child{border-top:none;}
   .cost-srow .cs-n{margin-left:auto;color:#16211B;font-weight:800;}
   .cost-srow .cs-in{width:96px;text-align:right;border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;
@@ -599,7 +599,7 @@
   .cost-cmp{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;margin-top:8px;font-size:14.5px;font-weight:700;color:#16211B;line-height:1.7;}
 
   /* 共有 */
-  .sharenote{background:var(--blue-soft);border:1.5px solid #B3CEDB;border-radius:14px;padding:12px 14px;
+  .sharenote{background:var(--blue-soft);border:1.5px solid #6099BA;border-radius:14px;padding:12px 14px;
     font-size:15px;font-weight:800;color:#1C4A63;line-height:1.55;}
   .memcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;
     display:flex;align-items:center;gap:12px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
@@ -703,14 +703,14 @@
   .drugcard .use{background:var(--orange);color:#fff;border:none;border-radius:12px;padding:11px;
     font-size:16px;font-weight:800;text-align:center;margin-top:10px;cursor:pointer;}
   .dbbtn{display:block;background:var(--orange);color:#fff;text-align:center;border-radius:12px;padding:13px;font-weight:700;margin:0 0 14px;}
-  .dbnote{background:var(--green-soft);border:1.5px solid #BDCFC0;border-radius:12px;padding:11px 14px;
+  .dbnote{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:12px;padding:11px 14px;
     font-size:14px;font-weight:800;color:var(--green-deep);line-height:1.6;}
 
   /* 設定 */
   .sethead{font-size:14px;font-weight:800;color:#6B6656;margin:6px 2px 0;letter-spacing:.02em;}
   .setcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 5px rgba(35,40,33,.05);}
   .setrow{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
-    font-size:16px;font-weight:800;border-bottom:1px solid #EDE9DE;cursor:pointer;} .setrow:last-child{border-bottom:none;}
+    font-size:16px;font-weight:800;border-bottom:1px solid #9C927C;cursor:pointer;} .setrow:last-child{border-bottom:none;}
   .setrow .sv{color:var(--green-deep);font-size:15px;font-weight:800;}
   .seg{display:flex;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;}
   .seg button{flex:1;border:none;background:#fff;padding:14px 4px;font-size:16px;font-weight:800;cursor:pointer;border-right:1px solid var(--line);}
@@ -732,7 +732,7 @@
 
   .spacer{height:28px;}
   .freebar{margin-top:14px;font-size:13px;font-weight:800;color:var(--green-deep);text-align:center;
-    background:var(--green-soft);border:1px solid #BDCFC0;border-radius:10px;padding:8px 12px;max-width:390px;}
+    background:var(--green-soft);border:1px solid #6B9077;border-radius:10px;padding:8px 12px;max-width:390px;}
   .hint{font-size:12px;color:#77725F;margin-top:8px;text-align:center;max-width:390px;line-height:1.6;}
 
   /* ===== 稲作先生 ===== */
@@ -751,7 +751,7 @@
   .ina-next{width:100%;margin-top:22px;background:linear-gradient(180deg,#8DC63F,#6FA82E);border:none;
     border-radius:999px;padding:16px;font-size:18px;font-weight:800;color:#fff;
     box-shadow:0 6px 16px rgba(111,168,46,.4);letter-spacing:.06em;cursor:pointer;}
-  .ina-trust{margin-top:18px;background:var(--blue-soft);border:1px solid #CBDEE6;border-radius:13px;padding:14px 15px;font-size:15px;line-height:1.75;color:#15303B;font-weight:600;}
+  .ina-trust{margin-top:18px;background:var(--blue-soft);border:1px solid #6099BA;border-radius:13px;padding:14px 15px;font-size:15px;line-height:1.75;color:#15303B;font-weight:600;}
   .ina-trust b{color:var(--blue);font-size:15.5px;}
   .ina-link{display:block;text-align:center;margin-top:12px;font-size:15.5px;font-weight:800;color:var(--blue);text-decoration:underline;cursor:pointer;}
 
@@ -843,7 +843,7 @@
   .kusa-rn .n span{font-size:13px;font-weight:700;color:#4A463C;margin-left:6px;}
   .kusa-rn .s{font-size:12.5px;font-weight:700;color:#4A463C;margin-top:3px;}
   .kusa-rn .s.ok{color:var(--green-deep);}
-  .kusa-cnt{flex-shrink:0;text-align:center;background:#EEF4FA;border:1.5px solid #C2D8E8;
+  .kusa-cnt{flex-shrink:0;text-align:center;background:#EEF4FA;border:1.5px solid #6099BA;
     border-radius:11px;padding:7px 9px;min-width:70px;cursor:pointer;}
   .kusa-cnt .k{font-size:14.5px;font-weight:800;color:#1D5C8F;line-height:1.2;white-space:nowrap;}
   .kusa-cnt .g{font-size:10.5px;font-weight:800;color:#1D5C8F;margin-top:2px;}
@@ -873,12 +873,12 @@
   .kusa-dd .w{font-size:12px;font-weight:700;color:#4A463C;margin-top:2px;}
   .kusa-bd{font-size:13.5px;font-weight:800;border-radius:999px;padding:9px 13px;
     flex-shrink:0;white-space:nowrap;cursor:pointer;}
-  .kusa-bd.date{color:#1D5C8F;background:#EEF4FA;border:1.5px solid #C2D8E8;}
-  .kusa-bd.del{color:#B23B2E;background:#fff;border:1.5px solid #E3C4BF;}
-  .kusa-edit{background:#FFF7DC;border:1.5px solid #E6D79A;border-radius:13px;
+  .kusa-bd.date{color:#1D5C8F;background:#EEF4FA;border:1.5px solid #6099BA;}
+  .kusa-bd.del{color:#B23B2E;background:#fff;border:1.5px solid #CA7F6F;}
+  .kusa-edit{background:#FFF7DC;border:1.5px solid #B8893B;border-radius:13px;
     padding:12px;margin:0 0 9px;}
   .kusa-edit .el{font-size:13px;font-weight:800;color:#8A6D1E;margin-bottom:8px;}
-  .kusa-di{width:100%;font-size:17px;font-weight:700;padding:12px;border:1.5px solid #E6D79A;
+  .kusa-di{width:100%;font-size:17px;font-weight:700;padding:12px;border:1.5px solid #B8893B;
     border-radius:11px;background:#fff;color:var(--ink);-webkit-appearance:none;appearance:none;}
   .kusa-edit .eb{display:flex;gap:9px;margin-top:10px;}
   .kusa-edit .eb div{flex:1;text-align:center;padding:13px;border-radius:999px;
@@ -909,14 +909,14 @@
   .ina-stg.now .st,.ina-stg.now .nm{color:var(--green-deep);font-weight:800;}
   .ina-stg.todo .st{color:#6E6A5C;}
 
-  .ina-why{background:#fff;border:1.5px solid #CBDEE6;border-radius:16px;padding:14px 15px;margin-top:14px;box-shadow:0 2px 6px rgba(46,110,142,.1);}
+  .ina-why{background:#fff;border:1.5px solid #6099BA;border-radius:16px;padding:14px 15px;margin-top:14px;box-shadow:0 2px 6px rgba(46,110,142,.1);}
   .ina-why .wt{display:flex;align-items:center;gap:8px;font-family:var(--mincho);font-size:17px;font-weight:800;color:var(--blue);margin-bottom:10px;}
-  .ina-why .item{display:flex;gap:9px;padding:10px 0;border-top:1px solid #EEF2F0;}
+  .ina-why .item{display:flex;gap:9px;padding:10px 0;border-top:1px solid #9C927C;}
   .ina-why .item:first-of-type{border-top:none;}
   .ina-why .num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;}
   .ina-why .wtx{font-size:15.5px;line-height:1.7;color:#16211B;font-weight:600;}
   .ina-why .wtx b{color:#111;background:none;padding:0;border-radius:0;font-weight:900;}
-  .ina-fix{width:100%;background:var(--gold-soft);border:1.5px solid #E6D6B8;border-radius:12px;padding:12px;text-align:center;font-size:15.5px;font-weight:800;color:#8A611C;margin-top:10px;cursor:pointer;}
+  .ina-fix{width:100%;background:var(--gold-soft);border:1.5px solid #B8893B;border-radius:12px;padding:12px;text-align:center;font-size:15.5px;font-weight:800;color:#8A611C;margin-top:10px;cursor:pointer;}
   .ina-fix small{display:block;font-size:13px;font-weight:700;color:#7A6A44;margin-top:3px;}
 
   .ina-hero{text-align:center;padding:4px 0 12px;border-bottom:1px dashed var(--line);margin-bottom:12px;}
@@ -928,10 +928,10 @@
   .ina-info .ic{font-size:20px;}
   .ina-info .tt{font-family:var(--mincho);font-size:17px;font-weight:800;letter-spacing:.02em;}
   .ina-info .tx{font-size:15.5px;line-height:1.7;color:#22201A;font-weight:500;}
-  .ina-info.wx{background:var(--blue-soft);border-color:#CBDEE6;}
+  .ina-info.wx{background:var(--blue-soft);border-color:#6099BA;}
   .ina-info.wx .tt{color:var(--blue);}
   .ina-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 9px;}
-  .ina-act{background:var(--green-soft);border:1px solid #C2D6C5;border-radius:12px;padding:13px 8px;text-align:center;font-size:15px;font-weight:800;color:var(--green-deep);cursor:pointer;}
+  .ina-act{background:var(--green-soft);border:1px solid #6B9077;border-radius:12px;padding:13px 8px;text-align:center;font-size:15px;font-weight:800;color:var(--green-deep);cursor:pointer;}
   .ina-act .ic{font-size:19px;display:block;margin-bottom:3px;}
   .ina-ksas{width:100%;background:#EDEBE4;border:1px dashed #C9C5B6;border-radius:12px;padding:13px;text-align:center;font-size:15px;font-weight:800;color:#7D7867;margin-top:3px;cursor:pointer;}
   .ina-ksas small{display:block;font-size:12.5px;font-weight:700;margin-top:3px;color:#4A463C;}
@@ -963,7 +963,7 @@
   .kusa-hero .badge{display:inline-block;margin-top:10px;background:var(--green);color:#fff;
     font-size:15px;font-weight:800;padding:9px 22px;border-radius:999px;}
   .kusa-dash{border-top:1px dashed #D9D4C4;margin:14px 0 12px;}
-  .kusa-note{background:var(--blue-soft);border:1px solid #CBDEE6;border-radius:13px;
+  .kusa-note{background:var(--blue-soft);border:1px solid #6099BA;border-radius:13px;
     padding:12px 13px;font-size:13px;line-height:1.85;color:#15303B;font-weight:600;margin-top:12px;}
   .kusa-note b{color:var(--blue);}
 
@@ -1017,7 +1017,7 @@
   .kt-setup .edit{font-size:13.5px;font-weight:800;color:var(--blue);text-decoration:underline;flex-shrink:0;}
   /* 「日付変更›」「入れる›」共通:赤背景×白文字のバッジ表示(本人指定色 #C62828) */
   .kt-setup .edit.dchg{color:#fff;background:#C62828;text-decoration:none;border-radius:8px;padding:6px 11px;white-space:nowrap;}
-  .kt-setup.warn{background:#FBF4E4;border-color:#E6D6B8;}
+  .kt-setup.warn{background:#FBF4E4;border-color:#B8893B;}
   .kt-setup.warn .tx b{color:#8A611C;}
   /* ===== v35: 苗箱の枚数計算 ===== */
   .nae-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
@@ -1032,7 +1032,7 @@
   .nae-big .num{font-size:52px;font-weight:800;line-height:1.05;margin:4px 0;letter-spacing:-1px;}
   .nae-big .num span{font-size:22px;margin-left:4px;}
   .nae-big .sub{font-size:14px;opacity:1;color:#fff;font-weight:600;border-top:1px solid rgba(255,255,255,.35);padding-top:9px;margin-top:9px;line-height:1.8;}
-  .nae-warn{background:#FBF4E4;border:1.5px solid #E6D6B8;border-radius:12px;padding:12px 13px;font-size:13.5px;line-height:1.8;color:#6B5A2A;margin-bottom:12px;}
+  .nae-warn{background:#FBF4E4;border:1.5px solid #B8893B;border-radius:12px;padding:12px 13px;font-size:13.5px;line-height:1.8;color:#6B5A2A;margin-bottom:12px;}
   .nae-warn b{color:#8A611C;}
   .nae-tabs{display:flex;gap:6px;margin-bottom:10px;}
   .nae-tb{flex:1;padding:10px 0;text-align:center;font-size:13.5px;font-weight:700;border-radius:9px;border:1.5px solid var(--line);background:#FBFAF6;color:#6B6656;cursor:pointer;}
@@ -1044,8 +1044,8 @@
   .nae-ach .am span{font-size:12px;font-weight:700;}
   .nae-acb{padding:0 12px;display:none;}
   .nae-ac.open .nae-acb{display:block;}
-  .nae-ac.open .nae-ach{border-bottom:1px solid #EFECE2;}
-  .nae-fl{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #EFECE2;gap:10px;}
+  .nae-ac.open .nae-ach{border-bottom:1px solid #9C927C;}
+  .nae-fl{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #9C927C;gap:10px;}
   .nae-fl:last-child{border-bottom:0;}
   .nae-fl .nm{flex:1;min-width:0;font-size:15px;font-weight:700;color:#33403A;}
   .nae-fl .nm small{display:block;color:#4A463C;font-size:12px;font-weight:700;margin-top:1px;}
@@ -1099,7 +1099,7 @@
   .nae-sheet .b2{flex:1;padding:13px 0;text-align:center;border-radius:11px;font-size:14px;font-weight:700;
     background:#F6F4EC;color:#6B6656;border:1.5px solid var(--line);cursor:pointer;}
   /* この数字の根拠 */
-  .nae-trust{background:#EEF3EE;border:1.5px solid #CBDACB;border-radius:12px;padding:12px 13px;
+  .nae-trust{background:#EEF3EE;border:1.5px solid #6B9077;border-radius:12px;padding:12px 13px;
     font-size:12.5px;line-height:1.85;color:#3D5244;margin-bottom:12px;}
   .nae-trust b{color:#213F29;}
   .nae-big .fix{background:rgba(232,201,122,.2);border:1px solid rgba(232,201,122,.6);border-radius:8px;
@@ -1108,18 +1108,18 @@
   .kt-growbadge{display:inline-block;font-size:11.5px;font-weight:800;color:#fff;background:#5B8A9E;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:1px;}
 
   /* ===== v21：あい作＋レイミー統合 ===== */
-  .yh-warn{background:var(--red-soft);border:1px solid #EBCFC9;border-radius:14px;padding:12px 14px;margin-bottom:10px;}
+  .yh-warn{background:var(--red-soft);border:1px solid #CA7F6F;border-radius:14px;padding:12px 14px;margin-bottom:10px;}
   .yh-warn .t{font-weight:800;font-size:17px;color:var(--red);margin-bottom:2px;}
   .yh-warn .b{font-size:15px;}
-  .yh-ok{background:var(--green-soft);border:1px solid #CFE0D2;border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:15px;}
+  .yh-ok{background:var(--green-soft);border:1px solid #6B9077;border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:15px;}
   .yh-sub{font-size:13px;color:#4A463C;margin:2px 0 12px;}
-  .dg-photo{background:var(--blue-soft);border:1px solid #CADDE8;border-radius:14px;padding:12px;margin-bottom:12px;}
+  .dg-photo{background:var(--blue-soft);border:1px solid #6099BA;border-radius:14px;padding:12px;margin-bottom:12px;}
   .dg-pt{font-weight:800;font-size:16px;margin-bottom:4px;}
   .dg-tips{font-size:14px;color:#4a5560;margin-bottom:8px;line-height:1.55;}
   .dg-kttl{font-weight:800;font-size:17px;margin:6px 0 2px;}
   .dg-ksub{display:block;font-size:13px;color:#4A463C;font-weight:400;margin-bottom:6px;}
   .dg-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;}
-  .dg-card.top{background:var(--gold-soft);border-color:#E8D9B8;}
+  .dg-card.top{background:var(--gold-soft);border-color:#B8893B;}
   .dg-rank{font-size:13px;font-weight:800;color:var(--gold);}
   .dg-nm{font-weight:800;font-size:18px;}
   .dg-kind{display:inline-block;font-size:12px;background:var(--green-soft);color:var(--green);border-radius:999px;padding:1px 10px;margin-left:6px;vertical-align:2px;}
@@ -1130,7 +1130,7 @@
   .dg-frow{font-size:14px;color:#6b6f66;margin-top:8px;}
   .dg-frow b{color:var(--ink);}
   .dg-zk{font-size:14.5px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;line-height:1.6;}
-  .famic-card{background:var(--blue-soft);border:1px solid #CADDE8;border-radius:14px;padding:12px;margin:10px 0;}
+  .famic-card{background:var(--blue-soft);border:1px solid #6099BA;border-radius:14px;padding:12px;margin:10px 0;}
   .famic-t{font-weight:800;margin-bottom:4px;}
   .famic-n{font-size:13.5px;color:#4a5560;margin-bottom:8px;line-height:1.55;}
   .hy-goalcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;}
@@ -1147,7 +1147,7 @@
   .kyo-nav .ar{color:var(--green);font-size:15px;padding:4px 6px;}
   .kyo-sec{font-family:var(--mincho);font-weight:800;color:var(--green-deep);font-size:17px;margin:12px 0 6px;}
   .kyo-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;}
-  .kyo-card.gold{background:var(--gold-soft);border-color:#E8D9B8;}
+  .kyo-card.gold{background:var(--gold-soft);border-color:#B8893B;}
   .kyo-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:15.5px;}
   .kyo-row:last-child{border-bottom:none;}
   .kyo-d{color:var(--gold);font-weight:800;min-width:52px;}
@@ -1170,7 +1170,7 @@
   #p-hist .hist-row.star{background:#F5EEDF;border:2px solid #B8893B;}
   /* 行の中身を上下まん中にそろえる（印が付いたので） */
   #p-hist .hist-row{align-items:center;}
-  .kyo-memoc{background:var(--green-soft);border:1px solid #CFE0D2;border-radius:14px;padding:12px;margin:10px 0;}
+  .kyo-memoc{background:var(--green-soft);border:1px solid #6B9077;border-radius:14px;padding:12px;margin:10px 0;}
   .kyo-mttl{font-weight:800;margin-bottom:6px;}
   .kyo-memo{width:100%;min-height:70px;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;font-family:var(--gothic);box-sizing:border-box;}
   .kyo-msub{font-size:13px;color:#5c7060;margin-top:4px;}
@@ -1200,7 +1200,7 @@
   .ph-meta .del{margin-left:auto;font-size:12px;font-weight:800;color:var(--red);background:var(--red-soft);border-radius:8px;padding:5px 9px;}
   .ph-note{font-size:12.5px;color:#4A463C;line-height:1.6;margin:2px 2px 8px;}
   .ph-empty{text-align:center;color:#4A463C;font-size:14px;padding:22px 0;}
-  .ph-bar{display:flex;align-items:center;gap:8px;background:var(--blue-soft);border:1.5px solid #B3CEDB;
+  .ph-bar{display:flex;align-items:center;gap:8px;background:var(--blue-soft);border:1.5px solid #6099BA;
     border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1A5A8A;margin-bottom:8px;}
   .ph-bar .rf{margin-left:auto;font-weight:800;}
   .ph-lb{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(20,18,14,.9);z-index:950;display:none;align-items:center;justify-content:center;padding:14px;}
@@ -1215,17 +1215,17 @@
   .fp-head{padding:13px 14px 6px;flex-shrink:0;}
   .fp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;}
   .fp-x{margin-left:auto;font-size:14px;color:#4A463C;padding:4px 6px;}
-  .fp-search{display:block;width:100%;margin:10px 0 4px;border:1.5px solid #E7E3D8;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;}
+  .fp-search{display:block;width:100%;margin:10px 0 4px;border:1.5px solid #9C927C;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;}
   .fp-hint{font-size:11px;color:#4A463C;}
   .fp-list{flex:1;overflow-y:auto;padding:2px 12px 30px;-webkit-overflow-scrolling:touch;}
   .fp-gh{font-size:12.5px;font-weight:800;color:#4A463C;margin:12px 2px 6px;}
-  .fp-row{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #E7E3D8;border-radius:12px;padding:12px;margin-bottom:6px;}
+  .fp-row{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #9C927C;border-radius:12px;padding:12px;margin-bottom:6px;}
   .fp-row .cdot{width:10px;height:10px;border-radius:99px;flex-shrink:0;}
   .fp-row .fn2{font-size:16.5px;font-weight:800;}
   .fp-row .fc2{font-size:11.5px;color:#4A463C;margin-top:1px;}
   .fp-row .fa2{margin-left:auto;font-size:14.5px;font-weight:800;color:#6B6552;white-space:nowrap;}
   .fp-row .fa2 small{font-size:10px;color:#6E6A5C;}
-  .fp-row.cur{background:#F5EEDF;border-color:#E0CFA3;}
+  .fp-row.cur{background:#F5EEDF;border-color:#B8893B;}
   /* ★v86 田んぼをえらぶを「草刈りと同じ」2段（地区 → 田んぼ）にする。
      地区タイル・並びは .kusa-grid / .kusa-tile を使い回す（§6 同じCSSクラスを使い回す）。 */
   .fp-bk{font-size:14.5px;font-weight:800;color:var(--green);padding:13px 10px 13px 0;white-space:nowrap;}
@@ -1260,7 +1260,7 @@
   .fl-sum .v{font-size:21px;font-weight:800;color:var(--green-deep,#254A2F);}
   .fl-sum .v small{font-size:11px;font-weight:600;color:#4A463C;}
   .fl-sum .k{font-size:10.5px;color:#4A463C;margin-top:1px;}
-  .fl-search{display:block;width:100%;border:1.5px solid #E7E3D8;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;margin-bottom:8px;}
+  .fl-search{display:block;width:100%;border:1.5px solid #9C927C;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;margin-bottom:8px;}
   .fl-mode{display:flex;gap:6px;margin-bottom:8px;}
   .fl-mode div{flex:1;text-align:center;font-size:13px;font-weight:800;padding:9px 0;border-radius:10px;background:#EFEBDD;color:#6B6552;border:1.5px solid var(--line);}
   .fl-mode div.on{background:var(--green,#356A43);border-color:var(--green,#356A43);color:#fff;}
@@ -1284,12 +1284,12 @@
   .tile.t-ksas{background:linear-gradient(157deg,#25498A,#1A3A6B);border-color:#1A3A6B;box-shadow:0 6px 14px rgba(26,58,107,.25);}
   .tile.t-ksas .tx{color:#fff;}
   .tile.t-ksas .ic{font-size:24px;font-weight:900;color:#fff;font-family:Arial,sans-serif;letter-spacing:1px;}
-  .fsheet{border:1px solid #E7E3D8;border-radius:14px;overflow:hidden;margin:0 0 10px;background:#fff;display:none;}
+  .fsheet{border:1px solid #9C927C;border-radius:14px;overflow:hidden;margin:0 0 10px;background:#fff;display:none;}
   .fsheet.on{display:block;}
   .fsheet .sh{background:#E9F0EA;padding:11px 14px;font-weight:800;color:#213F29;font-size:15.5px;display:flex;align-items:center;}
   .fsheet .sh .x{margin-left:auto;color:#6b6f66;font-size:19px;padding:0 4px;}
-  .fsheet .fsearch{display:block;width:calc(100% - 24px);margin:10px 12px;border:1px solid #E7E3D8;border-radius:10px;padding:11px 12px;font-size:16px;background:#fafafa;box-sizing:border-box;}
-  .fsheet .fopt{padding:13px 14px;border-top:1px solid #E7E3D8;display:flex;align-items:center;gap:8px;font-size:17.5px;font-weight:700;color:#232821;}
+  .fsheet .fsearch{display:block;width:calc(100% - 24px);margin:10px 12px;border:1px solid #9C927C;border-radius:10px;padding:11px 12px;font-size:16px;background:#fafafa;box-sizing:border-box;}
+  .fsheet .fopt{padding:13px 14px;border-top:1px solid #9C927C;display:flex;align-items:center;gap:8px;font-size:17.5px;font-weight:700;color:#232821;}
   /* ★v82 切りのいい所で改行：文節を小さな箱に入れて、箱の途中で折れないようにする。
      ※クラス名に .np は使えない（すぐ下の肥料の成分表示で使用中）ため .nb にした */
   .nb{display:inline-block;}
@@ -1298,7 +1298,7 @@
   .fsheet .fopt.sel::after{content:"✔";margin-left:8px;color:#B8893B;font-weight:800;}
   .fsheet .fempty{padding:14px;text-align:center;color:#8a8f84;font-size:15px;}
   /* ③ 話して記録:カンペ+手入力 */
-  .cheat{background:#F5EEDF;border:1px solid #E8D9B8;border-radius:12px;padding:12px;margin:10px 0;}
+  .cheat{background:#F5EEDF;border:1px solid #B8893B;border-radius:12px;padding:12px;margin:10px 0;}
   .cheat .ct{font-weight:800;color:#8a6a2a;margin-bottom:6px;font-size:15px;}
   .cheat .ex{background:#fff;border-radius:8px;padding:8px 10px;margin:5px 0;font-size:15.5px;color:#232821;}
   .cheat .ex b{color:#2F5D3A;}
@@ -1306,10 +1306,10 @@
   .vmanual{border:1.5px dashed #2F5D3A;border-radius:14px;padding:11px 12px;color:#2F5D3A;font-weight:800;text-align:center;margin:10px 0 8px;font-size:15.5px;}
   .vmanual-box{display:none;margin-bottom:10px;}
   .vmanual-box.on{display:block;}
-  .vmanual-box .vin{display:block;width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:12px;padding:12px;font-size:17px;background:#fff;}
+  .vmanual-box .vin{display:block;width:100%;box-sizing:border-box;border:1px solid #9C927C;border-radius:12px;padding:12px;font-size:17px;background:#fff;}
   .vmanual-box .vgo{margin-top:8px;background:#2F5D3A;color:#fff;border-radius:12px;text-align:center;font-weight:800;padding:12px;font-size:16.5px;}
   /* ⑤ 天気の信頼性 */
-  .wxloc{background:#EAF1F5;border:1px solid #CADDE8;border-radius:12px;padding:10px 12px;font-size:14px;color:#274b5c;margin-bottom:10px;line-height:1.55;}
+  .wxloc{background:#EAF1F5;border:1px solid #6099BA;border-radius:12px;padding:10px 12px;font-size:14px;color:#274b5c;margin-bottom:10px;line-height:1.55;}
   .wxloc b{color:#1d3947;}
   .wxloc .go{color:#2E6E8E;font-weight:800;}
   .wx .c .tp .mx{color:#B34A3E;}
@@ -1317,18 +1317,18 @@
   /* ⑥ 変更・削除 */
   .editrow{display:flex;gap:8px;margin-top:8px;}
   .editrow .eb{flex:1;text-align:center;border-radius:10px;padding:10px;font-weight:800;font-size:15px;}
-  .eb.mod{background:#EAF1F5;color:#2E6E8E;border:1px solid #CADDE8;}
-  .eb.del{background:#F6EAE7;color:#B34A3E;border:1px solid #EBCFC9;}
+  .eb.mod{background:#EAF1F5;color:#2E6E8E;border:1px solid #6099BA;}
+  .eb.del{background:#F6EAE7;color:#B34A3E;border:1px solid #CA7F6F;}
   .rowbtn{display:inline-block;border-radius:8px;padding:3px 9px;font-size:14px;font-weight:800;margin-left:6px;}
-  .rowbtn.mod{background:#EAF1F5;color:#2E6E8E;border:1px solid #CADDE8;}
-  .rowbtn.del{background:#F6EAE7;color:#B34A3E;border:1px solid #EBCFC9;}
+  .rowbtn.mod{background:#EAF1F5;color:#2E6E8E;border:1px solid #6099BA;}
+  .rowbtn.del{background:#F6EAE7;color:#B34A3E;border:1px solid #CA7F6F;}
   .krtbl td.krops{white-space:nowrap;}
   .kredit{border:2px solid #B8893B;border-radius:14px;padding:12px;margin:10px 0;background:#FDFBF4;display:none;}
   .kredit.on{display:block;}
   .kredit .ket{font-weight:800;color:#8a6a2a;font-size:15.5px;margin-bottom:8px;}
   .kredit .kef{display:flex;align-items:center;gap:8px;margin:6px 0;}
   .kredit .kef .kl{width:6.5em;font-size:14.5px;color:#6b6f66;font-weight:700;}
-  .kredit .kef input{flex:1;border:1px solid #E7E3D8;border-radius:10px;padding:10px;font-size:16.5px;min-width:0;}
+  .kredit .kef input{flex:1;border:1px solid #9C927C;border-radius:10px;padding:10px;font-size:16.5px;min-width:0;}
   /* ===== v22② カレンダー2.0 ===== */
   .day .cw{display:block;font-size:13px;line-height:1.15;font-weight:400;}
   .day .ct2{display:block;font-size:9.5px;line-height:1.2;font-weight:700;color:#4A463C;}
@@ -1338,35 +1338,35 @@
   .planform{border:2px solid var(--green);border-radius:14px;padding:12px;margin-top:10px;background:#fff;display:none;}
   .planform.on{display:block;}
   .planform .pft{font-weight:800;color:var(--green-deep);font-size:15.5px;margin-bottom:8px;}
-  .planform input{display:block;width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:10px;padding:11px;font-size:17px;margin-bottom:8px;}
+  .planform input{display:block;width:100%;box-sizing:border-box;border:1px solid #9C927C;border-radius:10px;padding:11px;font-size:17px;margin-bottom:8px;}
   .planform .pfrow{display:flex;gap:8px;}
   .planform .pfb{flex:1;text-align:center;border-radius:10px;padding:11px;font-weight:800;font-size:15.5px;}
   .pfb.ok{background:var(--green);color:#fff;}
   .pfb.no{background:#EEECE4;color:#6b6f66;}
-  .planform .pffld.fieldrow{border-color:#BCD3C0;background:#F4F9F5;color:var(--green);}
-  .planform .pffld{border:1px solid #E7E3D8;border-radius:10px;padding:11px;font-size:16px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;}
+  .planform .pffld.fieldrow{border-color:#6B9077;background:#F4F9F5;color:var(--green);}
+  .planform .pffld{border:1px solid #9C927C;border-radius:10px;padding:11px;font-size:16px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;}
   .planform .pffld .chv2{margin-left:auto;color:#c3bdae;}
   /* ===== v22④ 作業を記録2.0 ===== */
   .fld.datefld{position:relative;overflow:hidden;}
   .fld.datefld input[type=date]{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;}
   .recmemo-box{display:none;margin-bottom:10px;}
   .recmemo-box.on{display:block;}
-  .recmemo-box textarea{display:block;width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:12px;padding:12px;font-size:16.5px;min-height:74px;background:#fff;font-family:inherit;}
-  .usesheet-amt{display:none;border:1px solid #E7E3D8;border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff;}
+  .recmemo-box textarea{display:block;width:100%;box-sizing:border-box;border:1px solid #9C927C;border-radius:12px;padding:12px;font-size:16.5px;min-height:74px;background:#fff;font-family:inherit;}
+  .usesheet-amt{display:none;border:1px solid #9C927C;border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff;}
   .usesheet-amt.on{display:block;}
   .usesheet-amt .uat{font-weight:800;font-size:14.5px;color:#6b6f66;margin-bottom:6px;}
   .usesheet-amt .uarow{display:flex;gap:8px;}
   .usesheet-amt .ua{flex:1;min-width:0;}
   .usesheet-amt .ua .ual{font-size:13px;color:#4A463C;font-weight:700;margin-bottom:2px;}
-  .usesheet-amt .ua input{width:100%;box-sizing:border-box;border:1px solid #E7E3D8;border-radius:10px;padding:10px;font-size:16.5px;}
-  .fgroup{padding:9px 14px 4px;font-size:13.5px;font-weight:800;color:#8a6a2a;background:#FBF7EC;border-top:1px solid #E7E3D8;}
+  .usesheet-amt .ua input{width:100%;box-sizing:border-box;border:1px solid #9C927C;border-radius:10px;padding:10px;font-size:16.5px;}
+  .fgroup{padding:9px 14px 4px;font-size:13.5px;font-weight:800;color:#8a6a2a;background:#FBF7EC;border-top:1px solid #9C927C;}
   /* ===== 📝 記録の確認 v27（#p-hist 内だけに限定） ===== */
-  #p-hist .hist-lead{font-size:15px;line-height:1.7;color:#374151;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px 14px;margin:2px 0 12px;}
+  #p-hist .hist-lead{font-size:15px;line-height:1.7;color:#374151;background:#fff7ed;border:1px solid #BF874F;border-radius:12px;padding:12px 14px;margin:2px 0 12px;}
   #p-hist .hist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-  #p-hist .hist-chip{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #d1d5db;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  #p-hist .hist-chip{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #9C927C;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
   #p-hist .hist-chip.on{background:#c2410c;border-color:#c2410c;color:#fff;font-weight:700;}
-  #p-hist .hist-day{font-size:15px;font-weight:700;color:#c2410c;margin:16px 2px 8px;padding-bottom:4px;border-bottom:2px solid #eee;}
-  #p-hist .hist-row{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;margin-bottom:8px;}
+  #p-hist .hist-day{font-size:15px;font-weight:700;color:#c2410c;margin:16px 2px 8px;padding-bottom:4px;border-bottom:2px solid #9C927C;}
+  #p-hist .hist-row{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid #9C927C;border-radius:12px;padding:12px 14px;margin-bottom:8px;}
   #p-hist .hist-ic{font-size:24px;line-height:1.25;flex:0 0 auto;}
   #p-hist .hist-main{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;min-width:0;}
   #p-hist .hist-where{font-size:17px;font-weight:700;color:#111827;}
@@ -1389,9 +1389,9 @@
   #p-cost .cost-break .cb-nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #p-cost .cost-break .cb-y{flex:0 0 auto;font-weight:700;color:#b45309;white-space:nowrap;}
   #p-hist .hist-fieldbar{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 12px;}
-  #p-hist .hist-fld{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #d1d5db;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  #p-hist .hist-fld{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #9C927C;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
   #p-hist .hist-fld.on{background:#166534;border-color:#166534;color:#fff;font-weight:700;}
-  #p-hist .hist-fld.clr{color:#b91c1c;border-color:#f3c0c0;background:#fff;}
+  #p-hist .hist-fld.clr{color:#b91c1c;border-color:#CA7F6F;background:#fff;}
   /* ===== v61 記録の確認から「直す・消す」ができるようにする =====
      きっかけ：工程表が「消すときは 📝記録の確認 から」と案内するのに、
      この画面には 🗑 も ✏️ も無く、行を押しても何も起きなかった＝行き止まり。
@@ -1399,16 +1399,16 @@
        88枚ぶんの記録を指でなぞるとき、当たって消えるのを防ぐため（年配UX）。 */
   #p-hist .hist-tap{font-size:12.5px;font-weight:800;color:#9a958a;margin:-4px 2px 10px;}
   #p-hist .hist-row.opd{border-bottom-color:transparent;border-radius:12px 12px 0 0;margin-bottom:0;}
-  #p-hist .hist-ops{background:#F7F6F0;border:1px solid #e5e7eb;border-top:none;
+  #p-hist .hist-ops{background:#F7F6F0;border:1px solid #9C927C;border-top:none;
     border-radius:0 0 12px 12px;margin:0 0 8px;padding:11px 13px 12px;display:flex;gap:9px;}
   #p-hist .hist-ops .ob{flex:1;text-align:center;border-radius:12px;padding:13px 6px;font-size:16px;font-weight:900;
     cursor:pointer;-webkit-tap-highlight-color:transparent;}
-  #p-hist .hist-ops .ob.mod{background:#EAF1F5;color:#2E6E8E;border:2px solid #CADDE8;}
-  #p-hist .hist-ops .ob.del{background:#F6EAE7;color:#B34A3E;border:2px solid #EBCFC9;}
-  #p-hist .hist-ops .ob.cls{background:#fff;color:#6B6656;border:2px solid #e5e7eb;}
+  #p-hist .hist-ops .ob.mod{background:#EAF1F5;color:#2E6E8E;border:2px solid #6099BA;}
+  #p-hist .hist-ops .ob.del{background:#F6EAE7;color:#B34A3E;border:2px solid #CA7F6F;}
+  #p-hist .hist-ops .ob.cls{background:#fff;color:#6B6656;border:2px solid #9C927C;}
   /* ===== v61 工程表：数秒で消えるトーストをやめ、消えない案内カードにする ===== */
-  .kt-frow.opd{border-color:#E3D2A6;border-bottom-color:transparent;border-radius:13px 13px 0 0;margin-bottom:0;}
-  .kt-why{background:var(--gold-soft);border:1.5px solid #E3D2A6;border-top:none;
+  .kt-frow.opd{border-color:#B8893B;border-bottom-color:transparent;border-radius:13px 13px 0 0;margin-bottom:0;}
+  .kt-why{background:var(--gold-soft);border:1.5px solid #B8893B;border-top:none;
     border-radius:0 0 13px 13px;padding:12px 13px;margin:0 0 9px;
     font-size:14px;font-weight:800;color:#8A6A2E;line-height:1.7;}
   .kt-why b{color:#7A5A1E;font-size:15px;}
@@ -1428,6 +1428,25 @@
   .hscene .hs-chip{position:absolute;left:2px;top:2px;background:#FFFFFFE8;border:1px solid var(--green);
     border-radius:7px;padding:1.5px 5.5px;font-size:9px;font-weight:800;color:var(--green-deep);letter-spacing:.02em;line-height:1;
     box-shadow:0 1px 2px rgba(0,0,0,.07);}
+
+  /* ★★v101 枠の色を、アプリ全体で濃くした ★★
+     ── なぜ（親方のご指摘・実測）
+       カードの中は白 #FFF、外は紙 #FBFAF6 で、その差は **比1.04** しかない。
+       つまり箱の輪郭は**枠だけ**が作っている。その枠が軒並み **比1.24〜1.63** で、
+       事実上見えていなかった（§6「読みにくいの主犯は薄さ」）。
+       v99は「行と行を分ける線」、v100は「🌾田んぼ一覧の箱」だけだったので、
+       ★v101で**全画面・全項目**へ広げた（親方のご判断：案B＝比3.08／色つきの枠も一緒に）。
+     ── どうしたか（色は変えず、濃さだけ。似た色は1つに集約した＝§6「同じ意味は同じ色」）
+       中立 #9C927C(3.08) ／ 緑 #6B9077(3.57) ／ 金 #B8893B(3.14) ／ 青 #6099BA(3.11)
+       赤 #CA7F6F(3.10) ／ 橙 #BF874F(3.09) ／ 青緑 #569E9E(3.10) ／ 紫 #9C8BB4(3.10)
+       中立・緑・金は**すでにこのアプリで使っている色**をそのまま使い回した（新しい色を作らない）。
+     ── ★わざと触っていないもの
+       ・**点線・破線**（薄さ自体が意味・§6 v92）
+       ・**札(バッジ)のふち**：.hist-wrote／.kt-setup-tag／.drugcard .tag／.todo .th .src／
+         .kusa-tile .p.ok／.p.no（中の字が意味を運べているので、ふちは飾り）
+     🚩 `.wx .sep` は --line を**背景**に使う唯一の場所なので、
+        先に #E7E3D8 で固定した（値で grep して数え、確かめた・§10-15）。 */
+  
 </style>
 </head>
 <body>
@@ -1461,7 +1480,8 @@
     <div class="page" id="p-fields">
       <div class="sc">
         <!-- v36:ここにあったKSAS航空写真へのボタンは苗箱ボタンに交代した。
-             KSAS航空写真の機能自体は消していない（メニュー→圃場マップから今までどおり開ける） -->
+             ★v97 KSAS航空写真は**ホームの「KSAS連携」ボタン**から今までどおり開ける。
+             （v96で圃場マップ画面とメニュー画面を消したので、そこから入る道はもう無い） -->
         <div class="nae-entry" onclick="naeOpenFromFields()">
           <span class="ic">🌱</span>
           <span class="tx"><span class="l1">苗箱は何枚いる？</span><span class="l2"><i class="fg">☝️</i>ここを押すと枚数を変えられます</span><span class="l3">広さから自動計算・手直しもできます</span></span>
@@ -1910,7 +1930,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v96</span></div>
+          <div class="setrow">バージョン<span class="sv">v101</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2004,9 +2024,8 @@
       </div>
     </div>
 
-    <!-- ===== ⑭ 圃場マップ(v2.4新規・地図は自前で持たない) ===== -->
-
-    <!-- ===== ⑮ メニュー(v2.4新規・退避機能の置き場) ===== -->
+    <!-- ★v96 ⑭圃場マップ・⑮メニューはここにあったが、どちらもどこからも開けず、
+         中身は見本の固定文字と他画面の重複だったので削除した（HANDOVER v96「4.」） -->
 
     <!-- ===== ★v67 草刈り（工程表とは別画面。順送りには入れない） ===== -->
     <div class="page" id="p-kusa">
@@ -2055,9 +2074,12 @@
 
   <div class="tabbar">
     <button class="tab on" id="t-home" onclick="goFromTab('home')"><span class="ic">🏠</span>ホーム</button>
-    <button class="tab" id="tabm0" onclick="goTab(0)"><span class="ic">🎤</span>記録</button>
-    <button class="tab" id="tabm1" onclick="goTab(1)"><span class="ic">💬</span>相談</button>
-    <button class="tab" id="tabm2" onclick="goTab(2)"><span class="ic">🗺️</span>マップ</button>
+    <!-- ★v97 ここの絵と字は、起動時に midTabs から必ず描き直される。
+         書いてある字が実物と違うと「マップのタブがある」と誤解するので、
+         初期値 TAB_DEFAULT=['ai','cal','pest'] と同じにそろえてある（§10-14 固定文字の嘘） -->
+    <button class="tab" id="tabm0" onclick="goTab(0)"><span class="ic">💬</span>相談</button>
+    <button class="tab" id="tabm1" onclick="goTab(1)"><span class="ic">📅</span>予定</button>
+    <button class="tab" id="tabm2" onclick="goTab(2)"><span class="ic">🧪</span>農薬</button>
     <button class="tab" id="t-menu" onclick="goFromTab('set')"><span class="ic">⚙️</span>設定</button>
   </div>
   <div class="toast" id="toast"></div>
@@ -5979,7 +6001,7 @@
       nae='<span class="fl-rnae'+(ned?' ed':'')+'">🌱'+naeMai(f)+'枚'+(ned?'✏️':'')+'</span>';
     }
     return '<div class="fld-wrap" id="fw'+i+'">'
-      +'<div class="rowcard" onclick="fieldToggle('+i+')" style="border:0;border-radius:0;border-bottom:1px solid #F0EDE0;margin:0;box-shadow:none;">'
+      +'<div class="rowcard" onclick="fieldToggle('+i+')" style="border:0;border-radius:0;border-bottom:1px solid #9C927C;margin:0;box-shadow:none;">'
       +'<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;"><span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
       +'<div style="min-width:0;"><div class="nm">'+f.n+(f.care?' <span style="font-size:10px;background:var(--red-soft);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:800;">注意</span>':'')+(f.memo?' <span style="font-size:10px;background:#F5EEDC;color:#B8912E;border-radius:5px;padding:1px 5px;font-weight:800;">メモ</span>':'')+'</div>'
       +'<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
@@ -7186,7 +7208,7 @@
     ai:   {cls:'t-green2',ic:'💬', tx:'AI相談'},
     ksas: {cls:'t-ksas',  ic:'KSAS', tx:'KSAS連携'},
     pest: {cls:'t-gold',  ic:'🧪', tx:'農薬を計算'},
-    fields:{cls:'t-purple',ic:'🌾', tx:'田んぼ・マップ'},
+    fields:{cls:'t-purple',ic:'🌾', tx:'田んぼ・苗箱'},   /* ★v97 マップの無い画面なので、名前を中身に合わせた */
     team: {cls:'t-orange',ic:'👥', tx:'みんなと共有'},
     cal:  {cls:'t-blue',  ic:'📅', tx:'カレンダー'},
     cost: {cls:'t-red',   ic:'📊', tx:'生産原価'},
@@ -7202,7 +7224,7 @@
   var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','koutei','kusa'];
   /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
   /* ★v36.4：ご家族に配布したときの初期の並び。実機の画面どおりにした。
-     1ページ目=作業を記録／田んぼ・マップ／AI病害虫診断／KSAS連携／米づくり工程表／肥料の栄養
+     1ページ目=作業を記録／田んぼ・苗箱／AI病害虫診断／KSAS連携／米づくり工程表／肥料の栄養
      2ページ目=話して記録／去年の今ごろ／記録の確認／機械の維持費／生産原価／ドローン散布
      ※タブに使う ai・cal・pest はボタンからは自動で除かれる（重複させない仕様）。 */
   var HOME_ORDER_DEFAULT=['rec','fields','diag','ksas','koutei','kusa',
@@ -8288,7 +8310,8 @@
     var today=ymd(new Date());
     var list=plans.filter(function(p){return p.date===today;});
     if(!list.length){
-      box.innerHTML='<div style="padding:10px 2px;font-size:14.5px;font-weight:800;color:#4A463C;"><span class="nb">今日の予定は</span><span class="nb">ありません</span><span class="nb">(カレンダーから</span><span class="nb">確認できます)</span></div>';
+      box.innerHTML='<div style="padding:10px 2px;font-size:14.5px;font-weight:800;color:#4A463C;"><span class="nb">今日の予定は</span><span class="nb">ありません</span><br>'  /* ★v98 親方のご指示：ここで必ず改行する */
+      +'<span class="nb">(カレンダーから</span><span class="nb">確認できます)</span></div>';
       return;
     }
     box.innerHTML=list.map(function(p){
@@ -9146,7 +9169,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v96';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v101';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
