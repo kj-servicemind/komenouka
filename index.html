@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v94">
+<meta name="app-ver" content="v96">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1910,7 +1910,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v94</span></div>
+          <div class="setrow">バージョン<span class="sv">v96</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2005,34 +2005,8 @@
     </div>
 
     <!-- ===== ⑭ 圃場マップ(v2.4新規・地図は自前で持たない) ===== -->
-    <div class="page" id="p-map">
-      <div class="sc">
-        <div class="sharenote">🗺️ 航空写真の地図は<b>無料のKSAS</b><span class="nb">を開いて見ます</span><span class="nb">(このアプリは</span><span class="nb">地図を持たない</span><span class="nb">=課金ゼロ)。</span></div>
-        <div class="ksasbtn" onclick="openKsas('航空写真マップを表示します(無料)')">🗺️ 航空写真マップを開く(KSASを開く)</div>
-        <div class="feedtitle">🌾 いまの田んぼの様子</div>
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">西 3</div><div class="ar">39.81a・にじのきらめき</div></div><span class="badge b-here">📍今ここ</span></div>
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">池松 6</div><div class="ar">17.85a・つやおとめ</div></div><span class="badge b-done">✅済み</span></div>
-        <div class="rowcard" onclick="go('rec')"><div><div class="nm">松延121</div><div class="ar">12.68a・ひのひかり</div></div><span class="badge b-doing">💧作業中</span></div>
-        <div class="wide" onclick="go('fields')">🌾 田んぼ一覧をすべて見る</div>
-        <div class="spacer"></div>
-      </div>
-    </div>
 
     <!-- ===== ⑮ メニュー(v2.4新規・退避機能の置き場) ===== -->
-    <div class="page" id="p-menu">
-      <div class="sc">
-        <div class="rowcard" onclick="go('hist')"><div><div class="nm">📝 記録の確認</div><div class="ar">ひとこと・今までの記録・去年の同じ月</div></div><span class="badge" style="background:var(--gold);">開く ›</span></div>
-        <div class="rowcard" onclick="go('koutei')"><div><div class="nm">📋 米づくり工程表</div><div class="ar"><span class="nb">種まき〜稲刈りの進み＋</span><span class="nb">出穂・収穫の予想</span></div></div><span class="badge" style="background:#33586B;">開く ›</span></div>
-        <div class="rowcard" onclick="go('kusa')"><div><div class="nm">🌿 草刈り</div><div class="ar">田んぼごとに、刈ったらタップ</div></div><span class="badge" style="background:var(--green);">開く ›</span></div>
-        <div class="rowcard" onclick="go('pest')"><div><div class="nm">🧪 農薬を計算</div><div class="ar">希釈・薬量を自動計算(農水省DB)</div></div><span class="badge" style="background:var(--gold);">開く ›</span></div>
-        <div class="rowcard" onclick="go('fields')"><div><div class="nm">🌾 田んぼ一覧</div><div class="ar">色バッジで進み具合がわかる</div></div><span class="badge" style="background:var(--purple);">開く ›</span></div>
-        <div class="rowcard" onclick="go('team')"><div><div class="nm">👥 みんなと共有</div><div class="ar">5〜6人で記録と写真を共有</div></div><span class="badge" style="background:var(--orange);">開く ›</span></div>
-        <div class="rowcard" onclick="go('cal')"><div><div class="nm">📅 カレンダー</div><div class="ar">予定と実績を確認</div></div><span class="badge" style="background:var(--blue);">開く ›</span></div>
-        <div class="rowcard" onclick="go('cost')"><div><div class="nm">📊 生産原価</div><div class="ar">今年のコストと内訳</div></div><span class="badge" style="background:var(--red);">開く ›</span></div>
-        <div class="rowcard" onclick="go('set')"><div><div class="nm">⚙️ 設定</div><div class="ar">文字の大きさ・ホームのボタン入替</div></div><span class="badge" style="background:#6B6656;">開く ›</span></div>
-        <div class="spacer"></div>
-      </div>
-    </div>
 
     <!-- ===== ★v67 草刈り（工程表とは別画面。順送りには入れない） ===== -->
     <div class="page" id="p-kusa">
@@ -2103,7 +2077,7 @@
            || window.matchMedia('(display-mode: standalone)').matches;
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
-  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',map:'p-map',menu:'p-menu',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',kyoka:'p-kyoka',hist:'p-hist',kusa:'p-kusa'};
+  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',kyoka:'p-kyoka',hist:'p-hist',kusa:'p-kusa'};
   var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
@@ -2149,7 +2123,6 @@
     set:   navHdr('home','ホーム','設定'),
     drone: navHdr('home','ホーム','ドローン散布'),
     ai:    navHdr('home','戻る','AIに相談する'),
-    map:   navHdr('home','ホーム','圃場マップ'),
     kroku: navHdr('voice','話して記録','栽培管理記録簿'),
     hist:  navHdr('home','ホーム','記録の確認'),
     kyoka: navHdr('home','戻る','📜 去年の今ごろ'),
@@ -2161,7 +2134,7 @@
   function renderHeader(n){ document.getElementById('hdr').innerHTML = HEADERS[n]||''; }
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
-    cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',map:'home',koutei:'home',kroku:'voice',
+    cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',koutei:'home',kroku:'voice',
     hiryo:'home',kikai:'home',hist:'home',kyoka:'home',kusa:'home'};
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
@@ -7211,7 +7184,6 @@
     drone:{cls:'t-teal',  ic:'', tx:'ドローン散布', img:true},
     diag: {cls:'t-red',   ic:'🔬', tx:'AI病害虫診断'},
     ai:   {cls:'t-green2',ic:'💬', tx:'AI相談'},
-    map:  {cls:'t-purple',ic:'🗺️', tx:'圃場マップ'},
     ksas: {cls:'t-ksas',  ic:'KSAS', tx:'KSAS連携'},
     pest: {cls:'t-gold',  ic:'🧪', tx:'農薬を計算'},
     fields:{cls:'t-purple',ic:'🌾', tx:'田んぼ・マップ'},
@@ -7390,7 +7362,7 @@
 
   /* ===== 下部タブバー(真ん中3つを入替・ホーム/メニューは固定) ===== */
   /* v25.1:ksas等が抜けていてタブが「undefined」になっていたので全部そろえる */
-  var TAB_SHORT={rec:'作業',voice:'記録',drone:'ドローン',diag:'診断',ai:'相談',map:'マップ',
+  var TAB_SHORT={rec:'作業',voice:'記録',drone:'ドローン',diag:'診断',ai:'相談',
                  pest:'農薬',fields:'田んぼ',team:'共有',cal:'予定',cost:'原価',set:'設定',
                  ksas:'KSAS',koutei:'工程表',hiryo:'肥料',kikai:'機械',kyoka:'去年',kroku:'記録簿',hist:'履歴'};
   var TAB_ALIAS={rec:'voice', voice:'rec'}; /* 記録系はどちらでも同じタブを点灯 */
@@ -7429,7 +7401,6 @@
     document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
     var el=null;
     if(n==='home'){ el=document.getElementById('t-home'); }
-    else if(n==='menu'){ el=document.getElementById('t-menu'); }
     else{
       for(var i=0;i<3;i++){ if(midTabs[i]===n){ el=document.getElementById('tabm'+i); break; } }
       if(!el){ var al=TAB_ALIAS[n];
@@ -7723,15 +7694,34 @@
        → 「届いたか」ではなく「掃除まで済ませた結果が本当に変わったか」で返す。
        これは案①で上限を広げても、あふれれば同じことが起きるための土台の直し。 */
     var before=JSON.stringify(o);
-    for(var key in S){ if(!S.hasOwnProperty(key))continue; var sm=S[key]; if(!sm||typeof sm!=='object')continue;
-      var m=o[key]||(o[key]={});
-      for(var s in sm){ if(!sm.hasOwnProperty(s))continue; if(!(s in m)||sm[s]>m[s]){ m[s]=sm[s]; got=true; } }
+    /* ★★v95 削除印も、サーバーとまったく同じ並びに直してから足す ★★
+       上の配列と同じ不具合がここにもあった（同じ型は全数で直す・CLAUDE.md §0.5④）。
+       v94まで：手元の札を先に並べ、あとからサーバーの札を足していた。
+                サーバー側(sync-put.js)は O→N の順なので、中身が同じでも文字が一致せず、
+                削除印だけを **30秒ごとに永久に送り直して**いた。
+       v95から：サーバーの札を先に並べ、手元にしか無い札をあとに足す。
+       ★並べ替えただけの時は「変わった」と言わない（false を返す）。
+         言うと _syncApply() → location.reload() が走り、
+         **30秒ごとにホームへ戻り続ける**（v65で実際に起きた型・CLAUDE.md §10-3）。 */
+    var n2={}, key, s, sm, t;
+    for(key in S){ if(!S.hasOwnProperty(key))continue; sm=S[key];
+      if(!sm||typeof sm!=='object'||(sm instanceof Array))continue;
+      t=n2[key]||(n2[key]={});
+      for(s in sm){ if(!sm.hasOwnProperty(s))continue;
+        t[s]=sm[s];
+        if(!o[key]||!(s in o[key])||sm[s]>o[key][s])got=true;   /* 目新しい札が来たか */
+      }
     }
-    if(!got)return false;                 /* 目新しい札は1つも無かった */
-    tombPrune(o);
-    if(JSON.stringify(o)===before)return false;  /* 掃除したら元どおり＝実質なにも変わっていない */
-    _tombSave(o);
-    return true;
+    for(key in o){ if(!o.hasOwnProperty(key))continue; sm=o[key];
+      if(!sm||typeof sm!=='object'||(sm instanceof Array)){ if(!(key in n2))n2[key]=sm; continue; }
+      t=n2[key]||(n2[key]={});
+      for(s in sm){ if(!sm.hasOwnProperty(s))continue;
+        if(!(s in t)||sm[s]>t[s])t[s]=sm[s]; }
+    }
+    tombPrune(n2);
+    if(JSON.stringify(n2)===before)return false;  /* 中身も並びも同じ＝なにも変わっていない */
+    _tombSave(n2);
+    return got;                                   /* ★並べ替えただけなら false（画面は動かさない） */
   }
   /* ローカルを壊さずサーバーの分を足す。返り値 {str, changed}。 */
   function _mergeVal(localStr, serverStr, key){
@@ -7744,11 +7734,31 @@
     if(L instanceof Array && S instanceof Array){
       var TOMB=(key?tombFor(key):{});               /* v30 削除印 */
       var seen={}, out=[], a;
-      /* まず id を持つ記録は「更新時刻 _m が新しい方」を勝たせる（編集の共有） */
-      var winner={}, srcs=[L,S], si, it, s;
+      /* ★★v95 並べる順番を、サーバー(sync-put.js)とまったく同じにする ★★
+         ── v94まで何が起きていたか（本物のサーバーを読み込んで2台で流して確定）
+           合わせた中身は同じなのに、**並べ方だけ**が食い違っていた。
+             端末  ：手元(L) を先に並べ、あとからサーバー(S) の分を足す
+             サーバー：サーバーの今の中身(O) を先に並べ、あとから届いた分(N) を足す
+           ところが v57・v74 で決めた規則は
+           「**サーバーと中身が同じ時だけ『送った』と控える**（文字で見比べる）」。
+           並びが違うと文字は永久に一致しないので、その端末は
+           **30秒ごとに、同じ中身を送り直し続ける**。
+           家族の記録は届くので画面では気づけない。減るのは**サーバーの書き込み枠**で、
+           Cloudflare の無料枠は **1日1,000回**。1台が6つの箱でこれを起こすと
+           1時間で700回以上。使い切ったその日は、**家族の書き込みが保存されなくなる**
+           （CLAUDE.md 3節「完全無料」に直撃する）。
+         ── 直しかた（読む側の回避ではなく、並べる規則そのものを1つにする）
+           **サーバーが先・手元があと**にそろえる（サーバーの [O,N] と同じ向き）。
+           引き分け（_m が同じ）もサーバー側が勝つので、どの端末でも同じ答えになる
+           （CLAUDE.md §10-12「勝ち負けは、どの端末でも同じ答えになる規則で決める」）。
+         ★中身は1件も変わらない。並ぶ順番だけが変わる。
+           一覧はどの画面も日付で並べ直しているので、見た目は変わらない。
+           工程表の「なぜ›」だけは配列の先頭を出すので、**家族で同じ記録が出るようになる**
+           （AUDIT_v79【D】も、これで消える）。 */
+      var winner={}, srcs=[S,L], si, it, s;
       for(si=0;si<2;si++){ for(a=0;a<srcs[si].length;a++){ it=srcs[si][a]; s=_sig(it);
         if(s.indexOf('id:')!==0)continue; var p=winner[s]; if(!p||((it&&it._m||0)>(p._m||0)))winner[s]=it; } }
-      /* L→S の順に出す。削除印つきは外す。重複は先勝ち（ローカル優先） */
+      /* S→L の順に出す。削除印つきは外す。重複は先勝ち（＝サーバー優先・サーバーと同じ向き） */
       for(si=0;si<2;si++){ for(a=0;a<srcs[si].length;a++){ it=srcs[si][a]; s=_sig(it);
         if(TOMB[s])continue; if(seen[s])continue; seen[s]=1;
         out.push(s.indexOf('id:')===0?winner[s]:it); } }
@@ -7767,7 +7777,23 @@
            稲作先生は出穂・刈取の予想日の土台なので、端末ごとに違う予想が出ていた。 */
       var lm=(L&&typeof L._m==='number')?L._m:0, sm=(S&&typeof S._m==='number')?S._m:0;
       if(lm||sm){
-        merged=(sm>lm)?S:L;                                  /* 設定の箱：新しいほうが丸ごと勝つ */
+        /* ★★v95 引き分け（同じ時刻・両方とも時刻なし）は「サーバー側」が勝つ ★★
+           ── v94まで何が起きていたか（2台＋本物のサーバーで流して確定）
+             端末は「引き分けなら手元（自分の画面を守る）」、
+             サーバーは「引き分けなら届いたほう」を採っていた。
+             どちらの規則も **『自分が勝つ』** という意味なので、
+             2台が違う中身を同じ時刻で持つと、**永久に決着がつかない**。
+               A：自分の1000を守る → 送る → サーバー1000
+               B：自分の2000を守る → 送る → サーバー2000
+             …が30秒ごとに続き、**家族で違う値が出たまま／サーバーの値も入れ替わり続ける**。
+             書き込みも止まらないので、無料枠(1日1,000回)を焼く。
+             起きるのは「時刻を持たない古いデータ(v65以前)」と「同じミリ秒に書いた時」。
+           ── 直しかた（CLAUDE.md §10-12「どの端末でも同じ答えになる規則で決める」）
+             **引き分けはサーバー側（いま入っているほう）が勝つ**。
+             これは並び型（配列）の勝ち負けと**まったく同じ向き**なので、
+             規則がアプリ全体で1つになる。全員がサーバーの値に落ち着いて止まる。
+             新しく書き直せば _m が今の時刻になり、ちゃんと勝てる（止まったままにはならない）。 */
+        merged=(sm>=lm)?S:L;                                 /* 設定の箱：新しいほうが丸ごと勝つ（引き分けはサーバー） */
       }else{
         /* ★★v66 ここが TODO10 の根本直し ★★
            v65まではここが「同じ鍵はローカル優先」だった。時刻を持っていないので
@@ -7820,15 +7846,20 @@
       var out={}, mm={}, p;
       for(p in s){ if(s.hasOwnProperty(p)&&p!=='_m')out[p]=s[p]; }
       for(p in l){ if(!l.hasOwnProperty(p)||p==='_m')continue;
-        out[p]=(((smo[p]||0)>(lmo[p]||0))&&(p in s))?s[p]:l[p]; }
-      for(p in lmo){ if(lmo.hasOwnProperty(p))mm[p]=lmo[p]; }
-      for(p in smo){ if(smo.hasOwnProperty(p)&&(smo[p]||0)>(mm[p]||0))mm[p]=smo[p]; }
+        /* ★v95 引き分けはサーバー側（上の「設定の箱」と同じ理由） */
+        out[p]=((p in s)&&((smo[p]||0)>=(lmo[p]||0)))?s[p]:l[p]; }
+      /* ★v95 ここも並びをサーバーと同じ向きに（サーバー側 mergeEntry は om→nm の順） */
+      for(p in smo){ if(smo.hasOwnProperty(p))mm[p]=smo[p]; }
+      for(p in lmo){ if(lmo.hasOwnProperty(p)&&(lmo[p]||0)>(mm[p]||0))mm[p]=lmo[p]; }
       out._m=mm;
       return out;
     }
     /* ①丸ごと型（反省メモ・生産原価）／③古い形どうし
-       新しいほうが丸ごと勝つ。同点（両方とも時刻なし＝0 を含む）は手元を残す＝v65までと同じ */
-    return (_entryTime(s)>_entryTime(l))?s:l;
+       新しいほうが丸ごと勝つ。
+       ★v95 同点（両方とも時刻なし＝0 を含む）は**サーバー側**を採る。
+         v94までは手元を残していたが、それだと2台とも「自分が勝つ」ので永久に決着しない
+         （上の「設定の箱」の注記に、起きていたことを詳しく書いてある）。 */
+    return (_entryTime(l)>_entryTime(s))?l:s;
   }
   function _syncBadge(state){
     var el=document.getElementById('syncState'); if(!el)return;
@@ -8097,6 +8128,23 @@
           var _curS=(_cur==null?'null':_cur);
           if(_curS===String(data[k])) _syncHash[k]=_hash(_curS);
           else { try{ delete _syncHash[k]; }catch(e){ _syncHash[k]=null; } }
+        }
+        /* ★★v95 サーバーが返してこなかった鍵は「サーバーに無い」★★
+           ── 何が起きていたか（2台＋本物のサーバーで確かめた）
+             すぐ上の控えは、**サーバーが返してきた鍵だけ**を見比べていた。
+             返ってこない鍵（＝サーバーにその箱が無い）は素通りするので、
+             「送信ずみ」の控えが**古いまま残る**。すると syncPushAll は
+             「送る必要なし」と判断し、**その箱は二度と送られない**。
+             サーバーの箱だけが空になった時（書き込みの失敗・置き場の入れ替えなど）、
+             端末には記録が残っているのに、**家族には永久に届かない**。
+           ── 直しかた（v57・v74で決めた規則を、全数に当てはめるだけ・§0.5④）
+             **控えてよいのは「サーバーに在る」と確かめられた時だけ。**
+             返ってこなかった鍵は、控えを消して必ず送り直す。 */
+        for(var _q3=0;_q3<SYNC_KEYS.length;_q3++){ var _k3=SYNC_KEYS[_q3];
+          if(data[_k3]!=null)continue;                 /* サーバーに在る＝上の判定ずみ */
+          var _lv3=null; try{ _lv3=localStorage.getItem(_k3); }catch(e){ _lv3=null; }
+          if(_lv3==null)continue;                      /* 手元にも無い＝送るものが無い */
+          try{ delete _syncHash[_k3]; }catch(e){ _syncHash[_k3]=null; }
         }
         /* ★★v74【B案】合流が**終わったあと**に、同じ中身の重複を1件へまとめる ★★
            ★必ず合流の後。前に置くと v73 の tombFixStale とまったく同じ事故になる
@@ -9098,7 +9146,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v94';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v96';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
