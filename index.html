@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v113">
+<meta name="app-ver" content="v114">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2045,7 +2045,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v113</span></div>
+          <div class="setrow">バージョン<span class="sv">v114</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -8606,11 +8606,58 @@
         +'<span class="cb"></span><span class="tt">'+planTitle(p)+'</span><span class="fldnm">'+(p.field||'')+'</span></div>';
     }).join('');
   }
+  /* ★★v114 「○ 実績にする」を、作業台帳につなぐ ★★
+     ── 何が起きていたか（親方のご指摘・ブラウザで再現して確定）──
+       このアプリには帳面が2冊ある。
+         ①予定表(plans)   … カレンダー・ホームの「今日のやること」
+         ②作業台帳(ktLog) … 工程表・記録簿・KSAS が読む、本物の記録
+       v113まで todoTap は **①に✅を付けるだけ** で、②には1行も書いていなかった。
+       そのため「カレンダーで代かきを実績にしたのに、工程表はずっと"まだ"」になる。
+       ホームは✅・工程表はまだ、という**画面どうしの食い違い**が家族に見えていた。
+     ── 直しかた（読む側の回避ではなく、書く側を1本にする・§0.5②）──
+       記録を作る入口は wlAdd 1本にそろえてある（背骨）。ここを通す。
+       出どころは 'cal'＝「📅カレンダーから」。**受け皿は KT_SRC に最初から在った**ので新設しない。
+       形は 📋工程表の ktToggleField（wlAdd(st.k, fd.n, st.nm,'board')）の丸写し（§10-15）。
+     ★工程を勘で埋めない（§3.5・§10-13）
+       予定の名前が候補10種(REC_WORKS)と**同じ言葉のときだけ**工程が決まる。
+       手で打った「水見」などは **工程を空にする**。記録は残り、記録簿・KSASには出て、
+       工程表の✅だけが立たない。黙ってやらない工程に✅を立てるほうが、よほど危ない。
+     ★「予定に戻す」で消すのは、**この予定が作った記録だけ**（p.rec に id を控える）。
+       控えが無い予定（v113以前に実績にしたもの・同じ記録が既にあって作られなかったもの）は
+       **1件も消さない**。台帳の並び順から推し量ると、関係のない記録を消す（§10-12） */
+  function planStepOf(title){
+    var t=(title==null?'':String(title)).replace(/^\s+|\s+$/g,'');
+    if(!t)return '';
+    for(var i=0;i<REC_WORKS.length;i++){ if(REC_WORKS[i].n===t) return REC_WORKS[i].step; }
+    return '';   /* ★分からない＝空。実在の工程に当てはめない */
+  }
   function todoTap(id){
     var p=planById(id); if(!p)return;
-    p.done=!p.done; p._m=Date.now(); savePlans();   /* v30 済み⇔戻すも家族に反映 */
-    renderTodo(); renderCal(); renderDayList(); renderAiTip(); /* 提案も進み具合に追随 */
-    toast(p.done?'✅ 済みにしました':'予定に戻しました');
+    if(!p.done){                                   /* 予定 → 実績 */
+      var stp=planStepOf(p.title);
+      var d=(''+(p.date||'')).replace(/-/g,'/');   /* 予定は 2026-08-03、台帳は 2026/08/03（§5 v47） */
+      var rec=wlAdd(stp, p.field||'', planTitle(p), 'cal', {d:d, work:planTitle(p), who:p.who||''});
+      p.rec=(rec&&rec.id)?rec.id:'';               /* ★作ったものを受け取って控える（§10-12） */
+      p.done=true; p._m=Date.now(); savePlans();
+      renderTodo(); renderCal(); renderDayList(); renderAiTip();
+      if(rec){
+        toast(stp ? ('✅ 記録しました（工程表にも入ります）')
+                  : ('✅ 記録しました（工程表の工程は決めていません）'));
+      }
+      return;                                      /* ★作れなかった時は wlAdd が理由を出している */
+    }
+    /* 実績 → 予定に戻す。この予定が作った記録だけを消す */
+    var killed=0;
+    if(p.rec){
+      for(var i=ktLog.length-1;i>=0;i--){
+        if(ktLog[i] && ktLog[i].id===p.rec){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); killed++; break; }
+      }
+      if(killed) ktSave();
+    }
+    p.rec=''; p.done=false; p._m=Date.now(); savePlans();
+    renderTodo(); renderCal(); renderDayList(); renderAiTip();
+    toast(killed ? '予定に戻しました（記録も消しました）'
+                 : '予定に戻しました（この予定が作った記録はありません）');
   }
 
   /* ===== v2.5 カレンダー(動的・予定データと双方向連動) ===== */
@@ -9512,7 +9559,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v113';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v114';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
