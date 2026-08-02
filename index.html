@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v101">
+<meta name="app-ver" content="v103">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1161,12 +1161,8 @@
   .kyo-star.on .k{color:#E0A21C;text-shadow:0 1px 0 #B8893B;}
   .kyo-star.on .t{color:#8A6712;}
   /* 記録の確認の行に付ける印（同じ形） */
-  #p-hist .hist-star{display:flex;flex-direction:column;align-items:center;gap:1px;
-    flex:0 0 auto;width:56px;}
-  #p-hist .hist-star .k{font-size:29px;line-height:1;color:#6E6A5C;}
-  #p-hist .hist-star .t{font-size:11.5px;font-weight:800;color:#A19C8B;}
-  #p-hist .hist-star.on .k{color:#E0A21C;text-shadow:0 1px 0 #B8893B;}
-  #p-hist .hist-star.on .t{color:#8A6712;}
+  /* ★v103 行の中の★（幅56px）は廃止。押したときの操作の中へ移した。
+     ただし★を付けた記録は、下の .hist-row.star（金の下地）で一目で分かる */
   #p-hist .hist-row.star{background:#F5EEDF;border:2px solid #B8893B;}
   /* 行の中身を上下まん中にそろえる（印が付いたので） */
   #p-hist .hist-row{align-items:center;}
@@ -1365,13 +1361,20 @@
   #p-hist .hist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
   #p-hist .hist-chip{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #9C927C;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
   #p-hist .hist-chip.on{background:#c2410c;border-color:#c2410c;color:#fff;font-weight:700;}
-  #p-hist .hist-day{font-size:15px;font-weight:700;color:#c2410c;margin:16px 2px 8px;padding-bottom:4px;border-bottom:2px solid #9C927C;}
+  /* ★v103 日付＝深緑の帯（白文字）。1日に1枚しか出ないので画面は重くならない。
+     決まり：「いつ・何をしたか」を言う所だけ深緑／どこの田んぼか・何を使ったかは墨と灰 */
+  #p-hist .hist-day{font-size:15px;font-weight:800;color:#fff;background:var(--green);
+    border-radius:9px;margin:16px 2px 8px;padding:7px 12px;letter-spacing:.03em;}
   #p-hist .hist-row{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid #9C927C;border-radius:12px;padding:12px 14px;margin-bottom:8px;}
   #p-hist .hist-ic{font-size:24px;line-height:1.25;flex:0 0 auto;}
   #p-hist .hist-main{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;min-width:0;}
-  #p-hist .hist-where{font-size:17px;font-weight:700;color:#111827;}
-  #p-hist .hist-title{font-size:16px;color:#374151;}
-  #p-hist .hist-sub{font-size:14px;color:#6b7280;}
+  /* ★v103 案A：いちばん大きい字は「何をしたか」(hist-title)。
+     どこの田んぼか・薬や肥料の名前(hist-where)は、その下の1行にまとめる。
+     hist-sub は使わなくなったので廃止（描く側 histRender からも消した） */
+  #p-hist .hist-title{font-size:17px;font-weight:800;color:var(--green);line-height:1.35;}
+  #p-hist .hist-where{font-size:14px;font-weight:600;color:#5A5F58;line-height:1.45;}
+  /* 📣ひとことは「作業」ではないので深緑にしない（決まりの当てはめ） */
+  #p-hist .hist-row.hito .hist-title{color:#16211B;font-weight:700;}
   /* ★v63 「いつ書いたか」の札。深緑は"押させるボタン"の色なので使わない。
      ★（教科書に残す）と同じ金色系の、弱い知らせの見せ方にそろえる */
   #p-hist .hist-wrote{font-size:13px;font-weight:700;color:#8A6712;background:#F5EEDF;
@@ -1398,12 +1401,20 @@
      ★いつも🗑を出すのではなく「押してから開く」形にする。
        88枚ぶんの記録を指でなぞるとき、当たって消えるのを防ぐため（年配UX）。 */
   #p-hist .hist-tap{font-size:12.5px;font-weight:800;color:#9a958a;margin:-4px 2px 10px;}
-  #p-hist .hist-row.opd{border-bottom-color:transparent;border-radius:12px 12px 0 0;margin-bottom:0;}
-  #p-hist .hist-ops{background:#F7F6F0;border:1px solid #9C927C;border-top:none;
-    border-radius:0 0 12px 12px;margin:0 0 8px;padding:11px 13px 12px;display:flex;gap:9px;}
+  /* ★v103 開いた行は深緑の枠。押させたい「✏️直す」も深緑にそろえる */
+  #p-hist .hist-row.opd{background:var(--green-soft);border:2px solid var(--green);
+    border-bottom-color:transparent;border-radius:12px 12px 0 0;margin-bottom:0;}
+  #p-hist .hist-ops{background:#F7F6F0;border:2px solid var(--green);border-top:none;
+    border-radius:0 0 12px 12px;margin:0 0 8px;padding:11px 13px 12px;
+    display:flex;flex-direction:column;gap:9px;}
+  /* ★2段にしたのは、4つを1列に並べると文字を大きくする設定で折り返すため（実測） */
+  #p-hist .hist-ops .obline{display:flex;gap:9px;}
   #p-hist .hist-ops .ob{flex:1;text-align:center;border-radius:12px;padding:13px 6px;font-size:16px;font-weight:900;
+    min-height:46px;display:flex;align-items:center;justify-content:center;
     cursor:pointer;-webkit-tap-highlight-color:transparent;}
-  #p-hist .hist-ops .ob.mod{background:#EAF1F5;color:#2E6E8E;border:2px solid #6099BA;}
+  #p-hist .hist-ops .ob.mod{background:var(--green);color:#fff;border:2px solid var(--green-deep);}
+  #p-hist .hist-ops .ob.star{background:#F5EEDF;color:#7A5A12;border:2px solid #B8893B;}
+  #p-hist .hist-ops .ob.star.on{background:#F0E2C2;color:#6B4E0A;}
   #p-hist .hist-ops .ob.del{background:#F6EAE7;color:#B34A3E;border:2px solid #CA7F6F;}
   #p-hist .hist-ops .ob.cls{background:#fff;color:#6B6656;border:2px solid #9C927C;}
   /* ===== v61 工程表：数秒で消えるトーストをやめ、消えない案内カードにする ===== */
@@ -1930,7 +1941,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v101</span></div>
+          <div class="setrow">バージョン<span class="sv">v103</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -5708,25 +5719,36 @@
     h+='<div class="hist-tap">※ 記録を押すと「✏️直す・🗑消す」が出ます</div>';
     for(var i=0;i<items.length;i++){ var x=items[i], day=histDayKey(x.d);
       if(day!==curDay){ curDay=day; h+='<div class="hist-day">'+histDayLabel(x.d)+'</div>'; }
-      /* v48:台帳の記録には★（教科書に残す）を付ける。機械・肥料台帳には付けない */
-      var st=(x.ki>=0)
-        ? '<span class="hist-star'+(x.star?' on':'')+'" onclick="event.stopPropagation();kyoStar('+x.ki+')">'
-          +'<span class="k">'+(x.star?'★':'☆')+'</span><span class="t">'+(x.star?'残した':'残す')+'</span></span>'
-        : '';
       var opd=(histOpen===i);
+      /* ★★v103 案A：いちばん大きい字を「何をしたか」にする ★★
+         ── なぜ入れ替えたか ──
+           v102まで、いちばん大きい太字は田んぼ名で、何をしたかは小さい灰色だった。
+           「記録の確認」で見たいのは、まず何をしたかである。
+         ── どこの田んぼかは、どこへ行ったか ──
+           田んぼ名・薬や肥料の名前を「下の1行」にまとめた（hist-where 1本）。
+           田んぼで探す道は「📍田んぼでしぼる」が別にあり、しぼった後は
+           全部の行が同じ田んぼ名になるので、大きく出す意味がない。
+         ★📍を付けるのは田んぼの記録だけ。📣ひとこと(人の名前)と
+           🚜機械(機械の名前)には付けない（田んぼではないため）。 */
+      var meta = (x.hito || x.ki<0) ? x.where
+               : ('📍 '+x.where+(x.sub?'　'+x.sub:''));
       h+='<div class="hist-row'+(x.hito?' hito':'')+(x.star?' star':'')+(opd?' opd':'')+'" onclick="histRowTap('+i+')">'
          +'<span class="hist-ic">'+x.ic+'</span>'+
-           '<span class="hist-main"><span class="hist-where">'+x.where+'</span>'+
-             '<span class="hist-title">'+x.title+'</span>'+
-             (x.sub?'<span class="hist-sub">'+x.sub+'</span>':'')+
+           '<span class="hist-main"><span class="hist-title">'+x.title+'</span>'+
+             (meta?'<span class="hist-where">'+meta+'</span>':'')+
              (x.wrote?'<span class="hist-wrote">'+x.wrote+'</span>':'')+'</span>'+
-           '<span class="hist-yen">'+(x.yen?histYen(x.yen):'')+'</span>'+st+'</div>';
-      /* ★v61 開いた行の下だけに操作を出す。いつも出すと指が当たって消える */
+           '<span class="hist-yen">'+(x.yen?histYen(x.yen):'')+'</span></div>';
+      /* ★v61 開いた行の下だけに操作を出す。いつも出すと指が当たって消える
+         ★v103 行から外した★（教科書に残す）を、ここの2段目に入れた */
       if(opd && x.ki>=0){
         h+='<div class="hist-ops">'
+          +'<div class="obline">'
           +'<div class="ob mod" onclick="event.stopPropagation();histEdit('+x.ki+')">✏️ 直す</div>'
           +'<div class="ob del" onclick="event.stopPropagation();histDel('+x.ki+')">🗑 消す</div>'
           +'<div class="ob cls" onclick="event.stopPropagation();histRowTap(-1)">とじる</div>'
+          +'</div>'
+          +'<div class="ob star'+(x.star?' on':'')+'" onclick="event.stopPropagation();kyoStar('+x.ki+')">'
+          +(x.star?'★ 教科書に残した':'☆ 教科書に残す')+'</div>'
           +'</div>';
       }
     }
@@ -7018,14 +7040,36 @@
   function costCatTotal(cat){ var s=0; for(var i=0;i<cat.subs.length;i++)s+=costSubVal(cat.subs[i]); return s; }
   function costGrand(){ var s=0; for(var i=0;i<COST_CATS.length;i++)s+=costCatTotal(COST_CATS[i]); return s; }
   function costCropName(){
-    /* 実データから作付名を作る：今年の主な品種・田んぼ数・年 */
+    /* ★★v102 作付名を、台帳のとおりに正しく数える ★★
+       ── 何が違っていたか（親方のスクショで発覚）
+         「つやおとめほか **6品種**・田んぼ**88枚**」と出ていたが、台帳を数えると
+           つやおとめ20／ひのひかり19／にこまる17／にじのきらめき8／夢つくし1 ＝ **稲5品種・65枚**
+           大豆3枚・未定20枚（合わせて88枚）
+         ①「未定」だけを外していたので、**大豆が6つ目の"品種"**として数えられていた
+         ② 枚数は KT_FIELDS.length ＝ **登録している全部の枚数**を出していた。
+            この画面は農水省の「**米**・生産費」にそろえた画面なので、
+            分母は「今年 稲を作る枚数」でなければ嘘になる（§3.5 数える単位）
+       ── 根っこ
+         稲かどうかの見分けは NAE_EXC（['大豆','未定']）としてアプリに既にある。
+         v36.2で🌾田んぼ一覧の「今年の作付 5品種」はこれで直っていたのに、
+         **ここだけ直しが当たっていなかった**（§0.5④「同じ型を全数で確かめる」の見落とし）。
+       ── どう出すか（★親方が選ばれた形）
+         「つやおとめほか 稲5品種・65枚＋大豆3枚（2026年）」
+         ★稲以外は NAE_EXC から拾って「＋◯◯◯枚」と**正直に後ろに書く**（黙って混ぜない・黙って消さない）。
+         ★未定は作付ではないので出さない。 */
     var y=new Date().getFullYear();
-    var crops={}, n=0;
-    for(var i=0;i<KT_FIELDS.length;i++){ var c=KT_FIELDS[i].crop; if(c&&c!=='未定'){ crops[c]=(crops[c]||0)+1; n++; } }
-    var main='', mx=0; for(var k in crops){ if(crops[k]>mx){mx=crops[k];main=k;} }
-    if(!main) return '（品種未設定）'+y+'年';
-    var others=0; for(var k2 in crops)others++;
-    return main+(others>1?('ほか '+others+'品種'):'')+'・田んぼ'+KT_FIELDS.length+'枚（'+y+'年）';
+    var crops={}, rice=0, others={}, oth=0;
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var c=KT_FIELDS[i].crop;
+      if(!c || c==='未定') continue;
+      if(NAE_EXC.indexOf(c)>=0){ others[c]=(others[c]||0)+1; oth++; continue; }  /* 大豆など、稲以外 */
+      crops[c]=(crops[c]||0)+1; rice++;
+    }
+    var main='', mx=0, nk=0;
+    for(var k in crops){ nk++; if(crops[k]>mx){ mx=crops[k]; main=k; } }
+    var tail=''; for(var k2 in others) tail+='＋'+k2+others[k2]+'枚';
+    if(!main) return (oth?('稲の作付なし'+tail):'（品種未設定）')+'（'+y+'年）';
+    return main+(nk>1?('ほか 稲'+nk+'品種'):'')+'・'+rice+'枚'+tail+'（'+y+'年）';
   }
   function costEnter(){ costLoad(); var cn=document.getElementById('costCropName'); if(cn)cn.textContent=costCropName(); costRender(); }
   function costRender(){
@@ -9169,7 +9213,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v101';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v103';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
