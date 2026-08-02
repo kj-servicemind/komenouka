@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v103">
+<meta name="app-ver" content="v106">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -644,7 +644,7 @@
   .hitosave{background:#fff;border:2.5px solid var(--green-deep);color:var(--green-deep);}
   .hitoshare{font-size:13px;font-weight:700;color:#A8843A;margin-top:8px;text-align:center;line-height:1.5;}
   /* v47:記録の確認では .sc{gap:11px} が効くので、自分の下余白は消す（二重防止） */
-  #p-hist .hitobox{margin-bottom:0;}
+  /* ★v104 #p-hist .hitobox は撤去（入力カードはカレンダーへ引っ越した） */
   /* v48.1:記録の確認の中の入口(.kyobtn)は廃止。専用ボタン「📜去年の今ごろ」に一本化した */
   /* 切りかえ帯 */
   /* v47:切りかえ帯(.recsw)は廃止。ひとことは「📝記録の確認」に移した */
@@ -1331,6 +1331,10 @@
   .day .ct2 .h{color:#B34A3E;} .day .ct2 .l{color:#2E6E8E;}
   .cal-wxnote{font-size:13px;color:#6b6f66;margin:6px 2px 0;line-height:1.5;}
   .addplan{border:1.5px dashed var(--green);color:var(--green);border-radius:12px;text-align:center;padding:12px;font-weight:800;margin-top:10px;font-size:15.5px;}
+  /* ★v104 カレンダーの「その日の振り返り」の入口。予定(点線)と見分くため実線＋薄い緑 */
+  .addhito{border:2px solid var(--green);background:var(--green-soft);color:var(--green-deep);
+    border-radius:12px;text-align:center;padding:12px;font-weight:900;margin-top:10px;
+    font-size:15.5px;min-height:46px;}
   .planform{border:2px solid var(--green);border-radius:14px;padding:12px;margin-top:10px;background:#fff;display:none;}
   .planform.on{display:block;}
   .planform .pft{font-weight:800;color:var(--green-deep);font-size:15.5px;margin-bottom:8px;}
@@ -1360,7 +1364,30 @@
   #p-hist .hist-lead{font-size:15px;line-height:1.7;color:#374151;background:#fff7ed;border:1px solid #BF874F;border-radius:12px;padding:12px 14px;margin:2px 0 12px;}
   #p-hist .hist-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
   #p-hist .hist-chip{font-size:15px;padding:8px 14px;border-radius:999px;background:#fff;border:1.5px solid #9C927C;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-  #p-hist .hist-chip.on{background:#c2410c;border-color:#c2410c;color:#fff;font-weight:700;}
+  #p-hist .hist-chip.on{background:var(--green);border-color:var(--green-deep);color:#fff;font-weight:800;}
+  /* ★★v105 しぼりこみを1行に畳む ★★
+     ── なぜ ──
+       チップ7個＋📍田んぼで2〜3行を使い、開いた瞬間に記録が1件も見えなかった。
+       1行にすれば、そのすぐ下から記録が始まる。
+     ── 1行が2役する ──
+       しぼっていないとき＝「▾ しぼりこむ」（押すと選べる）
+       しぼっているとき ＝「📍中村 (2)　💊農薬」＋「✕ ぜんぶ」（いま何でしぼっているかの表示） */
+  #p-hist .hist-fold{display:flex;align-items:center;gap:8px;background:#fff;
+    border:2px solid #9C927C;border-radius:12px;padding:11px 13px;margin:0 0 10px;
+    min-height:46px;font-size:15.5px;font-weight:800;color:#374151;
+    cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  #p-hist .hist-fold .cv{margin-left:auto;font-size:15px;font-weight:700;color:#6B6656;}
+  #p-hist .hist-fold.on{border-color:var(--green);background:var(--green-soft);color:var(--green-deep);
+    border-radius:12px 12px 0 0;margin-bottom:0;}
+  #p-hist .hist-fold.act{border-color:var(--green);background:var(--green-soft);color:var(--green-deep);}
+  #p-hist .hist-fold .clr{margin-left:auto;font-size:13.5px;font-weight:900;color:#B34A3E;
+    background:#fff;border:1.5px solid #CA7F6F;border-radius:999px;padding:6px 11px;
+    min-height:34px;display:flex;align-items:center;}
+  #p-hist .hist-foldpanel{display:none;background:#F7F6F0;border:2px solid var(--green);
+    border-top:none;border-radius:0 0 12px 12px;padding:11px 13px 12px;margin:0 0 10px;}
+  #p-hist .hist-plabel{font-size:12.5px;font-weight:800;color:#5A5F58;margin:2px 0 7px;}
+  #p-hist .hist-foldpanel .hist-chips{margin-bottom:11px;}
+  #p-hist .hist-foldpanel .hist-chip{min-height:40px;display:flex;align-items:center;}
   /* ★v103 日付＝深緑の帯（白文字）。1日に1枚しか出ないので画面は重くならない。
      決まり：「いつ・何をしたか」を言う所だけ深緑／どこの田んぼか・何を使ったかは墨と灰 */
   #p-hist .hist-day{font-size:15px;font-weight:800;color:#fff;background:var(--green);
@@ -1622,24 +1649,22 @@
     <!-- ===== 📝 記録の確認(ひとこと＋時系列・新しい順) v47 ===== -->
     <div class="page" id="p-hist">
       <div class="sc">
-        <!-- ===== v47 今日ひとこと（作業を記録から移動）。書く所と読む所を1つにした ===== -->
-        <div class="hitobox" id="hitoBox">
-          <div class="hl">✍️ 今日ひとこと</div>
-          <div class="hs" id="hitoDate"><span class="nb">田んぼをえらばず、</span><span class="nb">ひとことだけ残せます</span></div>
-          <!-- ★v53 だれが書いたかを選ぶ。自動で入った値は緑の細枠＋札（CLAUDE.md 6節の共通ルール） -->
-          <div class="fld" id="hitoWhoFld" onclick="whoOpen('hito')" style="margin-bottom:9px;"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="hitoWhoV" style="color:#6E6A5C;">押して名前をえらぶ</span><span id="hitoWhoTag"></span><span class="chv">›</span></div></div>
-          <div class="whopick" id="hitoWhoSheet"><h4>👤 だれが書きますか？</h4><div class="cap">名前を押すだけ。キーボードは出ません</div><div id="hitoWhoOpts"></div></div>
-          <textarea id="hitoIn" placeholder="例：雨で作業は休み。西の田でうんかを少し見かけた" enterkeyhint="done"></textarea>
-          <div class="hitorow">
-            <div class="hitomic" onclick="hitoMic()">🎤 話して書く</div>
-            <div class="hitosave" onclick="hitoSave()">書きとめる</div>
-          </div>
-          <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
-        </div>
-        <div class="hist-lead">上で書いた<b>ひとこと</b><span class="nb">と、🎤や🚜で</span><span class="nb">記録したことが、</span><b>新しい順に上から</b><span class="nb">ぜんぶ並びます。</span><span class="nb">「いつ・どの田んぼ・</span><span class="nb">何を・いくら」が</span><span class="nb">一目で分かります。</span></div>
+        <!-- ★★v104 ここにあった「✍️今日ひとこと」の入力カードと説明は、
+             📅カレンダーの「その日の振り返り」へ引っ越した（親方の指示）。
+             ・書いたものは今までどおり作業台帳に入り、この一覧に📣で出る
+             ・カレンダーなら日をえらべるので、書き忘れた日にも後から書ける
+             ★入力欄の id（hitoIn／hitoWhoFld／hitoWhoSheet／hitoWhoOpts／hitoWhoV／hitoWhoTag）は
+               そのままカレンダー側へ持って行った。id を変えると whoOpen/whoPaint が効かなくなる -->
         <div id="histUnsent"></div>
-        <div class="hist-chips" id="histChips"></div>
-        <div class="hist-fieldbar" id="histFieldBar"></div>
+        <!-- ★v105 押すと開く「しぼりこみ」。中の histChips / histFieldBar は id をそのまま使い回す
+             （描く関数 histChipRender / histFieldRender は1文字も変えなくてよい） -->
+        <div class="hist-fold" id="histFoldBar" onclick="histFoldToggle()"></div>
+        <div class="hist-foldpanel" id="histFoldPanel">
+          <div class="hist-plabel">どの種類を見ますか</div>
+          <div class="hist-chips" id="histChips"></div>
+          <div class="hist-plabel">どの田んぼを見ますか</div>
+          <div class="hist-fieldbar" id="histFieldBar"></div>
+        </div>
         <div id="histBody"></div>
         <div class="spacer"></div>
       </div>
@@ -1838,6 +1863,20 @@
           </div>
           <div class="cal-wxnote" style="margin-top:8px;">ここで書いた予定は、その日になると<b>ホームの「🗓️今日のやること」に自動で出ます</b>。</div>
         </div>
+        <!-- ★★v104 その日の振り返り（旧「今日ひとこと」。記録の確認から引っ越し） -->
+        <div class="addhito" id="hitoAddBtn" onclick="hitoFormToggle()">✍️ 今日の振り返りを書く</div>
+        <div class="planform hitobox" id="hitoForm">
+          <div class="pft" id="hitoFormTitle">✍️ 今日の振り返り</div>
+          <div class="hs" id="hitoDate"><span class="nb">田んぼをえらばず、</span><span class="nb">その日のことを残せます</span></div>
+          <div class="fld" id="hitoWhoFld" onclick="whoOpen('hito')" style="margin-bottom:9px;"><div class="lb">だれが（押すと名前の一覧が出ます）</div><div class="v"><span id="hitoWhoV" style="color:#6E6A5C;">押して名前をえらぶ</span><span id="hitoWhoTag"></span><span class="chv">›</span></div></div>
+          <div class="whopick" id="hitoWhoSheet"><h4>👤 だれが書きますか？</h4><div class="cap">名前を押すだけ。キーボードは出ません</div><div id="hitoWhoOpts"></div></div>
+          <textarea id="hitoIn" placeholder="例：雨で作業は休み。西の田でうんかを少し見かけた" enterkeyhint="done"></textarea>
+          <div class="hitorow">
+            <div class="hitomic" onclick="hitoMic()">🎤 話して書く</div>
+            <div class="hitosave" onclick="hitoSave()">書きとめる</div>
+          </div>
+          <div class="hitoshare">📤 書くと家族全員にすぐ届きます</div>
+        </div>
         <div class="spacer"></div>
       </div>
     </div>
@@ -1941,7 +1980,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v103</span></div>
+          <div class="setrow">バージョン<span class="sv">v106</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2253,13 +2292,17 @@
     if(n==='drone'&&typeof droneEnter==='function')droneEnter();
     if(n==='cost'&&typeof costEnter==='function')costEnter();
     if(n==='cal'&&typeof calEnter==='function')calEnter();
+    /* ★v104 カレンダーを開いたら、振り返りの文言（今日／◯月◯日）を作り直す */
+    if(n==='cal'){ if(typeof hitoDateShow==='function'){ try{ hitoDateShow(); }catch(e){} }
+                   if(typeof whoApply==='function'){ try{ whoApply(); }catch(e){} }
+                   var _hf=document.getElementById('hitoForm'); if(_hf)_hf.classList.remove('on'); }
     if(n==='cal'&&typeof phLoad==='function')phLoad(false);
     if(n==='team'&&typeof teamEnter==='function')teamEnter();
     if(n==='rec'&&typeof recEnter==='function')recEnter();
     if(n==='diag'&&typeof dgEnter==='function')dgEnter();
-    if(n==='hist'){ if(typeof hitoDateShow==='function')hitoDateShow();
+    if(n==='hist'){
       if(typeof whoApply==='function'){ try{ whoApply(); }catch(e){} }   /* ★v53 だれがの欄を塗る */
-                    if(!_histKeepOpen){ histOpen=-1; histField=''; }  /* ★v61.1 ふつうに開いたら
+                    if(!_histKeepOpen){ histOpen=-1; histField=''; histFoldOpen=false; }  /* ★v61.1 ふつうに開いたら
                        行はとじ、田んぼのしぼりも外す。しぼりが残ると「ぜんぶが出ない」ので */
                     if(typeof histRender==='function')histRender(); }
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
@@ -4590,17 +4633,47 @@
     }catch(x){}
     return m;
   }
+  /* ★★v104 「その日の振り返り」の文言を、カレンダーで選んだ日から作る ★★
+     ── なぜ「今日」と決め打ちにしないか ──
+       カレンダーは日をえらべる。8月1日をえらんでいるのに「今日の振り返り」と書いてあれば、
+       それは画面の嘘になる（CLAUDE.md §10-14「固定文字は、いちばん静かな嘘」）。
+       えらんだ日が今日なら「今日の振り返り」、ほかの日なら「8月1日（土）の振り返り」と出す。
+     ★人が打った文字は一切入れない（入るのは 月・日・曜日 だけ。v83の注記のまま） */
+  function hitoDayLabel(){
+    var W=['日','月','火','水','木','金','土'], now=new Date();
+    var sel=(typeof calSel==='string'&&calSel)?calSel:'';
+    var p=sel.split('-');
+    if(p.length!==3) return {t:'今日', d:inaFmtFull(now)};
+    var dt=new Date(+p[0], +p[1]-1, +p[2]);
+    if(isNaN(dt.getTime())) return {t:'今日', d:inaFmtFull(now)};
+    var isToday=(ymd(now)===sel);
+    return { t: isToday ? '今日' : ((+p[1])+'月'+(+p[2])+'日（'+W[dt.getDay()]+'）'),
+             d: sel.replace(/-/g,'/') };   /* ★台帳の日付はスラッシュ区切り（書式のズレに注意・§5） */
+  }
   function hitoDateShow(){
-    var e=document.getElementById('hitoDate'); if(!e)return;
-    var d=new Date(), W=['日','月','火','水','木','金','土'];
-    /* ★v83 innerHTML にした。入るのは 月・日・曜日 の3つだけで、人が打った文字は入らない */
-    e.innerHTML=(d.getMonth()+1)+'月'+d.getDate()+'日（'+W[d.getDay()]+'）　'
-      +'<span class="nb">田んぼをえらばず、</span><span class="nb">ひとことだけ残せます</span>';
+    var lb=hitoDayLabel();
+    var b=document.getElementById('hitoAddBtn');
+    if(b)b.textContent='✍️ '+lb.t+'の振り返りを書く';
+    var t=document.getElementById('hitoFormTitle');
+    if(t)t.textContent='✍️ '+lb.t+'の振り返り';
+    var e=document.getElementById('hitoDate');
+    if(e)e.innerHTML='<span class="nb">田んぼをえらばず、</span><span class="nb">その日のことを残せます</span>';
+  }
+  /* ★v104 予定の入力と同じ形（planFormToggle を写した）。両方は開かない */
+  function hitoFormToggle(){
+    var f=document.getElementById('hitoForm'); if(!f)return;
+    if(f.classList.contains('on')){ f.classList.remove('on'); return; }
+    var pf=document.getElementById('planForm'); if(pf)pf.classList.remove('on');
+    hitoDateShow();
+    var ta=document.getElementById('hitoIn'); if(ta)ta.value='';
+    f.classList.add('on');
+    if(typeof whoApply==='function'){ try{ whoApply(); }catch(e){} }
+    if(ta)ta.focus();
   }
   function hitoSave(){
     var t=document.getElementById('hitoIn');
     var tx=t?(''+t.value).replace(/^\s+|\s+$/g,''):'';
-    if(!tx){ toast('ひとことを書いてください'); if(t)t.focus(); return; }
+    if(!tx){ toast('振り返りを書いてください'); if(t)t.focus(); return; }
     var who=(typeof whoEffective==='function'?whoEffective().n:whoLastGet());
     /* ★v53 本人指示：名前をえらぶまで書きとめない。
        ただし書いた文は消さずに残し、名前の一覧をその場で開く（探させない・打ち直させない）。
@@ -4612,12 +4685,15 @@
     }
     /* ★v67 工程表には出ない置き場。★v74 人メモは重複まとめの対象外なので必ず作られるが、
        万一作れなかった時に書いた文を消してしまわないよう受け取ってから確かめる */
-    if(!wlAdd(ETC_STEP, '', tx, 'hito', {hito:true, who:who})) return;
+    /* ★v104 カレンダーでえらんだ日に書く。今日とはかぎらない（書き忘れた日にも書ける） */
+    var lb=hitoDayLabel();
+    if(!wlAdd(ETC_STEP, '', tx, 'hito', {hito:true, who:who, d:lb.d})) return;
     if(t)t.value='';
-    toast('✅ 書きとめました（家族全員に共有されます）');
-    /* v47:書いたら、そのすぐ下の一覧に並ぶようにする（届いたことが目で分かる） */
+    var f=document.getElementById('hitoForm'); if(f)f.classList.remove('on');
+    toast('✅ '+lb.t+'の振り返りを書きとめました（家族全員に共有されます）');
     if(typeof histRender==='function'){ try{ histRender(); }catch(e){} }
     if(typeof renderCal==='function'){ try{ renderCal(); }catch(e){} }
+    if(typeof renderDayList==='function'){ try{ renderDayList(); }catch(e){} }
   }
   function hitoMic(){
     var t=document.getElementById('hitoIn'); if(!t)return;
@@ -5607,7 +5683,13 @@
 
   /* ===== 📄 栽培管理記録簿(JA提出用)：台帳を田んぼ別・日付順に表へ並べるだけ ===== */
   function krokuOpen(){ go('kroku'); krokuRender(); }
-  /* ===== 📝 記録の確認(ひとこと＋時系列・新しい順) v47 =====
+  /* ★★v106 言葉のそろえかた（次に読む人へ）★★
+       画面に出す言葉は「振り返り」でそろえた（v104でカレンダーへ引っ越したときの呼び名）。
+       ただし **中で使う名前（hito / e.hito / src:'hito' / hitoSave …）は変えていない**。
+       理由：src:'hito' は既に家族の端末とサーバーに保存ずみで、
+       変えると古い記録が「振り返り」と見なされなくなり、📣で出なくなる。
+       ★見た目の言葉と、しまってある印は、別物として扱う。 */
+  /* ===== 📝 記録の確認(振り返り＋時系列・新しい順) v47 =====
      記録簿(ktLog=作業/農薬/肥料)＋機械台帳(kiLog=維持費)を1本にまとめて新しい順に並べる。
      ★v51：肥料は ktLog(追肥) からだけ拾う。肥料台帳(hyLog)は ktLog と同じものを持つので
        足すと必ず二重になる（v51で削除）。 */
@@ -5626,8 +5708,8 @@
       var amt=[]; if(e.rate)amt.push(e.rate+'倍'); if(e.vol)amt.push(e.vol+'L'); if(e.mass)amt.push(e.mass+'kg');
       /* v48:★を押せるように、台帳の元番号(ki)と★の有無を持ち歩く */
       out.push({ d:e.d||'', kind:kind, ic:ic, hito:!!e.hito, ki:i, star:!!e.star,
-        where:(e.hito?(e.who||'ひとこと'):(e.field||'田んぼ不明')),
-        title:(e.hito?(e.text||'ひとこと'):(wlWork(e)||'記録')),
+        where:(e.hito?(e.who||'振り返り'):(e.field||'田んぼ不明')),
+        title:(e.hito?(e.text||'振り返り'):(wlWork(e)||'記録')),
         sub:(e.hito?'':[(e.chem||''), amt.join(' ')].filter(function(s){return s;}).join('　')),
         yen:(e.yen? +e.yen : 0), wrote:histWroteLabel(e) });
     }
@@ -5648,11 +5730,37 @@
     return out;
   }
   function histChipRender(){
-    var defs=[['all','ぜんぶ'],['star','★教科書'],['yaku','💊農薬'],['hiryo','🌱肥料'],['kikai','🚜機械'],['sagyo','✍️作業'],['hito','📣ひとこと']], h='';
+    var defs=HIST_KINDS, h='';
     for(var i=0;i<defs.length;i++){ h+='<div class="hist-chip'+(histFilter===defs[i][0]?' on':'')+'" onclick="histPick(\''+defs[i][0]+'\')">'+defs[i][1]+'</div>'; }
     var c=document.getElementById('histChips'); if(c)c.innerHTML=h;
   }
-  function histPick(k){ histFilter=k; histRender(); }
+  /* ★v105 種類の名前は、チップと「いま何でしぼっているか」の両方で使うので1か所に置く
+     （同じ意味の表を2つ作らない・CLAUDE.md §10-8） */
+  var HIST_KINDS=[['all','ぜんぶ'],['star','★教科書'],['yaku','💊農薬'],['hiryo','🌱肥料'],['kikai','🚜機械'],['sagyo','✍️作業'],['hito','📣振り返り']];
+  function histKindLabel(k){ for(var i=0;i<HIST_KINDS.length;i++)if(HIST_KINDS[i][0]===k)return HIST_KINDS[i][1]; return ''; }
+  var histFoldOpen=false;   /* しぼりこみを開いているか。画面を出るたび閉じる */
+  function histFoldToggle(){ histFoldOpen=!histFoldOpen; histRender(); }
+  function histClearAll(){ histFilter='all'; histField=''; histFoldOpen=false; histRender(); }
+  /* ★1行が2役する。えらんだら自動でとじ、その行が「いま何でしぼっているか」になる */
+  function histFoldRender(){
+    var bar=document.getElementById('histFoldBar'), pan=document.getElementById('histFoldPanel');
+    if(!bar||!pan)return;
+    var act=(histFilter!=='all')||!!histField;
+    var h='';
+    if(histFoldOpen){ h='▴ しぼりこみをとじる'; }
+    else if(act){
+      var a=[];
+      if(histField)a.push('📍 '+histField);            /* 田んぼ名は台帳の値。人が打った文字は入らない */
+      if(histFilter!=='all')a.push(histKindLabel(histFilter));
+      h=a.join('　')+'<span class="clr" onclick="event.stopPropagation();histClearAll()">✕ ぜんぶ</span>';
+    }else{
+      h='▾ しぼりこむ<span class="cv">種類・田んぼ</span>';
+    }
+    bar.className='hist-fold'+(histFoldOpen?' on':(act?' act':''));
+    bar.innerHTML=h;
+    pan.style.display=histFoldOpen?'block':'none';
+  }
+  function histPick(k){ histFilter=k; histFoldOpen=false; histRender(); }
   function histYen(n){ n=n||0; try{return '¥'+n.toLocaleString('ja-JP');}catch(e){return '¥'+n;} }
   function histDayKey(d){ return d?(''+d).slice(0,10):''; }
   function histDayLabel(d){ var s=histDayKey(d), mt=s.match(/(\d+)\/(\d+)\/(\d+)/); if(!mt)return d||'日付なし';
@@ -5690,8 +5798,8 @@
       el.innerHTML='<span class="hist-fld" onclick="histFieldPick()">📍 田んぼでしぼる ▾</span>';
     }
   }
-  function histFieldPick(){ if(typeof fieldSheetOpen==='function') fieldSheetOpen(function(n){ histField=n; histRender(); }, histField); }
-  function histFieldClear(){ histField=''; histRender(); }
+  function histFieldPick(){ if(typeof fieldSheetOpen==='function') fieldSheetOpen(function(n){ histField=n; histFoldOpen=false; histRender(); }, histField); }
+  function histFieldClear(){ histField=''; histFoldOpen=false; histRender(); }
   /* ★v55 まだ家族に送れていない記録を、画面で見えるようにする。
      色だけに頼らず「送れていない」と文字で書く（年配UX）。深緑の帯は押させるボタン用なので使わない */
   function histUnsentRender(){
@@ -5706,6 +5814,7 @@
     histUnsentRender();
     histChipRender();
     histFieldRender();
+    histFoldRender();   /* ★v105 1行の表示（開閉・いま何でしぼっているか） */
     /* ★v61 並びの条件は histVisible() の1か所だけに書く。
        ここと histRowTap で別々に書くと、番号がずれて「別の記録を消す」事故になる */
     var items=histVisible();
@@ -8425,6 +8534,9 @@
       var p3=calSel.split('-'), t=document.getElementById('planFormTitle');
       if(t)t.textContent='📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日 の予定を書く';
     }
+    /* ★v104 日を替えたら、振り返りのボタンと見出しも必ず追随させる
+       （開いていなくてもボタンの文字は変わるので、条件を付けずに毎回呼ぶ） */
+    if(typeof hitoDateShow==='function'){ try{ hitoDateShow(); }catch(e){} }
   }
   function renderCal(){
     var g=document.getElementById('calGrid'),ttl=document.getElementById('calTitle'); if(!g)return;
@@ -9213,7 +9325,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v103';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v106';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
