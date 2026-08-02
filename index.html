@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v106">
+<meta name="app-ver" content="v107">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -159,6 +159,17 @@
   .tile:active{transform:scale(.97);}
   .tile .ic{font-size:38px;line-height:1;}
   .tile .tx{font-size:15px;font-weight:800;letter-spacing:.01em;text-align:center;}
+  /* ★★v107 名前が7文字以上のタイルだけ、ほんの少し小さくする ★★
+     ── 本物のブラウザで測って決めた（§10-4）──
+       393px（親方のiPhone）… 15/16/17px どれでも1行に入る（余裕あり）
+       375px（小さい機種）  … 15px のときだけ2行に折り返す（幅104 に対し箱106）
+     14px にすると 375px でも1行に収まる。
+     ★これは「仕事の振り返り」専用ではなく、7文字以上に自動でかかる決まりにした。
+       同じことが「米づくり工程表」でも起きていたし、次に長い名前が増えても効く。
+     ★置き場所に注意：.screen.fs-big .tile .tx（クラス3つ）と詳しさが同点なので、
+       文字を大きくする設定を「後ろ」に置いて勝たせている。
+       ここを下に移すと、大きくしても14pxのままになる（§10-15） */
+  .tile .tx.sm{font-size:14px;}
   .tile.primary{background:linear-gradient(157deg,#356A43,#254A2F);border-color:var(--green-deep);
     box-shadow:0 8px 18px rgba(33,63,41,.28);}
   .tile.primary .tx{color:#fff;}
@@ -1673,7 +1684,7 @@
     <!-- ===== 🕰 去年の同じ月（v48.1：折りたたみをやめ、他の19画面と同じ「別画面＋戻る」に戻した） ===== -->
     <div class="page" id="p-kyoka">
       <div class="sc">
-        <div class="hy-lead"><b>去年の自分が先生</b><span class="nb">になる場所です。</span><span class="nb">★を付けた作業と</span><span class="nb">📝反省メモが、</span><b>来年の同じ月</b><span class="nb">にここへ出てきます。</span><br>★は「<b>📝記録の確認</b>」の各行から押せます。</div>
+        <div class="hy-lead"><b>去年の自分が先生</b><span class="nb">になる場所です。</span><span class="nb">★を付けた作業と</span><span class="nb">📝反省メモが、</span><b>来年の同じ月</b><span class="nb">にここへ出てきます。</span><br>★は「<b>📝仕事の振り返り</b>」で記録を押すと出る<b>☆教科書に残す</b>から付けられます。</div>
         <div class="kyo-nav"><span class="ar" onclick="kyoMove(-1)">‹ <span class="nb">前の月</span></span><span id="kyoTitle">…</span><span class="ar" onclick="kyoMove(1)"><span class="nb">次の月</span> ›</span></div>
         <div id="kyoPast"><!-- 過去の同じ月(JS) --></div>
         <div class="kyo-memoc">
@@ -1980,7 +1991,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v106</span></div>
+          <div class="setrow">バージョン<span class="sv">v107</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2196,7 +2207,7 @@
     drone: navHdr('home','ホーム','ドローン散布'),
     ai:    navHdr('home','戻る','AIに相談する'),
     kroku: navHdr('voice','話して記録','栽培管理記録簿'),
-    hist:  navHdr('home','ホーム','記録の確認'),
+    hist:  navHdr('home','ホーム','仕事の振り返り'),   /* ★v107 画面名を変更 */
     kyoka: navHdr('home','戻る','📜 去年の今ごろ'),
     hiryo: navHdr('home','ホーム','肥料の栄養バランス'),
     kikai: navHdr('home','ホーム','機械の維持費'),
@@ -5904,7 +5915,7 @@
     histOpen=-1;
     go('kroku'); if(typeof krokuRender==='function')krokuRender();
     krEdit(ki);
-    toast('📄 記録簿を開きました。ここで直せます（‹戻るで記録の確認へ）');
+    toast('📄 記録簿を開きました。ここで直せます（‹戻るで仕事の振り返りへ）');
   }
   /* ★★v61.1 工程表から「その記録を見る ›」で呼ばれる。
      ── v61 の作りと、どこが違うか ──
@@ -7126,7 +7137,7 @@
     el.innerHTML='<b>\u26A0\uFE0F 金額を入れていない農薬の記録が '+u.n+'件 あります</b>'
       +'<span class="nms">'+u.nms.join('・')+'</span>'
       +'<span class="how">この分は農薬費に入っていません。'
-      +'\uD83D\uDCDD記録の確認から その記録を \u270F\uFE0F直す で金額を入れると、ここに出ます。</span>';
+      +'\uD83D\uDCDD仕事の振り返りから その記録を \u270F\uFE0F直す で金額を入れると、ここに出ます。</span>';
   }
   function costChemYen(kind){
     if(typeof ktLog==='undefined')return 0;
@@ -7368,7 +7379,7 @@
     hiryo:{cls:'t-green2',ic:'🌾', tx:'肥料の栄養'},
     kikai:{cls:'t-teal',  ic:'🚜', tx:'機械の維持費'},
     kyoka:{cls:'t-gold',  ic:'📜', tx:'去年の今ごろ'},
-    hist: {cls:'t-orange',ic:'📝', tx:'記録の確認'},
+    hist: {cls:'t-orange',ic:'📝', tx:'仕事の振り返り'},
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'},
     kusa: {cls:'t-green2',ic:'🌿', tx:'草刈り'}          /* ★v67 */
@@ -7421,8 +7432,10 @@
   }
   function tileHtml(k){
     var d=TILE_DEFS[k];
+    /* ★v107 7文字以上は少し小さく（狭い機種で2行に折り返さないように） */
+    var sm=((''+d.tx).length>=7)?' sm':'';
     return '<div class="tile '+d.cls+'" onclick="go(\''+k+'\')"><span class="ic">'
-      +(d.img?droneImgTag():d.ic)+'</span><span class="tx">'+d.tx+'</span></div>';
+      +(d.img?droneImgTag():d.ic)+'</span><span class="tx'+sm+'">'+d.tx+'</span></div>';
   }
   function renderHomeGrid(){
     /* ホームのボタン=タブに使っていない全機能を、決めた並び順で6個ずつ。
@@ -9325,7 +9338,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v106';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v107';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
