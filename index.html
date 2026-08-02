@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v109">
+<meta name="app-ver" content="v113">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1229,8 +1229,15 @@
   #fpOv.on{display:block;}
   #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:9%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .fp-head{padding:13px 14px 6px;flex-shrink:0;}
+  /* ★★v112 とじるは左上、見出しは真ん中（親方のご指示）★★
+     アプリの画面ヘッダー（‹戻る が左・題が中央）と同じ並びにそろえた。
+     ★中央にそろえるため、左のとじるボタンと同じ幅の空きを右に作る（.fp-pad）。
+       margin-left:auto の一発では、文字数によって中心がずれる。 */
   .fp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;}
-  .fp-x{margin-left:auto;font-size:14px;color:#4A463C;padding:4px 6px;}
+  .fp-ttl .nm{flex:1;text-align:center;}
+  .fp-x{font-size:14px;color:#4A463C;padding:6px 8px;font-weight:800;
+    min-width:78px;min-height:40px;display:flex;align-items:center;}
+  .fp-pad{min-width:78px;}
   .fp-search{display:block;width:100%;margin:10px 0 4px;border:1.5px solid #9C927C;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;}
   .fp-hint{font-size:11px;color:#4A463C;}
   .fp-list{flex:1;overflow-y:auto;padding:2px 12px 30px;-webkit-overflow-scrolling:touch;}
@@ -1254,7 +1261,10 @@
   #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:14%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .bp-head{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--line);}
   .bp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;color:#232821;}
-  .bp-x{margin-left:auto;font-size:14px;color:#4A463C;padding:4px 6px;font-weight:700;}
+  .bp-ttl .nm{flex:1;text-align:center;}
+  .bp-x{font-size:14px;color:#4A463C;padding:6px 8px;font-weight:800;
+    min-width:78px;min-height:40px;display:flex;align-items:center;}
+  .bp-pad{min-width:78px;}
   .bp-sub{font-size:12px;color:#4A463C;margin-top:3px;line-height:1.5;}
   .bp-list{flex:1;overflow-y:auto;padding:10px 12px 34px;-webkit-overflow-scrolling:touch;}
   .bp-row{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;}
@@ -1350,7 +1360,15 @@
   .day .ct2{display:block;font-size:9.5px;line-height:1.2;font-weight:700;color:#4A463C;}
   .day .ct2 .h{color:#B34A3E;} .day .ct2 .l{color:#2E6E8E;}
   .cal-wxnote{font-size:13px;color:#6b6f66;margin:6px 2px 0;line-height:1.5;}
-  .addplan{border:1.5px dashed var(--green);color:var(--green);border-radius:12px;text-align:center;padding:12px;font-weight:800;margin-top:10px;font-size:15.5px;}
+  /* ★★v111 「この日の予定を書く」が押せるものに見えない、という親方のご指摘への直し ★★
+     v110まで **1.5pxの点線** だったので、入力欄の飾り枠のように見えていた。
+     すぐ下の「✍️ 今日の振り返りを書く」(.addhito)は実線＋薄い緑で見つけやすい。
+     同じ「その日に何かを書き始める入口」なので、**同じ見た目にそろえる**（§6）。
+     ★v104の注記「予定(点線)と見分けるため」は、ここで役目を終えた。
+       見分けるのは色や線ではなく、絵文字と言葉（📝予定／✍️振り返り）でよい。 */
+  .addplan{border:2px solid var(--green);background:var(--green-soft);color:var(--green-deep);
+    border-radius:12px;text-align:center;padding:12px;font-weight:900;margin-top:10px;
+    font-size:15.5px;min-height:46px;}
   /* ★v104 カレンダーの「その日の振り返り」の入口。予定(点線)と見分くため実線＋薄い緑 */
   .addhito{border:2px solid var(--green);background:var(--green-soft);color:var(--green-deep);
     border-radius:12px;text-align:center;padding:12px;font-weight:900;margin-top:10px;
@@ -1896,7 +1914,7 @@
         </div>
         <div class="dayhead" id="dayTitle">…</div>
         <div id="dayList"><!-- v2.5:選んだ日の予定(JS) --></div>
-        <div class="addplan" onclick="planFormToggle()">＋ この日に予定を書く（手入力）</div>
+        <div class="addplan" onclick="planFormToggle()">📝 この日の予定を書く</div>
         <div class="planform" id="planForm">
           <div class="pft" id="planFormTitle">📝 予定を書く</div>
           <div class="pfcandlb">よくある作業（種まき〜稲刈り）</div>
@@ -2027,7 +2045,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v109</span></div>
+          <div class="setrow">バージョン<span class="sv">v113</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -3938,7 +3956,8 @@
         +'<span class="fp-x" onclick="fpClose()">✕ とじる</span></div>'
         +'<div class="fp-hint">👆 押すと、その田んぼに決まります</div>';
     }else{
-      el.innerHTML='<div class="fp-ttl">🌾 田んぼをえらぶ<span class="fp-x" onclick="fpClose()">✕ とじる</span></div>'
+      el.innerHTML='<div class="fp-ttl"><span class="fp-x" onclick="fpClose()">✕ とじる</span>'
+        +'<span class="nm">🌾 田んぼをえらぶ</span><span class="fp-pad"></span></div>'
         +'<input class="fp-search" id="fpQ" type="text" placeholder="名前でさがす（例：池松）" oninput="fpDraw()">'
 ;   /* ★v87 案内文は消した。すぐ下に本物の「🕘最近つかった」が出るので、言わなくても分かる */
     }
@@ -4715,7 +4734,7 @@
     var ta=document.getElementById('hitoIn'); if(ta)ta.value='';
     f.classList.add('on');
     if(typeof whoApply==='function'){ try{ whoApply(); }catch(e){} }
-    if(ta)ta.focus();
+    /* ★v111 ここも同じ。🎤話して書く があるので、開いた瞬間には出さない */
   }
   function hitoSave(){
     var t=document.getElementById('hitoIn');
@@ -5774,6 +5793,40 @@
   var histFilter='all'; /* all / yaku / hiryo / kikai / sagyo */
   var histField='';     /* '' = ぜんぶの田んぼ。田んぼ名が入ると、その田んぼだけ表示 */
   function histKiMacName(k){ for(var i=0;i<KI_MACS.length;i++)if(KI_MACS[i].k===k)return KI_MACS[i].e+KI_MACS[i].nm; return k||'機械'; }
+  /* ★★v113 💊農薬／🌱肥料／✍️作業の見分け方（AUDIT_v112【A】の直し）★★
+     ── v112まで何がまちがっていたか ──
+       `e.rate ? 'yaku' : (e.mass ? 'hiryo' : 'sagyo')` ＝ **倍率が入っていれば農薬**だった。
+       ところが **粒剤・ジャンボ剤には倍率がない**（ゲットスタージャンボ等）。
+       薬の名前だけ入れた記録も倍率を持たない。
+       そのため **正しく記録した農薬が、永久に💊農薬へ入らなかった**。
+       画面には「💊農薬」と書いてあるのに、数えていたのは「倍率のある記録」。
+       §3.5「式が合っていても、何を数えているかが違えば答えは嘘になる」。
+     ── 直しかた（親方が案3を選択）──
+       **確かなものから順に見る。** 途中で決まったらそこで止める。
+       ① どの画面から記録したか(src)  … いちばん確か。人の入力に左右されない
+       ② 作業の名前               … 「元肥・穂肥・追肥」→肥料／「防除・除草・散布」→農薬
+       ③ 入っている数字            … 倍率や量→農薬／重さ→肥料（v112までの判定）
+       ④ 薬や肥料の名前だけあるとき  … 農薬とみなす（肥料は①②③で必ず拾えるため）
+     ★記録の中身は1文字も変えない。**見分け方だけ**を変えたので、
+       すでに家族の端末にある記録も、その場で正しく分類され直す。
+     ★肥料を先に見るのが要点。「肥料を散布」のような言い方でも農薬にしない。 */
+  function ktKindOf(e){
+    if(!e) return 'sagyo';
+    if(e.hito) return 'hito';
+    /* ① どの画面から記録したか */
+    if(e.src==='hiryo') return 'hiryo';
+    if(e.src==='pest' || e.src==='drone') return 'yaku';
+    /* ② 作業の名前（肥料を先に見る） */
+    var w = (typeof wlWork==='function') ? (wlWork(e)||'') : ((e && (e.work||e.text))||'');
+    if(/元肥|穂肥|追肥|肥料/.test(w)) return 'hiryo';
+    if(/防除|除草|農薬|散布|消毒/.test(w)) return 'yaku';
+    /* ③ 入っている数字 */
+    if(e.rate || e.vol) return 'yaku';
+    if(e.mass) return 'hiryo';
+    /* ④ 薬・肥料の名前だけあるとき */
+    if(e.chem) return 'yaku';
+    return 'sagyo';
+  }
   function histItems(){
     if(typeof ktLoad==='function' && !(ktLog&&ktLog.length)) ktLoad();
     if(typeof kiLoad==='function') kiLoad();
@@ -5781,7 +5834,7 @@
        v52で書き込みも止めたので、肥料は上の ktLog ループから 🌱 として1回だけ出る */
     var out=[], i;
     for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
-      var kind = e.hito ? 'hito' : (e.rate ? 'yaku' : (e.mass ? 'hiryo' : 'sagyo'));
+      var kind = ktKindOf(e);
       var ic = e.hito?'📣':(kind==='yaku'?'💊':(kind==='hiryo'?'🌱':'✍️'));
       var amt=[]; if(e.rate)amt.push(e.rate+'倍'); if(e.vol)amt.push(e.vol+'L'); if(e.mass)amt.push(e.mass+'kg');
       /* v48:★を押せるように、台帳の元番号(ki)と★の有無を持ち歩く */
@@ -7566,7 +7619,8 @@
     if(document.getElementById('bpOv'))return;
     var d=document.createElement('div'); d.id='bpOv';
     d.innerHTML='<div id="bpSheet" onclick="event.stopPropagation()">'
-      +'<div class="bp-head"><div class="bp-ttl"><span id="bpTtl">機能をえらぶ</span><span class="bp-x" onclick="bpClose()">✕ とじる</span></div>'
+      +'<div class="bp-head"><div class="bp-ttl"><span class="bp-x" onclick="bpClose()">✕ とじる</span>'
+        +'<span class="nm" id="bpTtl">機能をえらぶ</span><span class="bp-pad"></span></div>'
       +'<div class="bp-sub" id="bpSub"></div></div>'
       +'<div class="bp-list" id="bpList"></div></div>';
     d.onclick=bpClose;
@@ -8613,7 +8667,6 @@
     if(f&&f.classList.contains('on')){
       var p3=calSel.split('-'), t=document.getElementById('planFormTitle');
       if(t)t.textContent='📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日 の予定を書く';
-      if(typeof planCandsRender==='function'){ try{ planCandsRender(); }catch(e){} }  /* ★v109 */
     }
     /* ★v104 日を替えたら、振り返りのボタンと見出しも必ず追随させる
        （開いていなくてもボタンの文字は変わるので、条件を付けずに毎回呼ぶ） */
@@ -8704,8 +8757,24 @@
     if(t)t.textContent='📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日 の予定を書く';
     var fv=document.getElementById('planFieldV'); if(fv)fv.textContent=planField;
     var ti=document.getElementById('planTitleIn'); if(ti)ti.value='';
+    /* ★★v110 ここが v109 のバグ ★★
+       v109は、この1行を planFormToggle ではなく calPick（日を替えたとき）に入れてしまい、
+       しかも「フォームが開いているとき」限定だったので、
+       **開いた瞬間には一度も描かれず、候補が空っぽだった**。
+       ★呼び出しを足すときは「その関数の中に入ったか」を必ず目で確かめる。
+         差し替えの目印にした文字列が、よその関数にもあることがある（v110の事故）。 */
+    if(typeof planCandsRender==='function'){ try{ planCandsRender(); }catch(e){} }
     f.classList.add('on');
-    if(ti)ti.focus();
+    /* ★★v111 開いた瞬間にキーボードを出さない ★★
+       ── 親方のご指摘 ──
+         「押すとキーボードが画面半分に出て、上半分（候補）が見えない」。
+       ── 決まり（同じ型を全数で見て決めた・§0.5④）──
+         **開いた直後に「押すだけで済む道」があるなら、キーボードは出さない。**
+         予定＝よくある作業10種／振り返り＝🎤話して書く があるので、両方とも出さない。
+         打ちたい人は欄を指で押せば出る。年配のご家族が、いきなり
+         キーボードに画面をふさがれることがなくなる。
+       ★触っていない所：📝メモ欄・🎤音声メモ・🔍メモを探す。
+         これらは「打つために開く」ものなので、出したままが正しい。 */
   }
   function planFieldPick(){
     fieldSheetOpen(function(n){ planField=n;
@@ -9394,12 +9463,22 @@
       }
       return false;
     }
-    body.addEventListener('touchstart',function(e){
+    /* ★★v112 見張る場所を #body から document へ ★★
+       ── v108 で入れた「払ってシートを閉じる」が、実機で効いていなかった ──
+         払いの見張りは #body（まん中のスクロール容器）に付いていた。
+         ところが **かぶせる画面（シート）は #body の外**にあるので、
+         指の動きがそもそも届いていなかった。
+         §10-14「かぶせる作りは goBack() の外にある」は、
+         **払いの見張りの外でもあった**、というのが今回分かったこと。
+       ★画面の戻る（BACK_MAP）の動きは今までと変わらない。
+         document で受けても、判定に使っているのは curScreen だけなので同じ。 */
+    var WATCH=document;
+    WATCH.addEventListener('touchstart',function(e){
       if(e.touches.length!==1) { tracking=false; return; }
       if(inHScroll(e.target)) { tracking=false; return; }
       sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now(); tracking=true;
     },{passive:true});
-    body.addEventListener('touchend',function(e){
+    WATCH.addEventListener('touchend',function(e){
       if(!tracking) return; tracking=false;
       var t=e.changedTouches[0]; if(!t) return;
       var dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
@@ -9433,7 +9512,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v109';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v113';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
