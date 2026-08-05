@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v114">
+<meta name="app-ver" content="v119">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -847,8 +847,12 @@
   .kusa-tile .c{font-size:13.5px;font-weight:700;color:#332F28;margin-top:3px;}
   /* ★v90 田んぼ一覧のタイルに入れる苗箱の札。.fl-nae は一覧の行(flex)用なので打ち消す */
   .kusa-tile .fl-nae{display:inline-block;margin:6px 0 0;}
+  /* ★v118 札の文字が増えた（「✅ ぜんぶ済み」＝実測97.2px／タイルの中身は101px）。
+     余りが4px しか無く、実機の書体しだいで2行に折り返すおそれがある。
+     ①白い余白を左右1pxずつ詰め ②nowrap で物理的に折り返しを禁じる。
+     ★はみ出すより、1行で収まることを優先する（§6 できる限り1行に収める） */
   .kusa-tile .p{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:800;
-    border-radius:999px;padding:2px 9px;}
+    border-radius:999px;padding:2px 8px;white-space:nowrap;}
   .kusa-tile .p.ok{background:#fff;color:var(--green-deep);border:1px solid #9DBBA6;}
   .kusa-tile .p.no{background:#FBEFE4;color:#7A3B1E;border:1.5px solid #D9B79B;}
   .kusa-row{display:flex;align-items:center;gap:11px;background:#fff;border:1.5px solid var(--line);
@@ -2035,17 +2039,17 @@
         <div class="setnote"><span class="nb">💡 記録・予定・メモ・</span><span class="nb">工程表の設定などは、</span><span class="nb">家族みんなで</span><b>自動的に共有・バックアップ</b><span class="nb">されます</span><span class="nb">（数十秒ごと／</span><span class="nb">アプリを開いた時）。</span><span class="nb">ネットが無い時は</span><span class="nb">この端末で使え、</span><span class="nb">つながると</span><span class="nb">自動で追いつきます。</span><span class="nb">写真はこれまで通り</span><span class="nb">共有アルバムに</span><span class="nb">保存されます。</span></div>
         <div class="sethead">💾 データ（バックアップ・リセット）</div>
         <div class="setcard">
-          <div class="setrow">保存場所<span class="sv">このiPhoneの中</span></div>
+          <div class="setrow">保存場所<span class="sv">iPhoneとサーバー</span></div>
           <div class="setrow" onclick="backupExport()">バックアップを書き出す<span class="sv">ファイルに保存 ›</span></div>
           <div class="setrow" onclick="backupImportPick()">バックアップから復元<span class="sv">ファイルを選ぶ ›</span></div>
           <input type="file" id="bkFile" accept="application/json,.json" style="display:none" onchange="backupImportFile(this)">
           <div class="setrow danger" onclick="dataResetAll()">入力内容を全部リセット<span class="sv">はじめから ›</span></div>
         </div>
-        <div class="setnote"><span class="nb">💡 記録・予定・メモは</span><span class="nb">このiPhoneの中に</span><span class="nb">保存され、</span><span class="nb">家族とは</span><span class="nb">サーバー経由で</span><span class="nb">共有されます。</span><span class="nb">機種変更や故障に</span><span class="nb">そなえて、</span><span class="nb">ときどき</span><span class="nb">「バックアップを書き出す」で</span><span class="nb">保存しておくと</span><span class="nb">安心です。</span><br><span class="nb">⚠️ 写真だけは</span><span class="nb">バックアップに</span><span class="nb">入りません</span><span class="nb">（サーバーにあるため）。</span><span class="nb">「入力内容を全部リセット」で</span><span class="nb">「家族全員ぶんも消す」を</span><span class="nb">選ぶと、</span><span class="nb">みんなの写真も</span><span class="nb">消えます。</span></div>
+        <div class="setnote"><span class="nb">💡 記録・予定・メモは</span><span class="nb">このiPhoneと</span><span class="nb">家族のサーバーの</span><span class="nb"><b>両方</b>に保存されます。</span><br><span class="nb">📱 機種変更のときは、</span><span class="nb">新しいiPhoneで</span><span class="nb">このアプリを開くだけで</span><span class="nb">記録は戻ります</span><span class="nb">（自分の名前と</span><span class="nb">ホームの並びだけ</span><span class="nb">入れ直してください）。</span><br><span class="nb">💾「バックアップを書き出す」は、</span><span class="nb">家族全員ぶんが</span><span class="nb">一度に消えてしまった時の</span><span class="nb">備えです。</span><br><span class="nb">⚠️ 写真だけは</span><span class="nb">バックアップに</span><span class="nb">入りません</span><span class="nb">（サーバーにあるため）。</span><span class="nb">「入力内容を全部リセット」で</span><span class="nb">「家族全員ぶんも消す」を</span><span class="nb">選ぶと、</span><span class="nb">みんなの写真も</span><span class="nb">消えます。</span></div>
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v114</span></div>
+          <div class="setrow">バージョン<span class="sv">v119</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2486,8 +2490,21 @@
     var headAccum=v.head;
     var nowAccum=inaAccum(base, today);
     /* ステージ境界(移植後の積算割合)。②田植え=0, ③活着=8%, ④分げつ盛期=45%,
-       ⑤幼穂形成=78%, ⑥出穂=100%。①育苗は移植前。 */
-    var bnd=[0,0.08,0.45,0.78,1.0];
+       ⑤幼穂形成=65%, ⑥出穂=100%。①育苗は移植前。
+       ★★v117 ⑤幼穂形成期を 78% → 65% に直した ★★
+       ── 何がずれていたか（4通りの実測で確定）──
+         78%で計算すると、幼穂形成期が **出穂の13〜15日前** になっていた。
+         実務の目安は **出穂の20〜25日前**（幼穂長1mm＝25日前・2mm＝20日前／憲法§5）。
+         幼穂形成期は **穂肥をやる日** なので、遅く案内すると適期を過ぎる。
+         憲法§10-3「生育の予想は早い方に寄せる。遅い方に外すと穂肥・中干しの適期を
+         過ぎて収量・品質に響く」に、**逆向きに**外れていた。
+       ── 65% の出どころ（勘ではなく、このアプリの平年気温モデルで逆算した）──
+         出穂20日前 = 0.695 / 0.693 / 0.703 / 0.654（ヒノヒカリ2通り・にこまる・夢つくし）
+         出穂25日前 = 0.620 / 0.617 / 0.629 / 0.568（同上）
+         → 8つの平均 ≒ 0.647。キリよく **0.65**（＝出穂の約22日前）を採る。
+       ★ここを直すと、稲作先生の段階・工程表⑥穂肥の日・ホームのAI提案・「今ここ」の
+         判定が **すべて同じ値からそろって動く**（bnd はこの関数の中だけで使う）。 */
+    var bnd=[0,0.08,0.45,0.65,1.0];
     var stageDates=[];
     stageDates.push({no:'①', date:null}); /* 育苗(移植前) */
     stageDates.push({no:'②', date:new Date(base)});
@@ -3174,6 +3191,25 @@
     var b=document.getElementById('body'); if(b)b.scrollTop=0;
   }
 
+  /* ★v118 地区タイルの札を、工程表と草刈りで1本にそろえる（§10-8）。
+     ── v117まで何が伝わっていなかったか（親方のご指摘・スクショで発覚）──
+       タイルが緑（.kusa-tile.done）になるのは「その地区はぜんぶ済み」のときだが、
+       札は「✅ 1」としか言っていなかった。1枚しかない地区（吉田）は1件記録した瞬間に
+       緑になるので、**なぜ緑なのか画面のどこにも書いていない**状態だった。
+       憲法§6「色だけに頼らず文字併記」の違反。色は飾り、意味は文字で持たせる。
+     ── 直しかた（案B・親方のご指示）──
+       ぜんぶ済み … ✅ ぜんぶ済み   （緑の理由をそのまま書く）
+       途中      … ✅ 1 / 3        （あと何枚かが、その場で読める）
+       0件       … まだ            （今までどおり）
+     ★2か所（工程表 ktvGroupsHtml・草刈り kusaAreasRender）から必ずここを通す。
+       片方だけ直すと、同じ見た目のタイルで文字が食い違う。 */
+  function tileDonePill(done,all){
+    done=done||0; all=all||0;
+    if(!done)return '<div class="p no">まだ</div>';
+    if(done>=all)return '<div class="p ok">✅ ぜんぶ済み</div>';
+    return '<div class="p ok">✅ '+done+' / '+all+'</div>';
+  }
+
   /* ================= ① 地区一覧 ================= */
   function kusaAreasRender(){
     var el=document.getElementById('kusaBody'); if(!el)return;
@@ -3185,7 +3221,7 @@
       h+='<div class="kusa-tile'+(full?' done':'')+'" onclick="kusaOpenArea(\''+a.n+'\')">'
        +   '<div class="a">'+a.n+'</div>'
        +   '<div class="c">'+a.all+'枚</div>'
-       +   '<div class="p '+(a.done?'ok':'no')+'">'+(a.done?('✅ '+a.done):'まだ')+'</div>'
+       +   tileDonePill(a.done,a.all)
        + '</div>';
     }
     el.innerHTML=
@@ -3629,7 +3665,7 @@
       h+='<div class="kusa-tile'+(full?' done':'')+'" onclick="ktvOpen(\''+g.n.replace(/'/g,"\\'")+'\')">'
        +   '<div class="a">'+g.n+'</div>'
        +   '<div class="c">'+g.all+'枚</div>'
-       +   '<div class="p '+(g.done?'ok':'no')+'">'+(g.done?('✅ '+g.done):'まだ')+'</div>'
+       +   tileDonePill(g.done,g.all)
        + '</div>';
     }
     var out=''
@@ -3731,11 +3767,12 @@
     var out=[]; for(var q=0;q<order.length&&q<6;q++)out.push(m[order[q]]);
     return out;
   }
-  /* 前にまいた日。今年でなければ年も書く（去年の薬を今年の日付と読ませない） */
+  /* 前にまいた日。今年でなければ年も書く（去年の薬を今年の日付と読ませない）
+     ★v119 ここが「年がちがう時だけ年を書く」の手本だった。同じ書きかたが2つあると
+       片方だけ直されてズレるので、krMdY() に寄せて**1本**にした（§10-8） */
   function ktvChemDate(d){
     if(!d)return '前にまいた日は分かりません';
-    var y=kiYear(d), ny=(new Date()).getFullYear();
-    return '前にまいた日 '+((y&&y!==ny)?(y+'年'):'')+krMd(d);
+    return '前にまいた日 '+krMdY(d);
   }
   function ktvChemPick(c){ ktvChem=(ktvChem===c)?'':c; ktvRender(); }
   function ktvChemHtml(){
@@ -6091,7 +6128,7 @@
       for(var rr=0;rr<rows.length;rr++){
         var e2=rows[rr].e, ix=rows[rr].idx;
         var vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'—');
-        html2+='<tr><td>'+krMd(e2.d)+'</td><td>'+(wlWork(e2)||'—')+'</td><td>'+(e2.chem||'—')+
+        html2+='<tr><td>'+krMdY(e2.d)+'</td><td>'+(wlWork(e2)||'—')+'</td><td>'+(e2.chem||'—')+
           '</td><td>'+(e2.rate?e2.rate+'倍':'—')+'</td><td>'+vol+'</td>'+
           '<td class="krops"><span class="rowbtn mod" style="margin-left:0;" onclick="krEdit('+ix+')">✏️</span><span class="rowbtn del" onclick="krDel('+ix+')">🗑</span></td></tr>';
       }
@@ -6108,7 +6145,7 @@
     set('krEd',e.d); set('krEw',e.work||''); set('krEc',e.chem||'');
     set('krEr',e.rate||''); set('krEv',e.vol||''); set('krEm',e.mass||'');
     var t=document.getElementById('krEditTitle');
-    if(t)t.textContent='✏️ '+(e.field||'')+' '+krMd(e.d)+' の記録を直す';
+    if(t)t.textContent='✏️ '+(e.field||'')+' '+krMdY(e.d)+' の記録を直す';
     /* ★v36.3：以前は scrollIntoView({block:'center'}) だったが、iOSでは
        固定ヘッダーごとページ全体を動かして戻るボタンが画面外へ出ることがある。
        中のスクロール容器だけを動かす共通関数に統一した */
@@ -6134,13 +6171,34 @@
   }
   function krDel(idx){
     var e=ktLog[idx]; if(!e)return;
-    if(!confirm('本当に消しますか？\n'+krMd(e.d)+' '+(e.field||'')+' '+(e.work||e.text||''))) return;
+    if(!confirm('本当に消しますか？\n'+krMdY(e.d)+' '+(e.field||'')+' '+(e.work||e.text||''))) return;
     tombAdd(KT_LS,e); ktLog.splice(idx,1); ktSave();
     krEditCancel();
     krokuRender();
     toast('🗑 記録を消しました');
   }
   function krMd(d){ if(!d)return '—'; var m=d.match(/\d+\/(\d+)\/(\d+)/); return m?(parseInt(m[1],10)+'/'+parseInt(m[2],10)):d; }
+  /* ★★v119 年がちがう記録にだけ「2025年」を付ける ★★
+     ── 何が起きるところだったか（v118の総点検で発見・実害が出る前に直す）
+       krMd() は「7/10」と**月日だけ**を出す。これを **年で絞っていない一覧**に使うと、
+       年が変わったとたん**去年の記録と今年の記録が見分けられなくなる**。
+       実測：🚜機械の維持費は、合計を「今年5,000円／去年8,000円」と分けているのに、
+             下の一覧には「5/1 軽油 5,000円」「5/1 軽油 8,000円」が並んでいた。
+       いまは2026年ぶんしか無いので実害ゼロ。**2027年の春に3か所同時に出る**（憲法§10-13）。
+     ── どう直したか（★親方のご指示＝案B）
+       一覧を今年で絞ってしまうと、去年の記録を**直す・消すことができなくなる**。
+       だから絞らず、**年がちがう時だけ年を書く**。ふだんの見た目は今までと1文字も変わらない。
+       ★手本はアプリの中にあった：ktvChemDate()（前にまいた日）が同じ形をしている。
+     ── どこに当てるか（当てない所も決めてある。§10-13「年の見かたを1つにそろえる」）
+       当てる  … 年で絞っていない一覧（記録簿の表・記録簿の書き出し・機械の維持費・田んぼの資材）
+                 ＋**消す/直すの確認**（去年のものを間違って消さないため。取り返しがつかない）
+       当てない… 工程表の「なぜ✅か」・生産原価の内訳
+                 （どちらも**今年ぶんしか読んでいない**ので、毎回「2026年」と出るのは邪魔なだけ） */
+  function krMdY(d){
+    if(!d)return '—';
+    var y=kiYear(d), ny=(new Date()).getFullYear();
+    return ((y&&y!==ny)?(y+'年 '):'')+krMd(d);
+  }
   function krokuText(){
     var lines=['【栽培管理記録簿】'];
     var byField={};
@@ -6151,7 +6209,7 @@
       var rows=byField[f].slice().sort(function(a,b){return (a.d||'')<(b.d||'')?-1:1;});
       for(var r=0;r<rows.length;r++){
         var e2=rows[r], vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'');
-        lines.push([krMd(e2.d),wlWork(e2),e2.chem||'',e2.rate?e2.rate+'倍':'',vol].filter(Boolean).join(' / '));
+        lines.push([krMdY(e2.d),wlWork(e2),e2.chem||'',e2.rate?e2.rate+'倍':'',vol].filter(Boolean).join(' / '));
       }
     }
     return lines.join('\n');
@@ -6183,7 +6241,7 @@
       if(!e.chem && !e.mass) continue;
       var label=e.chem||''; if(e.rate)label+=(label?' ':'')+e.rate+'倍'; if(e.vol)label+=' '+e.vol+'L'; if(e.mass)label+=' '+e.mass+'kg';
       if(!label) label=e.text||'';
-      out.push({d:krMd(e.d), label:label});
+      out.push({d:krMdY(e.d), label:label});
     }
     out.reverse();
     return out;
@@ -6917,7 +6975,7 @@
     rows.sort(function(a,b){ return a.e.d<b.e.d?1:-1; });
     var lh='';
     for(var r=0;r<rows.length;r++){ var e=rows[r].e;
-      lh+='<div class="ki-item"><span class="ki-d">'+krMd(e.d)+'</span><span class="ki-c">'+e.kind+'</span>'
+      lh+='<div class="ki-item"><span class="ki-d">'+krMdY(e.d)+'</span><span class="ki-c">'+e.kind+'</span>'
         +'<span class="ki-y">'+kiYen(e.yen)+'</span>'
         +'<span class="rowbtn mod" onclick="kiEdit('+rows[r].i+')">✏️</span><span class="rowbtn del" onclick="kiDel('+rows[r].i+')">🗑</span></div>';
     }
@@ -6947,7 +7005,7 @@
   }
   function kiDel(i){
     var e=kiLog[i]; if(!e)return;
-    if(!confirm('本当に消しますか？\n'+krMd(e.d)+' '+e.kind+' '+kiYen(e.yen))) return;
+    if(!confirm('本当に消しますか？\n'+krMdY(e.d)+' '+e.kind+' '+kiYen(e.yen))) return;
     tombAdd(KI_LS,e); kiLog.splice(i,1); kiSave(); kiRender(); toast('🗑 削除しました');
   }
   function kiEdit(i){
@@ -8435,7 +8493,26 @@
              v57から ：サーバーと同じ時だけ印を付ける。違えば印を消して必ず送る。 */
           var _cur=null; try{ _cur=localStorage.getItem(k); }catch(e){ _cur=null; }
           var _curS=(_cur==null?'null':_cur);
-          if(_curS===String(data[k])) _syncHash[k]=_hash(_curS);
+          if(_curS===String(data[k])){
+            _syncHash[k]=_hash(_curS);
+            /* ★★v115 ここで「まだ送れていない件数」の控えも一緒に直す ★★
+               ── 何が起きていたか（2台＋本物の sync-put.js で再現して確定）
+                 控え(pushed)は **自分が送った時にしか** 更新されない作りだった。
+                 家族の記録は「送る」のではなく「読んで」入ってくるので、
+                 件数だけ増えて控えは古いまま。その差が
+                 **「まだ送れていない記録 ○件 ⚠️」** として出ていた。
+                 手元とサーバーの中身は1文字も違わないのに、である。
+                 しかも読んだ時点で上の _syncHash が付くため送信は正しく省かれ、
+                 **控えを直す機会が二度と来ない**。「今すぐ同期する」でも開き直しでも消えず、
+                 自分で何か1件書くまで ⚠️ が出たままだった（親方のスクリーンショット）。
+               ── 直しかた（v57の規則をそのまま当てはめるだけ）
+                 控えの意味は「この中身はサーバーにある」。
+                 いまここは **サーバーと1文字も違わないと確かめた場所** なので、
+                 控えてよい条件をちょうど満たしている。_syncHash と同じ所で同じ判断をする。
+               ★毎回書かない（同じ内容なら書かない）。30秒ごとに保存箱へ書くのを避ける */
+            try{ var _pp=pushedAll()[k];
+              if(!_pp||_pp.h!==_hash(_curS)) pushedMark(k,_curS); }catch(e){}
+          }
           else { try{ delete _syncHash[k]; }catch(e){ _syncHash[k]=null; } }
         }
         /* ★★v95 サーバーが返してこなかった鍵は「サーバーに無い」★★
@@ -8507,7 +8584,11 @@
     /* ★v43：先に読む→あとで送る、の順にした。
        送ってから読むと、リセットの合図を受け取る前に自分の古いデータを
        サーバーへ上書きしてしまい、消したはずの記録が全台に戻る。 */
-    _syncBusy=Date.now(); syncPull(function(){ syncPushAll(function(){ _syncBusy=0; }); });
+    /* ★v115 送り終えたら件数を描き直す。①で控えが直っても、描き直さなければ
+       画面は ⚠️ のまま。起動時の unsentPaint は2.5秒後の1回だけで、
+       電波が遅いと同期が終わる前に描いてしまう（＝古い件数が残る） */
+    _syncBusy=Date.now(); syncPull(function(){ syncPushAll(function(){ _syncBusy=0;
+      try{ unsentPaint(); }catch(e){} }); });
   }
   function syncDiag(){
     fetch('/api/sync-ping').then(function(r){ return r.json(); }).then(function(j){
@@ -9559,7 +9640,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v114';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v119';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
