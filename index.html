@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v124">
+<meta name="app-ver" content="v126">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2095,7 +2095,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v124</span></div>
+          <div class="setrow">バージョン<span class="sv">v126</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2332,6 +2332,47 @@
     for(var i=0;i<3;i++){document.getElementById('fs'+i).classList.toggle('on',i===n);}
     toast(n===0?'標準の文字にしました':(n===1?'文字を大きくしました':'文字を特大にしました'));}
   var curScreen='home';
+
+  /* ★★v126 読み込み直しても、見ていた画面のままにする ★★
+     ── 何が起きていたか ──
+       家族の誰かが記録すると _syncApply() が location.reload() する（§6.5）。
+       いま見ていた画面はどこにも控えていないので、curScreen は 'home' に戻る。
+       眺めているだけの時にこれが起きるので、**勝手に落ちてホームに帰った**ように見える。
+       家族5〜6人が動く農繁期ほど頻繁で、v125で新しい版が届きやすくなったぶん増える。
+     ── 直しかた ──
+       読み込み直す**直前に控え、起動しきったあとに戻す**。1本の関数にして、
+       「本人が押していないのに読み込み直る」出口だけを通す（②同期／②版の入れかわり）。
+     ★控えは sessionStorage。アプリを閉じれば消えるので、**次に開いたときは必ずホーム**。
+       localStorage にすると、翌朝ひらいた時に前の画面が出てしまい年配UXに反する。
+     ★控えるのは画面の名前だけ。入れ子（草刈りの地区の中など）は戻さず、
+       いつも**その画面のいちばん外側**から始める（§10-9）。
+     ★戻る履歴は空にする。押せばホームに着くので迷子にならない（§5・v40の決めごと）。 */
+  var SC_KEY='gyotoku.screen.v1';
+  var SC_MAX_MS=120000;      /* 2分より古い控えは使わない（別の用事で開き直した時に驚かせない） */
+  /* 読み込み直す直前に、いま見ている画面を控える。ホームなら控えない（戻す必要が無い） */
+  function scRemember(){
+    try{
+      if(typeof curScreen!=='string'||curScreen==='home')return;
+      if(!pages[curScreen])return;
+      sessionStorage.setItem(SC_KEY, JSON.stringify({n:curScreen,t:Date.now()}));
+    }catch(e){}
+  }
+  /* 起動しきったあとに1回だけ呼ぶ。控えが無ければ何もしない（＝今までどおりホーム） */
+  function scRestore(){
+    var s=null;
+    /* ★読んだらすぐ消す。消さないと、次に開き直した時にも戻ってしまう */
+    try{ s=sessionStorage.getItem(SC_KEY); sessionStorage.removeItem(SC_KEY); }catch(e){ s=null; }
+    if(!s)return false;
+    var o=null; try{ o=JSON.parse(s); }catch(e){ o=null; }
+    if(!o||typeof o.n!=='string'||!o.t)return false;
+    if(Date.now()-o.t>SC_MAX_MS)return false;
+    if(o.n==='home'||!pages[o.n])return false;
+    /* ★版が入れかわると、その画面自体が無くなっていることがある（v96で2画面消した）。
+       DOMに実物があることを確かめてからでないと、go() で落ちる */
+    if(!document.getElementById(pages[o.n]))return false;
+    try{ navClear(); _navSkip=true; go(o.n); }catch(e){ return false; }
+    return true;
+  }
 
   /* ===== v40★ 「戻る」を直前の画面へ =====
      これまでは BACK_MAP で行き先が固定だったため、
@@ -9279,6 +9320,7 @@
     var last=0; try{ last=parseInt(sessionStorage.getItem('gyotoku.sync.reloadedAt')||'0',10); }catch(e){}
     var now=Date.now(); if(now-last<6000)return;
     try{ sessionStorage.setItem('gyotoku.sync.reloadedAt',String(now)); }catch(e){}
+    scRemember();   /* ★v126 見ていた画面を控える（読み込み直したあと、ここへ戻る） */
     location.reload();
   }
   function syncNow(){
@@ -10357,7 +10399,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v124';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v126';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -10451,6 +10493,7 @@
     if(Date.now()-last < 180000){ verRetryLater(); return false; }    /* 3分に1回まで */
     try{ localStorage.setItem(VER_RELOADED, String(Date.now())); }catch(e){}
     try{ localStorage.setItem(VER_FLAG,'1'); }catch(e){}
+    scRemember();   /* ★v126 新しい版に入れかわる時も、見ていた画面へ戻す */
     try{ location.replace(location.pathname+'?v='+Date.now()); }catch(e){ try{ location.reload(); }catch(e2){} }
     return true;
   }
@@ -10492,14 +10535,40 @@
         .then(function(){ _verBusy=0; }, function(){ _verBusy=0; });
     }catch(e){ _verBusy=0; }
   }
-  /* 指紋くらべ（先頭だけもらえないサーバー用の控え） */
+  /* 指紋くらべ（先頭だけもらえないサーバー用の控え）
+
+     ★★v125 ここが「新しい版に、いつまでも気づかない」の本体だった ★★
+     ── 何が起きていたか（v123の実物を実ブラウザで動かして再現ずみ・2026/08/08）──
+       サーバーが「先頭1KBだけ」の求めに応じず全部返してくると、
+       以後この指紋くらべの経路に入る（_verRangeOK=false）。
+       ところが控え(VER_KEY)がまだ無いとき、v124まではここで **控えるだけ** で終わっていた。
+       その控えは **もう新しい版の指紋** なので、次からは「変わっていない」と判断される。
+       ＝ **新しい版の指紋を、見なかったことにして飲み込んでいた。**
+       こうなると、起動しても・ほかのアプリから戻っても・何分待っても入れかわらない。
+       「今すぐ最新にする」を押す以外に手が無くなる（親方の実機で実際にそうなった）。
+
+       ★v124 は pageshow を足したおかげで起動時に確認が2回走り、
+       1回目で控えが作られるので**表向きは直って見えた**。だが直したのは別の所で、
+       ここは**偶然に助けられていただけ**。控えが作られ損ねれば（通信が1回失敗する等）
+       また同じ所に落ちる。だから根本を直す。
+
+     ── 直しかた（根本）──
+       **控えが使えるときだけ、指紋くらべで済ませる。**
+       控えが無い／別の版のものなら、控えて終わりにせず **必ず版の名前を読みに行く**。
+       版の名前どうしで比べれば、飲み込みようがない。
+       ★このとき1回だけ本文を丸ごと落とすことになるが、読めば控えができるので
+         次からは軽い問い合わせ(HEAD)で済む。落ちるのは「控えが無い1回だけ」。 */
   function verSee(tag){
     if(!tag) return;
     verSeenSet();                                   /* ★v124 指紋が返ってきた＝確かめられた */
     var st=null;
     try{ st=JSON.parse(localStorage.getItem(VER_KEY)||'null'); }catch(e){ st=null; }
-    if(st && st.v===APP_VER && st.t && st.t!==tag){ verFetchVer(tag); return; }
-    verRemember(tag);
+    if(st && st.v===APP_VER && st.t){               /* 控えが使える＝指紋くらべでよい */
+      if(st.t!==tag){ verFetchVer(tag); return; }   /* 指紋が動いた → 版の名前を確かめる */
+      verRemember(tag);                             /* 変わっていない → 控え直すだけ */
+      return;
+    }
+    verFetchVer(tag);   /* ★v125 控えが無い／別の版のもの → 控えるだけにせず、必ず読む */
   }
   /* ★v68 設定の「今すぐ最新にする」。上スワイプで閉じなくてもよくするための出口。
      ・最新なら「最新です」と出す（黙って何も起きないと壊れたと思われるため）
@@ -10958,6 +11027,13 @@
        var は名前だけ先に見えて中身は後から入るので、前に置くと中身が undefined で
        「送り直しの印」を消せない（v33の型）。ktLoad も hyMigrate も済んだ後がいちばん安全。 */
   try{ ktDedup(); }catch(e){}
+
+  /* ★★v126 いちばん最後に、見ていた画面へ戻す ★★
+     ★ここに置く理由：go() は各画面の *Enter を呼ぶので、
+       その画面が読む台帳（ktLoad・hasLoad・hyGoalLoad…）が全部そろった後でないといけない。
+       前に置くと、まだ空の台帳で描いてしまう（§5「起動時に呼ばれる関数」の型）。
+     ★控えが無ければ何もしない＝今までどおりホームから始まる。 */
+  try{ scRestore(); }catch(e){}
 
 </script>
 </body>
