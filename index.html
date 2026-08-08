@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v126">
+<meta name="app-ver" content="v127">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2095,7 +2095,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v126</span></div>
+          <div class="setrow">バージョン<span class="sv">v127</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -10399,7 +10399,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v126';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v127';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -10437,10 +10437,16 @@
          **写真1枚で「見張りが最後に走ったのはいつか」が分かる**。
          今回はこれが無かったので、原因の切り分けに何往復もかかった */
   var VER_SEEN='gyotoku.verSeen.v1';    /* 最後に「サーバーの返事が返ってきた」時刻 */
+  var VER_SEEN_KB='gyotoku.verSeenKb.v1';  /* ★v127 そのとき受け取った量(KB)。切り分け用 */
   var _verRetry=0;                      /* 挑み直しの予約（重ねて取らない） */
   /* 確かめが成功した＝サーバーの返事が返ってきた。控えるのはこの時だけ。
-     ★「送った時刻」ではなく「返ってきた時刻」にする。送っただけでは確かめたことにならない */
-  function verSeenSet(){ try{ localStorage.setItem(VER_SEEN, String(Date.now())); }catch(e){} }
+     ★「送った時刻」ではなく「返ってきた時刻」にする。送っただけでは確かめたことにならない
+     ★v127 受け取った量も控える。次に同じ相談が出たとき、**写真1枚でどの経路か分かる**。
+       0KB＝軽い問い合わせ（指紋くらべ）／数KB＝先頭だけで打ち切れた／1000KB超＝丸ごと落ちた */
+  function verSeenSet(kb){
+    try{ localStorage.setItem(VER_SEEN, String(Date.now())); }catch(e){}
+    try{ localStorage.setItem(VER_SEEN_KB, String((typeof kb==='number')?kb:0)); }catch(e){}
+  }
   /* 設定の「最後に確かめた」を描く。開くたびに描き直す（§10-14 固定文字にしない） */
   function verSeenShow(){
     var el=document.getElementById('verSeenV'); if(!el) return;
@@ -10449,7 +10455,10 @@
     var d=new Date(t), mi=Math.floor((Date.now()-t)/60000);
     var hh=('0'+d.getHours()).slice(-2), mm=('0'+d.getMinutes()).slice(-2);
     var ago=(mi<1)?'たった今':((mi<60)?(mi+'分前'):(Math.floor(mi/60)+'時間前'));
-    el.textContent=hh+':'+mm+'（'+ago+'）';
+    /* ★v127 受け取った量を添える。これ1つで「どの経路を通ったか」が写真で分かる */
+    var kb=-1; try{ kb=parseInt(localStorage.getItem(VER_SEEN_KB),10); }catch(e){}
+    var sz=(kb>=0)?('・'+kb+'KB'):'';
+    el.textContent=hh+':'+mm+'（'+ago+sz+'）';
   }
   /* 見送ったときの挑み直し。★予約は1つだけ（重ねると通信が増える） */
   function verRetryLater(){
@@ -10510,30 +10519,70 @@
     try{ localStorage.setItem(VER_KEY, JSON.stringify({v:APP_VER, t:tag})); }catch(e){}
   }
   /* サーバーの版の名前を読む。tag を渡すと「版は同じだった」ときに控え直す */
-  function verFetchVer(tag){
+  /* ★★v127 ここが「見張りが毎回あきらめる」の本体だった ★★
+     ── 何が起きていたか（親方の実機・2026/08/08）──
+       「先頭1KBだけください」(Range)と頼んでも、**Cloudflare は応じず丸ごと返してくる**。
+       親方の実測では、手で押した確認が **30秒〜1分** かかっていた。
+       ところが自動の見張りは **45秒たつと札を捨てて諦める**（v58）。
+       つまり回線しだいで**毎回ぎりぎり間に合わず、一度も成功しない端末ができる**。
+       設定の「最後に確かめた」が3時間ゼロ回のまま、という写真がその証拠だった。
+       手で押す「今すぐ最新にする」には45秒の打ち切りが無いので、そちらだけは通っていた。
+
+     ── 直しかた（原因がどちらでも効く形にする）──
+       頼み方は変えない。**届いた先頭だけ読んだら、その場で受け取りをやめる。**
+       版の名前はファイルの7行目にあるので、そこまで読めば用は済む。
+       ★Range に応じてもらえても・断られても、どちらでも軽くなる。
+         「断られている」という推測に賭けない作りにしてある。
+       ★実測（1.28MBのファイル・わざと遅くしたサーバー）：
+         最後まで受け取る 2,023ms/1,136KB → 先頭でやめる 9ms/100KB
+         サーバーが送りきった量も 1,312KB → 200KB に減った（本当に止まっている）
+     ★古い iPhone には流し読み(ReadableStream)が無いことがある。
+       その時は今までどおり最後まで受け取る＝**直す前より悪くはならない**。 */
+  function verReadHead(url, ok, ng){
+    var got=0, fired=false;
+    var fin=function(t,kb){ if(fired)return; fired=true; ok(t,kb); };
+    var bad=function(){ if(fired)return; fired=true; ng(); };
     try{
-      fetch(location.pathname+'?vg='+Date.now(), {cache:'no-store', headers:{'Range':'bytes=0-1023'}})
+      fetch(url, {cache:'no-store', headers:{'Range':'bytes=0-1023'}})
         .then(function(r){
-          if(!r || !(r.ok || r.status===206)) return null;
+          if(!r || !(r.ok || r.status===206)){ bad(); return; }
           if(_verRangeOK===null){
             _verRangeOK=(r.status===206);
-            /* ★1MB丸ごと落ちるサーバーだと分かったら控えておく。
-               控えないと、アプリを開くたびに毎回1MB落ちてしまう（家族の通信量） */
+            /* ★丸ごと落ちるサーバーだと分かったら控えておく。
+               控えないと、アプリを開くたびに毎回まるごと落ちてしまう（家族の通信量） */
             if(!_verRangeOK){ try{ localStorage.setItem(VER_RANGE,'0'); }catch(e){} }
           }
-          return r.text();
+          /* 素直に先頭だけくれた／流し読みができない古い端末 → 今までどおり最後まで受け取る */
+          if(r.status===206 || !r.body || !r.body.getReader || typeof TextDecoder==='undefined'){
+            return r.text().then(function(t){ fin(t, Math.round((''+t).length/1024)); });
+          }
+          var rd=r.body.getReader(), dec=new TextDecoder('utf-8'), buf='';
+          var step=function(){
+            return rd.read().then(function(o){
+              if(o.done){ fin(buf, Math.round(got/1024)); return; }
+              got+=(o.value?o.value.length:0);
+              buf+=dec.decode(o.value,{stream:true});
+              if(buf.length>2048){                    /* ★用は済んだ。受け取りをやめる */
+                try{ rd.cancel(); }catch(e){}
+                fin(buf, Math.round(got/1024)); return;
+              }
+              return step();
+            });
+          };
+          return step();
         })
-        .then(function(t){
-          if(t==null) return;
-          var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
-          if(!m) return;                            /* 読めない → 何もしない（誤作動させない） */
-          verSeenSet();                             /* ★v124 ここで初めて「確かめられた」 */
-          if(m[1]!==APP_VER){ verApply(); return; } /* ★版がちがう＝古い画面を見ている。確実 */
-          verRemember(tag);                         /* 版は同じ＝指紋が揺れただけ。控え直す */
-        })
-        .catch(function(){})
-        .then(function(){ _verBusy=0; }, function(){ _verBusy=0; });
-    }catch(e){ _verBusy=0; }
+        .catch(function(){ bad(); });
+    }catch(e){ bad(); }
+  }
+  function verFetchVer(tag){
+    verReadHead(location.pathname+'?vg='+Date.now(), function(t, kb){
+      _verBusy=0;
+      var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
+      if(!m) return;                            /* 読めない → 何もしない（誤作動させない） */
+      verSeenSet(kb);                           /* ★v124 ここで初めて「確かめられた」 */
+      if(m[1]!==APP_VER){ verApply(); return; } /* ★版がちがう＝古い画面を見ている。確実 */
+      verRemember(tag);                         /* 版は同じ＝指紋が揺れただけ。控え直す */
+    }, function(){ _verBusy=0; });
   }
   /* 指紋くらべ（先頭だけもらえないサーバー用の控え）
 
@@ -10560,7 +10609,8 @@
          次からは軽い問い合わせ(HEAD)で済む。落ちるのは「控えが無い1回だけ」。 */
   function verSee(tag){
     if(!tag) return;
-    verSeenSet();                                   /* ★v124 指紋が返ってきた＝確かめられた */
+    verSeenSet(0);                                  /* ★v124 指紋が返ってきた＝確かめられた
+                                                       ★v127 0KB＝本文は落としていない印 */
     var st=null;
     try{ st=JSON.parse(localStorage.getItem(VER_KEY)||'null'); }catch(e){ st=null; }
     if(st && st.v===APP_VER && st.t){               /* 控えが使える＝指紋くらべでよい */
@@ -10577,14 +10627,16 @@
   function verNow(){
     var lb=document.getElementById('verNowV');
     if(lb)lb.textContent='確かめています…';
-    try{
-      fetch(location.pathname+'?vn='+Date.now(), {cache:'no-store', headers:{'Range':'bytes=0-1023'}})
-        .then(function(r){ return (r&&(r.ok||r.status===206))?r.text():null; })
-        .then(function(t){
-          if(t==null){ if(lb)lb.textContent='確かめる ›'; toast('電波が届かないようです'); return; }
+    /* ★★v127 手で押すこの道も、見張りとまったく同じ読み方に一本化した ★★
+       ── v126まで、ここだけ別に書いてあったので2つ困っていた ──
+         ①最後まで受け取るので、親方の実測で30秒〜1分かかっていた
+         ②**「先頭だけはもらえない」と分かっても、それを控えていなかった**。
+           だから手で押しても端末は何も学ばず、自動の見張りは毎回まるごと落とし続けていた。
+       → verReadHead 1本に通す（§0.5②「同じことをする所は1本にする」）。 */
+    verReadHead(location.pathname+'?vn='+Date.now(), function(t, kb){
           var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
           if(!m){ if(lb)lb.textContent='確かめる ›'; toast('確かめられませんでした'); return; }
-          verSeenSet(); try{ verSeenShow(); }catch(e){}   /* ★v124 */
+          verSeenSet(kb); try{ verSeenShow(); }catch(e){}   /* ★v124 ★v127 量も控える */
           if(m[1]===APP_VER){ if(lb)lb.textContent='最新です'; toast('✅ すでに最新です（'+APP_VER+'）'); return; }
           if(lb)lb.textContent='新しい版があります';
           toast('新しい版（'+m[1]+'）に入れかわります');
@@ -10595,9 +10647,8 @@
               toast('書きかけの文があるので、少し待ってからもう一度押してください');
             }
           }, 700);
-        })
-        .catch(function(){ if(lb)lb.textContent='確かめる ›'; toast('電波が届かないようです'); });
-    }catch(e){ if(lb)lb.textContent='確かめる ›'; }
+      },
+      function(){ if(lb)lb.textContent='確かめる ›'; toast('電波が届かないようです'); });
   }
   function verCheck(force){
     /* ★v58 45秒たっても返事の無い札は捨てる。捨てないと新版に永久に気づけない */
