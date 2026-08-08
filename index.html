@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v123">
+<meta name="app-ver" content="v124">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2095,10 +2095,13 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v123</span></div>
+          <div class="setrow">バージョン<span class="sv">v124</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
+          <!-- ★v124 見張りが最後に走った時刻。次に「新しくならない」と言われたとき、
+               写真1枚で原因が切り分けられる（時刻が古ければ見張りが止まっている） -->
+          <div class="setrow">最後に確かめた<span class="sv" id="verSeenV">まだ</span></div>
         </div>
         <div class="spacer"></div>
       </div>
@@ -2426,6 +2429,7 @@
                        行はとじ、田んぼのしぼりも外す。しぼりが残ると「ぜんぶが出ない」ので */
                     if(typeof histRender==='function')histRender(); }
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
+    if(n==='set'&&typeof verSeenShow==='function')verSeenShow();   /* ★v124 開くたび描き直す */
     highlightTab(n);
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
   var lastMemo='';
@@ -10353,7 +10357,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v123';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v124';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -10361,6 +10365,55 @@
   var VER_RANGE='gyotoku.verRange.v1';  /* 「先頭だけはもらえない」と分かったら控える */
   var _verRangeOK=null;   /* null=未確認 / true=先頭だけもらえる / false=もらえない */
   try{ if(localStorage.getItem(VER_RANGE)==='0') _verRangeOK=false; }catch(e){}
+
+  /* ★★v124 ここが「10分待っても新しい版にならない」の本体だった ★★
+     ── 何が起きていたか（親方の実機・2026/08/08 で確定）──
+       家族の端末が新しい版に気づくきっかけは、v123まで次の3つだけだった。
+         ① アプリを開いて3秒後
+         ② ほかのアプリから戻ってきたとき(visibilitychange)
+         ③ 10分ごと(setInterval)
+       ところが **iPhoneは画面が暗くなるとアプリの中の時計を止める**。
+       つまり③は、画面が消えた瞬間に止まって二度と動かない。
+       そしてアプリを開いたまま置いてある端末は、離れていないので②も起きない。
+       ①はもう済んでいる。**結果、一度も確かめに行かない端末ができる。**
+       実際に v123 を上げたあと、10分放置しても v122 のままだった。
+       「今すぐ最新にする」を押すと一発で入れかわった＝**サーバーもファイルも正常で、
+       壊れていたのは"自分から気づく仕掛け"だけ**だと分かった。
+
+     ── 直しかた（時計に頼らない）──
+       ★**画面に触ったら確かめる。** 指が触れているなら画面は点いていて、アプリも動いている。
+       時計が止まっていても関係ない。年配の方に何かを押させる必要もない。
+       ・確かめは verCheck の「1分に1回まで」がそのまま効くので、連打しても通信は増えない
+       ・見に行くのはファイルの先頭1KBだけ（Range）。1MB落とすことはしない
+       ・6人×8時間で1日およそ2,880回。Cloudflareの無料枠10万回に対して3%弱
+
+     ── あわせて直したもの ──
+       ・見送ったら30秒後に挑み直す（v123は次のチャンスが10分後だった）
+       ・10分ごと → 3分ごと（画面が点いたまま眺めている時のため。触る方が主役）
+       ・pageshow も拾う（しまい込まれた画面から戻る時、visibilitychange が出ないことがある）
+       ・★設定に「最後に確かめた時刻」を出す。次に同じ相談が出たとき、
+         **写真1枚で「見張りが最後に走ったのはいつか」が分かる**。
+         今回はこれが無かったので、原因の切り分けに何往復もかかった */
+  var VER_SEEN='gyotoku.verSeen.v1';    /* 最後に「サーバーの返事が返ってきた」時刻 */
+  var _verRetry=0;                      /* 挑み直しの予約（重ねて取らない） */
+  /* 確かめが成功した＝サーバーの返事が返ってきた。控えるのはこの時だけ。
+     ★「送った時刻」ではなく「返ってきた時刻」にする。送っただけでは確かめたことにならない */
+  function verSeenSet(){ try{ localStorage.setItem(VER_SEEN, String(Date.now())); }catch(e){} }
+  /* 設定の「最後に確かめた」を描く。開くたびに描き直す（§10-14 固定文字にしない） */
+  function verSeenShow(){
+    var el=document.getElementById('verSeenV'); if(!el) return;
+    var t=0; try{ t=parseInt(localStorage.getItem(VER_SEEN)||'0',10)||0; }catch(e){}
+    if(!t){ el.textContent='まだ'; return; }
+    var d=new Date(t), mi=Math.floor((Date.now()-t)/60000);
+    var hh=('0'+d.getHours()).slice(-2), mm=('0'+d.getMinutes()).slice(-2);
+    var ago=(mi<1)?'たった今':((mi<60)?(mi+'分前'):(Math.floor(mi/60)+'時間前'));
+    el.textContent=hh+':'+mm+'（'+ago+'）';
+  }
+  /* 見送ったときの挑み直し。★予約は1つだけ（重ねると通信が増える） */
+  function verRetryLater(){
+    if(_verRetry) return;
+    try{ _verRetry=setTimeout(function(){ _verRetry=0; try{ verCheck(true); }catch(e){} }, 30000); }catch(e){ _verRetry=0; }
+  }
 
   /* ★★v68 ここが「片方の端末だけ新しくならない」の真犯人だった ★★
      ── 何が起きていたか（実測で再現ずみ）
@@ -10390,10 +10443,12 @@
   }
   /* 実際に入れかわる。URLに時刻を付けるのは、付けないと古いものが出てくるため */
   function verApply(){
-    if(verTyping()) return false;                 /* 書きかけ → 次の機会に */
+    /* ★v124 見送るときは必ず次の機会を予約する。
+       v123は「次の機会」が10分後の時計だけで、その時計は画面が消えると止まっていた */
+    if(verTyping()){ verRetryLater(); return false; }   /* 書きかけ → 次の機会に */
     var last=0;
     try{ last=parseInt(localStorage.getItem(VER_RELOADED)||'0',10)||0; }catch(e){}
-    if(Date.now()-last < 180000) return false;    /* 3分に1回まで */
+    if(Date.now()-last < 180000){ verRetryLater(); return false; }    /* 3分に1回まで */
     try{ localStorage.setItem(VER_RELOADED, String(Date.now())); }catch(e){}
     try{ localStorage.setItem(VER_FLAG,'1'); }catch(e){}
     try{ location.replace(location.pathname+'?v='+Date.now()); }catch(e){ try{ location.reload(); }catch(e2){} }
@@ -10429,6 +10484,7 @@
           if(t==null) return;
           var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
           if(!m) return;                            /* 読めない → 何もしない（誤作動させない） */
+          verSeenSet();                             /* ★v124 ここで初めて「確かめられた」 */
           if(m[1]!==APP_VER){ verApply(); return; } /* ★版がちがう＝古い画面を見ている。確実 */
           verRemember(tag);                         /* 版は同じ＝指紋が揺れただけ。控え直す */
         })
@@ -10439,6 +10495,7 @@
   /* 指紋くらべ（先頭だけもらえないサーバー用の控え） */
   function verSee(tag){
     if(!tag) return;
+    verSeenSet();                                   /* ★v124 指紋が返ってきた＝確かめられた */
     var st=null;
     try{ st=JSON.parse(localStorage.getItem(VER_KEY)||'null'); }catch(e){ st=null; }
     if(st && st.v===APP_VER && st.t && st.t!==tag){ verFetchVer(tag); return; }
@@ -10458,6 +10515,7 @@
           if(t==null){ if(lb)lb.textContent='確かめる ›'; toast('電波が届かないようです'); return; }
           var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
           if(!m){ if(lb)lb.textContent='確かめる ›'; toast('確かめられませんでした'); return; }
+          verSeenSet(); try{ verSeenShow(); }catch(e){}   /* ★v124 */
           if(m[1]===APP_VER){ if(lb)lb.textContent='最新です'; toast('✅ すでに最新です（'+APP_VER+'）'); return; }
           if(lb)lb.textContent='新しい版があります';
           toast('新しい版（'+m[1]+'）に入れかわります');
@@ -10518,10 +10576,24 @@
     }catch(e){}
   }
 
-  /* 見張りの動かし方：起動3秒後・アプリに戻った時・10分ごと */
+  /* ★v124 見張りの動かし方：起動3秒後・★画面に触った時・アプリに戻った時・3分ごと
+     ★主役は「触った時」。ほかの3つは、どれも止まることがある（上の注記を参照） */
   setTimeout(function(){ try{ verCheck(true); }catch(e){} }, 3000);
-  setInterval(function(){ try{ verCheck(); }catch(e){} }, 600000);
+  setInterval(function(){ try{ verCheck(); }catch(e){} }, 180000);
   try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ verCheck(); }catch(e){} } }); }catch(e){}
+  /* ★しまい込まれた画面から戻るときは visibilitychange が出ないことがある */
+  try{ window.addEventListener('pageshow',function(){ try{ verCheck(); }catch(e){} }); }catch(e){}
+  /* ★★これが本体。指が触れている＝画面が点いていて、アプリが動いている。
+     　 時計が止まっていても関係ない。年配の方は何も押さなくてよい。
+     ★verCheck の「1分に1回まで」がそのまま効くので、連打しても通信は増えない。
+     ★passive にして、画面を払う動き（スクロール）の邪魔をしない */
+  try{
+    var _verTapGo=function(){ try{ verCheck(); }catch(e){} };
+    document.addEventListener('touchstart', _verTapGo, {capture:true, passive:true});
+    document.addEventListener('mousedown',  _verTapGo, {capture:true, passive:true});
+  }catch(e){
+    try{ document.addEventListener('touchstart', function(){ try{ verCheck(); }catch(e2){} }, true); }catch(e3){}
+  }
   /* 入れかわった直後だけ、小さく知らせる（黙って変わると壊れたと思われるため） */
   try{
     if(localStorage.getItem(VER_FLAG)){
