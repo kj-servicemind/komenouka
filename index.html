@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v119">
+<meta name="app-ver" content="v122">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -736,6 +736,26 @@
   .seg button{flex:1;border:none;background:#fff;padding:14px 4px;font-size:16px;font-weight:800;cursor:pointer;border-right:1px solid var(--line);}
   .seg button:last-child{border-right:none;} .seg button.on{background:var(--green);color:#fff;}
 
+  /* ★v122 保存場所が満杯のときの知らせ（L2）。かぶせる箱は .kusa-ov/.kusa-sheet を使い回す */
+  .lsw-warn{background:#FDECEC;border:1.5px solid rgba(197,48,48,.4);border-radius:14px;
+    padding:13px;margin-bottom:16px;}
+  .lsw-warn b{display:block;font-size:16.5px;font-weight:900;color:#C53030;line-height:1.5;}
+  .lsw-warn span{display:block;font-size:14px;font-weight:700;color:#C53030;margin-top:5px;line-height:1.5;}
+  .lsw-ttl{font-size:15px;font-weight:800;color:#3A362D;margin-bottom:4px;}
+  .lsw-ttl em{font-style:normal;color:#C53030;}
+  /* ★「（およそ ○KB）」は、折り返させずに次の行へ落とす（v122の実機確認で折り返していた） */
+  .lsw-ttl span{display:block;font-weight:700;color:#4A463C;font-size:12.5px;margin-top:2px;}
+  .lsw-gauge{height:22px;border-radius:6px;background:#EAE6DA;border:1.5px solid #C9C3B2;
+    overflow:hidden;margin:2px 0 12px;display:flex;}
+  .lsw-fill{height:100%;}
+  .lsw-row{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;
+    color:#3A362D;padding:7px 2px;border-bottom:1px solid #E6E2D6;}
+  .lsw-row:last-of-type{border-bottom:none;}
+  .lsw-row i{width:13px;height:13px;border-radius:3px;flex-shrink:0;font-style:normal;}
+  .lsw-row .lsw-lab{flex:1;min-width:0;}
+  .lsw-row .lsw-kb{font-variant-numeric:tabular-nums;color:#4A463C;white-space:nowrap;}
+  .lsw-note{font-size:12.5px;font-weight:700;color:#4A463C;text-align:center;margin-top:6px;line-height:1.5;}
+
   /* トースト */
   .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
     background:var(--ink);color:#fff;font-size:15px;font-weight:800;padding:13px 20px;border-radius:14px;
@@ -1291,6 +1311,23 @@
   .fl-sum .v small{font-size:11px;font-weight:600;color:#4A463C;}
   .fl-sum .k{font-size:10.5px;color:#4A463C;margin-top:1px;}
   .fl-search{display:block;width:100%;border:1.5px solid #9C927C;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;margin-bottom:8px;}
+  /* ★★v121 押させるボタン。★.go は「.kt-why .go」＝工程表の中だけで効くものだった。
+     実ブラウザで測って初めて分かった（高さ23px＝CSSが1つも当たっていなかった）。
+     §10-15「まず、その画面がその部品を使っているかを数える」を自分がやっていなかった。
+     → 中身は .kt-why .go と同じにし、名前だけ独立させる（§6 同じ意味は同じ見た目） */
+  .crop-go{display:block;background:var(--green);color:#fff;border-radius:12px;
+    padding:13px 10px;text-align:center;font-size:16px;font-weight:900;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;margin-bottom:10px;}
+  /* 控えめ版（白＋緑枠）。深緑は1画面1〜2か所に絞るため（§6） */
+  .crop-go.sub{background:#fff;color:var(--green-deep);border:1.5px solid var(--green);}
+  /* ★v121 作付を決めるモードの見出し。モードに入っていることを、色だけでなく文字で示す（§6） */
+  .fl-cropbar{background:#fff;border:2px solid var(--green);border-radius:14px;padding:13px 14px;margin-bottom:11px;}
+  .fl-cropbar .t{font-size:17px;font-weight:800;color:var(--green-deep);margin-bottom:7px;}
+  .fl-cropbar .s{font-size:14px;line-height:1.85;color:#3A382E;}
+  .fl-cropbar .n{font-weight:800;color:var(--green-deep);font-size:15.5px;}
+  /* ★v121「この田んぼは今年ぶんを決めた」の札。色だけに頼らず文字で言う（§6） */
+  .crop-set{flex-shrink:0;font-size:11.5px;font-weight:800;color:var(--green-deep);
+    background:var(--green-soft);border:1px solid #6B9077;border-radius:999px;padding:2px 8px;white-space:nowrap;}
   .fl-mode{display:flex;gap:6px;margin-bottom:8px;}
   .fl-mode div{flex:1;text-align:center;font-size:13px;font-weight:800;padding:9px 0;border-radius:10px;background:#EFEBDD;color:#6B6552;border:1.5px solid var(--line);}
   .fl-mode div.on{background:var(--green,#356A43);border-color:var(--green,#356A43);color:#fff;}
@@ -1564,6 +1601,9 @@
     <div class="page on" id="p-home">
       <div class="homebody">
         <div class="alertbar" id="alertBar"><!-- v2.6:警報・注意報が発表中のときだけJSで表示 --></div>
+        <div class="alertbar" id="lswBar"><!-- ★v122:保存場所が8割を超えたときだけJSで表示。
+             ★気象警報(alertBar)とは別の入れ物にする。同じidを使い回すと、
+               警報の描き直しが保存の知らせを消してしまう（§10-15） --></div>
         <div class="wxstale" id="wxStale"><!-- v2.6:オフライン復元時のみ「◯時点の予報」を表示 --></div>
         <div class="todo">
           <div class="th"><span>🗓️</span>今日のやること<span class="src">予定表から自動</span></div>
@@ -1593,6 +1633,12 @@
         </div>
         <div id="fieldsBody"><!-- 田んぼ88枚(JS) --></div>
         <div class="spacer"></div>
+      </div>
+      <!-- ★v121 その田んぼの作付をえらぶシート。草刈りの記録シートとまったく同じ作り
+           （.kusa-ov / .kusa-sheet を使い回す・§6「同じCSSクラスを使い回す」）。
+           iOS対策で inset は使わず4辺を明示するのも草刈りと同じ -->
+      <div class="kusa-ov" id="cropOv" style="display:none;" onclick="cropSheetBg(event)">
+        <div class="kusa-sheet" id="cropSheet"></div>
       </div>
     </div>
 
@@ -2049,7 +2095,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v119</span></div>
+          <div class="setrow">バージョン<span class="sv">v122</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2332,7 +2378,11 @@
     /* ★v90 田んぼ一覧も1画面の中に「タイル」と「その地区の田んぼ」があるので1段ずつ戻す。
        ヘッダーの戻るも横スワイプも下タブも、どれもここを通る（§10-9） */
     if(curScreen==='fields'){
+      /* ★v121 作付を決めている時は、シート → 中の一覧 → モード の順に1段ずつ戻す。
+         ヘッダーの戻るも横スワイプも下タブも、どれもここを通る（§10-9） */
+      if(typeof cropPickField!=='undefined' && cropPickField){ cropSheetClose(); return; }
       if(typeof flPick!=='undefined' && flPick){ flBackToTiles(); return; }
+      if(typeof flCropEdit!=='undefined' && flCropEdit){ cropEditClose(); return; }
     }
     var to=navPop();
     _navSkip=true;          /* 戻る動作そのものは履歴に積まない */
@@ -2352,6 +2402,7 @@
     if(typeof applyDates==='function')applyDates();
     if(n==='home'&&typeof applyWeather==='function')applyWeather();
     if(n==='home'&&typeof applyScene==='function')applyScene();
+    if(n==='home'&&typeof lsBarUpdate==='function')lsBarUpdate();   /* ★v122 保存場所の帯 */
     if(n==='koutei'&&typeof ktEnter==='function')ktEnter();
     if(n==='kusa'&&typeof kusaEnter==='function')kusaEnter();      /* ★v67 */
     if(n==='fields'&&typeof fieldsEnter==='function')fieldsEnter();
@@ -2436,6 +2487,165 @@
     '⑧':{do:'刈取適期の見極めと収穫・乾燥。',water:'収穫直前まで間断灌水。',fert:'—',pest:'刈り遅れによる胴割れに注意。',tip:'<span class="nb">出穂後およそ40日・</span><span class="nb">積算約1000℃が目安。</span><span class="nb">籾水分25%前後で</span><span class="nb">刈取。</span>'}
   };
 
+  /* ============================================================
+     ★★v122 保存の背骨（L2：満杯のとき、黙って捨てるのをやめる）★★
+
+     ── v121まで何が起きていたか（本物のChromiumで再現ずみ）──
+       localStorage.setItem は42か所にあり、うち40か所が catch(e){} で
+       **失敗を握りつぶして**いた。iPhone の保存場所が満杯になると：
+
+         画面に出たトースト … 「✅ 保存しました(記録簿・工程表・原価にも反映)」
+                              「💾 保存しました。まだ家族に送れていません
+                                （電波が戻れば自動で送ります）」
+         実際に保存された件数 … **0件**
+         JSエラー             … **0件**（何も起きていないように見える）
+         アプリを開き直すと    … 記録は消えている
+
+       ②のトーストは二重に嘘で、**待っても永久に家族へ届かない**。
+       §3.5「黙って嘘をつく」のいちばん危ない形＝農薬の使用履歴が消えるということ。
+
+     ── 直しかた（根本・§0.5②）──
+       出口が42か所あるので、42回同じ直しを書くのは対症療法。
+       **保存を1本の関数(lsSet)に通し、失敗をその場で言う。**
+       呼び出し元（42か所）は1行も触らない。トーストの嘘は toast() 1か所で止める。
+
+     ── 上限は決めつけない（§3.5「分からない時に既定値でごまかさない」）──
+       保存できる量は端末・機種・他のデータで変わる。**一度でも満杯を見たら、
+       その時の使用量を上限として覚える**。見るまでは目安を使い、画面では「およそ」と書く。
+
+     ── 実測（この版で数えた値。§3.5 勘で埋めない）──
+       写真の一覧キャッシュ200件 …    73KB（上限のわずか1.4%）
+       作業の記録 10年ぶん       … 3,204KB（上限の63%）★満杯の主犯はこれ
+       削除の印 20,000件         …   762KB
+       → 「控えを捨てる」で空くのはごくわずか。**画面にそう正直に書く**。
+         根治は「年ごとに帳面を分ける」（L3と同じ根。v123以降の大仕事）
+  ============================================================ */
+  var LS_GUESS=5120*1024;   /* 目安（iPhone Safari ≒5,120KB）。実測できるまでの間だけ使う */
+  var LS_SEEN=0;            /* 満杯を実際に見たときの使用量＝その端末の本当の上限 */
+  var LS_FULL_AT=0;         /* 最後に満杯を見た時刻。トーストの嘘を止めるのに使う */
+  var _lsUse=null, _lsUseAt=0;
+
+  /* 保存の背骨。★戻り値は「本当に保存できたか」。失敗したら、その場で必ず言う */
+  function lsSet(k,v){
+    try{ localStorage.setItem(k,v); return true; }
+    catch(e){
+      LS_FULL_AT=Date.now();
+      try{ var u=lsUsage(true); if(u&&u.total>LS_SEEN)LS_SEEN=u.total; }catch(_x){}
+      try{ lsFullOpen(); }catch(_x){}
+      try{ lsBarUpdate(); }catch(_x){}
+      return false;
+    }
+  }
+
+  /* いま何がどれだけ使っているか。★数えて出す（§3.5） */
+  function lsUsage(force){
+    if(!force && _lsUse && (Date.now()-_lsUseAt)<30000) return _lsUse;
+    var o={total:0, kt:0, tomb:0, cache:0, other:0};
+    try{
+      var CA={};
+      try{ if(typeof PH_LS==='string')CA[PH_LS]=1; }catch(_x){}
+      try{ if(typeof WX_LS_KEY==='string')CA[WX_LS_KEY]=1; }catch(_x){}
+      try{ if(typeof WX_ALERT_LS_KEY==='string')CA[WX_ALERT_LS_KEY]=1; }catch(_x){}
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i); if(k==null)continue;
+        var v=''; try{ v=localStorage.getItem(k)||''; }catch(_x2){ v=''; }
+        var n=k.length+v.length;
+        o.total+=n;
+        if(typeof KT_LS==='string' && k===KT_LS)o.kt+=n;
+        else if(typeof TOMB_LS==='string' && k===TOMB_LS)o.tomb+=n;
+        else if(CA[k])o.cache+=n;
+        else o.other+=n;
+      }
+    }catch(e){}
+    o.limit=(LS_SEEN>0)?LS_SEEN:LS_GUESS;
+    o.pct=(o.limit>0)?Math.min(100, Math.round(o.total/o.limit*100)):0;
+    _lsUse=o; _lsUseAt=Date.now();
+    return o;
+  }
+
+  /* 年配の方に「KB」は伝わりにくいので、割で言う（§6）。5%未満は「わずか」 */
+  function lsWari(n, total){
+    if(!total || n<=0)return 'わずか';
+    var p=n/total*100; if(p<5)return 'わずか';
+    var w=Math.round(p/5)/2, s=Math.floor(w);
+    return s+'割'+(((w-s)>=0.5)?'半':'');
+  }
+  function lsKB(n){ return Math.round(n/1024).toLocaleString()+'KB'; }
+
+  /* 満杯の知らせ（かぶせる箱）。★閉じる道を箱の中に必ず置く（§10-14） */
+  function lsFullOpen(){
+    if(document.getElementById('lswOv'))return;   /* 二重に開かない */
+    var u=lsUsage(true), t=u.total||1;
+    var seg=[['#C53030',u.kt],['#8B6F3A',u.tomb],['#2F5D3A',u.cache],['#B9B3A2',u.other]];
+    var bar='';
+    for(var i=0;i<seg.length;i++){
+      var w=Math.max(0, seg[i][1]/t*100*Math.min(1,u.total/u.limit));
+      bar+='<div class="lsw-fill" style="width:'+w.toFixed(2)+'%;background:'+seg[i][0]+'"></div>';
+    }
+    var ktn=0; try{ ktn=(ktLog&&ktLog.length)||0; }catch(_x){}
+    var rows=
+      '<div class="lsw-row"><i style="background:#C53030"></i><span class="lsw-lab">作業の記録　'+ktn.toLocaleString()+'件</span><span class="lsw-kb">'+lsWari(u.kt,t)+'</span></div>'+
+      '<div class="lsw-row"><i style="background:#8B6F3A"></i><span class="lsw-lab">消した記録の控え</span><span class="lsw-kb">'+lsWari(u.tomb,t)+'</span></div>'+
+      '<div class="lsw-row"><i style="background:#2F5D3A"></i><span class="lsw-lab">写真・天気の控え</span><span class="lsw-kb">'+lsWari(u.cache,t)+'</span></div>'+
+      '<div class="lsw-row"><i style="background:#B9B3A2"></i><span class="lsw-lab">そのほか</span><span class="lsw-kb">'+lsWari(u.other,t)+'</span></div>';
+    var full=(LS_FULL_AT && (Date.now()-LS_FULL_AT)<60000);
+    var head = full
+      ? '<div class="lsw-warn"><b>いま入れた記録は、残っていません。</b><span>空きを作ってから、もう一度記録してください。</span></div>'
+      : '<div class="lsw-warn" style="background:#FFF4E0;border-color:rgba(178,94,9,.35);"><b style="color:#B25E09;">このままだと、記録が保存できなくなります。</b><span style="color:#B25E09;">いまのうちに空きを作るか、設定から書き出してください。</span></div>';
+    var ov=document.createElement('div');
+    ov.className='kusa-ov'; ov.id='lswOv';
+    ov.innerHTML=
+      '<div class="kusa-sheet">'+
+        '<div class="kusa-grip"></div>'+
+        '<div class="kusa-sh">'+(full?'⚠️ 保存できませんでした':'⚠️ 保存場所が少なくなっています')+'</div>'+
+        '<div class="kusa-sh2">iPhoneの保存場所が、'+(full?'いっぱいです':'あと少しです')+'</div>'+
+        head+
+        '<div class="lsw-ttl">いま使っている場所　<em>'+u.pct+'%'+(full?'（ほぼ満杯）':'')+'</em>'+
+          '<span>およそ '+lsKB(u.total)+'</span></div>'+
+        '<div class="lsw-gauge">'+bar+'</div>'+
+        rows+
+        '<button class="crop-go" style="width:100%;margin-top:16px;" onclick="lsFreeCache()">🧹 写真・天気の控えを捨てる</button>'+
+        '<div class="lsw-note">写真そのものは消えません（少しだけ空きます）<br>足りないときは、設定から書き出してください</div>'+
+        '<button class="crop-go sub" style="width:100%;margin-top:12px;" onclick="lsFullClose()">とじる</button>'+
+      '</div>';
+    ov.addEventListener('click', function(e){ if(e.target===ov)lsFullClose(); });
+    document.body.appendChild(ov);
+    /* ★すでに画面に出ている「✅ 保存しました」を、その場で消す。
+       出たあとのトーストは数秒残るので、止めるだけでは間に合わない（v122の検証で判明） */
+    try{ var _t=document.getElementById('toast'); if(_t)_t.classList.remove('show'); }catch(e){}
+  }
+  function lsFullClose(){
+    var el=document.getElementById('lswOv');
+    if(el&&el.parentNode)el.parentNode.removeChild(el);
+    try{ lsBarUpdate(); }catch(e){}
+  }
+
+  /* 捨てても安全なものだけを捨てる。★どれもサーバー等から取り直せるものに限る（§10-12 狭くする） */
+  function lsFreeCache(){
+    var before=lsUsage(true).total;
+    try{ if(typeof PH_LS==='string')localStorage.removeItem(PH_LS); }catch(e){}
+    try{ if(typeof WX_LS_KEY==='string')localStorage.removeItem(WX_LS_KEY); }catch(e){}
+    try{ if(typeof WX_ALERT_LS_KEY==='string')localStorage.removeItem(WX_ALERT_LS_KEY); }catch(e){}
+    try{ phItems=[]; if(typeof phIndex==='function')phIndex(); phLoaded=false; }catch(e){}
+    var d=Math.max(0, before-lsUsage(true).total);
+    lsFullClose();
+    try{ lsBarUpdate(); }catch(e){}
+    toast(d>0 ? ('🧹 '+lsKB(d)+' あきました') : '🧹 捨てられる控えはありませんでした');
+  }
+
+  /* ホームの帯。8割を超えたら出す＝**満杯になる前に**気づける（§0.5⑤） */
+  function lsBarUpdate(){
+    var el=document.getElementById('lswBar'); if(!el)return;
+    var u=lsUsage();
+    if(!u || u.total<=0 || u.pct<80){ el.className='alertbar'; el.innerHTML=''; el.onclick=null; return; }
+    var full=(u.pct>=97);
+    el.className='alertbar on'+(full?' danger':'');
+    el.innerHTML='<div class="ai">⚠️</div><div class="atx">'+
+      '<b>保存場所が'+(full?'いっぱいです':('少なくなっています（残り '+Math.max(1,Math.round((100-u.pct)/10))+'割）'))+'</b>'+
+      '<span>'+(full?'新しい記録が保存できません':'このままだと、記録が保存できなくなります')+'</span></div>';
+    el.onclick=function(){ lsFullOpen(); };
+  }
+
   var INA_LS='gyotoku.inasaku.v1';
   var inaState=null; /* {variety, transplant(ISO), actualHead(ISO|null), viewStage} */
 
@@ -2444,8 +2654,9 @@
   }
   /* ★v63 保存するたびに更新時刻を押す。これが無いと、家族が品種や田植え日を直しても
      自分の端末に永久に届かない（_mergeVal の「設定の箱」の判定に使う） */
-  function inaSave(){ try{ if(inaState&&typeof inaState==='object')inaState._m=Date.now();
-    localStorage.setItem(INA_LS,JSON.stringify(inaState));}catch(e){} }
+  function inaSave(){ /* ★v122 lsSet を通す（保存の背骨） */
+    try{ if(inaState&&typeof inaState==='object')inaState._m=Date.now(); }catch(e){}
+    try{ return lsSet(INA_LS,JSON.stringify(inaState)); }catch(e){ return false; } }
 
   /* ある日付の平均気温を返す。直近は予報(WX_CACHE)、それ以外は月別平年値。 */
   function inaTempOn(d){
@@ -2754,6 +2965,136 @@
     {n:'吹上 (3)', a:'22.47a', crop:'にじのきらめき', last:'にじのきらめき', area:'吹上', addr:'', comb:'チョッパなし', memo:'', care:''},
     {n:'吹上 水', a:'7.68a', crop:'にじのきらめき', last:'にじのきらめき', area:'吹上', addr:'', comb:'チョッパなし', memo:'', care:''}
   ];
+
+  /* ============================================================
+     ★★v120【L1】作付は「年ごと」に持つ（10年20年つかうための土台）★★
+
+     ── なぜ要るのか（v119までの姿）──
+       88枚の作付は、すぐ上の KT_FIELDS に**直接書いて**あった。
+       crop＝2026年の計画／last＝2025年の実績（v24 で KSAS から取り込んだもの）。
+       この形だと **2027年になっても中身が動かない**。
+       しかも田んぼの詳細には「今年(2026)」と**固定文字**で書いてあったので、
+       **中身も古く、名札も古い**。年配の方には見破りようがない
+       （§10-14「固定文字は、いちばん静かな嘘」）。
+       さらに作付を変えるには index.html を書き換えるしかなく、
+       **毎年だれかに頼まないと年が進まない**。10年20年つかうには、ここが最大の弱点だった。
+
+     ── 直しかた（読む側33か所を1行も触らない＝根本を1か所で直す）──
+       作付を読んでいる所はアプリ全体で **33か所**あるが、**値の出どころは KT_FIELDS 1か所**。
+       だから読む側は触らず、**起動時に KT_FIELDS の crop/last を「今年の姿」に入れ直す**
+       （cropApply）。33か所はこれまでどおり f.crop を読むだけでよい。
+       （§0.5② 原因そのものを直す。読む側の回避で終わらせない）
+
+     ── 入れ物の形（家族との同期の規則に、そのまま乗せる）──
+       gyotoku.crop.v1 = { "2027": { "西 3":"ひのひかり", …, "_m":{"西 3":時刻} } }
+         ・いちばん上に _m を**置かない** → 〈場所ごとの表〉と判定される（§6.5）
+           ＝ 年ごとに足し算。ちがう年が混ざらない
+         ・年の箱の中に _m（項目ごとの時刻）を持つ → **田んぼ1枚ずつ**勝負がつく
+           ＝ 家族2人が別々の田んぼを同時に変えても、両方残る
+       これは「土のメモ」とまったく同じ形。**新しい合流の規則を1つも足さずに済む**
+       （§10-15「実績のある形があるなら、読んでからそろえる」）
+
+     ── まだ決めていない年は「去年のまま仮に動かす」。ただし黙らない ──
+       2027年1月1日を過ぎても作付を決めていなければ、直前に決まっている年の作付で動かす。
+       止めると工程表・出穂予想・苗箱がまるごと止まるため。
+       ★そのかわり cropProv() が true になり、画面に「まだ決めていません」と出す
+       （§3.5「分からない時に既定値でごまかさない」＝黙って埋めない。埋めたことを言う）
+     ============================================================ */
+  var CROP_LS='gyotoku.crop.v1';
+  var CROP_BASE=2026;   /* 上の KT_FIELDS の crop が指す年（v24でKSASから取り込んだ年） */
+  var CROP_PREV=2025;   /* 同じく last が指す年 */
+  var CROP_SEED={};     /* 取込時の作付の控え。KT_FIELDS は cropApply で書き換わるため要る */
+  var cropMap={};       /* {年:{田んぼ名:品種, _m:{田んぼ名:時刻}}} */
+
+  function cropSeedInit(){
+    CROP_SEED={};
+    for(var i=0;i<KT_FIELDS.length;i++){
+      CROP_SEED[KT_FIELDS[i].n]={c:KT_FIELDS[i].crop||'', l:KT_FIELDS[i].last||''};
+    }
+  }
+  function cropLoad(){
+    try{ var s=localStorage.getItem(CROP_LS); cropMap=s?JSON.parse(s):{}; }catch(e){ cropMap={}; }
+    if(!cropMap||typeof cropMap!=='object'||(cropMap instanceof Array))cropMap={};
+    /* ★いちばん上の _m は必ず落とす。これが1つでも紛れ込むと、サーバー(sync-put.js)が
+       〈設定の箱〉と見なして**年ごと丸ごと勝ち負け**を付けてしまい、
+       家族が別の年に入れた作付までまとめて消える（§6.5 箱型の2種類） */
+    if('_m' in cropMap){ try{ delete cropMap._m; }catch(e){} }
+  }
+  function cropSave(){ /* ★v122 lsSet を通す */
+    try{ lsSet(CROP_LS,JSON.stringify(cropMap)); }catch(e){}
+    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){}
+  }
+  function cropThisYear(){ return new Date().getFullYear(); }
+  function cropYearBox(y){ var b=cropMap[String(y)]; return (b&&typeof b==='object'&&!(b instanceof Array))?b:null; }
+  /* その年の作付が決まっているか（1枚でも入っていれば「決めた」） */
+  function cropDecided(y){
+    var b=cropYearBox(y);
+    if(b){ for(var k in b){ if(k!=='_m'&&b.hasOwnProperty(k)&&typeof b[k]==='string')return true; } }
+    return (y===CROP_BASE||y===CROP_PREV);
+  }
+  /* 田んぼ1枚の、その年の作付。決まっていなければ null（★勝手に埋めない・§3.5） */
+  function cropAt(name,y){
+    var b=cropYearBox(y);
+    if(b&&name!=='_m'&&typeof b[name]==='string')return b[name];
+    /* ★v121 空文字（＝取込時に作付の記録が無かった田んぼ。2025年ぶんに8枚ある）は
+       「分からない」なので null を返す。'' を返すと、写した先で '' のまま入り、
+       NAE_EXC に無いので**稲として数えられて苗箱の枚数が水増しされる**（§3.5） */
+    if(y===CROP_BASE)return (CROP_SEED[name]&&CROP_SEED[name].c)?CROP_SEED[name].c:null;
+    if(y===CROP_PREV)return (CROP_SEED[name]&&CROP_SEED[name].l)?CROP_SEED[name].l:null;
+    return null;
+  }
+  /* いま画面に出ている作付は「何年ぶん」か。今年ぶんが決まっていなければ、さかのぼる */
+  function cropBaseYear(){
+    var y=cropThisYear();
+    for(var i=0;i<25;i++){ if(cropDecided(y-i))return y-i; }
+    return CROP_BASE;
+  }
+  /* 今年ぶんは、まだ決めていないか（＝いま出ているのは去年までの作付） */
+  function cropProv(){ return !cropDecided(cropThisYear()); }
+  /* ★ここが要。KT_FIELDS を「今年の姿」に入れ直す。読む側33か所は1行も変えていない */
+  function cropApply(){
+    var B=cropBaseYear();
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var n=KT_FIELDS[i].n, c=cropAt(n,B), p=cropAt(n,B-1);
+      /* ★v121 決まっていない田んぼは '未定' にする。'' のままだと NAE_EXC に無いので
+         **稲として数えられ、苗箱の必要枚数が水増しされる**。'未定' はもともと
+         KT_FIELDS に20枚入っているアプリの言葉なので、しぼりこみ・色分けもそのまま効く */
+      KT_FIELDS[i].crop=(c==null)?'未定':c;
+      KT_FIELDS[i].last=(p==null)?'':p;   /* 去年は「無ければ出さない」作りなので '' のまま */
+    }
+  }
+  /* 1枚ぶんの作付を決める（★v121の画面から呼ぶ）。時刻は田んぼごとに押す */
+  function cropSet(name,y,v){
+    var yk=String(y), b=cropMap[yk];
+    if(!b||typeof b!=='object'||(b instanceof Array))b=cropMap[yk]={};
+    if(!b._m||typeof b._m!=='object'||(b._m instanceof Array))b._m={};
+    b[name]=v; b._m[name]=Date.now();
+    cropSave(); cropApply();
+  }
+  /* 去年の作付を、まるごと今年に写す（★v121「去年から写す」で呼ぶ）。
+     ★すでに決めた田んぼは上書きしない（家族が先に決めたぶんを消さないため） */
+  function cropCarryOver(y){
+    var from=y-1, t=Date.now(), n=0, yk=String(y), b=cropMap[yk];
+    if(!b||typeof b!=='object'||(b instanceof Array))b=cropMap[yk]={};
+    if(!b._m||typeof b._m!=='object'||(b._m instanceof Array))b._m={};
+    for(var i=0;i<KT_FIELDS.length;i++){
+      var nm=KT_FIELDS[i].n;
+      if(typeof b[nm]==='string')continue;
+      var v=cropAt(nm,from); if(v==null)continue;
+      b[nm]=v; b._m[nm]=t; n++;
+    }
+    if(n){ cropSave(); cropApply(); }
+    return n;
+  }
+  /* ★v121 作付でえらべるもの。★値は KT_FIELDS に実際に入っている表記と**同じ文字**にする。
+     ここがズレると「未定」と「まだ決めていない」の2つの言い方ができ、
+     しぼりこみ・色分け・苗箱の計算が全部食い違う（§10-8「同じ意味の表を2つ作らない」）。
+     並びは、いま作っている枚数の多い順。「未定」は最後（§3.5 分からないの受け皿） */
+  var CROP_CHOICES=['つやおとめ','ひのひかり','にこまる','にじのきらめき','夢つくし','モチ','大豆','未定'];
+
+  /* ★起動時に1回。KT_FIELDS を読む所より必ず先に走らせる（§5 var の巻き上げ事故を避ける） */
+  (function(){ cropSeedInit(); cropLoad(); cropApply(); })();
+
   var FIELD_BADGE={here:{c:'b-here',t:'📍今ここ'},done:{c:'b-done',t:'✅済み'},doing:{c:'b-doing',t:'💧作業中'},warn:{c:'b-warn',t:'⚠️注意'}};
   /* 土のメモ（田んぼ別）localStorage */
   var SOIL_LS='gyotoku.soil.v1';
@@ -2761,7 +3102,8 @@
   var SOIL_TAG_POOL=['酸性ぎみ','中性','アルカリぎみ','水はけ良い','水はけ悪い','粘土質','砂質','肥えている','やせ気味'];
   function soilLoad(){ try{var s=localStorage.getItem(SOIL_LS); soilData=s?JSON.parse(s):{};}catch(e){soilData={};}
     if(!soilData||typeof soilData!=='object')soilData={}; }
-  function soilSave(){ try{localStorage.setItem(SOIL_LS,JSON.stringify(soilData));}catch(e){} }
+  function soilSave(){ /* ★v122 lsSet を通す */
+    try{ return lsSet(SOIL_LS,JSON.stringify(soilData)); }catch(e){ return false; } }
   /* 全12工程。type:'rec'=記録から判定 / 'grow'=積算気温の計算から日付予想。
      ina は inaCompute().stageDates の添字(生育系のみ)。dtl は栽培アドバイス(INA_DETAIL)のキー。 */
   var KT_STEPS=[
@@ -2807,9 +3149,11 @@
   var ktLog=[];
   function ktLoad(){ try{var s=localStorage.getItem(KT_LS); ktLog=s?JSON.parse(s):[];}catch(e){ktLog=[];}
     if(!(ktLog instanceof Array))ktLog=[]; }
-  function ktSave(){ try{localStorage.setItem(KT_LS,JSON.stringify(ktLog));}catch(e){}
+  function ktSave(){ var _ok=false; /* ★v122 lsSet を通す。満杯なら false が返る */
+    try{ _ok=lsSet(KT_LS,JSON.stringify(ktLog)); }catch(e){ _ok=false; }
     /* ★v55 書いたら、その場で送る。30秒待つと閉じられて届かないことがある（7/25の事故） */
-    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){} }
+    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){}
+    return _ok; }
   /* 全機能はこの1関数で台帳に書き込む(連携連動の背骨) */
   function wlAdd(stepK, fieldN, text, src, extra){
     var e={d:inaFmtFull(new Date()), step:stepK, field:fieldN, text:text||'', src:src||'rec', ksas:false};
@@ -2929,7 +3273,7 @@
     for(i=0;i<arr.length;i++){ e=arr[i];
       if(e&&e.id&&kill[e.id]){ try{ tombAdd(KT_LS,e); }catch(_x){} continue; }
       out.push(e); }
-    try{ localStorage.setItem(KT_LS, JSON.stringify(out)); }catch(_x){}
+    try{ lsSet(KT_LS, JSON.stringify(out)); }catch(_x){}   /* ★v122 lsSet を通す */
     try{ ktLog=out; }catch(_x){}
     try{ _syncHash[KT_LS]=''; }catch(_x){}   /* まとめた版を必ず家族へ送る */
     try{ evLog('dup','同じ中身の記録を1件にまとめました（'+n+'件ぶんを消しました）'); }catch(_x){}
@@ -4418,6 +4762,8 @@
       var a=evArr();
       a.push({t:Date.now(), k:String(kind||''), x:String(text||'')});
       if(a.length>EV_MAX)a=a.slice(a.length-EV_MAX);
+      /* ★v122 ここだけ lsSet を通さない。evLog は「アプリの中の出来事」の控えであって
+         仕事の記録ではない。しかも lsSet の失敗の道から呼ばれると堂々めぐりになる。 */
       localStorage.setItem(EV_LS, JSON.stringify(a));
       var c=document.getElementById('evCountV'); if(c)c.textContent=a.length+'件 ›';
     }catch(e){}
@@ -4538,8 +4884,8 @@
     }
     return window._mem;
   }
-  function memSaveLS(){
-    try{ localStorage.setItem(MEM_LS, JSON.stringify(memArr())); }catch(e){}
+  function memSaveLS(){ /* ★v122 lsSet を通す */
+    try{ lsSet(MEM_LS, JSON.stringify(memArr())); }catch(e){}
     window._memList=null;
     if(typeof syncSoon==='function')syncSoon();
   }
@@ -4834,8 +5180,8 @@
     }
     return window._naeOv;
   }
-  function naeOvSave(){
-    try{ localStorage.setItem(naeOvKey(), JSON.stringify(naeOvArr())); }catch(e){}
+  function naeOvSave(){ /* ★v122 lsSet を通す */
+    try{ lsSet(naeOvKey(), JSON.stringify(naeOvArr())); }catch(e){}
     window._naeOvMap=null;   /* 早見表を作り直させる */
   }
   /* 田んぼ名 → 手直しした枚数（自動にもどした分は入らない） */
@@ -5025,7 +5371,7 @@
     /* 計算に入っていない田んぼ */
     if(ex.length){
       h+='<div class="nae-warn">⚠️ <b>'+ex.length+'枚の田んぼは計算に入っていません</b><br>'
-        +'2026年の作付が「未定」や「大豆」のところです。未定を稲に決めると、必要な枚数はもっと増えます。</div>';
+        +cropBaseYear()+'年の作付が「未定」や「大豆」のところです。未定を稲に決めると、必要な枚数はもっと増えます。</div>';  /* ★v120 年を固定文字にしない */
     }
     h+='<div class="ina-seclbl">田んぼごとの枚数（行を押すと手直しできます）</div>';
     h+='<div class="nae-tabs">'
@@ -6232,6 +6578,7 @@
      ============================================================ */
   function fieldsEnter(){ soilLoad(); ktLoad();
     flPick='';          /* ★v90 開くたびに必ずタイルから。前に開いた地区が残ると迷子になる（§10-9） */
+    flCropEdit=false; cropSheetClose();   /* ★v121 作付モードも必ず解く（同じ理由） */
     fieldsRender(); }
   function fieldMaterials(field){
     /* 台帳から、この田んぼの農薬・肥料の記録を新しい順で */
@@ -6246,15 +6593,163 @@
     out.reverse();
     return out;
   }
-  /* ===== v24 田んぼ一覧2.0:要約+検索+切替+品種チップ+地区たたみ ===== */
+  /* ============================================================
+     ★★v121【L1④】作付を決める画面（案A：1枚ずつ押して変える）★★
+
+     ── なぜ案Aにしたか（実データで決めた・§0.5）──
+       去年→今年で作付が変わったのは29枚。それを〈元の品種→今年の品種〉でまとめると
+       **13のまとまり**に散っていて、1〜2枚のまとまりが8組もあった。
+       まとめて変える案Bの手数は55タップ、1枚ずつの案Aは58タップ＝**差は3タップだけ**。
+       たった3タップのために「チェックしたが、まだ変わっていない」という
+       **中間の状態**を年配の方に背負わせる理由が無い。
+
+     ── 作りかた（新しく考えない・§10-15）──
+       🌾田んぼ一覧の2段（タイル→その中の田んぼ）を**そのまま使う**。
+       増やしたのは「作付を決めるモードか」を持つ1つの変数(flCropEdit)だけ。
+       ★モードは画面全体ではっきり見せる（ヘッダー・上の説明・下のボタン）。
+         「今どっちのモードか分からない」は年配UXでいちばん危ない。
+       ★戻る道は goBack() を通す（§10-9）。ヘッダーの戻るも横スワイプも下タブも同じ道。
+     ============================================================ */
+  var flCropEdit=false;    /* 作付を決めるモードか */
+  var cropPickField='';    /* 品種のシートを開いている田んぼの名前。'' ＝閉じている */
+
+  /* いま決めようとしている年。今年ぶんが未決でも「今年」を決める（去年を直しに行かない） */
+  function cropEditYear(){ return cropThisYear(); }
+  function cropEditOpen(){
+    flCropEdit=true; flPick=''; cropSheetClose();
+    fieldsRender();
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+  function cropEditClose(){
+    flCropEdit=false; flPick=''; cropSheetClose();
+    fieldsRender();
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+  /* その年に、もう決めた田んぼの枚数 */
+  function cropEditDoneN(){
+    var y=cropEditYear(), b=cropYearBox(y), n=0;
+    if(!b)return 0;
+    for(var i=0;i<KT_FIELDS.length;i++){ if(typeof b[KT_FIELDS[i].n]==='string')n++; }
+    return n;
+  }
+  /* この田んぼは、その年ぶんを決めたか（＝「決めた」の札を出すか） */
+  function cropEditIsSet(name){
+    var b=cropYearBox(cropEditYear());
+    return !!(b && typeof b[name]==='string');
+  }
+  /* 去年の作付をまるごと写す。★消える方向の操作ではないが、枚数を必ず言ってから実行する */
+  function cropCarryAsk(){
+    var y=cropEditYear();
+    if(!confirm(y+'年の作付を、'+(y-1)+'年と同じにします。\n\n'
+      +'すでに決めた田んぼは、そのまま残します。\nよろしいですか？')) return;
+    var n=cropCarryOver(y);
+    fieldsRender();
+    toast(n?(n+'枚に'+(y-1)+'年の作付を写しました'):'写せる田んぼがありませんでした');
+  }
+  /* ── 品種をえらぶシート（図③） ───────────────────────── */
+  function cropSheetOpen(name){
+    cropPickField=name;
+    var ov=document.getElementById('cropOv'), sh=document.getElementById('cropSheet');
+    if(!ov||!sh)return;
+    var y=cropEditYear(), now=cropAt(name,y), prev=cropAt(name,y-1);
+    var list=CROP_CHOICES;
+    var h='<div class="kusa-grip"></div>'
+      + '<div class="kusa-sh">'+name+'</div>'
+      + '<div class="kusa-sh2">'+y+'年の作付をえらんでください</div>';
+    for(var i=0;i<list.length;i++){
+      var v=list[i], on=(now===v);
+      h+='<div class="kusa-drow" style="cursor:pointer;'+(on?'border-color:var(--green);background:var(--green-soft);':'')+'"'
+        + ' onclick="cropPickSet(\''+String(v).replace(/'/g,"\\'")+'\')">'
+        + '<span style="width:12px;height:12px;border-radius:99px;flex-shrink:0;background:'+cropColor(v)+'"></span>'
+        + '<div class="kusa-dd"><div class="d">'+v+'</div>'
+        + (v==='未定'?'<div class="w">まだ決めていない、という意味です</div>'
+                    :(prev===v?'<div class="w">'+(y-1)+'年もこれでした</div>':''))+'</div>'
+        + (on?'<span class="kusa-bd" style="color:#fff;background:var(--green);">いまこれ</span>':'')
+        + '</div>';
+    }
+    h+='<div class="kusa-btn off" style="margin-top:6px;" onclick="cropSheetClose()">やめる</div>';
+    sh.innerHTML=h;
+    ov.style.display='flex';   /* ★開くときはCSSと同じ値をはっきり入れる（§5 v48の鉄則） */
+  }
+  function cropSheetClose(){
+    cropPickField='';
+    var ov=document.getElementById('cropOv');
+    if(ov)ov.style.display='none';   /* ★とじている＝'none' だけで見分ける（§5 v48の鉄則） */
+  }
+  function cropSheetBg(e){ if(e&&e.target&&e.target.id==='cropOv')cropSheetClose(); }
+  function cropPickSet(v){
+    var name=cropPickField, y=cropEditYear();
+    if(!name){ cropSheetClose(); return; }
+    cropSet(name, y, v);          /* ★保存＋家族へ送る＋KT_FIELDS を入れ直す（v120） */
+    cropSheetClose();
+    fieldsRender();               /* ★入れ直しただけでは画面は変わらない。必ず描き直す（§0.5⑦） */
+    /* ★v121 品種でしぼっている時に品種を変えると、その田んぼは**この一覧から外れる**。
+       年配の方には「押したら消えた」に見えるので、どこへ行ったかを必ず言う（§3.5） */
+    var moved=(flMode==='crop' && flPick && flPick!==v);
+    toast(name+' を '+v+' にしました（'+y+'年）'+(moved?'\n→「'+v+'」の中に移りました':''));
+  }
+
+
+  /* ★v121 作付モードへの入口。★これが無いと「画面は在るのに、どこからも行けない」（§10-1）。
+     今年ぶんをまだ決めていない年は深緑で強く、決めてある年は白＋緑枠で控えめに出す
+     （§6 強調は1画面1〜2か所。ふだんは苗箱の入口のほうを目立たせる） */
+  function cropEditEntry(){
+    var y=cropThisYear();
+    if(cropProv())
+      return '<div class="crop-go" onclick="cropEditOpen()">🌾 '+y+'年の作付を決めてください</div>';
+    return '<div class="crop-go sub" onclick="cropEditOpen()">🌾 '+y+'年の作付を変える</div>';
+  }
+  /* 作付モードの「頭」。★モードに入っていることが、ひと目で分かるようにする */
+  function cropEditHead(){
+    var y=cropEditYear(), n=cropEditDoneN();
+    return '<div class="fl-cropbar">'
+      + '<div class="t">🌾 '+y+'年の作付を決める</div>'
+      + '<div class="s">変える田んぼを押してください。<br>'
+      + '押していない田んぼは、<b>'+cropBaseYear()+'年のまま</b>です。</div>'
+      + '<div class="s" style="margin-top:6px;">決めた田んぼ　<span class="n">'+n+' / '+KT_FIELDS.length+'枚</span></div>'
+      + '<div class="crop-go sub" style="margin-top:10px;margin-bottom:0;"'
+      + ' onclick="cropCarryAsk()">📋 '+(y-1)+'年と同じにする（まとめて写す）</div>'
+      + '</div>'
+      /* ★id は通常の一覧('flm-')と別にする。同時に画面へ出ることは無いが、
+         静的に重複させると、次に画面をいじった人が必ず踏む（§0.5④・§10-4③） */
+      + '<div class="fl-mode">'
+      + '<div id="flm2-area" onclick="flModeSet(\'area\')">📍 地区でみる</div>'
+      + '<div id="flm2-crop" onclick="flModeSet(\'crop\')">🌾 品種でみる</div></div>';
+  }
+  /* 作付モードの「足」。★終わる道を、必ずこの中に置く（§10-14 かぶせた作りは外の戻るが効かない） */
+  function cropEditFoot(){
+    return '<div class="crop-go" style="margin-top:12px;" onclick="cropEditClose()">✅ 終わる（'+cropEditYear()+'年の作付）</div>';
+  }
+  /* 作付モードの1行。★押すと「詳細」ではなく「品種のシート」が開く */
+  function cropRowHtml(i){
+    var f=KT_FIELDS[i], set=cropEditIsSet(f.n);
+    var nm=String(f.n).replace(/'/g,"\\'");
+    return '<div class="rowcard" onclick="cropSheetOpen(\''+nm+'\')"'
+      + ' style="border:0;border-radius:0;border-bottom:1px solid #9C927C;margin:0;box-shadow:none;'
+      + (set?'background:#F4F9F5;':'')+'">'
+      + '<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;">'
+      + '<span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
+      + '<div style="min-width:0;"><div class="nm">'+f.n+'</div>'
+      + '<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
+      + (set?'<span class="crop-set">決めた</span>':'')
+      + '<span style="margin-left:8px;font-weight:800;color:#6B6552;font-size:14.5px;flex-shrink:0;">'+f.a+'</span>'
+      + '<span style="margin-left:6px;color:#8A8474;font-weight:800;flex-shrink:0;">›</span></div>';
+  }
+
   var flQ='', flMode='area', flCrop=null, flOpenG={};
   /* ★v90 田んぼ一覧を「草刈りと同じ2段」にする。'' ＝地区(品種)のタイル／名前 ＝その中の田んぼ */
   var flPick='';
   function flQSet(v){ flQ=v; flListDraw(); }
-  function flModeSet(m){ flMode=m; flOpenG={}; flPick=''; flShellModes(); flListDraw(); }
+  function flModeSet(m){ flMode=m; flOpenG={}; flPick='';
+    if(flCropEdit){ fieldsRender(); return; }   /* ★v121 作付モードは頭から描き直す */
+    flShellModes(); flListDraw(); }
   function flShellModes(){
     var ms=['area','crop','size'];
-    for(var i=0;i<ms.length;i++){ var el=document.getElementById('flm-'+ms[i]); if(el)el.classList.toggle('on',flMode===ms[i]); }
+    /* ★v121 作付モードの切替('flm2-')も同じ規則で光らせる */
+    for(var i=0;i<ms.length;i++){
+      var el=document.getElementById('flm-'+ms[i]); if(el)el.classList.toggle('on',flMode===ms[i]);
+      var e2=document.getElementById('flm2-'+ms[i]); if(e2)e2.classList.toggle('on',flMode===ms[i]);
+    }
   }
   function flCropSet(c){ flCrop=(flCrop===c?null:c); flListDraw(); }
   function flGrpToggle(k){ flOpenG[k]=!flOpenG[k]; flListDraw(); }
@@ -6272,11 +6767,18 @@
     /* ★v90 ②その地区(品種)の田んぼ。草刈り・工程表・田んぼをえらぶと同じ形 */
     flHdr();
     var ent=document.querySelector('#p-fields .nae-entry');
-    if(ent)ent.style.display=flPick?'none':'';
+    /* ★v121 作付を決めている間は、苗箱の入口を隠す（1画面1機能） */
+    if(ent)ent.style.display=(flPick||flCropEdit)?'none':'';
     if(flPick){
       var arr=flGroupIdx(flPick), hh='<div class="fl-grp open"><div class="fl-glist">';
       for(var z=0;z<arr.length;z++)hh+=flRowHtml(arr[z]);
-      body.innerHTML=hh+'</div></div><div class="spacer"></div>';
+      body.innerHTML=hh+'</div></div>'+(flCropEdit?cropEditFoot():'')+'<div class="spacer"></div>';
+      return;
+    }
+    /* ★v121 作付を決めるモード：要約・検索・品種チップは出さない（1画面1機能） */
+    if(flCropEdit){
+      body.innerHTML=cropEditHead()+flTilesHtml()+cropEditFoot()+'<div class="spacer"></div>';
+      flShellModes();
       return;
     }
     var totalA=0; for(var i=0;i<KT_FIELDS.length;i++)totalA+=parseFloat(KT_FIELDS[i].a)||0;
@@ -6288,6 +6790,7 @@
       +'<div><div class="v">'+KT_FIELDS.length+'<small>枚</small></div><div class="k">登録圃場</div></div>'
       +'<div><div class="v">'+(totalA/100).toFixed(1)+'<small>ha</small></div><div class="k">合計面積</div></div>'
       +'<div><div class="v">'+nCrop+'<small>品種</small></div><div class="k">今年の作付</div></div></div>'
+      +cropEditEntry()
       +'<input class="fl-search" type="text" placeholder="🔍 名前でさがす（例：池松）" value="'+flQ.replace(/"/g,'&quot;')+'" oninput="flQSet(this.value)">'
       +'<div class="fl-mode">'
       +'<div id="flm-area" onclick="flModeSet(\'area\')">📍 地区別</div>'
@@ -6313,6 +6816,7 @@
     el.innerHTML=h;
   }
   function flRowHtml(i){
+    if(flCropEdit)return cropRowHtml(i);   /* ★v121 作付モードは行の中身も行き先も別 */
     var f=KT_FIELDS[i];
     /* v36.1:稲の田んぼには1枚ずつの苗箱の枚数を出す（本人指摘①）。手直し済みはオレンジ＋✏️ */
     var nae='';
@@ -6372,6 +6876,11 @@
       el.innerHTML='<div class="navhead">'
         +'<button class="back" onclick="flBackToTiles()">\u2039 '+(flMode==='crop'?'\u54c1\u7a2e':'\u5730\u533a')+'</button>'
         +'<span class="title">'+flPick+'\uff08'+flGroupIdx(flPick).length+'\u679a\uff09</span></div>';
+    }else if(flCropEdit){
+      /* ★v121 作付モードは、ヘッダーでもそれと分かるようにする */
+      el.innerHTML='<div class="navhead">'
+        +'<button class="back" onclick="cropEditClose()">\u2039 \u623b\u308b</button>'
+        +'<span class="title">\ud83c\udf3e '+cropEditYear()+'\u5e74\u306e\u4f5c\u4ed8</span></div>';
     }else{
       el.innerHTML=HEADERS['fields']||'';
     }
@@ -6439,8 +6948,12 @@
       /* v24 KSAS取込情報 */
       h+='<div class="fl-info">'
         +'<div><span class="k3">面積</span><b>'+f.a+'</b>（約'+Math.round((parseFloat(f.a)||0)*100)+'㎡）</div>'
-        +'<div><span class="k3">今年(2026)</span>'+(f.crop||'未定')+'</div>'
-        +(f.last?'<div><span class="k3">去年(2025)</span>'+f.last+'</div>':'')
+        /* ★v120 年は固定文字にしない。いま出している作付が何年ぶんかを、そのまま書く。
+           今年ぶんをまだ決めていないときは「今年」と言わず「2026年」と年で言い、
+           下に「まだ決めていません」と出す（§3.5 黙って埋めない・§10-14 静かな嘘） */
+        +'<div><span class="k3">'+(cropProv()?cropBaseYear()+'年':'今年('+cropThisYear()+')')+'</span>'+(f.crop||'未定')+'</div>'
+        +(f.last?'<div><span class="k3">'+(cropProv()?(cropBaseYear()-1)+'年':'去年('+(cropThisYear()-1)+')')+'</span>'+f.last+'</div>':'')
+        +(cropProv()?'<div><span class="k3">⚠️ お知らせ</span><span style="color:var(--red);font-weight:700;">'+cropThisYear()+'年の作付は、まだ決めていません</span></div>':'')
         +(f.addr?'<div><span class="k3">住所</span>'+f.addr+'</div>':'')
         +(f.comb?'<div><span class="k3">ワラ処理</span>'+f.comb+'</div>':'')
         +(f.memo?'<div><span class="k3">📝 メモ</span>'+f.memo+'</div>':'')
@@ -6517,7 +7030,8 @@
     if(!(hyLog instanceof Array))hyLog=[]; }
   /* ★v52 hySave() はもう呼ばれない（肥料台帳へは書かなくなったため）。
      引っ越し(hyMigrate)が読むだけなので、hyLoad と対で残してある */
-  function hySave(){ try{localStorage.setItem(HY_LS,JSON.stringify(hyLog));}catch(e){} }
+  function hySave(){ /* ★v122 lsSet を通す */
+    try{ return lsSet(HY_LS,JSON.stringify(hyLog)); }catch(e){ return false; } }
   /* ★★v52 引っ越し：昔の版で作業台帳に相方が書かれなかった肥料台帳の記録を、作業台帳へ移す。★★
      ・起動時に一度だけ走り、終わったら印(HY_MIG)を付けて二度と走らせない
      ・id は「中身から決まる形」にする。家族の端末がそれぞれ引っ越ししても
@@ -6947,7 +7461,8 @@
   var kiKind='軽油';
   function kiLoad(){ try{var s=localStorage.getItem(KI_LS); kiLog=s?JSON.parse(s):[];}catch(e){kiLog=[];}
     if(!(kiLog instanceof Array))kiLog=[]; }
-  function kiSave(){ try{localStorage.setItem(KI_LS,JSON.stringify(kiLog));}catch(e){} }
+  function kiSave(){ /* ★v122 lsSet を通す */
+    try{ return lsSet(KI_LS,JSON.stringify(kiLog)); }catch(e){ return false; } }
   function kiYear(dstr){ var m=dstr&&dstr.match(/^(\d{4})/); return m?parseInt(m[1],10):null; }
   function kiSum(mac,year){
     var s=0; for(var i=0;i<kiLog.length;i++){ if(kiLog[i].mac===mac&&kiYear(kiLog[i].d)===year)s+=kiLog[i].yen||0; }
@@ -7214,7 +7729,8 @@
   var costManual={};        /* {費目キー:金額} 手入力ぶん */
   function costLoad(){ try{var s=localStorage.getItem(COST_LS); costManual=s?JSON.parse(s):{};}catch(e){costManual={};}
     if(!costManual||typeof costManual!=='object')costManual={}; }
-  function costSave(){ try{localStorage.setItem(COST_LS,JSON.stringify(costManual));}catch(e){} }
+  function costSave(){ /* ★v122 lsSet を通す */
+    try{ return lsSet(COST_LS,JSON.stringify(costManual)); }catch(e){ return false; } }
   /* ★v66 生産原価の手入力は「丸ごと型」{v:金額, _m:時刻}。
      v65までは数値をそのまま入れていたので、古いデータも必ず読めるようにする。
      ★消したときは「消す」のではなく {v:null, _m:時刻} を残す。
@@ -7519,6 +8035,17 @@
   /* v24.2:表示を7秒に延長(読み切れないという要望)。押せばすぐ消せる */
   var TOAST_MS=7000;
   var tt;function toast(m){
+    /* ★★v122 満杯で保存できなかった直後は、何も言わせない（L2）★★
+       ここを止めないと、満杯の知らせ(.kusa-ov z-index:60)の**上に**
+       トースト(z-index:900)が重なって「✅ 保存しました」と出る。
+       ★呼び出し元42か所を触らずに嘘を止められる、ただ1つの場所（§0.5②）。 */
+    try{
+      /* ★時刻ではなく「状態」で止める。
+         「💾 まだ家族に送れていません」は syncSoon の1200ms後に出る**非同期**なので、
+         満杯を見つけた時刻より前に出ていることがある。時計では取り逃がす（v122の検証で判明）。 */
+      if(document.getElementById('lswOv')) return;
+      if(LS_FULL_AT && (Date.now()-LS_FULL_AT)<2000) return;
+    }catch(e){}
     var t=document.getElementById('toast'); if(!t)return;
     t.textContent=m; t.classList.add('show');
     clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('show');},TOAST_MS);
@@ -7961,7 +8488,10 @@
      ・安全第一：この端末のデータは絶対に消さない(union)。取り込みは足すだけ。
      ・オフラインでも普通に使える。つながった時だけ自動で同期する。 */
   var TOMB_LS='gyotoku.tomb.v1';   /* v30 削除印(tombstone)の台帳。中身は印だけで記録本体は入れない */
-  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1',TOMB_LS];
+  /* ★v120 'gyotoku.crop.v1'（年ごとの作付）を追加＝13→14個。
+     形は〈場所ごとの表〉（上に _m を置かない）なので、合流の規則は土のメモと同じものが効く。
+     ★sync-list.js は鍵を50個までしか読まない。いま14個なので余裕はある（§6.5） */
+  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1',TOMB_LS];
   var SYNC_SET={}; (function(){ for(var i=0;i<SYNC_KEYS.length;i++)SYNC_SET[SYNC_KEYS[i]]=1; })();
   /* ★v43：読むときだけエポックも一緒に取る。
      SYNC_KEYS 本体には入れない（入れると sync-clear で消され、
@@ -7981,7 +8511,8 @@
   /* ===== v30 削除印(tombstone)：削除・編集を家族に共有する ===== */
   /* 台帳の形： { "<同期キー>": { "<記録の印>": 消した時刻ms } }。記録本体は入れない＝軽い */
   function _tombLoad(){ try{ var o=JSON.parse(localStorage.getItem(TOMB_LS)||'{}'); return (o&&typeof o==='object'&&!(o instanceof Array))?o:{}; }catch(e){ return {}; } }
-  function _tombSave(o){ try{ localStorage.setItem(TOMB_LS, JSON.stringify(o)); }catch(e){} }
+  function _tombSave(o){ /* ★v122 lsSet を通す（消した事実が消えると、記録が復活する） */
+    try{ return lsSet(TOMB_LS, JSON.stringify(o)); }catch(e){ return false; } }
   /* 掃除：★v65で「実質そうじしない」に変えた（10年／1キー20000件）
      ── なぜ変えたか（根本の理由）
      「消した」という事実は、削除印という**寿命つきの札**でしか持っていない。
@@ -8549,7 +9080,8 @@
     var N={'gyotoku.worklog.v1':'作業の記録','gyotoku.plans.v1':'予定','gyotoku.members.v1':'名簿',
            'gyotoku.kikai.v1':'機械の記録','gyotoku.photos.v1':'写真','gyotoku.soil.v1':'土のメモ',
            'gyotoku.kyoka.v1':'反省メモ','gyotoku.cost.v1':'生産原価','gyotoku.hygoal.v1':'肥料の目標',
-           'gyotoku.hassei.v1':'発生予察','gyotoku.inasaku.v1':'稲作先生','gyotoku.tomb.v1':'消した印'};
+           'gyotoku.hassei.v1':'発生予察','gyotoku.inasaku.v1':'稲作先生','gyotoku.crop.v1':'年ごとの作付',
+           'gyotoku.tomb.v1':'消した印'};  /* ★v120 作付を追加 */
     return N[k]||k;
   }
   function _syncApply(){
@@ -8610,6 +9142,7 @@
   setTimeout(function(){ try{ unsentPaint(); }catch(e){} }, 2500);
 
   renderHomeGrid(); renderSlotRows(); renderTabBar(); renderTabRows();
+  try{ lsBarUpdate(); }catch(e){}   /* ★v122 起動したその時から、保存場所の残りを見張る */
   (function(){
     var pager=document.getElementById('homePager'); if(!pager)return;
     pager.addEventListener('scroll',function(){
@@ -8637,7 +9170,7 @@
   function savePlans(){
     var all=plans;
     try{ if(plansAside && plansAside.length) all=plans.concat(plansAside); }catch(e){ all=plans; }
-    try{ localStorage.setItem(PLAN_LS_KEY,JSON.stringify(all)); }catch(e){}
+    try{ lsSet(PLAN_LS_KEY,JSON.stringify(all)); }catch(e){}   /* ★v122 lsSet を通す */
     /* ★v55 予定も、書いたその場で送る（カレンダーの入力が消えた事故と同じ根） */
     try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){} }
   /* ★v56 読めなかった1件のせいで、読めた予定を捨てない。保存でも捨てない。
@@ -9640,7 +10173,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v119';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v122';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -9988,7 +10521,8 @@
   /* ---- 📜 去年の今ごろ（旧「うちの教科書」） ---- */
   var KYO_KEY='gyotoku.kyoka.v1', kyoMemos={}, kyoDate=new Date();
   function kyoLoad(){ try{var t=localStorage.getItem(KYO_KEY); kyoMemos=t?JSON.parse(t):{};}catch(e){kyoMemos={};} if(typeof kyoMemos!=='object'||!kyoMemos)kyoMemos={}; }
-  function kyoSave(){ try{localStorage.setItem(KYO_KEY,JSON.stringify(kyoMemos));}catch(e){} }
+  function kyoSave(){ /* ★v122 lsSet を通す */
+    try{ return lsSet(KYO_KEY,JSON.stringify(kyoMemos)); }catch(e){ return false; } }
   /* ★v66 反省メモは「丸ごと型」{v:文章, _m:時刻}。
      v65までは文字列をそのまま入れていたので、古いデータも必ず読めるようにする。
      ★古いデータに時刻は入れない（分からない時刻をでっちあげない）。
@@ -10078,8 +10612,9 @@
   var HYG_KEY='gyotoku.hygoal.v1', hyGoal={n:8,p:10,k:10}; /* 10aあたりkg・水稲の一般的な目安。設定変更可 */
   function hyGoalLoad(){ try{var t=localStorage.getItem(HYG_KEY); if(t){var o=JSON.parse(t); if(o&&o.n!=null)hyGoal=o;}}catch(e){} }
   /* ★v63 肥料の目標も「設定の箱」。稲作先生と同じ型の不具合なので、あわせて時刻を押す */
-  function hyGoalSave(){ try{ if(hyGoal&&typeof hyGoal==='object')hyGoal._m=Date.now();
-    localStorage.setItem(HYG_KEY,JSON.stringify(hyGoal));}catch(e){} }
+  function hyGoalSave(){ /* ★v122 lsSet を通す */
+    try{ if(hyGoal&&typeof hyGoal==='object')hyGoal._m=Date.now(); }catch(e){}
+    try{ return lsSet(HYG_KEY,JSON.stringify(hyGoal)); }catch(e){ return false; } }
   function hyFieldArea(name){
     for(var i=0;i<KT_FIELDS.length;i++)if(KT_FIELDS[i].n===name)return parseFloat(KT_FIELDS[i].a)||0;
     return 0;
