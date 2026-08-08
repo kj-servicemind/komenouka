@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v122">
+<meta name="app-ver" content="v123">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2095,7 +2095,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v122</span></div>
+          <div class="setrow">バージョン<span class="sv">v123</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2551,7 +2551,9 @@
         var v=''; try{ v=localStorage.getItem(k)||''; }catch(_x2){ v=''; }
         var n=k.length+v.length;
         o.total+=n;
-        if(typeof KT_LS==='string' && k===KT_LS)o.kt+=n;
+        /* ★v123 作業の記録は年ごとの帳面に分かれた。全部まとめて「作業の記録」と数える
+           （足し忘れると、いちばん大きいものが「その他」に化けて内訳が嘘になる） */
+        if((typeof KT_LS==='string' && k===KT_LS) || /^gyotoku\.worklog\.[0-9][0-9][0-9][0-9]\.v1$/.test(k))o.kt+=n;
         else if(typeof TOMB_LS==='string' && k===TOMB_LS)o.tomb+=n;
         else if(CA[k])o.cache+=n;
         else o.other+=n;
@@ -3145,14 +3147,140 @@
               cal:'📅カレンダーから', board:'📋この表で入力', ina:'🌡稲作先生の計算'};
 
   /* ---- 作業台帳(全機能共通) ---- */
-  var KT_LS='gyotoku.worklog.v1';
+  /* ★★v123 記録を「年ごとの帳面」に分ける ★★
+     ── なぜ分けるか（v119の長期点検・v122の実測で確定）
+       サーバー(sync-put.js)は1つの箱につき200万字まで。記録は年およそ33万字なので
+       **6年で満杯**になり、その日から家族との共有が黙って止まる。
+       端末(localStorage)も記録10年で保存場所の63%を占める。
+       どちらも根は同じ＝**1冊の帳面に永遠にため続けている**こと。年で分ければ両方直る。
+     ── 分けかた（★既存の記録は移行しない）
+       いまある記録は旧鍵に入れたまま【凍結】。この版を上げた日から作る記録だけ年ごとに入る。
+       振り分けないので「分ける前」と「分けた後」が混ざりようがない。
+       古い版の端末は「新しい記録が見えない」だけで壊れない（版を上げれば見える）。
+     ── ★帳面は「日付」ではなく「id」で決める
+       日付はあとから直せる（v22④の日にち直し）。日付で決めると直した瞬間に帳面が変わり、
+       削除の印が迷子になって**消した記録が復活する**（v48.2・v73と同じ型）。
+       id は 'w'+作った瞬間のミリ秒 なので、日付をいくら直しても動かない。
+       ★帳面は「入れ物の都合」であって「意味」ではない。
+         年で絞る処理は今までどおり e.d（日付）を見るので、画面は1ドットも変わらない。
+     ── ★帳面の名前は「暦」から作る（★v123で設計を見直した所）
+       引き継ぎの設計は「いま端末にある帳面を全部返す」だった。しかしそれでは
+       **まっさらな端末（機種変更・ホーム画面に追加し直した直後・リセット後）は
+       帳面を1冊も持たないので、サーバーへ聞きに行けない**＝家族の記録が永久に届かない。
+       → 2026年から今年までを機械的に作る。どの端末でも必ず同じ答えになる（§10-12）。
+         端末に実在する帳面も足す（時計のずれ・未来の年が届いた場合の保険）。 */
+  var KT_LS='gyotoku.worklog.v1';   /* 旧・凍結。id の無い古い記録もここに残る */
+  var KT_Y0=2026;                   /* 分け始めた年（この版を上げた年） */
+  /* ★★KT_T0 ＝ 分け始めた瞬間（2026/08/08 0時）★★
+     ── なぜ「年」ではなく「時刻」で線を引くのか（★検証の途中で気づいた重大な穴）
+       年だけで決めると、**すでに旧鍵に入っている今年の記録が、まるごと年の帳面へ引っ越す**。
+       端末の中では筋が通るが、**サーバーの旧鍵は足し算なので古い実体が消えない**。
+       次に読んだとき、同じ記録が旧鍵と年の帳面の両方から返ってきて
+       **記録が二重に見える**（v48.2・v73と同じ「消したのに戻る」の親戚）。
+     → **この時刻より前に作られた記録は、1件も動かさない。** 設計どおり「移行しない」。
+       ★全端末で同じ数字なので、どの端末でも必ず同じ答えになる（§10-12） */
+  var KT_T0=1786114800000;
   var ktLog=[];
-  function ktLoad(){ try{var s=localStorage.getItem(KT_LS); ktLog=s?JSON.parse(s):[];}catch(e){ktLog=[];}
-    if(!(ktLog instanceof Array))ktLog=[]; }
-  function ktSave(){ var _ok=false; /* ★v122 lsSet を通す。満杯なら false が返る */
-    try{ _ok=lsSet(KT_LS,JSON.stringify(ktLog)); }catch(e){ _ok=false; }
+  function ktKeyOfY(y){ return 'gyotoku.worklog.'+y+'.v1'; }
+  /* 記録の id から「作った瞬間」を読む。'w'+ミリ秒+'_'+乱数 だけが対象。
+     ★時刻をでっちあげない（§3.5）。読めなければ 0＝旧鍵に固定。
+       肥料台帳からの移行(hm_…)・id の無い古い記録は、ここで 0 になって旧鍵に落ちる（正しい） */
+  function ktIdTime(e){
+    if(!e||typeof e.id!=='string')return 0;
+    var m=/^w(\d{10,16})_/.exec(e.id); if(!m)return 0;
+    var t=parseInt(m[1],10); return (t>0)?t:0;
+  }
+  function ktKeyOfRec(e){
+    var t=ktIdTime(e); if(!t)return KT_LS;
+    if(t<KT_T0)return KT_LS;        /* ★分け始める前に作られた記録は、1件も動かさない */
+    var y=0; try{ y=new Date(t).getFullYear(); }catch(_x){ y=0; }
+    if(!y||y<KT_Y0)return KT_LS;    /* 念のための二重の守り */
+    return ktKeyOfY(y);
+  }
+  /* いま読み書きする帳面の鍵を全部返す（旧鍵 ＋ 2026〜今年 ＋ 端末に実在するもの） */
+  function ktKeysAll(){
+    var out=[KT_LS], seen={}; seen[KT_LS]=1;
+    var y1=KT_Y0; try{ y1=new Date().getFullYear(); }catch(_x){ y1=KT_Y0; }
+    if(!(y1>=KT_Y0))y1=KT_Y0;
+    if(y1>KT_Y0+200)y1=KT_Y0+200;   /* 時計が壊れた端末で鍵が無限に増えないように */
+    /* ★★来年ぶんも先に読む（★2台通しのテストで落ちて見つかった穴）★★
+       年末年始、家族の端末どうしで日付が1日ずれていると（時計のずれ・時差・
+       年越しの数時間）、**先に年を越した端末が書いた記録を、まだ越していない端末が
+       読みに行かない**＝その記録が届かない。
+       1冊ぶん多く読むだけで防げる。空の帳面は作らない（ktSave が作らない）ので害は無い。 */
+    for(var y=KT_Y0;y<=y1+1;y++){ var k=ktKeyOfY(y); if(!seen[k]){seen[k]=1;out.push(k);} }
+    try{ for(var i=0;i<localStorage.length;i++){ var k2=localStorage.key(i);
+      if(k2&&/^gyotoku\.worklog\.[0-9][0-9][0-9][0-9]\.v1$/.test(k2)&&!seen[k2]){ seen[k2]=1; out.push(k2); } } }catch(_x){}
+    return out;
+  }
+  /* ★★同じ id が2冊の帳面に居たら、1件にまとめる（新しい方が勝つ）★★
+     ── なぜ要るか
+       サーバーの帳面は足し算なので、古い実体が消えずに残ることがある
+       （分ける前の版で書かれたもの・帳面をまたいで動いたもの）。
+       守りが無いと、同じ記録が**二重に見える**。
+     ── 🚩ここを1本の関数にした理由（★通し検証で「記録が全部消える」が出た）
+       ktDedup（同じ中身を1件にまとめる仕掛け・v74）は
+       **「同じ id の記録が2つある」ことを想定していなかった**。
+       2つ見つけると「片方を消す」と決めるが、印は id で付くので、
+       **残すはずだった方まで同じ印で消える**＝5件が丸ごと消えた。
+       → 数える前に、必ずここを通して1件にしておく。
+     ★勝ち負けは _m（更新時刻）で決め、帳面を読む順は全端末で同じ。
+       つまりどの端末でも必ず同じ答えになる（§10-12） */
+  function ktUniq(list){
+    var seen={}, out=[], i, it, id, q;
+    for(i=0;i<list.length;i++){
+      it=list[i]; id=(it&&typeof it.id==='string'&&it.id)?it.id:null;
+      if(id&&seen[id]!=null){
+        q=seen[id];
+        if(((it&&it._m)||0)>((out[q]&&out[q]._m)||0))out[q]=it;
+        continue;
+      }
+      if(id)seen[id]=out.length;
+      out.push(it);
+    }
+    return out;
+  }
+  /* ★★消された記録は読み込まない。旧ノートの印も必ず見る ★★
+     ── なぜ要るか（★古い版と混ぜる通し検証で見つかった穴）
+       まだ版を上げていない家族の端末は、**旧ノートにしか印を付けられない**。
+       その記録の実体がこちらでは年のノートへ移っていると、
+       印は届いているのに消えない＝**「家族が消したのに残る」**（v48.2・v73と同じ型）。
+     ★ここで外しておけば ktLog は「印を適用ずみ」になるので、
+       起動時の tombFixStale（手元に残っている記録の印は誤りとみなす）の前提も守られる。 */
+  function ktTombed(e, key, TB){
+    if(!TB||e==null)return false;
+    var sg=null; try{ sg=_sig(e); }catch(_x){ return false; }
+    if(TB[key]&&TB[key][sg])return true;
+    if(key!==KT_LS&&TB[KT_LS]&&TB[KT_LS][sg])return true;
+    return false;
+  }
+  function ktLoad(){
+    var all=[], ks=ktKeysAll(), TB=null;
+    try{ TB=_tombLoad(); }catch(e){ TB=null; }
+    for(var i=0;i<ks.length;i++){
+      var a=null; try{ var s=localStorage.getItem(ks[i]); a=s?JSON.parse(s):null; }catch(e){ a=null; }
+      if(!(a instanceof Array))continue;
+      for(var j=0;j<a.length;j++){ if(ktTombed(a[j],ks[i],TB))continue; all.push(a[j]); }
+    }
+    ktLog=ktUniq(all);
+  }
+  /* ★帳面ごとに振り分けて保存する。**中身が変わった帳面だけ**書くので、
+     10年たっても書く量は「今年ぶん」のまま増えない。
+     quiet=true のときは同期を起こさない（同期の取り込みの途中から呼ぶ ktDedup 用） */
+  function ktSave(quiet){
+    var _ok=true, g={}, ks=ktKeysAll(), i, k;
+    for(i=0;i<ks.length;i++)g[ks[i]]=[];
+    for(i=0;i<ktLog.length;i++){ k=ktKeyOfRec(ktLog[i]); if(!g[k])g[k]=[]; g[k].push(ktLog[i]); }
+    for(k in g){ if(!g.hasOwnProperty(k))continue;
+      var str=JSON.stringify(g[k]), cur=null;
+      try{ cur=localStorage.getItem(k); }catch(e){ cur=null; }
+      if(cur===str)continue;                 /* 中身が同じ帳面には触らない */
+      if(cur==null&&!g[k].length)continue;   /* もともと無い＋空＝作らない */
+      /* ★v122 lsSet を通す。満杯なら false が返り、その場で親方に伝わる */
+      try{ if(!lsSet(k,str))_ok=false; }catch(e){ _ok=false; }
+    }
     /* ★v55 書いたら、その場で送る。30秒待つと閉じられて届かないことがある（7/25の事故） */
-    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){}
+    if(!quiet){ try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){} }
     return _ok; }
   /* 全機能はこの1関数で台帳に書き込む(連携連動の背骨) */
   function wlAdd(stepK, fieldN, text, src, extra){
@@ -3253,9 +3381,16 @@
        合流は localStorage に書く。ktLog は古いままなので、
        ktLog を見て決めると v73 の tombFixStale とまったく同じ取り違えになる。 */
   function ktDedup(){
-    var raw=null; try{ raw=localStorage.getItem(KT_LS); }catch(_x){ raw=null; }
-    var arr=null; try{ arr=JSON.parse(raw==null?'null':raw); }catch(_x){ arr=null; }
-    if(!(arr instanceof Array)||arr.length<2)return 0;
+    /* ★v123 帳面が年ごとに分かれたので、全部の帳面を読んでから数える。
+       ★数える前に必ず ktUniq を通す（同じ id が2冊に居ると、残す方まで消える） */
+    var ks=ktKeysAll(), all=[], raw, a, j;
+    for(var q0=0;q0<ks.length;q0++){
+      raw=null; try{ raw=localStorage.getItem(ks[q0]); }catch(_x){ raw=null; }
+      a=null; try{ a=JSON.parse(raw==null?'null':raw); }catch(_x){ a=null; }
+      if(a instanceof Array)for(j=0;j<a.length;j++)all.push(a[j]);
+    }
+    var arr=ktUniq(all);
+    if(arr.length<2)return 0;
     var g={}, i, e, s;
     for(i=0;i<arr.length;i++){ e=arr[i];
       if(!_dupTarget(e))continue;
@@ -3271,11 +3406,13 @@
     if(!n)return 0;
     var out=[];
     for(i=0;i<arr.length;i++){ e=arr[i];
-      if(e&&e.id&&kill[e.id]){ try{ tombAdd(KT_LS,e); }catch(_x){} continue; }
+      if(e&&e.id&&kill[e.id]){ try{ ktTombAdd(e); }catch(_x){} continue; }
       out.push(e); }
-    try{ lsSet(KT_LS, JSON.stringify(out)); }catch(_x){}   /* ★v122 lsSet を通す */
     try{ ktLog=out; }catch(_x){}
-    try{ _syncHash[KT_LS]=''; }catch(_x){}   /* まとめた版を必ず家族へ送る */
+    /* ★v123 帳面ごとに振り分けて保存（中で lsSet を通る）。
+       ★quiet：ここは同期の取り込みの途中なので、その場で送り返さない */
+    try{ ktSave(true); }catch(_x){}
+    try{ for(var q1=0;q1<ks.length;q1++)_syncHash[ks[q1]]=''; }catch(_x){}   /* まとめた版を必ず家族へ送る */
     try{ evLog('dup','同じ中身の記録を1件にまとめました（'+n+'件ぶんを消しました）'); }catch(_x){}
     return n;
   }
@@ -3661,7 +3798,7 @@
     var ids=kusaUndoLast.ids||[], n=0;
     for(var q=0;q<ids.length;q++){
       for(var i=ktLog.length-1;i>=0;i--){
-        if(ktLog[i].id===ids[q]){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); n++; break; }
+        if(ktLog[i].id===ids[q]){ ktTombAdd(ktLog[i]); ktLog.splice(i,1); n++; break; }
       }
     }
     if(n)ktSave();
@@ -3743,7 +3880,7 @@
     if(!r){ toast('その記録が見つかりませんでした'); kusaSheetRender(); return; }
     if(!confirm(f.n+' の\n'+(r.d.getMonth()+1)+'月'+r.d.getDate()+'日の草刈りの記録を消しますか？\n\nこの1件だけを消します。'))return;
     for(var i=ktLog.length-1;i>=0;i--){
-      if(ktLog[i]===r.e){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); break; }
+      if(ktLog[i]===r.e){ ktTombAdd(ktLog[i]); ktLog.splice(i,1); break; }
     }
     ktSave();
     kusaSheetRender();
@@ -3760,7 +3897,7 @@
     for(var i=0;i<ktLog.length;i++)if(ktLog[i].id===id){ hit=ktLog[i]; break; }
     if(!hit){ toast('その記録が見つかりませんでした'); kusaSheetEditId=''; kusaSheetRender(); return; }
     hit.d=v;
-    tombEdit(KT_LS,hit);      /* id があるので _m を新しくして家族に勝たせる */
+    tombEdit(ktKeyOfRec(hit), hit);      /* id があるので _m を新しくして家族に勝たせる */
     ktSave();
     kusaSheetEditId='';
     kusaSheetRender();
@@ -4215,7 +4352,7 @@
     var del=0;
     for(var i=ktLog.length-1;i>=0;i--){
       var e=ktLog[i];
-      if(e&&e.id&&idm[e.id]){ tombAdd(KT_LS,e); ktLog.splice(i,1); del++; }
+      if(e&&e.id&&idm[e.id]){ ktTombAdd(e); ktLog.splice(i,1); del++; }
     }
     ktSave(); ktvClearUndo(); ktvRender();
     toast('↩ '+del+'枚の記録を取り消しました');
@@ -4269,7 +4406,7 @@
       +'消すと家族の端末からも消え、元に戻せません。')) return;
     for(i=ktLog.length-1;i>=0;i--){
       var g=ktLog[i];
-      if(ktHitStep(g,st.k,fd.n) && ktIsBoardOnly(g)){ tombAdd(KT_LS,g); ktLog.splice(i,1); }   /* ★v81 今年ぶんだけ */
+      if(ktHitStep(g,st.k,fd.n) && ktIsBoardOnly(g)){ ktTombAdd(g); ktLog.splice(i,1); }   /* ★v81 今年ぶんだけ */
     }
     ktSave(); toast('✅ を外しました（'+mine.length+'件）');
     ktOpenStep(ktCurStep,true);
@@ -4677,7 +4814,7 @@
       var e=ktLog[i]; if(!ktHitStep(e,st.k))continue;   /* ★v81 今年ぶんだけ */
       hit=true;
       if(e.ksas)continue;              /* すでに印がある＝中身は変わらないので触らない */
-      tombEdit(KT_LS,e);               /* ★v80 「直した」印。これが無いと家族に届かない */
+      tombEdit(ktKeyOfRec(e), e);               /* ★v80 「直した」印。これが無いと家族に届かない */
       e.ksas=true; chg++;
     }
     /* ★v74 「一番うしろ」を見るのをやめる（作らなかった時に
@@ -6506,7 +6643,7 @@
     var gv=function(id){ var el=document.getElementById(id); return el?el.value.replace(/^\s+|\s+$/g,''):''; };
     var d=gv('krEd');
     if(d&&!/^\d{4}\/\d{2}\/\d{2}$/.test(d)){ toast('月日は 2026/07/20 の形で入れてください'); return; }
-    tombEdit(KT_LS,e);  /* ★v48.2:ここも同じ不具合だった。直した記録が同期で消えていた */
+    tombEdit(ktKeyOfRec(e), e);  /* ★v48.2:ここも同じ不具合だった。直した記録が同期で消えていた */
     if(d)e.d=d;
     e.work=gv('krEw'); e.chem=gv('krEc');
     e.rate=gv('krEr'); e.vol=gv('krEv'); e.mass=gv('krEm');
@@ -6518,7 +6655,7 @@
   function krDel(idx){
     var e=ktLog[idx]; if(!e)return;
     if(!confirm('本当に消しますか？\n'+krMdY(e.d)+' '+(e.field||'')+' '+(e.work||e.text||''))) return;
-    tombAdd(KT_LS,e); ktLog.splice(idx,1); ktSave();
+    ktTombAdd(e); ktLog.splice(idx,1); ktSave();
     krEditCancel();
     krokuRender();
     toast('🗑 記録を消しました');
@@ -7367,7 +7504,7 @@
     var h=hyRowAt(i); if(!h)return;
     if(!confirm('本当に消しますか？\n'+h.r.fert+' '+(h.r.kg||0)+'kg')) return;
     /* 作業台帳から消す＝📄記録簿の「追肥」も同時に消える（v51までは片方だけ消えていた） */
-    tombAdd(KT_LS, h.e);
+    ktTombAdd(h.e);
     ktLog.splice(h.r.ki,1); ktSave();
     hyRender(); toast('🗑 削除しました');
   }
@@ -7381,7 +7518,7 @@
     /* ★直す前に呼ぶこと。id が無い古い記録は「直す前のJSON」に印を付ける必要がある。
        ここで tombAdd を使ってはいけない：id は直しても変わらないので本体まで消える（v48.2の重大不具合） */
     var oldText=(e.chem||'')+' '+e.mass+'kg';
-    tombEdit(KT_LS, e);
+    tombEdit(ktKeyOfRec(e), e);
     e.mass=kg;
     /* 「肥料名 ○kg」の形で作られた文だけ直す。🎤話して記録した文はさわらない */
     if(e.text===oldText) e.text=(e.chem||h.r.fert)+' '+kg+'kg';
@@ -8491,12 +8628,29 @@
   /* ★v120 'gyotoku.crop.v1'（年ごとの作付）を追加＝13→14個。
      形は〈場所ごとの表〉（上に _m を置かない）なので、合流の規則は土のメモと同じものが効く。
      ★sync-list.js は鍵を50個までしか読まない。いま14個なので余裕はある（§6.5） */
-  var SYNC_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1',TOMB_LS];
-  var SYNC_SET={}; (function(){ for(var i=0;i<SYNC_KEYS.length;i++)SYNC_SET[SYNC_KEYS[i]]=1; })();
-  /* ★v43：読むときだけエポックも一緒に取る。
-     SYNC_KEYS 本体には入れない（入れると sync-clear で消され、
-     さらに通常データとして送り合ってしまうため）。 */
-  var SYNC_READ_KEYS=SYNC_KEYS.concat([RESET_EPOCH_LS]);
+  /* ★★v123 作業の記録が「年ごとの帳面」になったので、鍵は固定の並びではなく組み立てて作る ★★
+     ★2つある入れ物(SYNC_KEYS と SYNC_SET)を、必ず同じ所で同時に作る。
+       片方だけ足すと、**届いた記録が SYNC_SET のふるいで黙って捨てられる**（§0.5⑧の型）。
+     ★年が変わった時・未知の年の帳面が届いた時に自動で増えるよう、
+       読む前・送る前に毎回組み立て直す（localStorage の走査は v122 の実測で 0ms）。
+     ⚠️ sync-list.js は鍵を50個までしか読まない。
+        固定13個＋帳面ぶん ＝ 2026年で14個／2050年で38個／**2062年で50個**。
+        その頃「古い年は同期から外す」判断が要る（HANDOVER に明記） */
+  var SYNC_FIXED=['gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1',TOMB_LS];
+  var SYNC_KEYS=[], SYNC_SET={}, SYNC_READ_KEYS=[];
+  function syncKeysBuild(){
+    var ks=[], seen={}, i, a=[];
+    try{ a=ktKeysAll(); }catch(e){ a=[KT_LS]; }
+    for(i=0;i<a.length;i++){ if(!seen[a[i]]){ seen[a[i]]=1; ks.push(a[i]); } }
+    for(i=0;i<SYNC_FIXED.length;i++){ if(!seen[SYNC_FIXED[i]]){ seen[SYNC_FIXED[i]]=1; ks.push(SYNC_FIXED[i]); } }
+    SYNC_KEYS=ks; SYNC_SET=seen;
+    /* ★v43：読むときだけエポックも一緒に取る。
+       SYNC_KEYS 本体には入れない（入れると sync-clear で消され、
+       さらに通常データとして送り合ってしまうため）。 */
+    SYNC_READ_KEYS=SYNC_KEYS.concat([RESET_EPOCH_LS]);
+    return SYNC_KEYS;
+  }
+  syncKeysBuild();
   var _syncHash={};      /* key -> 直近に送った内容のハッシュ(無駄な送信を防ぐ) */
   /* ★v58 「作業中」の札は 真偽 ではなく “いつ掛けたか(時刻)” で持つ。
      返事の来ない通信（電波切れ・アプリが裏で凍る）が1回でも起きると、
@@ -8542,6 +8696,19 @@
     m[_sig(item)]=Date.now(); tombPrune(o); _tombSave(o);
     try{ _syncHash[TOMB_LS]=''; }catch(e){}  /* 次の同期で必ず送るよう印だけリセット */
   }
+  /* ★★記録を消すときの印は、その記録が居る可能性のある帳面**すべて**に付ける ★★
+     ── なぜ要るか（★本番同様の通し検証で、実際に「消したのに復活する」が出た）
+       分け始めの前後に作られた記録は、**旧ノートと年のノートの両方に実体がありうる**。
+       ・自分の端末では年のノートへ入れ直しても、サーバーの旧ノートは足し算なので消えない
+       ・まだ版を上げていない家族の端末は、いまも旧ノートに書き続ける
+       片方の帳面にだけ印を付けると、**もう一方から復活する**（v48.2・v73とまったく同じ型）。
+     ★印は1件あたり数十文字。年100件なら200年もつ（v65の検算）ので、2倍でも余裕がある。
+     ★tombEdit は id があれば _m を新しくするだけで帳面を見ないので、こちらは1回でよい。 */
+  function ktTombAdd(e){
+    var k=ktKeyOfRec(e);
+    tombAdd(k, e);
+    if(k!==KT_LS)tombAdd(KT_LS, e);
+  }
   function tombFor(syncKey){ var o=_tombLoad(); return o[syncKey]||{}; }
   /* ★v48.2：記録を「消す」のではなく「直す」ときに呼ぶ。
      ── 直すたびに tombAdd を呼んでいたのが重大な不具合の原因だった。
@@ -8555,17 +8722,24 @@
      考え方：台帳にまだ残っている記録に削除印が付いていたら、それは★や編集で
      誤って付いたもの。本当に消した記録は台帳から消えているので、ここには一致しない。
      ※サーバーの印は union（足すだけ）で戻ってくるので、同期のたびに掃除する。 */
+  /* ★v123 帳面が年ごとに分かれたので、記録1件ごとに「その記録が入っている帳面の印」を見る。
+     KT_LS 決め打ちのままだと、今年の帳面に付いた誤った印が永久に掃除されない */
   function tombFixStale(){
-    var o=_tombLoad(), m=o[KT_LS]; if(!m)return false;
-    var changed=false;
+    var o=_tombLoad(), changed=false, touched={};
     try{
       for(var i=0;i<ktLog.length;i++){
-        var sg=_sig(ktLog[i]);
-        if(m[sg]){ delete m[sg]; changed=true; }
+        var kk=ktKeyOfRec(ktLog[i]), sg=_sig(ktLog[i]);
+        /* ★印は旧ノートにも付けてある（ktTombAdd）ので、掃除も両方を見る */
+        var kl=(kk===KT_LS)?[KT_LS]:[kk,KT_LS];
+        for(var kq=0;kq<kl.length;kq++){
+          var m=o[kl[kq]]; if(!m)continue;
+          touched[kl[kq]]=1;
+          if(m[sg]){ delete m[sg]; changed=true; }
+        }
       }
     }catch(e){ return false; }
     if(changed){
-      if(!Object.keys(m).length)delete o[KT_LS];
+      for(var kx in touched){ if(touched.hasOwnProperty(kx)&&o[kx]&&!Object.keys(o[kx]).length)delete o[kx]; }
       _tombSave(o);
       try{ _syncHash[TOMB_LS]=''; }catch(e){}   /* 掃除した版を家族にも配る */
     }
@@ -8769,6 +8943,7 @@
                    : '…確認中';
   }
   function syncPushAll(done){
+    try{ syncKeysBuild(); }catch(e){}   /* ★v123 年が変わったら帳面が1冊ふえる */
     var pend=[];
     for(var i=0;i<SYNC_KEYS.length;i++){ var k=SYNC_KEYS[i]; var v; try{ v=localStorage.getItem(k); }catch(e){ v=null; } if(v==null)continue; var h=_hash(v); if(_syncHash[k]!==h)pend.push({k:k,v:v,h:h}); }
     if(!pend.length){ if(done)done(true); return; }
@@ -8856,6 +9031,7 @@
      ★ここでは _syncHash を書きかえない。届いたか分からないのに「送った」と控えると、
        次の同期がその鍵を飛ばしてしまい、記録が永久に届かなくなる（今回の事故と同じ型） */
   function syncFlush(){
+    try{ syncKeysBuild(); }catch(e){}   /* ★v123 年が変わったら帳面が1冊ふえる */
     if(typeof inResetQuiet==='function'&&inResetQuiet())return;
     var pass=_syncPass();
     for(var i=0;i<SYNC_KEYS.length;i++){
@@ -8882,6 +9058,7 @@
     if(dirty)syncSoon();
   }
   function syncPull(done, quiet){
+    try{ syncKeysBuild(); }catch(e){}   /* ★v123 年が変わったら帳面が1冊ふえる */
     var qs='/api/sync-list?keys='+encodeURIComponent(SYNC_READ_KEYS.join(','));
     fetch(qs,{headers:{'x-photo-pass':_syncPass()}})
       .then(function(r){ return r.json(); })
@@ -9082,6 +9259,9 @@
            'gyotoku.kyoka.v1':'反省メモ','gyotoku.cost.v1':'生産原価','gyotoku.hygoal.v1':'肥料の目標',
            'gyotoku.hassei.v1':'発生予察','gyotoku.inasaku.v1':'稲作先生','gyotoku.crop.v1':'年ごとの作付',
            'gyotoku.tomb.v1':'消した印'};  /* ★v120 作付を追加 */
+    /* ★v123 作業の記録は年ごとの帳面になった。'gyotoku.worklog.2026.v1' → '作業の記録(2026年)' */
+    var _y=/^gyotoku\.worklog\.([0-9][0-9][0-9][0-9])\.v1$/.exec(k);
+    if(_y)return '作業の記録('+_y[1]+'年)';
     return N[k]||k;
   }
   function _syncApply(){
@@ -9264,7 +9444,7 @@
     var killed=0;
     if(p.rec){
       for(var i=ktLog.length-1;i>=0;i--){
-        if(ktLog[i] && ktLog[i].id===p.rec){ tombAdd(KT_LS,ktLog[i]); ktLog.splice(i,1); killed++; break; }
+        if(ktLog[i] && ktLog[i].id===p.rec){ ktTombAdd(ktLog[i]); ktLog.splice(i,1); killed++; break; }
       }
       if(killed) ktSave();
     }
@@ -10173,7 +10353,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v122';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v123';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -10552,7 +10732,7 @@
   }
   function kyoStar(i){
     if(i<0||i>=ktLog.length)return;
-    tombEdit(KT_LS,ktLog[i]);          /* ★v48.2:削除印ではなく「直した」印にする */
+    tombEdit(ktKeyOfRec(ktLog[i]), ktLog[i]);          /* ★v48.2:削除印ではなく「直した」印にする */
     ktLog[i].star=!ktLog[i].star; ktSave();
     try{ kyoRender(); }catch(e){}
     if(typeof histRender==='function'){ try{ histRender(); }catch(e){} }   /* v48 */
