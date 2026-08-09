@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v132">
+<meta name="app-ver" content="v135">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2115,7 +2115,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v132</span></div>
+          <div class="setrow">バージョン<span class="sv">v135</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -8824,11 +8824,38 @@
     try{ toast(s?('「'+s+'」にしました'):'名前を消しました'); }catch(e){}
   }
   /* ①アプリをひらいた時に1回だけ。★画面の読み込み直し(location.reload)では書かない。
-     sessionStorage は読み込み直しでは残り、アプリを閉じると消えるので、この2つを見分けられる */
+     sessionStorage は読み込み直しでは残り、アプリを閉じると消えるので、この2つを見分けられる
+
+     ★★★v135 ここに穴があった（親方のスクリーンショットで発覚・2026/08/09）★★★
+     ── 何が起きていたか
+       同じ1台なのに、設定の「バージョン」は v132、
+       家族の端末の一覧では **v131・きのう22:11 のまま凍っていた**。
+     ── なぜか
+       **版が新しくなる時も、読み込み直し(location.replace)で入れかわる**（verApply）。
+       ところが sessionStorage の印は、その読み込み直しでは **消えない**。
+       ＝ 印が残っているので二度と書かず、一覧は古い版のまま止まる。
+     ── いちばん悪いところ
+       この一覧は **「版を見るための道具」** である。
+       それが **版が上がった瞬間だけ嘘をつく**。いちばん見たい時に、いちばん当てにならない。
+       ＝ v132 で直した「一度そう決めたら二度と戻らない控え」と **まったく同じ型**（§10-19）。
+     ── 直しかた
+       印だけを見ずに、**控えてある版と、いまの版が食い違っていたら書く**。
+       ★その時 at（ひらいた時刻）は動かさない。読み込み直しであって、ひらき直しではない。
+       ＝「いつひらいたか」の意味を守る（devBump と同じ考え方） */
   function devPing(){
-    try{ if(sessionStorage.getItem('gyotoku.devPinged'))return false; }catch(e){}
+    var stale=false;                                   /* ★控えの版が、いまの版と食い違うか */
+    try{
+      var c=devLoad()[devId()];
+      stale=(!c || typeof c!=='object' || c.v!==devVer());
+    }catch(e){ stale=true; }                           /* 読めないなら書く側に倒す */
+
+    var pinged=false;
+    try{ pinged=!!sessionStorage.getItem('gyotoku.devPinged'); }catch(e){}
+
+    if(pinged && !stale) return false;                 /* ただの読み込み直し → 今までどおり書かない */
+
     try{ sessionStorage.setItem('gyotoku.devPinged','1'); }catch(e){}
-    devPut(Date.now());
+    devPut(pinged ? 0 : Date.now());                   /* ★読み込み直しなら、ひらいた時刻は動かさない */
     try{ devRender(); }catch(e){}
     return true;
   }
@@ -10609,7 +10636,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v132';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v135';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
