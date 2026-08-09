@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v130">
+<meta name="app-ver" content="v131">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -732,6 +732,11 @@
   .setrow{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
     font-size:16px;font-weight:800;border-bottom:1px solid #9C927C;cursor:pointer;} .setrow:last-child{border-bottom:none;}
   .setrow .sv{color:var(--green-deep);font-size:15px;font-weight:800;}
+  /* ★v131 家族の端末。★同じクラスを2回定義しない（§10-15 の .kt-setup 二重定義） */
+  .dev-sub{font-size:13px;color:#6B6656;font-weight:600;margin-top:3px;}
+  .dev-me{font-size:12px;color:#2F5D3A;border:1px solid #2F5D3A;background:#F1F6F1;border-radius:6px;padding:1px 6px;font-weight:700;}
+  .dev-tag{font-size:12px;color:#6B6656;border:1px dashed #A9A392;border-radius:6px;padding:1px 6px;font-weight:700;}
+  .setrow .sv.dev-old{color:#B23B2E;}
   .seg{display:flex;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;}
   .seg button{flex:1;border:none;background:#fff;padding:14px 4px;font-size:16px;font-weight:800;cursor:pointer;border-right:1px solid var(--line);}
   .seg button:last-child{border-right:none;} .seg button.on{background:var(--green);color:#fff;}
@@ -2095,6 +2100,9 @@
           <div class="setrow" onclick="syncDiag()">つながりを調べる<span class="sv">診断 ›</span></div>
         </div>
         <div class="setnote"><span class="nb">💡 記録・予定・メモ・</span><span class="nb">工程表の設定などは、</span><span class="nb">家族みんなで</span><b>自動的に共有・バックアップ</b><span class="nb">されます</span><span class="nb">（数十秒ごと／</span><span class="nb">アプリを開いた時）。</span><span class="nb">ネットが無い時は</span><span class="nb">この端末で使え、</span><span class="nb">つながると</span><span class="nb">自動で追いつきます。</span><span class="nb">写真はこれまで通り</span><span class="nb">共有アルバムに</span><span class="nb">保存されます。</span></div>
+        <div class="sethead" id="devHead">📱 家族の端末</div>
+        <div class="setcard" id="devCard"></div>
+        <div class="setnote"><span class="nb">💡 家族の端末が</span><span class="nb">いま何版か・</span><span class="nb">最後にいつひらいたかが</span><span class="nb">わかります。</span><span class="nb">⚠️ が付いた端末は</span><span class="nb">版が古いので、</span><span class="nb">その端末でアプリを</span><span class="nb">ひらいてもらってください。</span><span class="nb">記録の数は</span><b>この版を入れてから</b><span class="nb">のぶんです。</span><span class="nb">行を押すと</span><b>名前を付けられます</b><span class="nb">（家族みんなに届きます）。</span></div>
         <div class="sethead">💾 データ（バックアップ・リセット）</div>
         <div class="setcard">
           <div class="setrow">保存場所<span class="sv">iPhoneとサーバー</span></div>
@@ -2107,7 +2115,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v130</span></div>
+          <div class="setrow">バージョン<span class="sv">v131</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2483,6 +2491,7 @@
                     if(typeof histRender==='function')histRender(); }
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
     if(n==='set'&&typeof verSeenShow==='function')verSeenShow();   /* ★v124 開くたび描き直す */
+    if(n==='set'&&typeof devRender==='function'){ try{ devRender(); }catch(e){} }   /* ★v131 */
     highlightTab(n);
     document.getElementById('body').scrollTop=0; if(n!=='voice'){stopRec();resetPhoto();}}
   var lastMemo='';
@@ -3390,6 +3399,10 @@
     }
     ktLog.push(e);
     ktSave();
+    /* ★v131 この端末がつけた記録の数を1ふやす。★背骨(wlAdd)1本に置くので、
+       どの入口から記録しても必ず数えられる（§10-16）。数は端末の中だけで数え、
+       家族へは devs の行として送る（決まり①：毎回は書かない） */
+    try{ devBump(); }catch(_x){}
     /* ★v74 作った記録そのものを返す。
        ── なぜ返り値にしたか（根本の直し）
        v73まで、呼ぶ側は「いま足したのは ktLog の一番うしろ」と決めつけていた（3か所）。
@@ -8712,6 +8725,155 @@
      ・安全第一：この端末のデータは絶対に消さない(union)。取り込みは足すだけ。
      ・オフラインでも普通に使える。つながった時だけ自動で同期する。 */
   var TOMB_LS='gyotoku.tomb.v1';   /* v30 削除印(tombstone)の台帳。中身は印だけで記録本体は入れない */
+
+  /* ★★v131 家族の端末の一覧（版・最後にひらいた時刻・つけた記録の数）★★
+     ── なぜ作ったか
+       ご家族の端末は遠方にあり、いま何版か・使ってもらえているかを確かめる手段が
+       **1つも無かった**（v130 は「自動更新が効いたか」を確かめられないまま終わった）。
+     ── 鍵は3つ。★家族と分け合うのは1つだけ
+       gyotoku.devs.v1   … 家族で共有する一覧。〈場所ごとの表〉型
+       gyotoku.devid.v1  … この端末の見分け札。★分け合わない（端末ごとに違うものなので）
+       gyotoku.devrec.v1 … この端末がつけた記録の数。★分け合わない（devs へ写して送る）
+     ── 🚩 決まり①：毎回は書かない
+       分け合うデータに毎回時刻を押すと、家族の台数ぶんの上書き合戦になり、
+       **全員の画面が30秒ごとにホームへ戻り続ける**（v65で実際に起きた型）。
+       Cloudflare KV の書き込みは無料枠で **1日1,000回**まで（2026/08 に公式で確認）。
+       → 書くのは **①アプリをひらいた時に1回** と **②記録が1件ふえた時** だけ。
+     ── 🚩 決まり②：届いても画面は読み込み直さない
+       見るだけの情報なので、変わっても location.reload() はしない
+       （syncPull の changed に数えない）。数えると家族がひらくたび全員がホームへ戻る。
+     ── 🚩 決まり③：いちばん上に _m を置かない
+       置くと sync-put.js が〈設定の箱〉と見て**丸ごと入れ替え**、他の端末の行が消える。
+       置かなければ〈場所ごとの表〉として、行ごとに _m で合流する（§6.5）。
+     ── 🚩 決まり④：番号は「見分け札の文字列順」で決める
+       札は d＋時刻(36進) なので、文字列順＝**初めてひらいた順**になり、
+       どの端末で見ても同じ番号になる。並びかえで番号を振ると、ひらくたびに番号が動く。 */
+  var DEV_LS='gyotoku.devs.v1';        /* 家族で共有する一覧 */
+  var DEVID_LS='gyotoku.devid.v1';     /* この端末の見分け札。分け合わない */
+  var DEVREC_LS='gyotoku.devrec.v1';   /* この端末がつけた記録の数。分け合わない */
+  var DEV_NO=['\u2460','\u2461','\u2462','\u2463','\u2464','\u2465','\u2466','\u2467','\u2468','\u2469'];
+  function devId(){
+    var s=null; try{ s=localStorage.getItem(DEVID_LS); }catch(e){ s=null; }
+    if(typeof s==='string'&&s.length>3)return s;
+    /* ★crypto.randomUUID は古いiOSで動かない（§10-4 の11番）。時刻＋乱数で作る */
+    s='d'+Date.now().toString(36)+'x'+Math.floor(Math.random()*1679616).toString(36);
+    try{ lsSet(DEVID_LS,s); }catch(e){}
+    return s;
+  }
+  function devLoad(){
+    var o=null, s=null;
+    try{ s=localStorage.getItem(DEV_LS); }catch(e){ s=null; }
+    try{ o=JSON.parse(s||'{}'); }catch(e){ o=null; }
+    return (o&&typeof o==='object'&&!(o instanceof Array))?o:{};
+  }
+  function devRecN(){
+    var n=0; try{ n=parseInt(localStorage.getItem(DEVREC_LS)||'0',10); }catch(e){ n=0; }
+    return (n>0&&n<100000000)?n:0;
+  }
+  /* ★APP_VER は、このファイルのずっと後ろで var 宣言される（§5 の巻き上げ）。
+     起動の早い時点で読むと undefined になるので、必ずこの関数ごしに読む。 */
+  function devVer(){ try{ return (typeof APP_VER==='string'&&APP_VER)?APP_VER:''; }catch(e){ return ''; } }
+  /* この端末の行だけを書きかえる。★ほかの端末の行には指1本触れない。
+     ★★更新時刻(_m)は**項目ごと**に持つ（〈場所ごとの表〉の項目ごと型・§6.5 の v66 と同じ形）。
+     ── なぜ「行まるごと1つの時刻」ではいけないか（★決まり⑤）
+       名前は**親方の端末**が付け、記録の数は**その端末本人**が数える。
+       つまり**同じ行を2台が別々に書く**。行まるごとの勝負にすると、
+       あとから届いたほうが相手の項目を丸ごと消してしまい、
+       **親方が付けた名前が、その家族がアプリをひらいた瞬間に消える**。
+       項目ごとに時刻を持てば、名前は親方のぶん・記録数は本人のぶんが同時に残る。
+       端末側 _mergeEntry ・サーバー側 mergeEntry の**両方がこの形に対応ずみ**
+       （_m がオブジェクトなら項目ごとに勝負する。土のメモと同じ道を通る）。 */
+  function devMarks(cur){
+    var m={}, p;
+    if(cur&&cur._m&&typeof cur._m==='object'&&!(cur._m instanceof Array)){
+      for(p in cur._m){ if(Object.prototype.hasOwnProperty.call(cur._m,p))m[p]=cur._m[p]; }
+    }else if(cur&&typeof cur._m==='number'){    /* 古い形（v131の作りはじめ）も受ける */
+      m={nm:0, v:cur._m, at:cur._m, n:cur._m};
+    }
+    return m;
+  }
+  function devPut(at){
+    var o=devLoad(), id=devId(), now=Date.now(), cur=o[id], m=devMarks(cur);
+    o[id]={
+      nm:(cur&&typeof cur.nm==='string')?cur.nm:'',      /* ★名前は消さずに必ず引き継ぐ */
+      v:devVer(),
+      at:((at>0)?at:((cur&&typeof cur.at==='number'&&cur.at>0)?cur.at:now)),
+      n:devRecN(),
+      _m:{nm:(m.nm||0), v:now, at:((at>0)?now:(m.at||now)), n:now}
+    };
+    try{ lsSet(DEV_LS, JSON.stringify(o)); }catch(e){}
+    return o;
+  }
+  /* ★名前を付ける。★自分以外の端末にも付けられる（遠方のご家族に代わって親方が付けるため）。
+     ★触るのは nm と _m.nm だけ。v／at／n には指1本触れない（本人が数えているものなので）。
+     ★中身が変わらないときは書かない（決まり①：むだにサーバーへ書かない） */
+  function devName(id){
+    var o=devLoad(), cur=o[id];
+    if(!cur||typeof cur!=='object'||(cur instanceof Array))return;
+    var was=(typeof cur.nm==='string')?cur.nm:'', s=null;
+    try{ s=prompt('この端末の名前を入れてください（例：親方のiPhone）\n空にすると端末番号だけに戻ります', was); }catch(e){ s=null; }
+    if(s===null)return;                                   /* とりやめ */
+    s=String(s).replace(/^[\s\u3000]+/,'').replace(/[\s\u3000]+$/,'');
+    if(s.length>20)s=s.slice(0,20);
+    if(s===was)return;
+    var mm=devMarks(cur);
+    mm.nm=Date.now();
+    cur.nm=s; cur._m=mm; o[id]=cur;
+    try{ lsSet(DEV_LS, JSON.stringify(o)); }catch(e){}
+    try{ devRender(); }catch(e){}
+    try{ toast(s?('「'+s+'」にしました'):'名前を消しました'); }catch(e){}
+  }
+  /* ①アプリをひらいた時に1回だけ。★画面の読み込み直し(location.reload)では書かない。
+     sessionStorage は読み込み直しでは残り、アプリを閉じると消えるので、この2つを見分けられる */
+  function devPing(){
+    try{ if(sessionStorage.getItem('gyotoku.devPinged'))return false; }catch(e){}
+    try{ sessionStorage.setItem('gyotoku.devPinged','1'); }catch(e){}
+    devPut(Date.now());
+    try{ devRender(); }catch(e){}
+    return true;
+  }
+  /* ②記録が1件ふえた時。★ひらいた時刻(at)は動かさない＝「いつひらいたか」の意味を守る */
+  function devBump(){
+    var n=devRecN()+1;
+    try{ lsSet(DEVREC_LS,String(n)); }catch(e){}
+    devPut(0);
+    try{ devRender(); }catch(e){}
+  }
+  function devEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function devWhen(t){
+    if(typeof t!=='number'||!(t>0))return 'ひらいた記録がありません';
+    var d=new Date(t);
+    if(Date.now()-t<120000)return 'たった今ひらいた';
+    var hh=('0'+d.getHours()).slice(-2), mm=('0'+d.getMinutes()).slice(-2);
+    var t0=new Date(); t0.setHours(0,0,0,0);
+    if(d.getTime()>=t0.getTime())return 'きょう '+hh+':'+mm+' にひらいた';
+    if(d.getTime()>=t0.getTime()-86400000)return 'きのう '+hh+':'+mm+' にひらいた';
+    return (d.getMonth()+1)+'月'+d.getDate()+'日 '+hh+':'+mm+' にひらいた';
+  }
+  function devRender(){
+    var card=document.getElementById('devCard'); if(!card)return;
+    var o=devLoad(), me=devId(), ks=[], k;
+    for(k in o){ if(Object.prototype.hasOwnProperty.call(o,k)&&o[k]&&typeof o[k]==='object'&&!(o[k] instanceof Array))ks.push(k); }
+    ks.sort(function(a,b){ return a<b?-1:(a>b?1:0); });   /* ★決まり④ 札の文字列順＝初めてひらいた順 */
+    var hd=document.getElementById('devHead');
+    if(hd)hd.textContent='\ud83d\udcf1 家族の端末（'+ks.length+'台）';
+    if(!ks.length){ card.innerHTML='<div class="setrow">まだ分かりません<span class="sv">—</span></div>'; return; }
+    var mv=devVer(), out='';
+    for(var i=0;i<ks.length;i++){
+      var e=o[ks[i]], mine=(ks[i]===me);
+      var v=(typeof e.v==='string'&&e.v)?e.v:'';
+      var old=!!(v&&mv&&v!==mv);
+      var cnt=(typeof e.n==='number'&&e.n>0)?e.n:0;
+      var nm=(typeof e.nm==='string'&&e.nm)?e.nm:'';
+      /* ★名前があればそれを出す。無ければ端末番号＋「名前をつける」の札（押せると分かるように） */
+      var ttl=nm?devEsc(nm):('端末'+(DEV_NO[i]||('('+(i+1)+')'))+' <span class="dev-tag">名前をつける</span>');
+      out+='<div class="setrow" onclick="devName(\''+devEsc(ks[i])+'\')"><div><div>'+ttl
+        +(mine?' <span class="dev-me">この端末</span>':'')+'</div>'
+        +'<div class="dev-sub">'+devWhen(e.at)+'・記録 '+cnt+'件</div></div>'
+        +'<span class="sv'+(old?' dev-old':'')+'">'+(old?'\u26a0\ufe0f ':'')+devEsc(v||'—')+' ›</span></div>';
+    }
+    card.innerHTML=out;
+  }
   /* ★v120 'gyotoku.crop.v1'（年ごとの作付）を追加＝13→14個。
      形は〈場所ごとの表〉（上に _m を置かない）なので、合流の規則は土のメモと同じものが効く。
      ★sync-list.js は鍵を50個までしか読まない。いま14個なので余裕はある（§6.5） */
@@ -8723,7 +8885,7 @@
      ⚠️ sync-list.js は鍵を50個までしか読まない。
         固定13個＋帳面ぶん ＝ 2026年で14個／2050年で38個／**2062年で50個**。
         その頃「古い年は同期から外す」判断が要る（HANDOVER に明記） */
-  var SYNC_FIXED=['gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1',TOMB_LS];
+  var SYNC_FIXED=['gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1',DEV_LS,TOMB_LS];   /* ★v131 端末の一覧を追加＝14→15個（上限50） */
   var SYNC_KEYS=[], SYNC_SET={}, SYNC_READ_KEYS=[];
   function syncKeysBuild(){
     var ks=[], seen={}, i, a=[];
@@ -9278,7 +9440,11 @@
                       +((_after.length>_b)?('（'+(_after.length-_b)+'件ふえた）'):('（'+(_b-_after.length)+'件へった）')));
               }
             }catch(e2){}
-            _lsSetRaw(k,m.str); if(k===MEM_LS){ window._mem=null; window._memList=null; } changed=true; }
+            _lsSetRaw(k,m.str); if(k===MEM_LS){ window._mem=null; window._memList=null; }
+            /* ★v131【決まり②】端末の一覧は「見るだけ」。届いても読み込み直さない。
+               ここで changed=true にすると、家族がアプリをひらくたびに
+               全員の画面がホームへ戻ってしまう（v65で実際に起きた型）。 */
+            if(k===DEV_LS){ try{ devRender(); }catch(_x){} } else { changed=true; } }
           /* ★★v57 送信済みの印は「この中身がサーバーにある」という意味。
              v56まで：合流したあと、合流後の中身に印を付けていた。
                       しかしサーバーに在るのは“サーバーのぶん”であって合流後の中身ではない。
@@ -9346,6 +9512,7 @@
            'gyotoku.kyoka.v1':'反省メモ','gyotoku.cost.v1':'生産原価','gyotoku.hygoal.v1':'肥料の目標',
            'gyotoku.hassei.v1':'発生予察','gyotoku.inasaku.v1':'稲作先生','gyotoku.crop.v1':'年ごとの作付',
            'gyotoku.naeov.v1':'苗箱の手直し',   /* ★v130 ここだけ日本語の名前が無かった */
+           'gyotoku.devs.v1':'家族の端末',   /* ★v131 */
            'gyotoku.tomb.v1':'消した印'};  /* ★v120 作付を追加 */
     /* ★v123 作業の記録は年ごとの帳面になった。'gyotoku.worklog.2026.v1' → '作業の記録(2026年)' */
     var _y=/^gyotoku\.worklog\.([0-9][0-9][0-9][0-9])\.v1$/.exec(k);
@@ -10442,7 +10609,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v130';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v131';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -10743,6 +10910,9 @@
 
   /* ★v124 見張りの動かし方：起動3秒後・★画面に触った時・アプリに戻った時・3分ごと
      ★主役は「触った時」。ほかの3つは、どれも止まることがある（上の注記を参照） */
+  /* ★v131 ひらいたことを1回だけ控える。★ここに置くのは APP_VER(var) より後ろだから。
+     起動の早い所で呼ぶと、巻き上げで版が undefined になる（§5・v33の型） */
+  setTimeout(function(){ try{ devPing(); }catch(e){} }, 2000);
   setTimeout(function(){ try{ verCheck(true); }catch(e){} }, 3000);
   setInterval(function(){ try{ verCheck(); }catch(e){} }, 180000);
   try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ verCheck(); }catch(e){} } }); }catch(e){}
