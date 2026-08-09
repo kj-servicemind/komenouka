@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>端末しらべ</title>
+<style>
+  html,body{background:#FBFAF6;margin:0;padding:0;}
+  body{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;color:#2A2620;
+       padding:18px 16px 60px;font-size:17px;line-height:1.7;}
+  h1{font-size:22px;color:#2F5D3A;margin:0 0 4px;}
+  .note{font-size:14px;color:#5A5445;margin:0 0 18px;}
+  .card{background:#fff;border:1px solid #9C927C;border-radius:12px;
+        padding:14px 16px;margin:0 0 14px;}
+  .card h2{font-size:17px;color:#2F5D3A;margin:0 0 10px;
+           border-bottom:1px solid #C9C0A8;padding-bottom:6px;}
+  .row{display:flex;justify-content:space-between;align-items:flex-start;
+       gap:12px;padding:7px 0;border-bottom:1px solid #EDE8DA;}
+  .row:last-child{border-bottom:none;}
+  .k{font-weight:800;flex:0 0 auto;}
+  .v{color:#2F5D3A;font-weight:800;text-align:right;word-break:break-all;}
+  .ng{color:#B03A2E;}
+  .ok{color:#1E7A3C;}
+  .verdict{background:#2F5D3A;color:#fff;border-radius:12px;padding:16px;
+           font-size:19px;font-weight:800;line-height:1.6;margin:0 0 16px;}
+  .verdict.g{background:#1E7A3C;}
+  .verdict.r{background:#B03A2E;}
+  button{width:100%;min-height:56px;font-size:19px;font-weight:800;
+         font-family:inherit;background:#2F5D3A;color:#fff;border:none;
+         border-radius:12px;margin-top:8px;}
+  pre{background:#F4F2EA;border:1px solid #C9C0A8;border-radius:8px;
+      padding:10px;font-size:12px;white-space:pre-wrap;word-break:break-all;
+      font-family:ui-monospace,monospace;color:#2A2620;}
+</style>
+</head>
+<body>
+<h1>📱 端末しらべ</h1>
+<p class="note">このページは調べるだけです。アプリのデータには一切さわりません。<br>
+見終わったら閉じてください。</p>
+
+<div id="verdict" class="verdict">調べています…</div>
+
+<div class="card">
+  <h2>① この端末に残っている控え</h2>
+  <div id="ls"></div>
+</div>
+
+<div class="card">
+  <h2>② サーバーに「先頭1KBだけ」と頼んだ返事</h2>
+  <div id="rg"></div>
+</div>
+
+<div class="card">
+  <h2>③ サーバーへの軽い問い合わせ（HEAD）の返事</h2>
+  <div id="hd"></div>
+</div>
+
+<div class="card">
+  <h2>④ まとめ（この文をそのまま送ってください）</h2>
+  <pre id="sum">…</pre>
+  <button onclick="cp()">この文をコピーする</button>
+</div>
+
+<script>
+function row(box,k,v,cls){
+  var d=document.createElement('div'); d.className='row';
+  d.innerHTML='<span class="k"></span><span class="v '+(cls||'')+'"></span>';
+  d.children[0].textContent=k; d.children[1].textContent=v;
+  document.getElementById(box).appendChild(d);
+}
+var S=[];
+function log(t){ S.push(t); document.getElementById('sum').textContent=S.join('\n'); }
+
+/* ---- ① 端末に残っている控え ---- */
+function get(k){ try{ return localStorage.getItem(k); }catch(e){ return '(読めません)'; } }
+var range = get('gyotoku.verRange.v1');
+var tag   = get('gyotoku.verTag.v1');
+var seen  = get('gyotoku.verSeen.v1');
+var kb    = get('gyotoku.verSeenKb.v1');
+var fail  = get('gyotoku.verFail.v1');
+
+function when(t){
+  if(!t) return '(無し)';
+  var n=parseInt(t,10); if(!n) return '(読めません)';
+  var d=new Date(n), mi=Math.floor((Date.now()-n)/60000);
+  var ago=(mi<1)?'たった今':((mi<60)?(mi+'分前'):(Math.floor(mi/60)+'時間前'));
+  return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'（'+ago+'）';
+}
+row('ls','先頭だけ無理の控え', (range==='0')?'★ 0 が入っている':'無し（よい状態）',
+    (range==='0')?'ng':'ok');
+row('ls','指紋の控え', tag?('有り '+String(tag).slice(0,28)+'…'):'無し');
+row('ls','最後に確かめた', when(seen));
+row('ls','そのときの量', kb!=null?(kb+'KB'):'(無し)');
+row('ls','届かなかった回数', fail?(fail+'回'):'0回');
+log('【端末の控え】');
+log('  先頭だけ無理の控え : '+(range===null?'無し':range));
+log('  指紋の控え         : '+(tag?'有り':'無し'));
+log('  最後に確かめた     : '+when(seen)+' / '+(kb!=null?kb+'KB':'-'));
+log('  届かなかった回数   : '+(fail||'0'));
+
+/* ---- ② Range ---- */
+var base = location.pathname.replace(/[^/]*$/,'');
+var t0=Date.now();
+fetch(base+'?d1='+Date.now(), {cache:'no-store', headers:{'Range':'bytes=0-1023'}})
+ .then(function(r){
+    var st=r.status, cr=r.headers.get('content-range')||'(無し)';
+    return r.text().then(function(t){
+      var ms=Date.now()-t0, k=Math.round(t.length/1024);
+      var m=t.match(/name="app-ver"[^>]*content="([^"]+)"/);
+      row('rg','返事の番号', st+(st===206?'（先頭だけくれた・よい）':'（丸ごと返ってきた）'),
+          st===206?'ok':'ng');
+      row('rg','受け取った量', k+'KB');
+      row('rg','かかった時間', ms+'ミリ秒');
+      row('rg','サーバーの版', m?m[1]:'★読めなかった', m?'ok':'ng');
+      log('【先頭1KBの求め】');
+      log('  返事の番号   : '+st);
+      log('  受け取った量 : '+k+'KB / '+ms+'ms');
+      log('  サーバーの版 : '+(m?m[1]:'読めなかった'));
+      window._srvVer = m?m[1]:null;
+      window._st = st;
+      head();
+    });
+ })
+ .catch(function(e){
+    row('rg','結果','★届きませんでした','ng');
+    log('【先頭1KBの求め】★届きませんでした '+e);
+    head();
+ });
+
+/* ---- ③ HEAD ---- */
+function head(){
+  fetch(base+'?d2='+Date.now(), {method:'HEAD', cache:'no-store'})
+   .then(function(r){
+      var et=r.headers.get('etag'), lm=r.headers.get('last-modified');
+      row('hd','返事の番号', r.status, r.ok?'ok':'ng');
+      row('hd','ETag（指紋）', et||'★返ってこない', et?'ok':'ng');
+      row('hd','Last-Modified', lm||'★返ってこない', lm?'ok':'ng');
+      log('【軽い問い合わせ(HEAD)】');
+      log('  返事の番号     : '+r.status);
+      log('  ETag           : '+(et||'返ってこない'));
+      log('  Last-Modified  : '+(lm||'返ってこない'));
+      verdict(et||lm);
+   })
+   .catch(function(e){
+      row('hd','結果','★届きませんでした','ng');
+      log('【軽い問い合わせ(HEAD)】★届きませんでした');
+      verdict(null);
+   });
+}
+
+/* ---- 見立て ---- */
+function verdict(tagOK){
+  var v=document.getElementById('verdict');
+  var stuck = (range==='0');
+  var txt, cls;
+  if(stuck && !tagOK){
+    txt='★この端末は「指紋くらべの道」に閉じこもり、指紋も返ってこないので、'
+       +'自動では新しい版に永久に気づけません。v132 の直しが、まさにここです。';
+    cls='r';
+  }else if(stuck && tagOK){
+    txt='この端末は「指紋くらべの道」に入っていますが、指紋は返ってきています。'
+       +'別の原因の可能性があるので、④の文をそのまま送ってください。';
+    cls='';
+  }else if(!stuck){
+    txt='この端末に閉じこもりの控えはありません（よい状態）。'
+       +'④の文をそのまま送ってください。';
+    cls='g';
+  }
+  v.className='verdict '+cls;
+  v.textContent=txt;
+  log('【見立て】'+txt);
+  log('【この端末の版】'+(document.referrer||'(直接ひらいた)'));
+}
+
+function cp(){
+  var t=document.getElementById('sum').textContent;
+  try{
+    navigator.clipboard.writeText(t).then(function(){ alert('コピーしました'); },
+      function(){ sel(); });
+  }catch(e){ sel(); }
+  function sel(){
+    var r=document.createRange(); r.selectNodeContents(document.getElementById('sum'));
+    var s=getSelection(); s.removeAllRanges(); s.addRange(r);
+    alert('文を選びました。長押しして「コピー」を選んでください');
+  }
+}
+</script>
+</body>
+</html>

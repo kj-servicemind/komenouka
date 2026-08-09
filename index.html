@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v131">
+<meta name="app-ver" content="v132">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2115,7 +2115,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v131</span></div>
+          <div class="setrow">バージョン<span class="sv">v132</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -10609,14 +10609,35 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v131';                        /* この版の名前。版を上げるたびにここも上げる */
-  var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
+  var APP_VER='v132';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
-  var _verPend=null, _verLast=0, _verBusy=0;   /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
-  var VER_RANGE='gyotoku.verRange.v1';  /* 「先頭だけはもらえない」と分かったら控える */
-  var _verRangeOK=null;   /* null=未確認 / true=先頭だけもらえる / false=もらえない */
-  try{ if(localStorage.getItem(VER_RANGE)==='0') _verRangeOK=false; }catch(e){}
+  var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
+  var VER_FAIL='gyotoku.verFail.v1';        /* ★v132 続けて届かなかった回数。切り分け用 */
+
+  /* ★★v132 ここが「一日直らなかった」の本体だった ★★
+     ── 何が起きていたか（親方の実機・2026/08/09。v128〜v131 の4版ぶん直らず）──
+       見張りには道が2つあった。
+         ①版の名前を直に読む（先頭1KBだけ頼む）
+         ②指紋くらべ（軽い問い合わせ HEAD で ETag を見る）
+       ②へ入るのは「一度でも先頭だけをもらえなかった端末」で、
+       その判断は **localStorage に控えられ、二度と①へ戻らない**。
+       ところが②の入口 verSee は `if(!tag) return;` で始まっていた。
+       つまり **ETag も Last-Modified も取れないと、黙って終わる。**
+         ・「最後に確かめた」も更新されない（＝確かめた回数ゼロのまま）
+         ・①へ落ちる道が無いので、その端末は**永久に新しい版に気づかない**
+         ・手で押す「今すぐ最新にする」は①を直に呼ぶので**必ず通る**
+       親方の写真：21:54 に見て「最後に確かめた 13:04（8時間前）」。
+       手で押せば入れかわる。この2つが同時に起きるのは、この形しかない。
+
+     ── 直しかた（親方のご判断＝根本）──
+       **②の道を丸ごとやめる。いつでも①の1本にする。**
+       分岐が消えるので、穴も消える（§0.5②「1つの変更で全箇所が同時に正しくなる」）。
+       ★通信量は増えない。v127 で「届いた先頭だけ読んだら受け取りをやめる」を
+         入れてあるので、Range に応じてもらえなくても実測 1KB 程度で打ち切れる。
+         ②はその v127 の改良で**もう要らなくなっていたのに、残って穴になっていた**。
+       ★あわせて「届かなかった回数」を控え、設定に出す。
+         次に同じ相談が出たとき、**写真1枚で「届いていない」と分かる**（v127 の 1KB 表示と同じ発想）。 */
 
   /* ★★v124 ここが「10分待っても新しい版にならない」の本体だった ★★
      ── 何が起きていたか（親方の実機・2026/08/08 で確定）──
@@ -10656,6 +10677,15 @@
   function verSeenSet(kb){
     try{ localStorage.setItem(VER_SEEN, String(Date.now())); }catch(e){}
     try{ localStorage.setItem(VER_SEEN_KB, String((typeof kb==='number')?kb:0)); }catch(e){}
+    try{ localStorage.removeItem(VER_FAIL); }catch(e){}   /* ★v132 届いた＝数え直し */
+  }
+  /* ★v132 届かなかった。数えるだけで、画面は何も変えない（年配UX：脅かさない）。
+     数えておくと、次に「更新されない」と言われたときに写真1枚で分かる。 */
+  function verFailAdd(){
+    var n=0; try{ n=parseInt(localStorage.getItem(VER_FAIL)||'0',10)||0; }catch(e){}
+    n++; if(n>999) n=999;
+    try{ localStorage.setItem(VER_FAIL, String(n)); }catch(e){}
+    try{ verSeenShow(); }catch(e){}
   }
   /* 設定の「最後に確かめた」を描く。開くたびに描き直す（§10-14 固定文字にしない） */
   function verSeenShow(){
@@ -10668,7 +10698,10 @@
     /* ★v127 受け取った量を添える。これ1つで「どの経路を通ったか」が写真で分かる */
     var kb=-1; try{ kb=parseInt(localStorage.getItem(VER_SEEN_KB),10); }catch(e){}
     var sz=(kb>=0)?('・'+kb+'KB'):'';
-    el.textContent=hh+':'+mm+'（'+ago+sz+'）';
+    /* ★v132 続けて届かなかった回数。0のときは何も出さない（ふだんは静かに） */
+    var ng=0; try{ ng=parseInt(localStorage.getItem(VER_FAIL)||'0',10)||0; }catch(e){}
+    var ngs=(ng>0)?('・届かず'+ng+'回'):'';
+    el.textContent=hh+':'+mm+'（'+ago+sz+ngs+'）';
   }
   /* 見送ったときの挑み直し。★予約は1つだけ（重ねると通信が増える） */
   function verRetryLater(){
@@ -10723,12 +10756,7 @@
      先頭1KBだけをくださいと頼む(Range)。1MBのファイルを毎回落とすことはしない。
      もし先頭だけをもらえないサーバーだったら、以降は軽い問い合わせ(HEAD)の
      指紋くらべに切りかえ、指紋が変わったときだけ版の名前を読みにいく。 */
-  function verRemember(tag){
-    _verPend=null;
-    if(!tag) return;
-    try{ localStorage.setItem(VER_KEY, JSON.stringify({v:APP_VER, t:tag})); }catch(e){}
-  }
-  /* サーバーの版の名前を読む。tag を渡すと「版は同じだった」ときに控え直す */
+  /* サーバーの版の名前を読む。★v132 指紋の控えは廃止したので、渡すものは無い */
   /* ★★v127 ここが「見張りが毎回あきらめる」の本体だった ★★
      ── 何が起きていたか（親方の実機・2026/08/08）──
        「先頭1KBだけください」(Range)と頼んでも、**Cloudflare は応じず丸ごと返してくる**。
@@ -10756,12 +10784,9 @@
       fetch(url, {cache:'no-store', headers:{'Range':'bytes=0-1023'}})
         .then(function(r){
           if(!r || !(r.ok || r.status===206)){ bad(); return; }
-          if(_verRangeOK===null){
-            _verRangeOK=(r.status===206);
-            /* ★丸ごと落ちるサーバーだと分かったら控えておく。
-               控えないと、アプリを開くたびに毎回まるごと落ちてしまう（家族の通信量） */
-            if(!_verRangeOK){ try{ localStorage.setItem(VER_RANGE,'0'); }catch(e){} }
-          }
+          /* ★v132 ここで「先頭だけもらえない端末」を控えるのをやめた。
+             控えると二度と①の道へ戻れず、それが今回の穴の入口だった。
+             どちらのサーバーでも下の打ち切りが効くので、控える必要がそもそも無い。 */
           /* 素直に先頭だけくれた／流し読みができない古い端末 → 今までどおり最後まで受け取る */
           if(r.status===206 || !r.body || !r.body.getReader || typeof TextDecoder==='undefined'){
             return r.text().then(function(t){ fin(t, Math.round((''+t).length/1024)); });
@@ -10784,54 +10809,22 @@
         .catch(function(){ bad(); });
     }catch(e){ bad(); }
   }
-  function verFetchVer(tag){
+  function verFetchVer(){
     verReadHead(location.pathname+'?vg='+Date.now(), function(t, kb){
       _verBusy=0;
       var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
-      if(!m) return;                            /* 読めない → 何もしない（誤作動させない） */
+      /* ★v132 読めなかった時も「黙って終わり」にしない。数えて画面に出す。
+         ここが黙っていると、届いていないのか確かめていないのかが誰にも分からない */
+      if(!m){ verFailAdd(); return; }           /* 版の名前が読めない → 誤作動はさせないが、数える */
       verSeenSet(kb);                           /* ★v124 ここで初めて「確かめられた」 */
       try{ verSeenShow(); }catch(e){}           /* ★v128 開いたままでも、その場で描き直す */
       if(m[1]!==APP_VER){ verApply(); return; } /* ★版がちがう＝古い画面を見ている。確実 */
-      verRemember(tag);                         /* 版は同じ＝指紋が揺れただけ。控え直す */
-    }, function(){ _verBusy=0; });
+    }, function(){ _verBusy=0; verFailAdd(); });
   }
-  /* 指紋くらべ（先頭だけもらえないサーバー用の控え）
-
-     ★★v125 ここが「新しい版に、いつまでも気づかない」の本体だった ★★
-     ── 何が起きていたか（v123の実物を実ブラウザで動かして再現ずみ・2026/08/08）──
-       サーバーが「先頭1KBだけ」の求めに応じず全部返してくると、
-       以後この指紋くらべの経路に入る（_verRangeOK=false）。
-       ところが控え(VER_KEY)がまだ無いとき、v124まではここで **控えるだけ** で終わっていた。
-       その控えは **もう新しい版の指紋** なので、次からは「変わっていない」と判断される。
-       ＝ **新しい版の指紋を、見なかったことにして飲み込んでいた。**
-       こうなると、起動しても・ほかのアプリから戻っても・何分待っても入れかわらない。
-       「今すぐ最新にする」を押す以外に手が無くなる（親方の実機で実際にそうなった）。
-
-       ★v124 は pageshow を足したおかげで起動時に確認が2回走り、
-       1回目で控えが作られるので**表向きは直って見えた**。だが直したのは別の所で、
-       ここは**偶然に助けられていただけ**。控えが作られ損ねれば（通信が1回失敗する等）
-       また同じ所に落ちる。だから根本を直す。
-
-     ── 直しかた（根本）──
-       **控えが使えるときだけ、指紋くらべで済ませる。**
-       控えが無い／別の版のものなら、控えて終わりにせず **必ず版の名前を読みに行く**。
-       版の名前どうしで比べれば、飲み込みようがない。
-       ★このとき1回だけ本文を丸ごと落とすことになるが、読めば控えができるので
-         次からは軽い問い合わせ(HEAD)で済む。落ちるのは「控えが無い1回だけ」。 */
-  function verSee(tag){
-    if(!tag) return;
-    verSeenSet(0);                                  /* ★v124 指紋が返ってきた＝確かめられた
-                                                       ★v127 0KB＝本文は落としていない印 */
-    try{ verSeenShow(); }catch(e){}                 /* ★v128 開いたままでも、その場で描き直す */
-    var st=null;
-    try{ st=JSON.parse(localStorage.getItem(VER_KEY)||'null'); }catch(e){ st=null; }
-    if(st && st.v===APP_VER && st.t){               /* 控えが使える＝指紋くらべでよい */
-      if(st.t!==tag){ verFetchVer(tag); return; }   /* 指紋が動いた → 版の名前を確かめる */
-      verRemember(tag);                             /* 変わっていない → 控え直すだけ */
-      return;
-    }
-    verFetchVer(tag);   /* ★v125 控えが無い／別の版のもの → 控えるだけにせず、必ず読む */
-  }
+  /* ★v132 ここにあった「指紋くらべ(verSee)」は廃止した。
+     v125 の注記は「控えが無いなら必ず版の名前を読みに行く」だったが、
+     **ETag も Last-Modified も取れない場合**という、もう一つ手前の穴が残っていた。
+     道を1本にすれば、その穴ごと無くなる（親方のご判断・A案）。 */
   /* ★v68 設定の「今すぐ最新にする」。上スワイプで閉じなくてもよくするための出口。
      ・最新なら「最新です」と出す（黙って何も起きないと壊れたと思われるため）
      ・古ければその場で入れかわる
@@ -10871,22 +10864,10 @@
     var now=Date.now();
     if(!force && now-_verLast < 60000) return;     /* 1分に1回まで */
     _verLast=now; _verBusy=Date.now();
-    try{
-      if(_verRangeOK===false){
-        /* 先頭だけもらえないサーバー：軽い問い合わせで指紋を見る */
-        fetch(location.pathname+'?vc='+now, {method:'HEAD', cache:'no-store'})
-          .then(function(r){
-            try{
-              if(!r || !r.ok) return;
-              verSee(r.headers.get('etag') || r.headers.get('last-modified') || '');
-            }catch(e){}
-          })
-          .catch(function(){})
-          .then(function(){ _verBusy=0; }, function(){ _verBusy=0; });
-      } else {
-        verFetchVer(null);   /* _verBusy は verFetchVer の中で戻す */
-      }
-    }catch(e){ _verBusy=0; }
+    /* ★v132 道は1本だけ。版の名前どうしを比べる。
+       分岐が無いので「片方の道に閉じこもって永久に出られない」が起きようがない。
+       _verBusy は verFetchVer の中で戻す（成功でも失敗でも必ず戻る） */
+    try{ verFetchVer(); }catch(e){ _verBusy=0; }
   }
 
   /* ★v54 sw.js の登録をやめた。
@@ -10912,6 +10893,11 @@
      ★主役は「触った時」。ほかの3つは、どれも止まることがある（上の注記を参照） */
   /* ★v131 ひらいたことを1回だけ控える。★ここに置くのは APP_VER(var) より後ろだから。
      起動の早い所で呼ぶと、巻き上げで版が undefined になる（§5・v33の型） */
+  /* ★v132 廃止した指紋くらべの控えを片づける。
+     読む側はもう無いので害は無いが、残しておくと保存場所を食い、
+     次にこのコードを読む人が「まだ使っている」と誤解する（§10-11） */
+  try{ localStorage.removeItem('gyotoku.verRange.v1'); }catch(e){}
+  try{ localStorage.removeItem('gyotoku.verTag.v1');   }catch(e){}
   setTimeout(function(){ try{ devPing(); }catch(e){} }, 2000);
   setTimeout(function(){ try{ verCheck(true); }catch(e){} }, 3000);
   setInterval(function(){ try{ verCheck(); }catch(e){} }, 180000);
