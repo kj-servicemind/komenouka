@@ -49,6 +49,46 @@
       どちらが効いたのか分けられていない。**疑わしいので直しておく**という段階。
 
    ─────────────────────────────────────────────────────────────
+   ★★★ v133 で足したこと（★これが「遠方のご家族の端末」を救う本命） ★★★
+
+   ── 誰を救うのか
+     端末の版の見張りには、v131まで **道が2つ**あった。
+
+       ①版の名前を直に読む（先頭1KBだけくださいと頼む＝GET + Range）
+       ②指紋くらべ（軽い問い合わせ＝HEAD で ETag を見る）
+
+     ②へ入るのは「一度でも先頭だけをもらえなかった端末」。
+     ★その判断は端末に控えられ、**二度と①へ戻らない**（v132で廃止した仕掛け）。
+     そして Cloudflare は **HEAD に ETag も Last-Modified も返さない**。
+     ②の入口は「指紋が無ければ黙って終わる」形だったので、
+     **その端末は永久に新しい版に気づかない。**
+
+   ── なぜ v128〜v132 の直しでは救えなかったか（★ここが4版ぶんの見落とし）
+     下の GET の受け口は **GET の Range だけ**を引き受けている。
+     ところが **②に閉じこもった端末は Range を打たない。HEAD しか打たない。**
+     ＝ **助ける仕掛けを、助ける相手が一度も通らない道に置いていた。**
+
+     v132 で端末側の②を廃止したが、その直しは **v132 が届いた端末にしか効かない**。
+     届かない端末を救うための直しが、届かないと効かない（＝鶏と卵）。
+
+   ── そこで、応える側だけで手を伸ばす
+     **HEAD で頼まれたら、ETag（指紋）を返す。**
+     ★端末のアプリには指1本触れない。遠方のご家族に何もお願いしない。
+     ★ETag は index.html の**先頭1KBの中身**から作る。
+       版が変われば <meta app-ver> が変わる → 先頭1KBが変わる → ETag が必ず変わる。
+       同じ版のあいだは同じ ETag（＝むだに丸ごと落としに行かせない）。
+
+   ── ★ここで絶対にしないこと（するといま より悪くなる）
+     ①**304 は絶対に返さない。** If-None-Match / If-Modified-Since は**見もしない**。
+       304 を返すと、そのあと端末が版名を読みに行っても中身が空になり、
+       「黙って終わる出口」が1つ増える＝いまより悪化する
+     ②**下の GET の経路（wantHead / headOnly）には手を入れない。**
+       いま正しく動いている端末（v132・親方の端末）は GET+Range で動いている。
+       ここを触ると、直っている端末まで壊す
+     ③**ETag を毎回変わるもの（時刻・乱数）にしない。**
+       毎回変われば、②の端末が毎回まるごと落としに行くことになり通信量が跳ねる
+
+   ─────────────────────────────────────────────────────────────
    ★★ 安全のためにしていること（§0.5②・§10-12「消さない側を先に決めて狭くする」）★★
 
    ここは **サイトに来るすべての求め** が通る場所である。壊すと家族全員がアプリを開けない。
@@ -59,7 +99,12 @@
      ③ Range が ちょうど「bytes=0-数字」の形のときだけ
      ④ その数字が 64KB 以内のときだけ（動画のような大きな求めは引き受けない）
 
-   この4つを全部満たさなければ、**何もせず next() でいつもどおりに流す**。
+   ★v133 で足した HEAD の受け口も、同じ狭さにしてある：
+     ⑤ HEAD のときだけ（GET・POST には一切さわらない）
+     ⑥ 行き先が「/」か「/index.html」のときだけ（/api/… は素通し）
+     ⑦ 先頭1KBが読めたときだけ（読めなければ引き受けない＝素通し）
+
+   この条件を満たさなければ、**何もせず next() でいつもどおりに流す**。
    さらに全体を try/catch で包み、**途中で何が起きても必ず next() に落ちる**。
 
    🚩 それでも心配なときは、**このファイルを GitHub から消せば元どおり**になる。
@@ -68,6 +113,15 @@
 export async function onRequest(context) {
   const { request, next, env } = context;
   try {
+    /* ★★v133 ここから：HEAD には ETag（指紋）を返す。
+       ②に閉じこもった端末は HEAD しか打たないので、ここが唯一の通り道になる。
+       ★下の GET の経路には**指1本触れていない**（§4-2②） */
+    if (wantTag(request) && env && env.ASSETS) {
+      const res = await tagOnly(request, env);
+      if (res) return res;                  /* 指紋を返せた */
+    }
+    /* ★★v133 ここまで。以下は v130 のまま（1文字も変えていない） */
+
     const end = wantHead(request);          /* 引き受けてよい求めか。違えば null */
     if (end !== null && env && env.ASSETS) {
       const res = await headOnly(request, env, end);
@@ -178,6 +232,105 @@ async function headOnly(request, env, end) {
     }
   });
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ★★ ここから下が v133 で足したぶん。上の GET の経路とは完全に分けてある。
+      （上を1文字も触らないために、あえて末尾へまとめた）
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 「指紋だけください」の求めかどうかを見る。引き受けるなら true。
+   ★GET・POST は絶対に引き受けない。HEAD だけ（§10-12「狭くする」） */
+function wantTag(request) {
+  try {
+    if (!request || request.method !== "HEAD") return false;
+
+    const p = new URL(request.url).pathname;
+    if (p !== "/" && p !== "/index.html") return false;   /* ★/api/… は通さない */
+
+    return true;
+  } catch (e) { return false; }
+}
+
+/* 中身は返さず、ヘッダーだけ返す（HEAD なので中身が無いのが正しい）。
+   ★If-None-Match / If-Modified-Since は **一度も見ていない**。
+     見ないので、まちがっても 304 を返すことがない（§4-2①）。 */
+async function tagOnly(request, env) {
+  try {
+    const origin = new URL(request.url).origin;
+
+    /* 取りに行き方は GET の経路とまったく同じ（fetchAsset をそのまま使い回す）。
+       ①端末が付けてきた印つきで頼む → ②だめなら "/" で取り直す＝安全に劣化する */
+    let asset = await fetchAsset(env, request.url);
+    if (!asset || !asset.ok) asset = await fetchAsset(env, origin + "/");
+    if (!asset || !asset.ok) return null;
+
+    /* ★先頭1KBだけ読む。ここに <meta app-ver> が入っている。
+       版が変われば、この1KBが変わる → 指紋が必ず変わる */
+    const buf = await readHeadBytes(asset, 1024);
+    if (!buf || buf.length === 0) return null;   /* 読めなければ引き受けない＝素通し */
+
+    const h = {
+      "content-type": "text/html; charset=utf-8",
+      "etag": etagOf(buf),                 /* ★必ず二重引用符つき（決まりで required） */
+      "accept-ranges": "bytes",            /* 先頭だけの求めにも応じられる、と伝える */
+      "cache-control": "no-store"          /* 版の確かめなので、控えさせない */
+    };
+
+    /* 元から日付が付いていれば、そのまま渡す。
+       ★無いときに今の時刻を書いたりはしない。毎回変わる指紋になってしまう（§4-2③）。
+         「分からないものを既定値でごまかさない」（CLAUDE.md §3.5） */
+    try {
+      const lm = asset.headers.get("last-modified");
+      if (lm) h["last-modified"] = lm;
+    } catch (e) { }
+
+    return new Response(null, { status: 200, headers: h });
+  } catch (e) { return null; }             /* 何が起きても素通しに落ちる */
+}
+
+/* 先頭の want バイトだけ読む。要る所まで読んだら受け取りをやめる。
+   ★headOnly の中にある同じ処理には手を入れず、こちらに書き写してある。
+     （直っている端末が通る道を、1文字も触らないため・§4-2②） */
+async function readHeadBytes(asset, want) {
+  try {
+    const body = asset.body;
+    if (body && body.getReader) {
+      const rd = body.getReader();
+      const parts = [];
+      let got = 0;
+      while (got < want) {
+        const o = await rd.read();
+        if (o.done) break;
+        if (o.value && o.value.length) { parts.push(o.value); got += o.value.length; }
+      }
+      try { await rd.cancel(); } catch (e) { }   /* ★用は済んだ。受け取りをやめる */
+      return joinBytes(parts, Math.min(got, want));
+    }
+    const all = new Uint8Array(await asset.arrayBuffer());
+    return all.slice(0, Math.min(all.length, want));
+  } catch (e) { return null; }
+}
+
+/* 中身から指紋を作る。
+   ★同じ中身なら必ず同じ指紋／中身が1文字でも違えば必ず違う指紋。
+   ★時刻も乱数も使っていない（使うと毎回まるごと落としに行かせることになる・§4-2③）。
+   ★二重引用符で囲むのは決まり（§4-2⑤）。 */
+function etagOf(bytes) {
+  let h1 = 0x811c9dc5 >>> 0;               /* FNV-1a の種 */
+  let h2 = 0x9dc5811c >>> 0;               /* 別の種でもう1本まわす（取り違え防止） */
+  for (let i = 0; i < bytes.length; i++) {
+    const b = bytes[i];
+    h1 = Math.imul(h1 ^ b, 0x01000193) >>> 0;
+    h2 = Math.imul(h2 ^ b, 0x85ebca6b) >>> 0;
+    h2 = ((h2 << 13) | (h2 >>> 19)) >>> 0;
+  }
+  const hex = function (n) { return ("0000000" + (n >>> 0).toString(16)).slice(-8); };
+  return '"' + hex(bytes.length) + hex(h1) + hex(h2) + '"';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★★ v133 で足したぶんは、ここまで。
+   ═══════════════════════════════════════════════════════════════ */
 
 /* ばらばらに届いた かたまり を1本につなぎ、要るぶんだけ切り出す */
 function joinBytes(parts, want) {
