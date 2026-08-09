@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v128">
+<meta name="app-ver" content="v129">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -905,7 +905,15 @@
     font-size:15px;font-weight:800;white-space:nowrap;cursor:pointer;}
   .kusa-ov{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;
     background:rgba(35,40,33,.45);display:flex;flex-direction:column;justify-content:flex-end;}
+  /* ★v129 padding-bottom を2行に分けてあるのは、ホームバー（画面の下の白い棒・約34px）の逃げ。
+     ★下タブバーのある画面はタブバーが避けてくれるが、かぶせるシートにはタブバーが無い。
+     ★このクラスは 🌿草刈り(kusaSheet)・🌾作付(cropSheet)・⚠️満杯の知らせ(lswOv) の
+       3つで使い回しているので、ここ1行で3つとも直る（§6「同じCSSクラスを使い回す」）。
+     ★1行目の 22px はそのまま残してある。env() が読めない古い端末は2行目だけを読み飛ばし、
+       今までどおり 22px になる（＝壊れない）。★クラスは1つのまま（§10-15の二重定義を作らない）
+     ★実測(v128)：一番下のボタンの下端830／画面852＝余白22px。ホームバー34pxに12px不足 */
   .kusa-sheet{background:var(--paper);border-radius:20px 20px 0 0;padding:8px 16px 22px;
+    padding-bottom:calc(22px + env(safe-area-inset-bottom));
     max-height:86%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .kusa-grip{width:44px;height:5px;border-radius:99px;background:#D6D2C6;margin:4px auto 12px;}
   .kusa-sh{font-family:var(--mincho);font-size:20px;font-weight:800;text-align:center;margin-bottom:3px;}
@@ -1264,7 +1272,9 @@
   .fp-pad{min-width:78px;}
   .fp-search{display:block;width:100%;margin:10px 0 4px;border:1.5px solid #9C927C;border-radius:12px;padding:12px;font-size:16px;background:#fff;box-sizing:border-box;}
   .fp-hint{font-size:11px;color:#4A463C;}
-  .fp-list{flex:1;overflow-y:auto;padding:2px 12px 30px;-webkit-overflow-scrolling:touch;}
+  /* ★v129 一番下まで送ったとき、最後の1枚がホームバーに重なっていた（実測 余白30px・4px不足） */
+  .fp-list{flex:1;overflow-y:auto;padding:2px 12px 30px;
+    padding-bottom:calc(30px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;}
   .fp-gh{font-size:12.5px;font-weight:800;color:#4A463C;margin:12px 2px 6px;}
   .fp-row{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #9C927C;border-radius:12px;padding:12px;margin-bottom:6px;}
   .fp-row .cdot{width:10px;height:10px;border-radius:99px;flex-shrink:0;}
@@ -1290,7 +1300,9 @@
     min-width:78px;min-height:40px;display:flex;align-items:center;}
   .bp-pad{min-width:78px;}
   .bp-sub{font-size:12px;color:#4A463C;margin-top:3px;line-height:1.5;}
-  .bp-list{flex:1;overflow-y:auto;padding:10px 12px 34px;-webkit-overflow-scrolling:touch;}
+  /* ★v129 実測 余白34px＝ホームバーとちょうど同じ＝余裕ゼロだった */
+  .bp-list{flex:1;overflow-y:auto;padding:10px 12px 34px;
+    padding-bottom:calc(34px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;}
   .bp-row{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;}
   .bp-row .bpic{font-size:22px;width:30px;text-align:center;flex-shrink:0;}
   .bp-row .bpic img{height:22px;width:auto;vertical-align:middle;}
@@ -2095,7 +2107,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v128</span></div>
+          <div class="setrow">バージョン<span class="sv">v129</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -10399,7 +10411,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v128';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v129';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
