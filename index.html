@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v129">
+<meta name="app-ver" content="v130">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2107,7 +2107,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v129</span></div>
+          <div class="setrow">バージョン<span class="sv">v130</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -3324,10 +3324,40 @@
   /* ★帳面ごとに振り分けて保存する。**中身が変わった帳面だけ**書くので、
      10年たっても書く量は「今年ぶん」のまま増えない。
      quiet=true のときは同期を起こさない（同期の取り込みの途中から呼ぶ ktDedup 用） */
+  /* ★★v130【A案】もともと旧帳面に入っている記録は、1件も動かさない ★★
+     ── 何が起きていたか（本物の sync-put.js を import して再現し、確定させた）
+       v123 で帳面を年ごとに分けたとき「分け始める前の記録は1件も動かさない」と決めた
+       （ktKeyOfRec の注記）。ところが**サーバーの旧帳面に、8/8以降の記録が61件まぎれて**いた。
+       端末は ktSave のたびにその61件を年の帳面へ移すので、旧帳面は 188→127件になる。
+       ★サーバーの合流は**足し算しかしない**ので、旧帳面の188件は減らない。
+       次に読むと188件が戻り、アプリは「家族から新しいデータが届いた」と判断して
+       **画面を読み込み直す**。新しい記録は1件も来ていないのに、である。
+       ＝ **記録を1件書くたびに、余計な読み込み直しが1回起きていた。**
+     ── 直しかた（新しい規則を作らず、既にある規則を守らせる）
+       「分け始める前の記録は動かさない」を、**サーバー経由で旧帳面に入ってきた記録**にも
+       当てはめる。旧帳面にもう居るものは、旧帳面に置いたままにする。
+       ★年の帳面にも居るなら、**両方に置く**。片方から消すと、こんどは
+         年の帳面がサーバーと食い違って、同じ往復が向きを変えて起きる。
+       ★画面は ktUniq が同じ id を1件にまとめるので、二重に見えることはない。
+     ── なぜ削除印で消さないか（★やってはいけない直し方）
+       削除印は id で付く。同じ61件は年の帳面にも居るので、
+       **残すべき方まで一緒に消える**（v48.2・ktUniq の注記と同じ型の事故）。 */
+  function ktStayOld(){
+    var stay={}, raw=null, a=null, i, it;
+    try{ raw=localStorage.getItem(KT_LS); }catch(_x){ raw=null; }
+    try{ a=JSON.parse(raw==null?'null':raw); }catch(_x){ a=null; }
+    if(a instanceof Array)for(i=0;i<a.length;i++){ it=a[i];
+      if(it&&typeof it.id==='string'&&it.id)stay[it.id]=1; }
+    return stay;
+  }
   function ktSave(quiet){
     var _ok=true, g={}, ks=ktKeysAll(), i, k;
     for(i=0;i<ks.length;i++)g[ks[i]]=[];
-    for(i=0;i<ktLog.length;i++){ k=ktKeyOfRec(ktLog[i]); if(!g[k])g[k]=[]; g[k].push(ktLog[i]); }
+    var stay=ktStayOld();   /* ★v130 いま旧帳面に居る記録の id */
+    for(i=0;i<ktLog.length;i++){ k=ktKeyOfRec(ktLog[i]); if(!g[k])g[k]=[]; g[k].push(ktLog[i]);
+      /* ★v130 旧帳面にもう居るなら、旧帳面にも残す（年の帳面からは外さない） */
+      if(k!==KT_LS && ktLog[i] && typeof ktLog[i].id==='string' && stay[ktLog[i].id]){
+        if(!g[KT_LS])g[KT_LS]=[]; g[KT_LS].push(ktLog[i]); } }
     for(k in g){ if(!g.hasOwnProperty(k))continue;
       var str=JSON.stringify(g[k]), cur=null;
       try{ cur=localStorage.getItem(k); }catch(e){ cur=null; }
@@ -9315,6 +9345,7 @@
            'gyotoku.kikai.v1':'機械の記録','gyotoku.photos.v1':'写真','gyotoku.soil.v1':'土のメモ',
            'gyotoku.kyoka.v1':'反省メモ','gyotoku.cost.v1':'生産原価','gyotoku.hygoal.v1':'肥料の目標',
            'gyotoku.hassei.v1':'発生予察','gyotoku.inasaku.v1':'稲作先生','gyotoku.crop.v1':'年ごとの作付',
+           'gyotoku.naeov.v1':'苗箱の手直し',   /* ★v130 ここだけ日本語の名前が無かった */
            'gyotoku.tomb.v1':'消した印'};  /* ★v120 作付を追加 */
     /* ★v123 作業の記録は年ごとの帳面になった。'gyotoku.worklog.2026.v1' → '作業の記録(2026年)' */
     var _y=/^gyotoku\.worklog\.([0-9][0-9][0-9][0-9])\.v1$/.exec(k);
@@ -10411,7 +10442,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v129';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v130';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
