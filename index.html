@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v135">
+<meta name="app-ver" content="v136">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2102,7 +2102,7 @@
         <div class="setnote"><span class="nb">💡 記録・予定・メモ・</span><span class="nb">工程表の設定などは、</span><span class="nb">家族みんなで</span><b>自動的に共有・バックアップ</b><span class="nb">されます</span><span class="nb">（数十秒ごと／</span><span class="nb">アプリを開いた時）。</span><span class="nb">ネットが無い時は</span><span class="nb">この端末で使え、</span><span class="nb">つながると</span><span class="nb">自動で追いつきます。</span><span class="nb">写真はこれまで通り</span><span class="nb">共有アルバムに</span><span class="nb">保存されます。</span></div>
         <div class="sethead" id="devHead">📱 家族の端末</div>
         <div class="setcard" id="devCard"></div>
-        <div class="setnote"><span class="nb">💡 家族の端末が</span><span class="nb">いま何版か・</span><span class="nb">最後にいつひらいたかが</span><span class="nb">わかります。</span><span class="nb">⚠️ が付いた端末は</span><span class="nb">版が古いので、</span><span class="nb">その端末でアプリを</span><span class="nb">ひらいてもらってください。</span><span class="nb">記録の数は</span><b>この版を入れてから</b><span class="nb">のぶんです。</span><span class="nb">行を押すと</span><b>名前を付けられます</b><span class="nb">（家族みんなに届きます）。</span></div>
+        <div class="setnote"><span class="nb">💡 家族の端末が</span><span class="nb">いま何版か・</span><span class="nb">最後にいつ使ったかが</span><span class="nb">わかります。</span><span class="nb">⚠️ が付いた端末は</span><span class="nb">版が古いので、</span><span class="nb">その端末でアプリを</span><span class="nb">ひらいてもらってください。</span><span class="nb">記録の数は</span><b>この版を入れてから</b><span class="nb">のぶんです。</span><span class="nb">行を押すと</span><b>名前を付けられます</b><span class="nb">（家族みんなに届きます）。</span></div>
         <div class="sethead">💾 データ（バックアップ・リセット）</div>
         <div class="setcard">
           <div class="setrow">保存場所<span class="sv">iPhoneとサーバー</span></div>
@@ -2115,7 +2115,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v135</span></div>
+          <div class="setrow">バージョン<span class="sv">v136</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -8726,7 +8726,7 @@
      ・オフラインでも普通に使える。つながった時だけ自動で同期する。 */
   var TOMB_LS='gyotoku.tomb.v1';   /* v30 削除印(tombstone)の台帳。中身は印だけで記録本体は入れない */
 
-  /* ★★v131 家族の端末の一覧（版・最後にひらいた時刻・つけた記録の数）★★
+  /* ★★v131 家族の端末の一覧（版・★v136 最後に使った日・つけた記録の数）★★
      ── なぜ作ったか
        ご家族の端末は遠方にあり、いま何版か・使ってもらえているかを確かめる手段が
        **1つも無かった**（v130 は「自動更新が効いたか」を確かめられないまま終わった）。
@@ -8841,21 +8841,49 @@
      ── 直しかた
        印だけを見ずに、**控えてある版と、いまの版が食い違っていたら書く**。
        ★その時 at（ひらいた時刻）は動かさない。読み込み直しであって、ひらき直しではない。
-       ＝「いつひらいたか」の意味を守る（devBump と同じ考え方） */
-  function devPing(){
-    var stale=false;                                   /* ★控えの版が、いまの版と食い違うか */
+       ＝「いつひらいたか」の意味を守る（devBump と同じ考え方）
+
+     ★★★v136 ここに「最後に使った日」を足した（★親方のご要望）★★★
+     ── なぜ
+       親方のお言葉：「この時間や日付が分かれば家族がこのアプリを使ってくれている
+       証拠になるから、アプリを作って良かったと気持ちが救われる」
+     ── なぜ「日」までなのか（★時刻まで出さない理由）
+       触るたびに書くと、**5台で1日およそ1,800回**サーバーに書きに行くことになり、
+       無料枠の上限（1,000回/日）を超える。さらに家族の台数ぶんの上書き合戦になり、
+       **全員の画面が数十秒ごとにホームへ戻り続ける**（v65で実際に起きた事故）。
+       → **日が変わった時だけ書く。1台1日1回。5台で5回/日＝上限の0.5%。**
+       ★1日1回しか書かないので、上書き合戦は**原理的に起きない**。
+       ★親方のご判断：「規制があるなら、最後にアプリを開いた日にちだけでも良い、
+         せっかく今、自動更新出来るように改善したのに、また、バグが出たら困る」
+     ── ★画面に時刻を出さない理由（§3.5「文言とコードの条件を突き合わせる」）
+       at に入るのは「**その日、はじめて触った時刻**」である。
+       これを「2:14 に使っていた」と出すと、そのあと何時間使っていても 2:14 と出て
+       **嘘になる**。日まで（きょう／きのう／◯月◯日）なら、いつでも正しい。 */
+  function devSameDay(a,b){
     try{
-      var c=devLoad()[devId()];
-      stale=(!c || typeof c!=='object' || c.v!==devVer());
-    }catch(e){ stale=true; }                           /* 読めないなら書く側に倒す */
+      var x=new Date(a), y=new Date(b);
+      return x.getFullYear()===y.getFullYear() && x.getMonth()===y.getMonth() && x.getDate()===y.getDate();
+    }catch(e){ return false; }
+  }
+  function devPing(){
+    var cur=null;
+    try{ cur=devLoad()[devId()]; }catch(e){ cur=null; }
+    if(cur && (typeof cur!=='object' || (cur instanceof Array))) cur=null;
+
+    var stale  = (!cur || cur.v!==devVer());                        /* 版が食い違う */
+    var newDay = (!cur || typeof cur.at!=='number' || !(cur.at>0)
+                       || !devSameDay(cur.at, Date.now()));         /* ★日が変わった */
 
     var pinged=false;
     try{ pinged=!!sessionStorage.getItem('gyotoku.devPinged'); }catch(e){}
 
-    if(pinged && !stale) return false;                 /* ただの読み込み直し → 今までどおり書かない */
+    /* ★書かなくてよい唯一の場合＝「ただの読み込み直し・版も同じ・日も同じ」 */
+    if(pinged && !stale && !newDay) return false;
 
     try{ sessionStorage.setItem('gyotoku.devPinged','1'); }catch(e){}
-    devPut(pinged ? 0 : Date.now());                   /* ★読み込み直しなら、ひらいた時刻は動かさない */
+    /* ★at を動かすのは「はじめてひらいた時」と「日が変わった時」だけ。
+       版が上がっただけの読み込み直しでは動かさない（0を渡す＝据え置き） */
+    devPut((!pinged || newDay) ? Date.now() : 0);
     try{ devRender(); }catch(e){}
     return true;
   }
@@ -8867,15 +8895,17 @@
     try{ devRender(); }catch(e){}
   }
   function devEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  /* ★v136 「最後に使った日」を出す。
+     ★時刻は出さない。at は「その日はじめて触った時刻」なので、
+       時刻まで出すと そのあと何時間使っていても同じ時刻が出て **嘘になる**（§3.5）。
+     ★日まで（きょう／きのう／◯月◯日）なら、いつでも正しい。 */
   function devWhen(t){
-    if(typeof t!=='number'||!(t>0))return 'ひらいた記録がありません';
+    if(typeof t!=='number'||!(t>0))return 'まだ使われていません';
     var d=new Date(t);
-    if(Date.now()-t<120000)return 'たった今ひらいた';
-    var hh=('0'+d.getHours()).slice(-2), mm=('0'+d.getMinutes()).slice(-2);
     var t0=new Date(); t0.setHours(0,0,0,0);
-    if(d.getTime()>=t0.getTime())return 'きょう '+hh+':'+mm+' にひらいた';
-    if(d.getTime()>=t0.getTime()-86400000)return 'きのう '+hh+':'+mm+' にひらいた';
-    return (d.getMonth()+1)+'月'+d.getDate()+'日 '+hh+':'+mm+' にひらいた';
+    if(d.getTime()>=t0.getTime())return 'きょう 使っていた';
+    if(d.getTime()>=t0.getTime()-86400000)return 'きのう 使っていた';
+    return (d.getMonth()+1)+'月'+d.getDate()+'日 に使っていた';
   }
   function devRender(){
     var card=document.getElementById('devCard'); if(!card)return;
@@ -10636,7 +10666,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v135';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v136';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
@@ -10936,11 +10966,17 @@
      ★verCheck の「1分に1回まで」がそのまま効くので、連打しても通信は増えない。
      ★passive にして、画面を払う動き（スクロール）の邪魔をしない */
   try{
-    var _verTapGo=function(){ try{ verCheck(); }catch(e){} };
+    var _verTapGo=function(){
+      try{ verCheck(); }catch(e){}
+      /* ★v136 「最後に使った日」も、ここで見る。
+         devPing は中で「日が変わっていなければ何もしない」ので、
+         連打されても書き込みは **1日1回**しか起きない（＝上限の心配がない） */
+      try{ devPing(); }catch(e){}
+    };
     document.addEventListener('touchstart', _verTapGo, {capture:true, passive:true});
     document.addEventListener('mousedown',  _verTapGo, {capture:true, passive:true});
   }catch(e){
-    try{ document.addEventListener('touchstart', function(){ try{ verCheck(); }catch(e2){} }, true); }catch(e3){}
+    try{ document.addEventListener('touchstart', function(){ try{ verCheck(); }catch(e2){} try{ devPing(); }catch(e4){} }, true); }catch(e3){}
   }
   /* 入れかわった直後だけ、小さく知らせる（黙って変わると壊れたと思われるため） */
   try{
