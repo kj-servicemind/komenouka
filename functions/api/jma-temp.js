@@ -103,6 +103,7 @@ export async function onRequest(context) {
     place: PLACE + "（" + PREC + "/" + BLOCK + "）",
     today: today,
     summary: summarize(months),
+    check: checkFormula(months),
     months: months
   });
 }
@@ -138,7 +139,7 @@ function spanOf(a, b) {
   return out;
 }
 function ymOf(y, m) { return y + "-" + (m < 10 ? "0" : "") + m; }
-function kvKey(ym) { return "t:jma:" + BLOCK + ":" + ym; }
+function kvKey(ym) { return "t:jma:" + BLOCK + ":v2:" + ym; }   /* ★v138 で1日ぶんの中身が増えたので v2 */
 function out(rec, src) {
   return { src: src, got: rec.got, way: rec.way || "", days: rec.rows.length, rows: rec.rows };
 }
@@ -219,7 +220,7 @@ function parseDaily(html) {
       if (!(max >= avg && avg >= min)) continue;   /* ★検算。ずれた読み方はここで落ちる */
       if (seen[day]) continue;
       seen[day] = 1;
-      rows.push([day, avg]);
+      rows.push([day, avg, max, min]);
     }
     if (rows.length > best.rows.length) best = { rows: rows, name: ways[w].name };
   }
@@ -277,10 +278,60 @@ function summarize(months) {
        + (diff >= 0 ? "（平年より早く進んでいる）" : "（平年より遅れている）");
 }
 
+/* ===== ★予報から「その日の平均気温」を出す式を、今年の実測で確かめる（v138） =====
+   ── なぜ要るか ──
+     天気予報は 最高／最低 しか持っていない。積算に要るのは **日平均**。
+     v137まで、端末側は「平均 ≒ 最高 − 4℃（夏場の概算）」で埋めていたが、
+     **この 4℃ に根拠が無かった**（しかも最低気温を持っているのに使っていない）。
+   ── どう決めるか ──
+     今年の実測は「日平均・最高・最低」が3つそろっている。
+     そこで4つの式を実測に当てて、**どれがいちばん近いか**を数で出す。
+       かたより … 平均してどちら向きに何℃ずれるか（+なら高く出る）
+       ずれの大きさ … 1日あたり平均で何℃ちがうか（★小さいほうが良い）
+     ★勘で決めない。§3.5「分からない時に既定値でごまかさない」の当てはめ。 */
+function checkFormula(months) {
+  const A = [];
+  for (const ym in months) {
+    const o = months[ym];
+    if (!o || !o.rows) continue;
+    for (let i = 0; i < o.rows.length; i++) {
+      const r = o.rows[i];
+      if (r.length >= 4 && r[2] != null && r[3] != null) A.push(r);
+    }
+  }
+  if (A.length < 10) return ["実測が少なすぎて確かめられません（" + A.length + "日）"];
+
+  let sMax = 0, sMid = 0;
+  for (let i = 0; i < A.length; i++) {
+    sMax += (A[i][2] - A[i][1]);                 /* 最高 − 平均 */
+    sMid += ((A[i][2] + A[i][3]) / 2 - A[i][1]); /* (最高+最低)/2 − 平均 */
+  }
+  const bestA = sMax / A.length;   /* ③ 最高 − bestA が、いちばん かたよらない */
+  const bestB = sMid / A.length;   /* ④ (最高+最低)/2 − bestB が、いちばん かたよらない */
+
+  const f = [
+    { name: "① 最高−4℃（いまの式）", g: function (r) { return r[2] - 4; } },
+    { name: "② (最高+最低)÷2", g: function (r) { return (r[2] + r[3]) / 2; } },
+    { name: "③ 最高−" + bestA.toFixed(1) + "℃", g: function (r) { return r[2] - bestA; } },
+    { name: "④ (最高+最低)÷2−" + bestB.toFixed(1) + "℃", g: function (r) { return (r[2] + r[3]) / 2 - bestB; } }
+  ];
+  const out = ["★今年の実測 " + A.length + "日で確かめました（かたより／ずれの大きさ）"];
+  let win = -1, winV = 1e9;
+  for (let k = 0; k < f.length; k++) {
+    let bias = 0, mae = 0;
+    for (let i = 0; i < A.length; i++) { const e = f[k].g(A[i]) - A[i][1]; bias += e; mae += Math.abs(e); }
+    bias /= A.length; mae /= A.length;
+    out.push(f[k].name + " … かたより " + (bias >= 0 ? "+" : "") + bias.toFixed(2) + "℃ ／ ずれの大きさ " + mae.toFixed(2) + "℃");
+    if (mae < winV) { winV = mae; win = k; }
+  }
+  out.push("★いちばん近いのは " + f[win].name.slice(0, 2) + "（ずれの大きさ " + winV.toFixed(2) + "℃）");
+  return out;
+}
+
 /* ★検証から中身を直接たしかめられるように出しておく。
    sync-put.js が mergeValue を出しているのと同じ流儀（CLAUDE.md §10-18「本物の関数を呼ぶのが最短の裏取り」）。
    Cloudflare は onRequest だけを見るので、これがあっても動きに影響しない。 */
-export const _test = { parseDaily, monthList, summarize, spanOf, num, strip, timeIdx };
+export const _test = { parseDaily, monthList, summarize, spanOf, num, numT, strip, timeIdx, checkFormula };
 
 /* ===== 道具 ===== */
 function jstDate() {
