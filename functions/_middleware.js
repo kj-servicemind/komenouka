@@ -49,6 +49,40 @@
       どちらが効いたのか分けられていない。**疑わしいので直しておく**という段階。
 
    ─────────────────────────────────────────────────────────────
+   ★★★ v134 で足したこと（★「見張りに賭けない」ための直し） ★★★
+
+   ── なぜこれを足すのか（★親方のお言葉）
+     「遠方の端末では確認出来ない、自動更新されるのを祈るしか無い状況。
+       だから、何度も自動更新何とか出来るようにお願いしている」
+
+     v127〜v133 の直しは、どれも **「端末の見張りがちゃんと動くか」** に賭けていた。
+     賭けである以上、外れれば また祈ることになる。**直す場所を変える。**
+
+   ── ★①「開けば最新」（賭けない道）
+     ご家族がホーム画面のアプリを叩くと、iPhone は index.html を取りに行く。
+     このとき **端末に残った古い写しが使われる**なら、見張りが動く前から負けている。
+
+     そこで、こちらから **「使う前に必ず確かめて」** と付けて返す。
+       ・見張りが動くかどうかに **関係なく** 効く
+       ・ご家族がすることは「いつもどおり開く」だけ
+       ・★no-store（＝毎回まるごと落とす）ではなく **no-cache**。
+         中身が変わっていなければ、端末とサーバーの間で軽くやりとりが済む
+
+     🚩 **安全に劣化する形にしてある**：
+        いまサーバーが既に「毎回確かめて」と返しているなら、**何も変わらない**（損はゼロ）。
+        max-age が付いていたなら、**そこが効く**。どちらでも、いまより悪くはならない。
+
+   ── ★②「祈らずに確かめる」ための、ちいさな確認ページ  /__gy
+     こちらは **いまサーバーが何と返しているかを、まだ一度も測っていない**。
+     測らずに「これで直ります」と言わないために、測る口を付ける（§0.5⑨）。
+
+       ・親方が Safari で komenouka.pages.dev/__gy を **1回開くだけ**
+       ・★遠方のご家族には何もお願いしない
+       ・出るのは「サーバーが index.html に何と返しているか」だけ。
+         端末の中の控えは見ない（iOS ではアプリと Safari で保存場所が別・§1③）
+       ・★役目を終えたら、このファイルから消せばよい
+
+   ─────────────────────────────────────────────────────────────
    ★★★ v133 で足したこと（★これが「遠方のご家族の端末」を救う本命） ★★★
 
    ── 誰を救うのか
@@ -113,14 +147,20 @@
 export async function onRequest(context) {
   const { request, next, env } = context;
   try {
-    /* ★★v133 ここから：HEAD には ETag（指紋）を返す。
+    /* ★★v134② ちいさな確認ページ。いま何が返っているかを測るためだけの口。
+       ★いちばん先に見る。ここは「/」でも「/index.html」でもないので、他に一切ぶつからない */
+    if (wantChk(request) && env && env.ASSETS) {
+      const res = await chkPage(request, env);
+      if (res) return res;
+    }
+
+    /* ★★v133 HEAD には ETag（指紋）を返す。
        ②に閉じこもった端末は HEAD しか打たないので、ここが唯一の通り道になる。
        ★下の GET の経路には**指1本触れていない**（§4-2②） */
     if (wantTag(request) && env && env.ASSETS) {
       const res = await tagOnly(request, env);
       if (res) return res;                  /* 指紋を返せた */
     }
-    /* ★★v133 ここまで。以下は v130 のまま（1文字も変えていない） */
 
     const end = wantHead(request);          /* 引き受けてよい求めか。違えば null */
     if (end !== null && env && env.ASSETS) {
@@ -130,7 +170,17 @@ export async function onRequest(context) {
   } catch (e) {
     /* 何が起きても、いつもどおりに流す（★ここが安全弁） */
   }
-  return next();
+
+  /* ★★v134① 「開けば最新」。
+     ふつうにアプリを開いた時（GET・Rangeなし）だけ、
+     いつもどおり作った返事に **「使う前に必ず確かめて」** を付け直して返す。
+     ★中身には指1本触れない。付け替えるのは札(ヘッダー)だけ。
+     ★うまくいかなければ、作った返事をそのまま返す＝いまより悪くならない */
+  const res = await next();
+  try {
+    if (wantFresh(request)) return freshen(res);
+  } catch (e) { }
+  return res;
 }
 
 /* 「先頭だけ」の求めかどうかを見る。引き受けるなら最後のバイト位置、違えば null。
@@ -232,6 +282,127 @@ async function headOnly(request, env, end) {
     }
   });
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ★★ ここから下が v134 で足したぶん。
+      ①開けば最新（wantFresh / freshen）
+      ②ちいさな確認ページ（wantChk / chkPage）
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 「ふつうにアプリを開いた」求めかどうか。
+   ★版の見張り（Range つき）や HEAD は、上ですでに引き受けているのでここには来ない。
+   ★ここに来るのは、ホーム画面のアプリを叩いた時・Safariで開いた時だけ */
+function wantFresh(request) {
+  try {
+    if (!request || request.method !== "GET") return false;
+
+    const p = new URL(request.url).pathname;
+    if (p !== "/" && p !== "/index.html") return false;   /* ★/api/… は通さない */
+
+    if (request.headers.get("Range")) return false;       /* 版の見張りの道は触らない */
+
+    return true;
+  } catch (e) { return false; }
+}
+
+/* 「使う前に必ず確かめて」を付け直す。
+   ★中身（body）はそのまま。付け替えるのは札だけ。
+   ★no-store にはしない。no-store は「保存すらするな」で、毎回まるごと落とすことになる。
+     no-cache は「持っていてよいが、使う前に確かめて」。中身が同じなら軽く済む。
+   ★元が何だったかを x-gy-was に残す（あとで /__gy で読むため。無害な覚え書き）
+
+   ★★★ ここで一度しくじった（v134の検証で捕まえた）★★★
+     覚え書きに **日本語「(なし)」** を入れていた。
+     HTTP の札は ASCII しか許されないので **例外**になり、
+     上の catch が黙って握りつぶし、**「開けば最新」が丸ごと効かなくなっていた**。
+     しかも効かなくなるのは「元に控えの決まりが無いとき」＝**いちばん効かせたい場面**。
+     🚩 **札の中身は必ず ASCII だけにする。** 画面に出す言葉と、機械に渡す札は別物。 */
+function freshen(res) {
+  try {
+    if (!res || !res.headers) return res;
+    const h = new Headers(res.headers);
+    const was = h.get("cache-control");
+    h.set("cache-control", "no-cache, must-revalidate");
+    h.set("x-gy-was", ascii(was) || "none");   /* ★ASCII だけ。日本語は入れない */
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+  } catch (e) { return res; }               /* ★しくじったら元のまま返す＝悪くならない */
+}
+
+/* 札に入れてよい文字だけ残す。空になったら空文字を返す。
+   ★念のため長さも切る（長すぎる札は捨てられることがある） */
+function ascii(s) {
+  try {
+    if (s == null) return "";
+    return String(s).replace(/[^\x20-\x7E]/g, "").replace(/[\r\n]/g, "").slice(0, 120);
+  } catch (e) { return ""; }
+}
+
+/* ── ②ちいさな確認ページ ────────────────────────────────
+   ★「/__gy」ちょうどの時だけ。他のどの道にもぶつからない名前にしてある */
+function wantChk(request) {
+  try {
+    if (!request || request.method !== "GET") return false;
+    return new URL(request.url).pathname === "/__gy";
+  } catch (e) { return false; }
+}
+
+/* いまサーバーが index.html に何と返しているかを、そのまま画面に出す。
+   ★端末の中の控えは見ない（iOS ではアプリと Safari で保存場所が別なので、見えない）。
+   ★役目を終えたら、この関数と wantChk を消せばよい */
+async function chkPage(request, env) {
+  try {
+    const origin = new URL(request.url).origin;
+    const asset = await fetchAsset(env, origin + "/?chk=" + Date.now());
+    if (!asset) return null;
+
+    const g = function (k) { try { const v = asset.headers.get(k); return v ? v : "（返ってきていません）"; } catch (e) { return "（読めません）"; } };
+
+    /* 版の名前も読んでおく（サーバーがいま何版を配っているか） */
+    let ver = "（読めません）";
+    try {
+      const buf = await readHeadBytes(asset, 2048);
+      if (buf && buf.length) {
+        const m = /name="app-ver"[^>]*content="([^"]+)"/.exec(new TextDecoder("utf-8").decode(buf));
+        if (m) ver = m[1];
+      }
+    } catch (e) { }
+
+    const rows = [
+      ["サーバーが配っている版", ver],
+      ["控えの決まり (cache-control)", g("cache-control")],
+      ["指紋 (etag)", g("etag")],
+      ["日付 (last-modified)", g("last-modified")],
+      ["中身の大きさ (content-length)", g("content-length")],
+      ["先頭だけ渡せるか (accept-ranges)", g("accept-ranges")]
+    ];
+
+    let html = '<!doctype html><html lang="ja"><head><meta charset="utf-8">'
+      + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+      + '<title>サーバーの返事</title><style>'
+      + 'body{font-family:-apple-system,sans-serif;background:#FBFAF6;color:#1a1a1a;'
+      + 'margin:0;padding:18px;font-size:19px;line-height:1.7}'
+      + 'h1{font-size:22px;margin:0 0 6px}p{color:#555;font-size:16px;margin:0 0 18px}'
+      + '.r{background:#fff;border:2px solid #cfc9b8;border-radius:12px;padding:14px 16px;margin:0 0 12px}'
+      + '.k{font-size:15px;color:#555;margin:0 0 4px}.v{font-weight:700;word-break:break-all}'
+      + '</style></head><body><h1>サーバーの返事</h1>'
+      + '<p>いま komenouka.pages.dev が index.html に付けて返しているものです。'
+      + 'この画面は、この端末の中の控えは見ていません。</p>';
+    for (let i = 0; i < rows.length; i++) {
+      html += '<div class="r"><div class="k">' + rows[i][0] + '</div>'
+        + '<div class="v">' + String(rows[i][1]).replace(/&/g, "&amp;").replace(/</g, "&lt;") + '</div></div>';
+    }
+    html += '</body></html>';
+
+    return new Response(html, {
+      status: 200,
+      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }
+    });
+  } catch (e) { return null; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★★ v134 で足したぶんは、ここまで。
+   ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════
    ★★ ここから下が v133 で足したぶん。上の GET の経路とは完全に分けてある。
