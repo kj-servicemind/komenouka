@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v127">
+<meta name="app-ver" content="v128">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2095,7 +2095,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v127</span></div>
+          <div class="setrow">バージョン<span class="sv">v128</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -10399,7 +10399,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v127';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v128';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_KEY='gyotoku.verTag.v1';          /* {v:版, t:指紋} この端末だけ・同期しない */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
@@ -10580,6 +10580,7 @@
       var m=(''+t).match(/name="app-ver"[^>]*content="([^"]+)"/);
       if(!m) return;                            /* 読めない → 何もしない（誤作動させない） */
       verSeenSet(kb);                           /* ★v124 ここで初めて「確かめられた」 */
+      try{ verSeenShow(); }catch(e){}           /* ★v128 開いたままでも、その場で描き直す */
       if(m[1]!==APP_VER){ verApply(); return; } /* ★版がちがう＝古い画面を見ている。確実 */
       verRemember(tag);                         /* 版は同じ＝指紋が揺れただけ。控え直す */
     }, function(){ _verBusy=0; });
@@ -10611,6 +10612,7 @@
     if(!tag) return;
     verSeenSet(0);                                  /* ★v124 指紋が返ってきた＝確かめられた
                                                        ★v127 0KB＝本文は落としていない印 */
+    try{ verSeenShow(); }catch(e){}                 /* ★v128 開いたままでも、その場で描き直す */
     var st=null;
     try{ st=JSON.parse(localStorage.getItem(VER_KEY)||'null'); }catch(e){ st=null; }
     if(st && st.v===APP_VER && st.t){               /* 控えが使える＝指紋くらべでよい */
