@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v141">
+<meta name="app-ver" content="v142">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -815,20 +815,44 @@
   .ina-now .kt-ricefoot{font-size:13.5px;font-weight:700;margin-top:9px;padding-top:9px;
     border-top:1px solid rgba(255,255,255,.35);color:#fff;}
 
+  /* ★★v142 品種ごとの「かたまり」＝ 札 ＋ 品種の行 ＋ 積算の帯 を1つの箱に入れる ★★
+     ── なぜ1つの箱にするか（親方のご指摘・2026/08/10）──
+       積算の帯を足したら、どこからどこまでが1品種か分からなくなった。
+       左に品種の色の帯を通し、うすく色を塗り、品種の間を7px→14pxに広げて切り分ける。
+     ★色は --kc（品種色）--kc2（枠）--kb1 --kb2（背景）--kt（文字）を JS から流し込む。
+       CSSに色表を持たない＝品種色を1か所直せば全部ついてくる（§0.5②）。 */
+  .kt-blk{border-radius:14px;overflow:hidden;margin-bottom:14px;
+    border:1.5px solid var(--kc2,#D8D2C0);border-left:9px solid var(--kc,#9C927C);}
+  /* ★v142 「いちばん早い／遅い」の札。品種名と同じ行に置くと、
+     「にじのきらめき」で44px足りず必ず切れた（実測）。幅いっぱいの帯にすれば切れない。 */
+  .kt-tag{background:var(--green);color:#fff;font-size:12.5px;font-weight:800;
+    padding:5px 12px;letter-spacing:.03em;}
+  .kt-tag.l{background:#8A6D1E;}
   /* v45 品種ごとの出穂・収穫予想カード */
   .kt-pcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 13px;margin-bottom:12px;
     box-shadow:0 1px 3px rgba(0,0,0,.04);}
   .kt-pcard .ti{font-size:17px;font-weight:800;margin-bottom:3px;}
   .kt-pcard .sb{font-size:13px;color:#4A463C;line-height:1.7;margin-bottom:10px;}
-  .kt-prow{display:flex;align-items:center;gap:9px;padding:12px 10px;border-radius:12px;
-    background:#F7F5EC;margin-bottom:7px;}
-  /* ★v92 行・枠の線は #6B9077（比3.08）にそろえる。タイルの枠と同じ濃さ */
-  .kt-prow.soon{background:var(--green-soft);border:1.5px solid #6B9077;}
-  .kt-prow.wait{background:#F2F0E8;}
+  /* ★v142 かたまりの中に入るので、角丸と下の余白は kt-blk 側が持つ */
+  .kt-prow{display:flex;align-items:center;gap:9px;padding:12px 11px;background:var(--kb1,#F7F5EC);}
+  .kt-prow.wait{background:var(--kb1,#F2F0E8);}
   /* ★v141 出穂を見た日を入れられる行。押せると分かるように › を出す */
   .kt-prow.tapok{cursor:pointer;}
-  .kt-prow .kt-chv{flex:0 0 auto;margin-left:4px;font-size:21px;font-weight:700;color:#B8893B;line-height:1;}
+  .kt-prow .kt-chv{flex:0 0 auto;margin-left:2px;font-size:21px;font-weight:700;color:var(--kt,#7A5314);line-height:1;}
+  /* ★v142 いまの積算温度。ラベルと数字を離さない（84℃が何の温度か分かるように）＋中央寄せ */
+  .kt-acc{padding:11px 12px 12px;background:var(--kb2,#FCFBF6);text-align:center;}
+  .kt-acc .t1{font-size:13.5px;font-weight:800;color:#3A362C;line-height:1.35;}
+  .kt-acc .t1 .vv{font-size:21px;font-weight:800;color:var(--kt,#7A5314);margin-left:6px;}
+  .kt-acc .t1 .vv small{font-size:13px;font-weight:800;}
+  .kt-acc .t2{font-size:13.5px;font-weight:700;color:#3A362C;line-height:1.6;margin-top:4px;}
+  .kt-acc .t2 b{font-size:14.5px;color:var(--kt,#7A5314);}
+  .kt-acc .t3{font-size:15px;font-weight:800;line-height:1.5;margin-top:6px;padding-top:7px;
+    border-top:1px solid rgba(120,110,90,.3);color:var(--kt,#7A5314);}
+  .kt-acc .t3 b{font-size:17px;}
+  .kt-acc .t4{font-size:12px;font-weight:700;color:#4A463C;line-height:1.5;margin-top:5px;}
   .ina-hbox{background:#FFFFFF;border:1.5px solid #B8893B;border-radius:14px;padding:12px 14px;margin:0 0 8px;}
+  /* ★v142 かたまりの中に入るときは、角丸と余白を消して枠になじませる */
+  .kt-blk .ina-hbox{border:0;border-top:1.5px solid var(--kc2,#D8D2C0);border-radius:0;margin:0;}
   .ina-hbox .ht{font-size:15.5px;font-weight:800;color:var(--ink);margin-bottom:9px;}
   .ina-hbox .hin{display:block;width:100%;box-sizing:border-box;border:1px solid #9C927C;
     border-radius:10px;padding:11px 10px;font-size:16.5px;background:#fff;font-family:inherit;}
@@ -838,15 +862,15 @@
   .ina-hbox .hb.no{background:#fff;border:1px solid rgba(156,146,124,.45);color:#6E6A5C;}
   .ina-hbox .hn{font-size:12.5px;color:#4A463C;line-height:1.7;margin-top:9px;}
   .kt-prow.wait .nm{color:#6E6A5C;}
-  .kt-prow .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-  .kt-prow .nm{font-size:16px;font-weight:800;flex:1;min-width:0;}
-  .kt-prow .nm small{display:block;font-size:12px;color:#4A463C;font-weight:700;margin-top:2px;}
-  .kt-prow .dz{text-align:right;font-size:15.5px;font-weight:800;color:var(--green-deep);flex-shrink:0;line-height:1.5;}
-  .kt-prow .dz small{display:block;font-size:12px;color:#4A463C;font-weight:700;}
-  .kt-prow .wt{font-size:13px;color:#4A463C;font-weight:800;text-align:right;flex-shrink:0;}
-  .kt-flag{font-size:11.5px;font-weight:800;color:#fff;background:var(--green);padding:2px 8px;
-    border-radius:999px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
-  .kt-flag.l{background:#8A6D1E;}
+  .kt-prow .dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;}
+  .kt-prow .nm{font-size:16px;font-weight:800;flex:1 1 auto;min-width:0;}
+  /* ★v142 左の小さい字を14pxにそろえ、2行に分ける。
+     v141は12pxの1行で、余裕が1%しかなく iPhone の書体で右の日付と重なっていた（実測） */
+  .kt-prow .nm small{display:block;font-size:14px;color:#4A463C;font-weight:700;margin-top:3px;line-height:1.55;}
+  /* ★v142 右の日付。上下を同じ14pxにそろえ、「出穂」を付ける */
+  .kt-prow .dz{text-align:right;flex:0 0 auto;line-height:1.55;}
+  .kt-prow .dz .r1,.kt-prow .dz .r2{font-size:14px;font-weight:800;color:var(--green-deep);}
+  .kt-prow .wt{font-size:14px;color:#4A463C;font-weight:800;text-align:right;flex-shrink:0;}
   .kt-pnote{font-size:13px;color:#4A463C;line-height:1.85;margin-top:9px;}
   .kt-pnote b{color:#6E6A5C;}
   /* ★v139 この予想のもとにした気温（実測／予報／平年なみ）。年配の方向けに文字を大きめに */
@@ -2138,7 +2162,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v141</span></div>
+          <div class="setrow">バージョン<span class="sv">v142</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2963,7 +2987,35 @@
       if(head){
         harv=inaDateAtAccum(inaFmtFull(head), o.v.ripen); harv.setHours(0,0,0,0);
       }
-      out.push({crop:o.crop, key:o.key, n:o.n, area:o.area, tp:o.tp, head:head, harvest:harv, seen:seenFlag});
+      /* ★★v142 いまの積算温度を出す（親方のご質問①）★★
+         ── どこから数えるか ──
+           出穂前 … 田植えの日から今日まで。目標は品種の head（例 つやおとめ1720℃）
+           出穂後 … 出穂の日から今日まで。目標は品種の ripen（例 1000℃）
+         ── 残りの日数は「予想日 − 今日」で出す（★気温で割り算しない）──
+           割り算で出すと、すぐ上に出ている「9/2ごろ」と1日ずれた（実測で確認）。
+           同じ日付から数えれば、画面同士が食い違わない（§0.5②）。
+         ── ガード ──
+           ★残りがマイナスにならないようにする。テストの田植え記録（8/1など）が
+             残っていると収穫が12月になり、「あと −40日」のような数字が出かねない。 */
+      var accum=null, target=null, remC=null, remDays=null, after=false;
+      if(o.tp&&head){
+        var _t=new Date(); _t.setHours(0,0,0,0);
+        after=(_t>=head);
+        if(after){
+          accum=inaAccum(inaFmtFull(head), _t);
+          target=o.v.ripen;
+          remDays=harv?Math.round((harv-_t)/86400000):null;
+        }else{
+          accum=inaAccum(o.tp, _t);
+          target=o.v.head;
+          remDays=Math.round((head-_t)/86400000);
+        }
+        accum=Math.round(accum);
+        remC=Math.max(0, Math.round(target-accum));
+        if(remDays!=null&&remDays<0)remDays=0;   /* ★マイナスの日数は出さない */
+      }
+      out.push({crop:o.crop, key:o.key, n:o.n, area:o.area, tp:o.tp, head:head, harvest:harv, seen:seenFlag,
+                accum:accum, target:target, remC:remC, remDays:remDays, after:after});
     }
     /* 田植え済み(head有)を出穂日の早い順に、未田植え(null)は後ろに面積の大きい順で */
     out.sort(function(a,b){
@@ -3042,8 +3094,63 @@
 
   /* 品種名 → 田んぼ一覧と同じ色（丸バッジ用） */
   var INA_CROP_COLOR={ 'つやおとめ':'#D4A017','ひのひかり':'#2E7D32','にこまる':'#6B4FA0',
-    'にじのきらめき':'#1D5C8F','夢つくし':'#D97706','元気つくし':'#0E7C7B','未定':'#9A958A','大豆':'#8B5E3C' };
+    'にじのきらめき':'#1D5C8F','夢つくし':'#C2185B','元気つくし':'#0E7C7B','未定':'#9A958A','大豆':'#8B5E3C' };
   function inaCropColor(c){ return INA_CROP_COLOR[c]||'#7A9A5B'; }
+
+  /* ===== ★★v142 品種の色から、うすい背景と「読める」文字色を作る ★★
+     ── なぜ表を持たないか（§0.5②）──
+       背景色・文字色を品種ごとに書いた表を作ると、品種を1つ足すたびに3か所直すことになり、
+       どれか1つを直し忘れる。品種の色（INA_CROP_COLOR）1か所から計算で出す。
+     ── なぜコントラストを測るか（§10-4の9番）──
+       品種の色をそのまま数字に使うと、つやおとめ 2.24・夢つくし 2.95 しかなく、
+       年配の方には読めない（基準4.5）。読めるまで自動で濃くする。
+     ★ここは色を作るだけで、画面には何も書かない。 */
+  function inaHex2rgb(h){
+    h=String(h||'').replace('#','');
+    if(!/^[0-9a-fA-F]{6}$/.test(h))return null;
+    return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+  }
+  function inaRgb2hex(a){
+    function p(x){ x=Math.max(0,Math.min(255,Math.round(x))).toString(16); return x.length<2?'0'+x:x; }
+    return '#'+p(a[0])+p(a[1])+p(a[2]);
+  }
+  /* 白と混ぜてうすくする。r=0.07 なら 7% だけ品種の色 */
+  function inaMixW(h,r){
+    var c=inaHex2rgb(h); if(!c)return '#FFFFFF';
+    return inaRgb2hex([c[0]*r+255*(1-r),c[1]*r+255*(1-r),c[2]*r+255*(1-r)]);
+  }
+  function inaLum(h){
+    var c=inaHex2rgb(h); if(!c)return 1;
+    var v=[],i,x;
+    for(i=0;i<3;i++){ x=c[i]/255; v.push(x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4)); }
+    return 0.2126*v[0]+0.7152*v[1]+0.0722*v[2];
+  }
+  function inaCR(a,b){
+    var l1=inaLum(a),l2=inaLum(b),t;
+    if(l1<l2){ t=l1; l1=l2; l2=t; }
+    return (l1+0.05)/(l2+0.05);
+  }
+  /* 背景 bg の上で 4.6 以上になるまで、品種の色を濃くして返す */
+  function inaInkFor(h,bg){
+    var c=inaHex2rgb(h); if(!c)return '#3A362C';
+    var r,col;
+    for(r=1.0;r>=0.2;r-=0.02){
+      col=inaRgb2hex([c[0]*r,c[1]*r,c[2]*r]);
+      if(inaCR(col,bg)>=4.6)return col;
+    }
+    return '#3A362C';
+  }
+  /* かたまりに流し込む色一式を作る。style="--kc:…" の形で返す */
+  function inaBlkStyle(crop){
+    var c=inaCropColor(crop);
+    var kb1=inaMixW(c,0.12), kb2=inaMixW(c,0.07), kc2=inaMixW(c,0.35);
+    return '--kc:'+c+';--kc2:'+kc2+';--kb1:'+kb1+';--kb2:'+kb2+';--kt:'+inaInkFor(c,kb2)+';';
+  }
+  /* 1501 → 1,501。年配の方が桁を読み違えないように */
+  function inaComma(n){
+    var s=String(Math.round(n));
+    return s.replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  }
 
   /* =========================================================
      ⑰ 米づくり工程表(シーズンボード) v17（稲作先生を統合）
@@ -4177,25 +4284,63 @@
     var firstI=heads.length?heads[0]:-1, lastI=heads.length>1?heads[heads.length-1]:-1;
     for(var i2=0;i2<arr.length;i2++){
       var o=arr[i2], col=inaCropColor(o.crop);
-      var flag='';
-      if(i2===firstI)flag=' <span class="kt-flag">いちばん早い</span>';
-      else if(i2===lastI)flag=' <span class="kt-flag l">いちばん遅い</span>';
-      var cls='kt-prow'+(i2===firstI?' soon':'')+(o.head?'':' wait')+(o.head?' tapok':'');
-      var sub=o.n+'枚・'+Math.round(o.area)+'a'+(o.tp?' ／ '+inaFmt(new Date(o.tp))+'に田植え':'');
+      /* ★★v142 品種ごとに「かたまり」で囲む。左に品種の色の帯を通す ★★
+         ★札は品種名と同じ行に置かない。「にじのきらめき」で44px足りず必ず切れたため（実測）。 */
+      h+='<div class="kt-blk" style="'+inaBlkStyle(o.crop)+'">';
+      if(i2===firstI)h+='<div class="kt-tag">⚑ いちばん早い</div>';
+      else if(i2===lastI)h+='<div class="kt-tag l">⚑ いちばん遅い</div>';
+      var cls='kt-prow'+(o.head?'':' wait')+(o.head?' tapok':'');
+      /* ★v142 左の小さい字は2行に分ける。1行だと余裕が1%しかなく、
+         iPhone の書体で右の日付と重なっていた（実測で確認・§10-4の9番） */
+      var sub=o.n+'枚・'+Math.round(o.area)+'a'+(o.tp?'<br>'+inaFmt(new Date(o.tp))+'に田植え':'');
       h+='<div class="'+cls+'"'
         +(o.head?' onclick="ktHeadTap('+ktQ(o.crop)+')"':'')+'>'
         +'<span class="dot" style="background:'+col+';"></span>'
-        +'<div class="nm">'+o.crop+flag+'<small>'+sub+'</small></div>';
+        +'<div class="nm">'+o.crop+'<small>'+sub+'</small></div>';
       if(o.head){
         /* ★v141 実際に見た日を使っているときは「ごろ」を付けない。
-           「ごろ」は予想の意味なので、事実に付けると嘘になる（§3.5） */
-        h+='<div class="dz">'+inaFmt(o.head)+(o.seen?'':'ごろ')
-          +'<small>'+(o.seen?'見た日／':'')+'収穫 '+inaFmt(o.harvest)+'ごろ</small></div>'
+           「ごろ」は予想の意味なので、事実に付けると嘘になる（§3.5）
+           ★v142 上下を同じ大きさにそろえ、「出穂」を付けた（何の日か分かるように） */
+        h+='<div class="dz">'
+          +'<div class="r1">出穂 '+inaFmt(o.head)+(o.seen?'':'ごろ')+'</div>'
+          +'<div class="r2">収穫 '+inaFmt(o.harvest)+'ごろ</div></div>'
           +'<span class="kt-chv">›</span>';
       }else{
         h+='<div class="wt">田植え待ち</div>';
       }
       h+='</div>';
+      /* ★★v142 いまの積算温度（親方のご質問①）★★
+         ★数字はラベルのすぐ横に置く。離すと「84℃が何の温度か分からない」（親方のご指摘） */
+      if(o.head&&o.accum!=null&&o.target!=null){
+        h+='<div class="kt-acc">';
+        if(o.after){
+          h+='<div class="t1">🌸 '+inaFmt(o.head)+(o.seen?'':'ごろ')+'の出穂から'
+            +'<span class="vv">'+inaComma(o.accum)+'<small>℃</small></span></div>'
+            +'<div class="t2">収穫は '+inaComma(o.target)+'℃。'
+            +(o.remC>0?'あと <b>'+inaComma(o.remC)+'℃</b>':'<b>もう足りています</b>')+'</div>';
+          h+='<div class="t3">🌾 '+((o.remDays!=null&&o.remDays>0)
+            ? '収穫まで あと <b>'+o.remDays+'日</b> 位'
+            : '<b>収穫の時期です</b>')+'</div>';
+        }else{
+          h+='<div class="t1">🌡 いまの積算温度'
+            +'<span class="vv">'+inaComma(o.accum)+'<small>℃</small></span></div>';
+          /* ★v142 出穂を見た日が入っているのに、その日がまだ来ていない場合。
+             「見た日」は事実なので、「あと◯℃で出穂」という予想を横に並べると
+             数字の意味が混ざる（§3.5）。目安の数だけ出して、予想は出さない。 */
+          if(o.seen){
+            h+='<div class="t2">出穂の目安は '+inaComma(o.target)+'℃</div>';
+          }else{
+            h+='<div class="t2">出穂は '+inaComma(o.target)+'℃。'
+              +(o.remC>0?'あと <b>'+inaComma(o.remC)+'℃</b>':'<b>もう足りています</b>')+'</div>';
+          }
+          h+='<div class="t3">🌸 '+((o.remDays!=null&&o.remDays>0)
+            ? '出穂まで あと <b>'+o.remDays+'日</b> 位'
+            : '<b>出穂のころです</b>')+'</div>';
+        }
+        /* ★v141の「見た日」を使っていることは、必ず画面に残す（予想と事実の書き分け・§3.5） */
+        if(o.seen)h+='<div class="t4">※ 実際に見た出穂日で計算</div>';
+        h+='</div>';
+      }
       /* ★v141 押された品種の行の下に、日を入れる欄をひらく（その場で開く＝画面が飛ばない） */
       if(o.head&&ktHeadCrop===o.crop){
         var cur=headGet(o.crop);
@@ -4211,6 +4356,7 @@
           +'<br>★<b>あてずっぽうでは入れないでください。</b>見ていない日を入れると、かえって外れます。</div>'
           +'</div>';
       }
+      h+='</div>';   /* ★v142 品種のかたまりを閉じる */
     }
     /* ★v139 この予想のもとにした気温（実測／予報／平年なみ）。田植え済みのときだけ出す。
        ★呼び出しを入れ忘れると「関数はあるのに画面に出ない」（§0.5⑧ v114の型） */
@@ -4220,7 +4366,8 @@
       try{ h+=inaSrcCardHTML(_fromTp); }catch(_e){}
     }
     h+='<div class="kt-pnote">※ 気温の積み上げから計算した目安です。<b><span class="nb">未定・大豆は</span><span class="nb">入っていません</span></b>。'
-      +(anyHead?'<br>※ <b>品種を押す</b>と、出穂を実際に見た日を入れられます。入れると、そこから先はもっと正確になります（任意）。'
+      +(anyHead?'<br>※ <b>積算温度</b>は、田植えの日から<b><span class="nb">毎日の平均気温を</span><span class="nb">たし算した合計</span></b>です。稲はこの合計で穂を出します。'
+                +'<br>※ <b>品種を押す</b>と、出穂を実際に見た日を入れられます。入れると、そこから先はもっと正確になります（任意）。'
                 +'<br>※ 積算温度は<b>目安</b>です。最後は<b><span class="nb">籾の色と水分</span><span class="nb">（25%前後）</span></b>でお決めください。':'<br><span class="nb">※ 分からないことは</span><span class="nb">「分からない」と</span><span class="nb">出します。</span><span class="nb">あてずっぽうの</span><span class="nb">日付は出しません。</span>')
       +'</div></div>';
     return h;
@@ -4761,7 +4908,7 @@
   function fldRecentGet(){ try{ var a=JSON.parse(localStorage.getItem(FLD_RECENT_LS)||'[]'); return (a instanceof Array)?a:[]; }catch(e){ return []; } }
   function fldRecentPush(n){ var a=fldRecentGet(); var o=[n]; for(var i=0;i<a.length;i++)if(a[i]!==n)o.push(a[i]); o=o.slice(0,3); try{localStorage.setItem(FLD_RECENT_LS,JSON.stringify(o));}catch(e){} }
   function fieldByName(n){ for(var i=0;i<KT_FIELDS.length;i++)if(KT_FIELDS[i].n===n)return KT_FIELDS[i]; return null; }
-  var CROP_COLOR={'つやおとめ':'#D4A017','ひのひかり':'#2E7D32','にこまる':'#6A5A86','にじのきらめき':'#1A5A8A','夢つくし':'#D2691E','大豆':'#8B5A2B','モチ':'#9AA0A6'};
+  var CROP_COLOR={'つやおとめ':'#D4A017','ひのひかり':'#2E7D32','にこまる':'#6A5A86','にじのきらめき':'#1A5A8A','夢つくし':'#C2185B','大豆':'#8B5A2B','モチ':'#9AA0A6'};
   function cropColor(c){ return (c&&CROP_COLOR[c])?CROP_COLOR[c]:'#C8C4B4'; }
   /* ===== v32: 地区のあいうえお順(読みがな)＋初期選択の田んぼ =====
      漢字は文字コード順だと「西→にし」の位置に来ないため、地区28件に読みを持たせる。
@@ -11031,7 +11178,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v141';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v142';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
