@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v143">
+<meta name="app-ver" content="v145">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1067,6 +1067,89 @@
   .kusa-note{background:var(--blue-soft);border:1px solid #6099BA;border-radius:13px;
     padding:12px 13px;font-size:13px;line-height:1.85;color:#15303B;font-weight:600;margin-top:12px;}
   .kusa-note b{color:var(--blue);}
+
+  /* ===== ★v145 📖年度別記録 =====
+     ★★なぜ .kusa-* を使い回さず、新しく .ndo-* を作ったか（HANDOVER §6-1・§10-15）
+       .kusa-row は **927行と1054行の2か所で定義**されていて、混ざって効いている
+       （display:flex は前の定義／枠線と影は後の定義が勝つ）。実測で確かめた。
+       ここへ手を入れると 🌿草刈り本体が崩れる。値だけ写して名前を分ける。
+     ★★色は読みやすさ4.5以上のものだけ使う（§0.5⑭）。
+       使ってよい灰色 #667569(4.9) / #5F6E62(5.4) / #5A6B5E(5.7) / #2F4F3A(9.1) */
+  .ndo-lbl{font-size:13.5px;font-weight:800;color:#33302A;margin:14px 2px 9px;}
+  .ndo-hero{text-align:center;padding:12px 0 2px;}
+  .ndo-hero .nm{font-family:var(--mincho);font-size:26px;font-weight:800;letter-spacing:.04em;}
+  .ndo-hero .badge{display:inline-block;margin-top:9px;background:var(--green);color:#fff;
+    font-size:14.5px;font-weight:800;padding:8px 20px;border-radius:999px;}
+  /* 年をえらぶ丸チップ。★.kusa-tile ではなく丸チップ。押す所は高さ46px（§8-4①） */
+  .ndo-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .ndo-chip{min-height:46px;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:5px 15px;border-radius:999px;background:#fff;
+    border:1.5px solid #9C927C;cursor:pointer;}
+  .ndo-chip.on{background:var(--green);border-color:var(--green);}
+  .ndo-chip .y{font-size:15.5px;font-weight:800;color:#2F4F3A;line-height:1.2;white-space:nowrap;}
+  .ndo-chip .c{font-size:11px;font-weight:800;color:#5F6E62;margin-top:1px;white-space:nowrap;}
+  .ndo-chip.on .y,.ndo-chip.on .c{color:#fff;}
+  /* 地区タイル（.kusa-grid/.kusa-tile の値を写した） */
+  .ndo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+  .ndo-tile{background:#fff;border:1.5px solid #9C927C;border-radius:13px;
+    padding:11px 6px 10px;text-align:center;cursor:pointer;}
+  .ndo-tile .a{font-family:var(--mincho);font-size:18px;font-weight:800;color:var(--green-deep);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ndo-tile .c{font-size:13.5px;font-weight:700;color:#332F28;margin-top:3px;}
+  .ndo-tile .p{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:800;
+    border-radius:999px;padding:2px 8px;white-space:nowrap;
+    background:#EEF4FA;color:#1D5C8F;border:1px solid #6099BA;}
+  .ndo-tile .p.zero{background:#F4F2EA;color:#5A6B5E;border-color:#C9C4B4;}
+  /* 田んぼの行 */
+  .ndo-row{background:#fff;border:1px solid var(--line);border-radius:13px;
+    padding:12px 13px;margin-bottom:7px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .ndo-top{display:flex;align-items:center;gap:9px;}
+  .ndo-nm{flex:1;min-width:0;font-size:16px;font-weight:800;}
+  .ndo-nm span{font-size:13px;font-weight:700;color:#5A6B5E;margin-left:6px;}
+  .ndo-cnt{flex-shrink:0;text-align:center;background:#EEF4FA;border:1.5px solid #6099BA;
+    border-radius:11px;padding:7px 9px;min-width:70px;}
+  .ndo-cnt .k{font-size:14.5px;font-weight:800;color:#1D5C8F;line-height:1.2;white-space:nowrap;}
+  .ndo-cnt .g{font-size:10.5px;font-weight:800;color:#1D5C8F;margin-top:2px;}
+  .ndo-cnt.zero{background:#F4F2EA;border-color:var(--line);}
+  .ndo-cnt.zero .k,.ndo-cnt.zero .g{color:#5A6B5E;}
+  .ndo-sum{font-size:13.5px;font-weight:700;color:#4A463C;margin-top:7px;line-height:1.5;}
+  .ndo-warn{font-size:13px;font-weight:800;color:#B23B2E;margin-top:5px;line-height:1.5;}
+  /* 一年の帯（4月〜10月）。★丸は position:absolute で置くので親に relative が要る */
+  .ndo-band{position:relative;height:26px;margin:9px 2px 2px;}
+  .ndo-band .ln{position:absolute;left:0;right:0;top:11px;height:3px;
+    background:#E2E6DF;border-radius:2px;}
+  .ndo-band .mk{position:absolute;top:6px;width:13px;height:13px;border-radius:999px;
+    margin-left:-6px;border:1.5px solid #fff;}
+  .ndo-band .mk.ks{top:9px;width:9px;height:9px;margin-left:-4px;}
+  .ndo-mon{display:flex;justify-content:space-between;font-size:10.5px;font-weight:800;
+    color:#5F6E62;margin:0 2px 2px;}
+  /* この年の節目（2×2の大きな札） */
+  .ndo-k4{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .ndo-k4 .c{background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:11px 12px;}
+  .ndo-k4 .c .t{font-size:12.5px;font-weight:800;color:#5F6E62;}
+  .ndo-k4 .c .d{font-size:19px;font-weight:800;color:#2F4F3A;margin-top:3px;}
+  .ndo-k4 .c .d.no{font-size:15px;color:#5A6B5E;}
+  .ndo-note{font-size:13px;font-weight:700;color:#4A463C;margin:9px 2px 0;line-height:1.7;}
+  /* 色の見本（凡例） */
+  .ndo-lg{display:flex;flex-wrap:wrap;gap:5px 11px;margin:9px 2px 0;}
+  .ndo-lg .i{display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:800;color:#4A463C;}
+  .ndo-lg .i b{width:10px;height:10px;border-radius:999px;display:inline-block;}
+  /* 記録ぜんぶ（左に5pxの色帯） */
+  .ndo-rec{display:flex;gap:9px;background:#fff;border:1px solid var(--line);
+    border-radius:11px;padding:9px 11px 9px 0;margin-bottom:6px;overflow:hidden;}
+  .ndo-rec .bar{width:5px;flex-shrink:0;align-self:stretch;}
+  .ndo-rec .bd{flex:1;min-width:0;}
+  .ndo-rec .d1{font-size:13px;font-weight:800;color:#5F6E62;}
+  .ndo-rec .w1{font-size:15px;font-weight:800;color:#2A2822;margin-top:2px;line-height:1.5;}
+  .ndo-rec .c1{font-size:12.5px;font-weight:700;color:#5A6B5E;margin-top:2px;line-height:1.5;}
+  .ndo-rec .n1{font-size:12px;font-weight:800;color:#8A6A2E;margin-top:3px;}
+  /* ★草刈りの行だけ背景を変える（§8-4③） */
+  .ndo-rec.ks{background:#F5F8EF;border-color:#B9CE92;}
+  .ndo-rec .cnt{flex-shrink:0;align-self:center;font-size:12px;font-weight:800;
+    color:#4A6B1F;background:#fff;border:1px solid #B9CE92;border-radius:999px;padding:2px 9px;
+    white-space:nowrap;margin-right:2px;}
+  .ndo-empty{font-size:14px;font-weight:700;color:#5A6B5E;text-align:center;
+    padding:22px 10px;line-height:1.8;}
 
   /* ===== ★v67 文字の折り返しをアプリ全体で整える（親方の指示） =====
      「キリが良い所で改行し、可能なら一行にまとめたい。アプリ内全ての文字に反映させて」
@@ -2162,7 +2245,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v143</span></div>
+          <div class="setrow">バージョン<span class="sv">v145</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2271,6 +2354,29 @@
       </div>
     </div>
 
+    <!-- ===== 📖 年度別記録（★v144：入れ物だけ。中身は v145 で作る） =====
+         ★ここを空にしないこと。押して真っ白だと「壊れた」と見える。
+         ★「📜 去年の今ごろ」への入口は、この画面にしか無い（TILE_POOL から外したため）。
+           v145 で中身を作るときも、この入口は必ず残す（HANDOVER §8-3） -->
+    <div class="page" id="p-nendo">
+      <div class="sc" id="ndoBody">
+        <!-- ★v145 中身は nendoEnter() → ndoRender() が描く。ここは空でよい。
+             ★ただし go('nendo') を通さずに直接開くと空になるので、
+               画面を開く道は必ず go('nendo') を通すこと -->
+      
+      </div>
+      <!-- ★v144 「去年の今ごろ」への小さな入口。押す所は縦44px以上を確保する。
+           ★色は #667569（読みやすさ4.9）。親方のご判断で、設計の薄いグレーから濃くした。
+             薄くすると年配の家族に見えない。ここは v145 が届くまで唯一の入口でもある -->
+      <div id="ndoKyo" style="margin:18px 14px 24px;border-top:1px solid #E2E6DF;">
+        <div onclick="go('kyoka')"
+             style="min-height:44px;display:flex;align-items:center;justify-content:center;
+                    font-size:12.5px;color:#667569;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          📜 去年の今ごろ（月ごとの反省メモ・★を付けた作業）›
+        </div>
+      </div>
+    </div>
+
     <!-- ===== ⑰ 米づくり工程表(v16新規) ===== -->
     <div class="page" id="p-koutei">
       <div class="sc">
@@ -2334,7 +2440,7 @@
            || window.matchMedia('(display-mode: standalone)').matches;
   if(isPwa) document.documentElement.classList.add('pwa');
 })();
-  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',kyoka:'p-kyoka',hist:'p-hist',kusa:'p-kusa'};
+  var pages={home:'p-home',fields:'p-fields',rec:'p-rec',pest:'p-pest',voice:'p-voice',cal:'p-cal',cost:'p-cost',team:'p-team',diag:'p-diag',drug:'p-drug',set:'p-set',drone:'p-drone',ai:'p-ai',koutei:'p-koutei',kroku:'p-kroku',hiryo:'p-hiryo',kikai:'p-kikai',kyoka:'p-kyoka',hist:'p-hist',kusa:'p-kusa',nendo:'p-nendo'};  /* ★v144 nendo */
   var tabOf={}; /* タブ入替対応以降は未使用。highlightTab()が動的に点灯を判定する */
 
   /* ===== 固定ヘッダーの中身(画面ごと) =====
@@ -2386,13 +2492,14 @@
     hiryo: navHdr('home','ホーム','肥料の栄養バランス'),
     kikai: navHdr('home','ホーム','機械の維持費'),
     menu:  navHdr(null,null,'メニュー'),
-    koutei: navHdr('home','ホーム','米づくり工程表')
+    koutei: navHdr('home','ホーム','米づくり工程表'),
+    nendo: navHdr('home','戻る','📖 年度別記録')      /* ★v144 */
   };
   function renderHeader(n){ document.getElementById('hdr').innerHTML = HEADERS[n]||''; }
   /* 横スワイプで前画面に戻る（全プロジェクト共通仕様）。各画面の「戻り先」を明示的に対応付ける */
   var BACK_MAP={fields:'home',rec:'home',voice:'home',pest:'home',diag:'home',drug:'pest',
     cal:'home',cost:'home',team:'home',set:'home',drone:'home',ai:'home',koutei:'home',kroku:'voice',
-    hiryo:'home',kikai:'home',hist:'home',kyoka:'home',kusa:'home'};
+    hiryo:'home',kikai:'home',hist:'home',kyoka:'nendo',kusa:'home',nendo:'home'};  /* ★v144 nendo を追加。kyoka の戻り先は入口に合わせて nendo へ */
   function symTap(el){el.classList.toggle('on');}
   function setFs(n){var s=document.querySelector('.screen');s.classList.remove('fs-big','fs-huge');
     if(n===1)s.classList.add('fs-big'); if(n===2)s.classList.add('fs-huge');
@@ -2537,6 +2644,7 @@
                        行はとじ、田んぼのしぼりも外す。しぼりが残ると「ぜんぶが出ない」ので */
                     if(typeof histRender==='function')histRender(); }
     if(n==='kyoka'&&typeof kyoEnter==='function')kyoEnter();
+    if(n==='nendo'&&typeof nendoEnter==='function')nendoEnter();   /* ★v144 中身は v145。無ければ何もしない */
     if(n==='set'&&typeof verSeenShow==='function')verSeenShow();   /* ★v124 開くたび描き直す */
     if(n==='set'&&typeof devRender==='function'){ try{ devRender(); }catch(e){} }   /* ★v131 */
     highlightTab(n);
@@ -4261,6 +4369,346 @@
   /* ★★v141 品種の行を押して「出穂を見た日」を入れる ★★
      ★ktRenderBoard() で描き直すだけ。画面を読み込み直したりホームへ戻したりしない（§10-18） */
   var ktHeadCrop='';                    /* いま開いている品種名。空なら閉じている */
+  /* ==========================================================
+     ★★v145 📖年度別記録（HANDOVER §8-4・親方の承認ずみ設計）★★
+     -----------------------------------------------------------
+     何をする画面か
+       年 → 地区 → 田んぼ → その1枚・その年の記録ぜんぶ、と3段でたどる。
+       🌿草刈りとまったく同じ手順にした（親方が毎日使っている道だから）。
+     ★★ふりかえり専用。✏️直す・🗑消すは付けない（§8-4③）
+       直すのは 📄記録簿から。ここで直せると、同じ記録を2か所から触ることになり、
+       どちらが本当か分からなくなる。
+     ★★データは1件も書かない。読むだけ。
+       だから ktSave() も syncSoon() もこのブロックからは呼ばない。
+     ★★「📜 去年の今ごろ」への入口は p-nendo の HTML に置いてある（v144）。
+       ★★消さないこと。TILE_POOL から外したので、入口はあれ1本しか無い。
+     ========================================================== */
+
+  /* いま見ている場所。開くたびに nendoEnter() で必ず作り直す */
+  var ndoYear = 0;        /* 0 = ぜんぶの年 */
+  var ndoView = 'top';    /* 'top'（年と地区）/ 'fields'（田んぼ）/ 'one'（1枚） */
+  var ndoArea = '';
+  var ndoIdx  = -1;       /* KT_FIELDS の番号 */
+
+  /* 工程ごとの色（§8-4②で親方が承認した色）。
+     ★KT_STEPS に無い step（ひとこと furikaeri など）は灰色にする */
+  var NDO_COLOR = {
+    tane:'#6E6A5C', kouki:'#6E6A5C', taue:'#2E6E8E', josou:'#2F5D3A',
+    nakaboshi:'#3E7A6B', hogoe:'#B8893B', shussui:'#C56A24',
+    rakusui:'#3E7A6B', inekari:'#B34A3E', kusakari:'#7FA83F'
+  };
+  function ndoColor(k){ return NDO_COLOR[k] || '#8A8578'; }
+  /* 帯と凡例に出す並び。★草刈りは最後（回数が多いので小さい丸で描く） */
+  var NDO_LEGEND = [
+    {k:'kouki',   n:'荒起こし・代かき'},
+    {k:'taue',    n:'田植え'},
+    {k:'josou',   n:'除草剤'},
+    {k:'hogoe',   n:'穂肥'},
+    {k:'shussui', n:'出穂・防除'},
+    {k:'inekari', n:'稲刈り'},
+    {k:'kusakari',n:'草刈り'}
+  ];
+
+  /* ---- その年の記録だけ返す（新しい順）----
+     ★kusaRecsOf() は「今年」で決め打ちなので年度別記録では使えない（§8-4）。
+       年を指定して返すこの関数を新しく作った。y=0 なら全部の年。
+     ★日にちの読み取りは既存の kusaParseD() をそのまま使う（新しく作らない）。
+       台帳の日にちは全部 '2026/06/02' の形（実測ずみ・§10-25） */
+  function ndoRecsOf(fieldN, y, stepK){
+    var out=[], i, e, d;
+    for(i=0;i<ktLog.length;i++){
+      e=ktLog[i];
+      if(!e || e.field!==fieldN) continue;
+      if(stepK && e.step!==stepK) continue;
+      d=kusaParseD(e.d); if(!d) continue;
+      if(y && d.getFullYear()!==y) continue;
+      out.push({e:e, d:d});
+    }
+    out.sort(function(a,b){ return b.d - a.d; });
+    return out;
+  }
+  /* その年に記録のある年の一覧（新しい順）と件数 */
+  function ndoYearList(){
+    var m={}, i, e, d, out=[], k;
+    for(i=0;i<ktLog.length;i++){
+      e=ktLog[i]; if(!e) continue;
+      d=kusaParseD(e.d); if(!d) continue;
+      k=d.getFullYear(); m[k]=(m[k]||0)+1;
+    }
+    for(k in m){ if(Object.prototype.hasOwnProperty.call(m,k)) out.push({y:parseInt(k,10), c:m[k]}); }
+    out.sort(function(a,b){ return b.y - a.y; });
+    return out;
+  }
+  /* 地区ごとの件数（その年） */
+  function ndoAreaList(y){
+    var out=[], seen={}, i, a, n;
+    for(i=0;i<KT_FIELDS.length;i++){
+      a = KT_FIELDS[i].area || 'その他';
+      if(!seen[a]){ seen[a]={n:a, all:0, c:0}; out.push(seen[a]); }
+      seen[a].all++;
+      n = ndoRecsOf(KT_FIELDS[i].n, y, '').length;
+      seen[a].c += n;
+    }
+    return out;
+  }
+  /* その工程の、いちばん新しい記録の日にち（recs は新しい順） */
+  function ndoLastOf(recs, stepK){
+    var i;
+    for(i=0;i<recs.length;i++){ if(recs[i].e.step===stepK) return recs[i].d; }
+    return null;
+  }
+  function ndoCountOf(recs, stepK){
+    var i, n=0;
+    for(i=0;i<recs.length;i++) if(recs[i].e.step===stepK) n++;
+    return n;
+  }
+  function ndoMd(d){ return d ? ((d.getMonth()+1)+'/'+d.getDate()) : ''; }
+  function ndoMdJp(d){ return d ? ((d.getMonth()+1)+'月'+d.getDate()+'日') : ''; }
+  function ndoDays(a,b){ return Math.round((b-a)/86400000); }
+  function ndoYearName(y){ return y ? (y+'年') : 'ぜんぶの年'; }
+
+  /* ================= 入口 ================= */
+  /* ★go('nendo') から呼ばれる手はずは v144 で入れてある */
+  function nendoEnter(){
+    try{ if(typeof ktLoad==='function' && !(ktLog && ktLog.length)) ktLoad(); }catch(e){}
+    /* ★開くたびに必ずいちばん上から。前に見ていた地区が残っていると迷子になる
+         （🌿草刈りの kusaEnter と同じ考え方） */
+    ndoView='top'; ndoArea=''; ndoIdx=-1;
+    /* 年は「記録のあるいちばん新しい年」を最初に出す。無ければ今年 */
+    var ys = ndoYearList();
+    ndoYear = ys.length ? ys[0].y : (new Date()).getFullYear();
+    ndoRender();
+  }
+  function ndoRender(){
+    ndoHdr();
+    if(ndoView==='one')        ndoOneRender();
+    else if(ndoView==='fields') ndoFieldsRender();
+    else                        ndoTopRender();
+    /* ★「📜 去年の今ごろ」の入口は、いちばん上の画面のときだけ出す（§8-4①）。
+       ★★消さないこと。TILE_POOL から外したので、入口はここ1本しか無い。
+         記録をたどっている最中（地区・田んぼ）に出すと、話の筋がずれる。 */
+    var ky=document.getElementById('ndoKyo');
+    if(ky) ky.style.display = (ndoView==='top') ? '' : 'none';
+    var b=document.getElementById('body'); if(b)b.scrollTop=0;
+  }
+  /* 見出しの差し替え（kusaHdr と同じ形） */
+  function ndoHdr(){
+    var el=document.getElementById('hdr'); if(!el)return;
+    if(ndoView==='fields'){
+      el.innerHTML='<div class="navhead">'
+        +'<button class="back" onclick="ndoBackToTop()">‹ 年度別</button>'
+        +'<span class="title">'+ndoArea+'（'+ndoYearName(ndoYear)+'）</span></div>';
+    }else if(ndoView==='one'){
+      var f=KT_FIELDS[ndoIdx];
+      el.innerHTML='<div class="navhead">'
+        +'<button class="back" onclick="ndoBackToFields()">‹ '+ndoArea+'</button>'
+        +'<span class="title">'+((f&&f.n)||'')+'</span></div>';
+    }else{
+      el.innerHTML=HEADERS['nendo']||'';
+    }
+  }
+  function ndoSetYear(y){ ndoYear=y; ndoRender(); }
+  function ndoOpenArea(a){ ndoArea=a; ndoView='fields'; ndoRender(); }
+  function ndoBackToTop(){ ndoView='top'; ndoArea=''; ndoIdx=-1; ndoRender(); }
+  function ndoOpenField(i){ ndoIdx=i; ndoView='one'; ndoRender(); }
+  function ndoBackToFields(){ ndoView='fields'; ndoIdx=-1; ndoRender(); }
+
+  /* ================= ① 年と地区 ================= */
+  function ndoTopRender(){
+    var el=document.getElementById('ndoBody'); if(!el)return;
+    var ys=ndoYearList(), h='', i, a, as, all=0;
+    for(i=0;i<ys.length;i++) all+=ys[i].c;
+
+    /* 記録が1件も無いとき。★真っ白にしない */
+    if(!ys.length){
+      el.innerHTML='<div class="ndo-empty">まだ記録がありません。<br>'
+        + '作業を記録すると、ここに年ごとに並びます。</div>';
+      return;
+    }
+    var cur = ndoYear ? ndoRecsCountOfYear(ndoYear) : all;
+    h += '<div class="ndo-hero"><div class="nm">'+ndoYearName(ndoYear)+'</div>'
+      +  '<div class="badge">記録 '+cur+'件 / 田んぼ '+KT_FIELDS.length+'枚</div></div>';
+
+    h += '<div class="ndo-lbl">📅 年をえらぶ</div><div class="ndo-chips">';
+    for(i=0;i<ys.length;i++){
+      h += '<div class="ndo-chip'+(ndoYear===ys[i].y?' on':'')+'" onclick="ndoSetYear('+ys[i].y+')">'
+        +    '<div class="y">'+ys[i].y+'年</div><div class="c">'+ys[i].c+'件</div></div>';
+    }
+    h += '<div class="ndo-chip'+(ndoYear===0?' on':'')+'" onclick="ndoSetYear(0)">'
+      +    '<div class="y">ぜんぶ</div><div class="c">'+all+'件</div></div>';
+    h += '</div>';
+
+    h += '<div class="ndo-lbl">📍 地区をえらぶ</div><div class="ndo-grid">';
+    as = ndoAreaList(ndoYear);
+    for(i=0;i<as.length;i++){
+      a = as[i];
+      h += '<div class="ndo-tile" onclick="ndoOpenArea('+ktQ(a.n)+')">'
+        +    '<div class="a">'+a.n+'</div>'
+        +    '<div class="c">'+a.all+'枚</div>'
+        +    '<div class="p'+(a.c?'':' zero')+'">'+(a.c?('記録 '+a.c+'件'):'記録 なし')+'</div>'
+        +  '</div>';
+    }
+    h += '</div>';
+    el.innerHTML = h;
+  }
+  function ndoRecsCountOfYear(y){
+    var i, n=0, e, d;
+    for(i=0;i<ktLog.length;i++){
+      e=ktLog[i]; if(!e) continue;
+      d=kusaParseD(e.d); if(!d) continue;
+      if(d.getFullYear()===y) n++;
+    }
+    return n;
+  }
+
+  /* ================= ② 田んぼが並ぶ ================= */
+  function ndoFieldsRender(){
+    var el=document.getElementById('ndoBody'); if(!el)return;
+    var ids=[], i, h='';
+    for(i=0;i<KT_FIELDS.length;i++) if((KT_FIELDS[i].area||'その他')===ndoArea) ids.push(i);
+
+    h += '<div class="ndo-lbl">'+ndoArea+'（'+ids.length+'枚）・'+ndoYearName(ndoYear)+'</div>';
+    for(i=0;i<ids.length;i++) h += ndoRowHtml(ids[i]);
+    h += ndoLegendHtml();
+    el.innerHTML = h;
+  }
+  function ndoRowHtml(i){
+    var f=KT_FIELDS[i], recs=ndoRecsOf(f.n, ndoYear, ''), h='';
+    var taue=ndoLastOf(recs,'taue'), kari=ndoLastOf(recs,'inekari');
+    var ks=ndoCountOf(recs,'kusakari');
+    var sum='', warn='';
+
+    if(taue||kari||recs.length){
+      sum = (taue?('田植え '+ndoMd(taue)):'田植えの記録なし')
+          + ' → ' + (kari?('稲刈り '+ndoMd(kari)):'稲刈りの記録なし')
+          + ' ・ 草刈り '+ks+'回';
+    }else{
+      sum = 'この年の記録はありません';
+    }
+    /* ★抜けている所を赤字で出す（§8-4②）。
+       ★ただし「記録が1件でもある田んぼ」だけに出す。何もしていない田んぼに
+         「稲刈りの記録なし」と出しても意味が無く、赤字だらけになる。
+       ★大豆の田んぼには出さない（稲ではないので稲刈り・草刈りの物差しが合わない） */
+    if(recs.length && (f.crop||'')!=='大豆'){
+      var ws=[];
+      if(!kari) ws.push('稲刈りの記録なし');
+      if(ks===0) ws.push('草刈りの記録なし');
+      else if(ks===1) ws.push('草刈りは1回だけ');
+      if(ws.length) warn = '<div class="ndo-warn">⚠ '+ws.join(' ／ ')+'</div>';
+    }
+    h += '<div class="ndo-row" onclick="ndoOpenField('+i+')">'
+      +    '<div class="ndo-top">'
+      +      '<div class="ndo-nm">'+f.n+'<span>'+(f.a||'')+'</span></div>'
+      +      '<div class="ndo-cnt'+(recs.length?'':' zero')+'">'
+      +        '<div class="k">記録 '+recs.length+'件</div>'
+      +        '<div class="g">'+(recs.length?'ひらく ›':'—')+'</div>'
+      +      '</div>'
+      +    '</div>'
+      +    '<div class="ndo-sum">'+sum+'</div>'
+      +    warn
+      +    ndoBandHtml(recs)
+      +  '</div>';
+    return h;
+  }
+  /* 一年の帯（4月〜10月）。★月の目盛りと、その日に打った丸 */
+  function ndoBandHtml(recs){
+    if(!recs.length) return '';
+    var M0=4, M1=10, span=(M1-M0+1), i, r, m, dd, x, h='';
+    h += '<div class="ndo-band"><div class="ln"></div>';
+    for(i=0;i<recs.length;i++){
+      r=recs[i]; m=r.d.getMonth()+1; dd=r.d.getDate();
+      if(m<M0||m>M1) continue;                       /* 4月〜10月の外は帯に出さない */
+      x = ((m-M0) + (dd-1)/31) / span * 100;
+      if(x<0)x=0; if(x>100)x=100;
+      h += '<div class="mk'+(r.e.step===KUSA_STEP?' ks':'')+'" style="left:'+x.toFixed(1)+'%;'
+        +  'background:'+ndoColor(r.e.step)+';"></div>';
+    }
+    h += '</div><div class="ndo-mon">';
+    for(i=M0;i<=M1;i++) h += '<span>'+i+'月</span>';
+    h += '</div>';
+    return h;
+  }
+  function ndoLegendHtml(){
+    var i, h='<div class="ndo-lbl">色の見本</div><div class="ndo-lg">';
+    for(i=0;i<NDO_LEGEND.length;i++){
+      h += '<div class="i"><b style="background:'+ndoColor(NDO_LEGEND[i].k)+';"></b>'
+        +  NDO_LEGEND[i].n+'</div>';
+    }
+    return h + '</div>';
+  }
+
+  /* ================= ③ その1枚・その年の記録ぜんぶ ================= */
+  function ndoOneRender(){
+    var el=document.getElementById('ndoBody'); if(!el)return;
+    var f=KT_FIELDS[ndoIdx]; if(!f){ ndoBackToFields(); return; }
+    var recs=ndoRecsOf(f.n, ndoYear, ''), h='', i, r;
+
+    h += '<div class="ndo-hero"><div class="nm">'+f.n+'</div>'
+      +  '<div class="badge">'+ndoYearName(ndoYear)+' ・ 記録 '+recs.length+'件</div></div>';
+    h += '<div class="ndo-sum" style="text-align:center;">'
+      +  (f.a||'') + (f.crop?(' ・ '+f.crop):'') + '</div>';
+
+    if(!recs.length){
+      h += '<div class="ndo-empty">'+ndoYearName(ndoYear)+'の記録はありません。</div>';
+      el.innerHTML=h; return;
+    }
+
+    /* 🌾 この年の節目 */
+    var taue=ndoLastOf(recs,'taue'), hogoe=ndoLastOf(recs,'hogoe');
+    var bou=ndoLastOf(recs,'shussui'), kari=ndoLastOf(recs,'inekari');
+    var nb=ndoCountOf(recs,'shussui'), ks=ndoCountOf(recs,'kusakari');
+    h += '<div class="ndo-lbl">🌾 この年の節目</div><div class="ndo-k4">'
+      +  ndoK4('田植え', taue) + ndoK4('穂肥', hogoe)
+      +  ndoK4('出穂・防除', bou) + ndoK4('稲刈り', kari)
+      +  '</div>';
+    var note=[];
+    if(taue&&kari) note.push('田植えから稲刈りまで '+ndoDays(taue,kari)+'日');
+    if(nb) note.push('出穂・防除は '+nb+'回');
+    if(note.length) h += '<div class="ndo-note">'+note.join('。')+'。</div>';
+    if(ks){
+      var kl=ndoRecsOf(f.n, ndoYear, KUSA_STEP), ds=[], j;
+      for(j=kl.length-1;j>=0;j--) ds.push(ndoMd(kl[j].d));
+      h += '<div class="ndo-note">🌿 草刈りは '+ks+'回（'+ds.join('・')+'）</div>';
+    }
+    h += ndoLegendHtml();
+
+    /* 📄 記録ぜんぶ。★古い順に並べる（一年をたどるので） */
+    h += '<div class="ndo-lbl">📄 記録ぜんぶ</div>';
+    var head = ndoLastOf(recs,'shussui');   /* 出穂の記録があれば、その10日前を目印にする */
+    var kn = ks;
+    for(i=recs.length-1;i>=0;i--){
+      r=recs[i];
+      h += ndoRecHtml(r, (r.e.step===KUSA_STEP)? (ks-(--kn)) : 0, head);
+    }
+    el.innerHTML=h;
+  }
+  function ndoK4(t, d){
+    return '<div class="c"><div class="t">'+t+'</div>'
+      + '<div class="d'+(d?'':' no')+'">'+(d?ndoMdJp(d):'記録なし')+'</div></div>';
+  }
+  function ndoRecHtml(r, kaime, head){
+    var e=r.e, isKs=(e.step===KUSA_STEP);
+    var w = (typeof wlWork==='function') ? wlWork(e) : (e.work||e.text||'');
+    var c = e.chem ? ('薬：'+e.chem+(e.rate?('　'+e.rate+'倍'):'')+(e.vol?('　'+e.vol+'L'):'')+(e.mass?('　'+e.mass+'kg'):'')) : '';
+    var note='';
+    /* ★出穂10日前の草刈りに印を付ける（斑点米カメムシの目安・HANDOVER §10）。
+       ★出穂の記録が無い年は何も出さない（推測で出さない） */
+    if(isKs && head){
+      var diff = ndoDays(r.d, head);
+      if(diff>=8 && diff<=12) note='<div class="n1">🌾 出穂の10日前ごろ</div>';
+    }
+    return '<div class="ndo-rec'+(isKs?' ks':'')+'">'
+      +  '<div class="bar" style="background:'+ndoColor(e.step)+';"></div>'
+      +  '<div class="bd">'
+      +    '<div class="d1">'+ndoMdJp(r.d)+'（'+kusaWd(r.d)+'）</div>'
+      +    '<div class="w1">'+w+'</div>'
+      +    (c?('<div class="c1">'+c+'</div>'):'')
+      +    note
+      +  '</div>'
+      +  (kaime?('<div class="cnt">'+kaime+'回め</div>'):'')
+      +  '</div>';
+  }
+
   function ktQ(s){ return "'"+String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'"; }
   function ktHeadTap(crop){
     ktHeadCrop=(ktHeadCrop===crop)?'':crop;   /* もう一度押したら閉じる */
@@ -8746,18 +9194,28 @@
     hist: {cls:'t-orange',ic:'📝', tx:'仕事の振り返り'},
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'},
-    kusa: {cls:'t-green2',ic:'🌿', tx:'草刈り'}          /* ★v67 */
+    kusa: {cls:'t-green2',ic:'🌿', tx:'草刈り'},         /* ★v67 */
+    nendo:{cls:'t-purple', ic:'📖', tx:'年度別記録'}      /* ★v144 */
   };
   /* v25.4:設定は下タブに固定になったのでボタン/タブの候補からは外す(重複させない)。 */
-  var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','kyoka','koutei','kusa'];
+  /* ★v144 'kyoka'（去年の今ごろ）をホームのボタン候補から外した。画面も記録も消していない。
+     入口は 📖年度別記録 の下に置いてある（HANDOVER §8-3）。
+     ★loadHomeOrder() は TILE_POOL に無い鍵を復元しないので、ここへ戻さない限り設定にも出ない。 */
+  var TILE_POOL=['rec','voice','hist','drone','diag','ai','ksas','pest','fields','team','cal','cost','hiryo','kikai','nendo','koutei','kusa'];
   /* v25.3:全機能ぶんの並び順。ここからタブに使われている機能を除いたものがホームのボタンになる。 */
   /* ★v36.4：ご家族に配布したときの初期の並び。実機の画面どおりにした。
      1ページ目=作業を記録／田んぼ・苗箱／AI病害虫診断／KSAS連携／米づくり工程表／肥料の栄養
      2ページ目=話して記録／去年の今ごろ／記録の確認／機械の維持費／生産原価／ドローン散布
      ※タブに使う ai・cal・pest はボタンからは自動で除かれる（重複させない仕様）。 */
+  /* ★v144 親方の実機の並びに合わせ直した（3ページ・14個）。
+     1ページ目=作業を記録／田んぼ・苗箱／AI病害虫診断／KSAS連携／米づくり工程表／草刈り
+     2ページ目=仕事の振り返り／★年度別記録／話して記録／機械の維持費／ドローン散布／肥料の栄養
+     3ページ目=生産原価／みんなと共有
+     ★これは「新しい端末」と「リセットのあと」だけに効く。すでに並べ替えた端末は
+       gyotokuHomeOrder_v1 が優先されるので変わらない（HANDOVER §8-2⑤）。 */
   var HOME_ORDER_DEFAULT=['rec','fields','diag','ksas','koutei','kusa',
-                          'voice','kyoka','hist','kikai','cost','hiryo',
-                          'drone','ai','pest','cal','team'];
+                          'hist','nendo','voice','kikai','drone','hiryo',
+                          'cost','team'];
   var TILE_LS_KEY='gyotokuHomeOrder_v1';
   function loadHomeOrder(){
     var base=HOME_ORDER_DEFAULT.slice();
@@ -11193,7 +11651,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v143';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v145';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
