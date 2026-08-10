@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v136">
+<meta name="app-ver" content="v139">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -837,6 +837,14 @@
   .kt-flag.l{background:#8A6D1E;}
   .kt-pnote{font-size:13px;color:#4A463C;line-height:1.85;margin-top:9px;}
   .kt-pnote b{color:#6E6A5C;}
+  /* ★v139 この予想のもとにした気温（実測／予報／平年なみ）。年配の方向けに文字を大きめに */
+  .ina-src{background:#FFFFFF;border:1px solid rgba(156,146,124,.34);border-radius:14px;
+           padding:12px 14px;margin:12px 0 0;}
+  .ina-src .st{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+  .ina-srow{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px;}
+  .ina-srow .dt{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .ina-srow .rg{flex:0 0 auto;color:#4A463C;}
+  .ina-srow .nm{margin-left:auto;font-weight:700;}
 
   /* ★v70 品種・田植え日の入口の帯。
      CLAUDE.md 6.の決まりどおり「アプリが自動で入れた値＝緑の細枠＋薄い緑＋札」。
@@ -2115,7 +2123,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v136</span></div>
+          <div class="setrow">バージョン<span class="sv">v139</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2612,6 +2620,7 @@
       try{ if(typeof PH_LS==='string')CA[PH_LS]=1; }catch(_x){}
       try{ if(typeof WX_LS_KEY==='string')CA[WX_LS_KEY]=1; }catch(_x){}
       try{ if(typeof WX_ALERT_LS_KEY==='string')CA[WX_ALERT_LS_KEY]=1; }catch(_x){}
+      try{ if(typeof JMA_LS_KEY==='string')CA[JMA_LS_KEY]=1; }catch(_x){}   /* ★v139 実際の気温の控え */
       for(var i=0;i<localStorage.length;i++){
         var k=localStorage.key(i); if(k==null)continue;
         var v=''; try{ v=localStorage.getItem(k)||''; }catch(_x2){ v=''; }
@@ -2694,6 +2703,7 @@
     try{ if(typeof PH_LS==='string')localStorage.removeItem(PH_LS); }catch(e){}
     try{ if(typeof WX_LS_KEY==='string')localStorage.removeItem(WX_LS_KEY); }catch(e){}
     try{ if(typeof WX_ALERT_LS_KEY==='string')localStorage.removeItem(WX_ALERT_LS_KEY); }catch(e){}
+    try{ if(typeof JMA_LS_KEY==='string')localStorage.removeItem(JMA_LS_KEY); }catch(e){}   /* ★v139 取り直せる */
     try{ phItems=[]; if(typeof phIndex==='function')phIndex(); phLoaded=false; }catch(e){}
     var d=Math.max(0, before-lsUsage(true).total);
     lsFullClose();
@@ -2726,15 +2736,52 @@
     try{ if(inaState&&typeof inaState==='object')inaState._m=Date.now(); }catch(e){}
     try{ return lsSet(INA_LS,JSON.stringify(inaState)); }catch(e){ return false; } }
 
-  /* ある日付の平均気温を返す。直近は予報(WX_CACHE)、それ以外は月別平年値。 */
+  /* ★★v139 予報の「最高／最低」から、その日の平均気温を出す ★★
+     ── なぜ式を変えたか（★勘ではなく、今年の実測101日で確かめた・§3.5）──
+       ① 最高−4℃（v138までの式） … かたより +1.35℃ ／ ずれ 1.99℃
+       ② (最高+最低)÷2            … かたより +0.64℃ ／ ずれ 0.66℃
+       ③ 最高−5.4℃               … かたより  0.00℃ ／ ずれ 1.55℃
+       ★④ (最高+最低)÷2 −0.6℃    … かたより  0.00℃ ／ ずれ 0.36℃ ←採用
+       いままでの式は、予報の日を **平均1.35℃も高く**見積もっていた。④で5.5倍正確になる。
+     ★最低気温が無い日だけ ③（最高−5.4℃）に落ちる。★「最高−4℃」には戻さない。 */
+  function inaAvgFromMaxMin(mx,mn){
+    var a=parseFloat(mx); if(!isFinite(a))return null;
+    var b=parseFloat(mn);
+    if(isFinite(b))return (a+b)/2-0.6;
+    return a-5.4;
+  }
+  /* ★★v139 ある日付の平均気温を返す。3段構え ★★
+       ①過ぎた日     … 気象庁の実測（JMA_REAL）
+       ②今日〜1週間先 … 天気予報（WX_CACHE.week）
+       ③それより先    … 月別の平年値（いままでどおり）
+     ★どれも読めなければ、必ず③に落ちる＝**この関数は必ず数を返す**（v136と同じ動き）。 */
   function inaTempOn(d){
+    var key=null;
+    try{ key=ymd(d); }catch(e){ key=null; }
+    /* ① 実測（過ぎた日）。★過ぎた日の気温は変わらないので、控えが古くても正しい */
+    if(key&&typeof JMA_REAL!=='undefined'&&JMA_REAL&&JMA_REAL.days){
+      var rv=JMA_REAL.days[key];
+      if(rv!=null&&isFinite(rv))return rv;
+    }
     var today=new Date(); today.setHours(0,0,0,0);
     var diff=Math.round((d-today)/86400000);
-    if(WX_CACHE&&!WX_CACHE.stale){
-      /* 予報は最高気温しか持たないため、平均≒最高-4℃で近似(夏場の概算) */
-      if(diff===0&&WX_CACHE.tToday!=null)return WX_CACHE.tToday-4;
-      if(diff===1&&WX_CACHE.tTomo!=null)return WX_CACHE.tTomo-4;
+    /* ② 予報。★v139まで「今日と明日」しか見ておらず、5日ぶん捨てていた（親方のご指摘） */
+    if(typeof WX_CACHE!=='undefined'&&WX_CACHE&&!WX_CACHE.stale&&diff>=0){
+      if(key&&WX_CACHE.week&&WX_CACHE.week[key]){
+        var w=WX_CACHE.week[key];
+        var wv=inaAvgFromMaxMin(w.mx,w.mn);
+        if(wv!=null)return wv;
+      }
+      if(diff===0&&WX_CACHE.tToday!=null){
+        var v0=inaAvgFromMaxMin(WX_CACHE.tToday,WX_CACHE.tMinToday);
+        if(v0!=null)return v0;
+      }
+      if(diff===1&&WX_CACHE.tTomo!=null){
+        var v1=inaAvgFromMaxMin(WX_CACHE.tTomo,WX_CACHE.tMinTomo);
+        if(v1!=null)return v1;
+      }
     }
+    /* ③ 平年値（v136までと同じ。★ここに落ちれば、いままでとまったく同じ答えになる） */
     return INA_NORMAL_TEMP[d.getMonth()];
   }
   /* 移植日(or実出穂日)から今日までの積算平均気温 */
@@ -4054,9 +4101,85 @@
       }
       h+='</div>';
     }
+    /* ★v139 この予想のもとにした気温（実測／予報／平年なみ）。田植え済みのときだけ出す。
+       ★呼び出しを入れ忘れると「関数はあるのに画面に出ない」（§0.5⑧ v114の型） */
+    if(anyHead){
+      var _fromTp=null;
+      for(var z=0;z<arr.length;z++){ if(arr[z].tp&&(!_fromTp||arr[z].tp<_fromTp))_fromTp=arr[z].tp; }
+      try{ h+=inaSrcCardHTML(_fromTp); }catch(_e){}
+    }
     h+='<div class="kt-pnote">※ 気温の積み上げから計算した目安です。<b><span class="nb">未定・大豆は</span><span class="nb">入っていません</span></b>。'
-      +(anyHead?'<br>※ 出穂を実際に見た日を入れると、そこから先はもっと正確になります（任意）。':'<br><span class="nb">※ 分からないことは</span><span class="nb">「分からない」と</span><span class="nb">出します。</span><span class="nb">あてずっぽうの</span><span class="nb">日付は出しません。</span>')
+      +(anyHead?'<br>※ 出穂を実際に見た日を入れると、そこから先はもっと正確になります（任意）。'
+                +'<br>※ 積算温度は<b>目安</b>です。最後は<b><span class="nb">籾の色と水分</span><span class="nb">（25%前後）</span></b>でお決めください。':'<br><span class="nb">※ 分からないことは</span><span class="nb">「分からない」と</span><span class="nb">出します。</span><span class="nb">あてずっぽうの</span><span class="nb">日付は出しません。</span>')
       +'</div></div>';
+    return h;
+  }
+  /* ★★v139 この予想のもとにした気温を、日付ごとに正直に出す ★★
+     ── なぜ出すか（§10-3・§3.5）──
+       同じ「8/21ごろ」でも、実測で出したのか平年値で出したのかで確かさがまるで違う。
+       どこまでが実際の気温かを見えるようにしないと、予想の重みが伝わらない。
+     ★日付は毎日ひとりでに動く（明日には実測が1日のびる）。手で直す所は無い。
+     ★実測が取れていなければ「ずっと平年なみ」と正直に出す。嘘をつかない。 */
+  function inaSrcCardHTML(fromISO){
+    var todayK=ymd(new Date());
+    var realLast=null, realFrom=null;
+    try{
+      if(typeof JMA_REAL!=='undefined'&&JMA_REAL&&JMA_REAL.last&&JMA_REAL.first){
+        realLast=(JMA_REAL.last<todayK)?JMA_REAL.last:null;   /* ★当日ぶんは気象庁の表に載らない */
+        if(!realLast&&JMA_REAL.first<todayK)realLast=JMA_REAL.first;
+        realFrom=JMA_REAL.first;
+      }
+    }catch(e){ realLast=null; }
+    /* 表示の始まりは「いちばん早い田植えの日」。それより実測の始まりが後なら、そちらに合わせる */
+    var startK=null;
+    try{
+      if(fromISO){ var t=String(fromISO).slice(0,10).replace(/\//g,'-');
+        if(/^\d{4}-\d{2}-\d{2}$/.test(t))startK=t; }
+    }catch(e){}
+    if(realFrom&&(!startK||startK<realFrom))startK=realFrom;
+    /* 予報が届いている最後の日 */
+    var fcLast=null;
+    try{
+      if(typeof WX_CACHE!=='undefined'&&WX_CACHE&&!WX_CACHE.stale&&WX_CACHE.week){
+        for(var k in WX_CACHE.week){
+          if(!/^\d{4}-\d{2}-\d{2}$/.test(k))continue;
+          if(k<todayK)continue;
+          if(WX_CACHE.week[k]&&WX_CACHE.week[k].mx==null)continue;
+          if(!fcLast||k>fcLast)fcLast=k;
+        }
+      }
+    }catch(e){ fcLast=null; }
+
+    function jp(k){ var p=k.split('-'); return parseInt(p[1],10)+'/'+parseInt(p[2],10); }
+    function nextDay(k){ var p=k.split('-');
+      var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10)+1); return ymd(d); }
+    function row(col,rg,nm,tcol){
+      /* ★丸印は薄い色でよいが、**文字は濃くする**。
+         v139の実測で #9C927C はコントラスト3.08しかなく、基準の4.5に届いていなかった
+         （年配の方が読む文字なので、ここは必ず数値で測る・§10-4の9番） */
+      return '<div class="ina-srow"><span class="dt" style="background:'+col+';"></span>'
+           + '<span class="rg">'+rg+'</span><b class="nm" style="color:'+(tcol||col)+';">'+nm+'</b></div>';
+    }
+
+    var h='<div class="ina-src"><div class="st">🌡 この予想のもとにした気温</div>';
+    var normFrom=null;
+    if(realLast&&startK&&startK<=realLast){
+      h+=row('#2F5D3A', jp(startK)+'〜'+jp(realLast), '実際の気温');
+      normFrom=nextDay(realLast);
+    }
+    if(fcLast){
+      var fcFrom=realLast?nextDay(realLast):todayK;
+      if(fcFrom<=fcLast){
+        h+=row('#2E6E8E', jp(fcFrom)+'〜'+jp(fcLast), '天気予報');
+        normFrom=nextDay(fcLast);
+      }
+    }
+    if(!realLast&&!fcLast){
+      h+=row('#9C927C', 'ぜんぶ', '平年なみ', '#6E6A5C');
+    }else{
+      h+=row('#9C927C', jp(normFrom||todayK)+'から', '平年なみ', '#6E6A5C');
+    }
+    h+='</div>';
     return h;
   }
   /* ★v70 品種・田植え日の帯（工程表の🌼予想カードの下）。
@@ -9279,7 +9402,22 @@
              見張りなら、口が増えても勝手に拾う。
        ④ 「まだ送れていない件数」を持ち、画面に出す（届いたかを目で確かめられる） */
   var PUSHED_LS='gyotoku.pushed.v1';   /* {キー:{h:指紋,n:件数}} この端末だけ・同期しない */
-  var UNSENT_KEYS=['gyotoku.worklog.v1','gyotoku.plans.v1'];  /* 件数を数えるのはこの2つ */
+  /* ★★v139 まだ家族に送れていない件数を数える鍵。★v123 の取り残しを直した ★★
+     ── 何が起きていたか ──
+       記録は v123 から年ごとの帳面（gyotoku.worklog.2026.v1）に書かれるのに、
+       ここが旧帳面（gyotoku.worklog.v1）のままだったので、
+       設定の「まだ家族に送れていない記録」が **新しい記録を1件も数えていなかった**。
+       データは壊れないが、v57 で「届いたか目で確かめる」ために作った表示が
+       役目を果たしていなかった。
+     ★ktKeysAll() を通して、SYNC_KEYS と同じ考え方にそろえる（§10-16 書く側でつなぐ）。 */
+  function unsentKeys(){
+    var ks=[], seen={}, a=[], i;
+    try{ a=ktKeysAll(); }catch(e){ a=[]; }
+    if(!a.length)a=['gyotoku.worklog.v1'];       /* ★読めなかった時も、旧帳面だけは必ず数える */
+    for(i=0;i<a.length;i++){ if(!seen[a[i]]){ seen[a[i]]=1; ks.push(a[i]); } }
+    if(!seen['gyotoku.plans.v1'])ks.push('gyotoku.plans.v1');
+    return ks;
+  }
   function pushedAll(){
     try{ var o=JSON.parse(localStorage.getItem(PUSHED_LS)||'{}');
       return (o&&typeof o==='object'&&!(o instanceof Array))?o:{}; }catch(e){ return {}; }
@@ -9294,8 +9432,9 @@
   }
   function unsentCount(){
     var o=pushedAll(), t=0, i;
-    for(i=0;i<UNSENT_KEYS.length;i++){
-      var k=UNSENT_KEYS[i], v; try{ v=localStorage.getItem(k); }catch(e){ v=null; }
+    var UK=unsentKeys();
+    for(i=0;i<UK.length;i++){
+      var k=UK[i], v; try{ v=localStorage.getItem(k); }catch(e){ v=null; }
       if(v==null)continue;
       var p=o[k]; if(!p)continue;              /* 一度も送れていない＝比べる相手が無いので数えない */
       if(p.h===_hash(v))continue;              /* サーバーと同じ中身 */
@@ -9390,7 +9529,7 @@
                         ② 配列の記録は「合図より後に書かれたもの」を残す（_recTime）
                         ③ 何を残して何を消したかを、出来事として控える */
             var _keep={'gyotokuHomeOrder_v1':1,'gyotokuTabs_v1':1,'gyotoku.who.v1':1,'gyotoku.phpass.v1':1,
-                       'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1,
+                       'gyotoku_wx_v1':1,'gyotoku_alert_v1':1,'gyotoku_jma_v1':1,'gyotoku.fldRecent.v1':1,'gyotoku.whoLast.v1':1,
                        'gyotoku.resetAt.v1':1,'gyotoku.resetEpoch.v1':1,'gyotoku.evlog.v1':1};
             var _d=[];
             try{ for(var _i=0;_i<localStorage.length;_i++){ var _k=localStorage.key(_i);
@@ -10540,8 +10679,97 @@
       el.className='alertbar'; el.innerHTML='';
     }
   }
+  /* =========================================================
+     ★★v139 今年の「実際の気温」を稲作の計算に使う（第2段・親方のご指示①）★★
+
+     ── なぜ要るか ──
+       稲作先生の積算は、これまで **ほとんど平年並みの気温**で計算していた
+       （予報を見ていたのは「今日」と「明日」の2日だけ）。
+       今年は暑く、実測は平年より **+191.5℃**（5/1〜8/9の101日ぶん・約7.4日ぶん）進んでいた。
+       ＝ 出穂・刈取の予想が **実際より1週間ほど遅く** 出ていた。
+
+     ── どうするか（3段構え。inaTempOn 1か所を通すだけで全部に効く） ──
+       ①過ぎた日     … 気象庁の実測（/api/jma-temp・v138で作った部品）
+       ②今日〜1週間先 … 天気予報。★WX_CACHE.week に**もう入っている**（新しい通信は不要）
+       ③それより先    … 月別の平年値 INA_NORMAL_TEMP（いままでどおり）
+
+     ── ★壊さないための決めごと（CLAUDE.md §0.5⑪） ──
+       ・控えは **同期しない鍵**（'gyotoku_jma_v1'＝ドットでなくアンダースコア）。
+         家族で分け合う必要が無いうえ、同期に乗せると画面の読み込み直しを誘発する（§10-18）
+       ・端末は **控えが今日のものなら通信しない**（気象庁へはサーバー側で1日1回まで）
+       ・読めなかったら **黙って今までどおり（平年値）に落ちる**。★嘘の日付は出さない（§3.5）
+       ・location.reload() は絶対に呼ばない。描き直すのは「いま出ている所」だけ（§10-18）
+     ========================================================= */
+  var JMA_LS_KEY='gyotoku_jma_v1';   /* ★ドットでないので SYNC_FIXED に拾われない＝家族へ送らない */
+  var JMA_REAL=null;                 /* {got:'YYYY-MM-DD', days:{'YYYY-MM-DD':日平均}, first:'', last:''} */
+
+  function jmaLoadFromStore(){
+    try{
+      var s=localStorage.getItem(JMA_LS_KEY); if(!s)return null;
+      var o=JSON.parse(s);
+      if(!o||!o.days||typeof o.days!=='object')return null;
+      return o;
+    }catch(e){ return null; }
+  }
+  /* サーバーの返事 {months:{'2026-05':{rows:[[日,平均,最高,最低],…]}}} を
+     日付キーの表 {'2026-05-01':21.3,…} に直す。
+     ★rows が null の月（取れなかった月）は黙って飛ばす。無理に埋めない。 */
+  function jmaFlatten(js){
+    var days={}, first=null, last=null, n=0;
+    try{
+      var ms=js&&js.months; if(!ms)return null;
+      for(var ym in ms){
+        if(!/^\d{4}-\d{2}$/.test(ym))continue;
+        var o=ms[ym]; if(!o||!o.rows||!o.rows.length)continue;
+        for(var i=0;i<o.rows.length;i++){
+          var r=o.rows[i]; if(!r||r.length<2)continue;
+          var dd=parseInt(r[0],10), av=parseFloat(r[1]);
+          if(!(dd>=1&&dd<=31))continue;
+          if(!isFinite(av)||av<-50||av>60)continue;   /* ★気温として有り得ない値は捨てる（§3.5） */
+          var k=ym+'-'+(dd<10?'0':'')+dd;
+          if(days[k]==null)n++;
+          days[k]=av;
+          if(!first||k<first)first=k;
+          if(!last||k>last)last=k;
+        }
+      }
+    }catch(e){ return null; }
+    if(!n)return null;
+    return {days:days, first:first, last:last, n:n};
+  }
+  /* 起動時に1回だけ。★控えが今日のものなら、何も通信しない */
+  function jmaFetch(){
+    if(!JMA_REAL)JMA_REAL=jmaLoadFromStore();
+    var today=ymd(new Date());
+    if(JMA_REAL&&JMA_REAL.got===today)return;         /* 今日ぶんは取得ずみ */
+    try{
+      fetch('/api/jma-temp',{headers:{'x-photo-pass':_syncPass()}})
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(js){
+          if(!js||!js.ok)return;                      /* ★読めなければ控えのまま（無ければ平年値） */
+          var f=jmaFlatten(js); if(!f)return;
+          f.got=today;
+          JMA_REAL=f;
+          try{ localStorage.setItem(JMA_LS_KEY,JSON.stringify(f)); }catch(e){}
+          jmaRepaint();
+        })
+        .catch(function(){});                         /* ★圏外でも、何も起きない */
+    }catch(e){}
+  }
+  /* 気温が新しくなったので、日付を出している所だけ描き直す。
+     ★ホームに戻したり、読み込み直したりはしない（v126・§10-18） */
+  function jmaRepaint(){
+    try{
+      var bd=document.getElementById('ktViewBoard');
+      if(bd&&bd.offsetParent!==null&&typeof ktRenderBoard==='function')ktRenderBoard();
+    }catch(e){}
+    try{ if(typeof renderAiTip==='function')renderAiTip(); }catch(e){}
+    try{ if(typeof applyScene==='function')applyScene(); }catch(e){}
+  }
+
   fetchWeather();
   fetchAlerts();
+  jmaFetch();
 
   /* ===== v2.4 AI相談(A×Bミックス・完全無料) ===== */
   function setQ(el){ document.getElementById('aiQ').value=el.textContent; }
@@ -10666,7 +10894,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v136';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v139';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
