@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v139">
+<meta name="app-ver" content="v141">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -825,6 +825,18 @@
   /* ★v92 行・枠の線は #6B9077（比3.08）にそろえる。タイルの枠と同じ濃さ */
   .kt-prow.soon{background:var(--green-soft);border:1.5px solid #6B9077;}
   .kt-prow.wait{background:#F2F0E8;}
+  /* ★v141 出穂を見た日を入れられる行。押せると分かるように › を出す */
+  .kt-prow.tapok{cursor:pointer;}
+  .kt-prow .kt-chv{flex:0 0 auto;margin-left:4px;font-size:21px;font-weight:700;color:#B8893B;line-height:1;}
+  .ina-hbox{background:#FFFFFF;border:1.5px solid #B8893B;border-radius:14px;padding:12px 14px;margin:0 0 8px;}
+  .ina-hbox .ht{font-size:15.5px;font-weight:800;color:var(--ink);margin-bottom:9px;}
+  .ina-hbox .hin{display:block;width:100%;box-sizing:border-box;border:1px solid #9C927C;
+    border-radius:10px;padding:11px 10px;font-size:16.5px;background:#fff;font-family:inherit;}
+  .ina-hbox .hrow{display:flex;gap:8px;margin-top:10px;}
+  .ina-hbox .hb{flex:1;text-align:center;padding:12px 8px;border-radius:12px;font-size:15.5px;font-weight:800;}
+  .ina-hbox .hb.ok{background:var(--blue-soft);border:1px solid rgba(46,110,142,.4);color:var(--blue);}
+  .ina-hbox .hb.no{background:#fff;border:1px solid rgba(156,146,124,.45);color:#6E6A5C;}
+  .ina-hbox .hn{font-size:12.5px;color:#4A463C;line-height:1.7;margin-top:9px;}
   .kt-prow.wait .nm{color:#6E6A5C;}
   .kt-prow .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
   .kt-prow .nm{font-size:16px;font-weight:800;flex:1;min-width:0;}
@@ -1421,6 +1433,9 @@
   .kredit .kef{display:flex;align-items:center;gap:8px;margin:6px 0;}
   .kredit .kef .kl{width:6.5em;font-size:14.5px;color:#6b6f66;font-weight:700;}
   .kredit .kef input{flex:1;border:1px solid #9C927C;border-radius:10px;padding:10px;font-size:16.5px;min-width:0;}
+  /* ★v140 月日はカレンダーを出す「押す所」なので、44px を満たす（実測 43px → 45px）。
+     ★他の欄には手を付けない＝変える範囲を最小にする */
+  .kredit .kef input#krEd{padding-top:11px;padding-bottom:11px;}
   /* ===== v22② カレンダー2.0 ===== */
   .day .cw{display:block;font-size:13px;line-height:1.15;font-weight:400;}
   .day .ct2{display:block;font-size:9.5px;line-height:1.2;font-weight:700;color:#4A463C;}
@@ -1760,7 +1775,7 @@
         <div class="kroku-lead"><span class="nb">🎤で話した記録が、</span><span class="nb">そのままこの表に</span><span class="nb">並びます。</span><span class="nb">手書きのノートは</span><span class="nb">もう要りません。</span><b><span class="nb">間違えた行は ✏️直す・</span><span class="nb">🗑消す で見直せます。</span></b></div>
         <div class="kredit" id="krEditCard">
           <div class="ket" id="krEditTitle">✏️ この記録を直す</div>
-          <div class="kef"><span class="kl">月日</span><input id="krEd" type="text" inputmode="numeric" placeholder="2026/07/20"></div>
+          <div class="kef"><span class="kl">月日</span><input id="krEd" type="date"></div>
           <div class="kef"><span class="kl">作業</span><input id="krEw" type="text" placeholder="散布・追肥など"></div>
           <div class="kef"><span class="kl">農薬・肥料</span><input id="krEc" type="text" placeholder="スタークルなど"></div>
           <div class="kef"><span class="kl">倍率（倍）</span><input id="krEr" type="number" inputmode="numeric" placeholder="1000"></div>
@@ -2123,7 +2138,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v139</span></div>
+          <div class="setrow">バージョン<span class="sv">v141</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2725,6 +2740,46 @@
   }
 
   var INA_LS='gyotoku.inasaku.v1';
+  /* ===== ★★v141 品種ごとの「出穂を見た日」 ★★
+     ── なぜ要るか（★親方のご要望。注記と実態の食い違いを直す）──
+       予想カードの下に「出穂を実際に見た日を入れると、そこから先はもっと正確になります」
+       と書いてあるのに、**品種ごとに入れる所が無かった**。
+       あったのは工程表の⑤〜⑨用（inaState.actualHead）だけで、
+       すぐ上にある品種ごとのカードには**まったく効いていなかった**＝注記が嘘になっていた。
+     ── 形（★生産原価と同じ「場所ごとの表」にそろえた。v66の手本）──
+       { 'つやおとめ': {v:'2026/08/15', _m:時刻}, … }
+       🚩**トップレベルに _m（数字）を置かない。** 置くと sync-put.js が〈設定の箱〉と見なして
+         **丸ごと後勝ち**にするため、家族の2人が別々の品種を入れると片方が消える。
+         この形なら **品種ごとに独立して合流する**（sync-put.js の mergeEntry）
+       🚩**消すときは行ごと削らず {v:null, _m:時刻} を残す。**
+         削ると「消した」と「元から無い」の区別がつかず、サーバーの古い日が戻ってくる（v65の不具合）
+     ── ★別の鍵にした理由 ──
+       inaState（gyotoku.inasaku.v1）に相乗りさせると、**v140以前の端末**が inaState を
+       保存したときに、この日付ごと消える（あちらは〈設定の箱〉＝丸ごと後勝ちのため）。
+       家族の端末に新しい版が届くのは同時ではないので、必ず起きる（CLAUDE.md §0.5⑪②）。 */
+  var HEAD_LS='gyotoku.heads.v1';
+  var headSeen={};
+  function headLoad(){
+    try{ var s=localStorage.getItem(HEAD_LS); headSeen=s?JSON.parse(s):{}; }catch(e){ headSeen={}; }
+    if(!headSeen||typeof headSeen!=='object'||(headSeen instanceof Array))headSeen={};
+  }
+  function headSave(){ /* ★lsSet を通す（保存の背骨・v122） */
+    try{ return lsSet(HEAD_LS,JSON.stringify(headSeen)); }catch(e){ return false; } }
+  /* その品種の「見た日」を 'YYYY/MM/DD' で返す。無ければ null（＝予想で計算する） */
+  function headGet(crop){
+    var e=headSeen[crop];
+    if(e==null)return null;
+    var v=(e&&typeof e==='object')?e.v:e;        /* 素の文字列で入っていても読める */
+    if(!v)return null;                           /* {v:null}＝消した */
+    var t=(''+v).slice(0,10).replace(/-/g,'/');
+    return /^\d{4}\/\d{2}\/\d{2}$/.test(t)?t:null;
+  }
+  function headSet(crop,dateStr){
+    if(!crop)return false;
+    headSeen[crop]={v:(dateStr||null), _m:Date.now()};
+    return headSave();
+  }
+
   var inaState=null; /* {variety, transplant(ISO), actualHead(ISO|null), viewStage} */
 
   function inaLoad(){
@@ -2880,6 +2935,7 @@
   }
   /* 品種ごとの予想をまとめて返す（早い順にならべる） */
   function inaVarietyPredict(){
+    headLoad();   /* ★v141 描くたびに読み直す＝家族から届いた「見た日」も必ず反映される */
     var taue=inaTaueDates();
     var g={};                       /* crop名 → {n,枚,面積,key,植日(最早)} */
     for(var i=0;i<KT_FIELDS.length;i++){
@@ -2893,12 +2949,21 @@
     }
     var out=[];
     for(var c in g){
-      var o=g[c], head=null, harv=null;
-      if(o.tp){
+      var o=g[c], head=null, harv=null, seenFlag=false;
+      /* ★v141 出穂を実際に見た日が入っていれば、そちらを使う（＝そこから先が正確になる）。
+         ★見た日は「その日に出穂した」という事実なので、積算の予想より必ず優先する。 */
+      var seen=headGet(o.crop);
+      if(o.tp&&seen){
+        head=new Date(seen); head.setHours(0,0,0,0);
+        if(isNaN(head.getTime())){ head=null; }else{ seenFlag=true; }
+      }
+      if(!head&&o.tp){
         head=inaDateAtAccum(o.tp, o.v.head); head.setHours(0,0,0,0);
+      }
+      if(head){
         harv=inaDateAtAccum(inaFmtFull(head), o.v.ripen); harv.setHours(0,0,0,0);
       }
-      out.push({crop:o.crop, key:o.key, n:o.n, area:o.area, tp:o.tp, head:head, harvest:harv});
+      out.push({crop:o.crop, key:o.key, n:o.n, area:o.area, tp:o.tp, head:head, harvest:harv, seen:seenFlag});
     }
     /* 田植え済み(head有)を出穂日の早い順に、未田植え(null)は後ろに面積の大きい順で */
     out.sort(function(a,b){
@@ -4071,6 +4136,32 @@
     toast('✅ '+v.replace(/^\d+\//,'').replace('/','月')+'日を足しました');
   }
 
+  /* ★★v141 品種の行を押して「出穂を見た日」を入れる ★★
+     ★ktRenderBoard() で描き直すだけ。画面を読み込み直したりホームへ戻したりしない（§10-18） */
+  var ktHeadCrop='';                    /* いま開いている品種名。空なら閉じている */
+  function ktQ(s){ return "'"+String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'"; }
+  function ktHeadTap(crop){
+    ktHeadCrop=(ktHeadCrop===crop)?'':crop;   /* もう一度押したら閉じる */
+    ktRenderBoard();
+  }
+  function ktHeadApply(crop){
+    var el=document.getElementById('ktHeadIn');
+    var v=el?el.value:'';
+    if(!v){ toast('日を選んでください'); return; }
+    var d=krDateToLog(v);                     /* ★v140で作った変換。台帳と同じスラッシュ形にそろえる */
+    if(!/^\d{4}\/\d{2}\/\d{2}$/.test(d)){ toast('日を選んでください'); return; }
+    headSet(crop,d);
+    ktHeadCrop='';
+    ktRenderBoard();
+    toast('✅ '+crop+' の出穂を見た日を入れました');
+  }
+  function ktHeadClear(crop){
+    headSet(crop,null);                       /* ★消すのではなく {v:null} を残す（v65の教訓） */
+    ktHeadCrop='';
+    ktRenderBoard();
+    toast('予想の計算にもどしました');
+  }
+
   /* ---- 画面A:工程表 ---- */
   /* v45：品種ごとの出穂・収穫予想カード。早い順。田植え待ちは「田植え待ち」を表示。 */
   function ktPredictCardHTML(){
@@ -4089,17 +4180,37 @@
       var flag='';
       if(i2===firstI)flag=' <span class="kt-flag">いちばん早い</span>';
       else if(i2===lastI)flag=' <span class="kt-flag l">いちばん遅い</span>';
-      var cls='kt-prow'+(i2===firstI?' soon':'')+(o.head?'':' wait');
+      var cls='kt-prow'+(i2===firstI?' soon':'')+(o.head?'':' wait')+(o.head?' tapok':'');
       var sub=o.n+'枚・'+Math.round(o.area)+'a'+(o.tp?' ／ '+inaFmt(new Date(o.tp))+'に田植え':'');
-      h+='<div class="'+cls+'">'
+      h+='<div class="'+cls+'"'
+        +(o.head?' onclick="ktHeadTap('+ktQ(o.crop)+')"':'')+'>'
         +'<span class="dot" style="background:'+col+';"></span>'
         +'<div class="nm">'+o.crop+flag+'<small>'+sub+'</small></div>';
       if(o.head){
-        h+='<div class="dz">'+inaFmt(o.head)+'ごろ<small>収穫 '+inaFmt(o.harvest)+'ごろ</small></div>';
+        /* ★v141 実際に見た日を使っているときは「ごろ」を付けない。
+           「ごろ」は予想の意味なので、事実に付けると嘘になる（§3.5） */
+        h+='<div class="dz">'+inaFmt(o.head)+(o.seen?'':'ごろ')
+          +'<small>'+(o.seen?'見た日／':'')+'収穫 '+inaFmt(o.harvest)+'ごろ</small></div>'
+          +'<span class="kt-chv">›</span>';
       }else{
         h+='<div class="wt">田植え待ち</div>';
       }
       h+='</div>';
+      /* ★v141 押された品種の行の下に、日を入れる欄をひらく（その場で開く＝画面が飛ばない） */
+      if(o.head&&ktHeadCrop===o.crop){
+        var cur=headGet(o.crop);
+        h+='<div class="ina-hbox">'
+          +'<div class="ht">🌼 '+o.crop+' の 出穂を見た日</div>'
+          +'<input class="hin" type="date" id="ktHeadIn" value="'+(cur?cur.replace(/\//g,'-'):'')+'">'
+          +'<div class="hrow">'
+          +'<div class="hb ok" onclick="ktHeadApply('+ktQ(o.crop)+')">✅ この日にする</div>'
+          +(cur?'<div class="hb no" onclick="ktHeadClear('+ktQ(o.crop)+')">予想にもどす</div>':'')
+          +'</div>'
+          +'<div class="hn">※ いまの予想は <b>'+inaFmt(o.head)+'ごろ</b>です。'
+          +'実際に見た日を選ぶと、そこから先（収穫の予想）が正確になります。'
+          +'<br>★<b>あてずっぽうでは入れないでください。</b>見ていない日を入れると、かえって外れます。</div>'
+          +'</div>';
+      }
     }
     /* ★v139 この予想のもとにした気温（実測／予報／平年なみ）。田植え済みのときだけ出す。
        ★呼び出しを入れ忘れると「関数はあるのに画面に出ない」（§0.5⑧ v114の型） */
@@ -4109,7 +4220,7 @@
       try{ h+=inaSrcCardHTML(_fromTp); }catch(_e){}
     }
     h+='<div class="kt-pnote">※ 気温の積み上げから計算した目安です。<b><span class="nb">未定・大豆は</span><span class="nb">入っていません</span></b>。'
-      +(anyHead?'<br>※ 出穂を実際に見た日を入れると、そこから先はもっと正確になります（任意）。'
+      +(anyHead?'<br>※ <b>品種を押す</b>と、出穂を実際に見た日を入れられます。入れると、そこから先はもっと正確になります（任意）。'
                 +'<br>※ 積算温度は<b>目安</b>です。最後は<b><span class="nb">籾の色と水分</span><span class="nb">（25%前後）</span></b>でお決めください。':'<br><span class="nb">※ 分からないことは</span><span class="nb">「分からない」と</span><span class="nb">出します。</span><span class="nb">あてずっぽうの</span><span class="nb">日付は出しません。</span>')
       +'</div></div>';
     return h;
@@ -6842,13 +6953,39 @@
     }
     box.innerHTML=html2;
   }
+  /* ===== ★★v140 記録簿の月日を、手打ちからカレンダー選びに変えた ★★
+     ── なぜ（★親方のご要望）──
+       月日を「2026/07/20」と手で打つしかなく、間違えやすかった。
+       ★年配のご家族に手打ちを求めるのは、設計の失敗（CLAUDE.md §0.5）。
+     ── どうやって ──
+       <input type="date"> にした。ただし **記録側はスラッシュ（2026/07/20）**、
+       **type="date" はハイフン（2026-07-20）でないと読めない**。
+       ★この作法はアプリ内に既にある（v70 の品種・移植日／🌿草刈りの日付）。
+         新しい流儀を作らず、そちらに合わせた。
+     ── ★壊さないための決めごと ──
+       ・**保存するときは必ずスラッシュに戻す**。台帳(e.d)の形は1文字も変えない。
+         ここを変えると、記録簿・工程表・原価・肥料・草刈りが一斉に読めなくなる
+       ・ゼロ埋めが無い日付（2026/8/1）が混じっていても開けるように補う。
+         補えないものは空欄にする＝**その場で選び直せる**（黙って壊れない） */
+  function krDateToInput(s){            /* 台帳の '2026/07/20' → 欄の '2026-07-20' */
+    var t=(''+(s||'')).slice(0,10).replace(/\//g,'-');
+    var m=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if(!m)return '';                    /* 読めない形は空欄にする（嘘の日付を入れない） */
+    return m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2);
+  }
+  function krDateToLog(s){              /* 欄の '2026-07-20' → 台帳の '2026/07/20' */
+    var t=(''+(s||'')).slice(0,10).replace(/-/g,'/');
+    var m=t.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+    if(!m)return '';
+    return m[1]+'/'+('0'+m[2]).slice(-2)+'/'+('0'+m[3]).slice(-2);
+  }
   /* ===== v22⑥ 記録簿の 直す・消す(作業記録・話して記録の実体=台帳) ===== */
   var krEditIdx=-1;
   function krEdit(idx){
     var e=ktLog[idx]; if(!e){ toast('その記録が見つかりません'); return; }
     krEditIdx=idx;
     var set=function(id,v){ var el=document.getElementById(id); if(el)el.value=(v==null?'':v); };
-    set('krEd',e.d); set('krEw',e.work||''); set('krEc',e.chem||'');
+    set('krEd',krDateToInput(e.d)); set('krEw',e.work||''); set('krEc',e.chem||'');
     set('krEr',e.rate||''); set('krEv',e.vol||''); set('krEm',e.mass||'');
     var t=document.getElementById('krEditTitle');
     if(t)t.textContent='✏️ '+(e.field||'')+' '+krMdY(e.d)+' の記録を直す';
@@ -6864,7 +7001,7 @@
   function krEditSave(){
     var e=ktLog[krEditIdx]; if(!e){ krEditCancel(); return; }
     var gv=function(id){ var el=document.getElementById(id); return el?el.value.replace(/^\s+|\s+$/g,''):''; };
-    var d=gv('krEd');
+    var d=krDateToLog(gv('krEd'));   /* ★v140 欄はハイフン。台帳はスラッシュに必ず戻す */
     if(d&&!/^\d{4}\/\d{2}\/\d{2}$/.test(d)){ toast('月日は 2026/07/20 の形で入れてください'); return; }
     tombEdit(ktKeyOfRec(e), e);  /* ★v48.2:ここも同じ不具合だった。直した記録が同期で消えていた */
     if(d)e.d=d;
@@ -9065,7 +9202,7 @@
      ⚠️ sync-list.js は鍵を50個までしか読まない。
         固定13個＋帳面ぶん ＝ 2026年で14個／2050年で38個／**2062年で50個**。
         その頃「古い年は同期から外す」判断が要る（HANDOVER に明記） */
-  var SYNC_FIXED=['gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1',DEV_LS,TOMB_LS];   /* ★v131 端末の一覧を追加＝14→15個（上限50） */
+  var SYNC_FIXED=['gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.heads.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1',DEV_LS,TOMB_LS];   /* ★v141 出穂を見た日を追加＝15→16個（上限50） */
   var SYNC_KEYS=[], SYNC_SET={}, SYNC_READ_KEYS=[];
   function syncKeysBuild(){
     var ks=[], seen={}, i, a=[];
@@ -10894,7 +11031,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v139';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v141';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
