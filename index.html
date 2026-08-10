@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v142">
+<meta name="app-ver" content="v143">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2162,7 +2162,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v142</span></div>
+          <div class="setrow">バージョン<span class="sv">v143</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2562,7 +2562,22 @@
       {k:'tsukushiroman',n:'つくしろまん',         head:1780, ripen:1000},
       {k:'nikomaru',     n:'にこまる',             head:1880, ripen:1050},
       {k:'milky',        n:'ミルキークイーン',     head:1720, ripen:1000},
-      {k:'nijinokira',   n:'にじのきらめき',       head:1800, ripen:1000},
+      /* ★★v143 にじのきらめきの ripen を 1000→1100 に直した ★★
+         ── なぜ 1000 が誤りか（大刀洗起点で調べ直した・2026/08/10）──
+           育成元の農研機構の栽培暦…出穂後積算 1,100〜1,200℃
+           茨城県…1,169℃(1,105〜1,236)・登熟46日／群馬…1,100〜1,200℃
+           静岡県…972〜1,226℃(出穂後35〜45日)
+           ★1000℃はどこの県の値でもなかった。この品種は籾が密で登熟が長い。
+         ── なぜ 1150 ではなく 1100 か（★戻さないこと）──
+           ①山梨県(2023-24の高温登熟)…「登熟期の気温が高い作期では
+             1等となる刈取適期は **1,150℃程度が晩限**」。大刀洗は高温登熟地帯なので
+             1150 を入れると適期でなく **晩限** に置くことになる
+           ②佐賀県(隣県)5ヵ年実測…移植5/16→出穂7/30→成熟9/8＝**登熟40日**。
+             これを大刀洗の気温(8月28.2℃・9月24.5℃)に当てると **約1,090℃**
+           ③憲法§10-3「予想は早い方に寄せる」
+         ★早刈りすると屑米・青未熟粒が増える品種（静岡県の資料に明記）。
+           逆に刈り遅れても品質低下はわずかなので、**早い側に外すほうが損**が大きい。 */
+      {k:'nijinokira',   n:'にじのきらめき',       head:1800, ripen:1100},
       {k:'tsuyakirari',  n:'つやきらり',           head:1680, ripen:1000},
       {k:'tsuyaotome',   n:'つやおとめ',           head:1720, ripen:1000},
       {k:'hiyokumochi',  n:'ヒヨクモチ（もち米）', head:1820, ripen:1000}
@@ -11178,7 +11193,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v142';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v143';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
