@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v145">
+<meta name="app-ver" content="v147">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -92,8 +92,22 @@
   /* ===== 下層画面ナビ(‹戻る + タイトル) ===== */
   .navhead{display:flex;align-items:center;gap:8px;padding:12px 16px 12px;
     background:#fff;border-bottom:1px solid var(--line);}
-  .navhead .back{font-size:16px;font-weight:800;color:var(--green-deep);background:none;border:none;cursor:pointer;letter-spacing:.02em;}
-  .navhead .title{font-size:19px;font-weight:800;flex:1;text-align:center;margin-right:44px;letter-spacing:.03em;}
+  /* ★★v147 戻るボタンを大きく・押しやすくした（★親方のご指摘「文字が小さくて分かりにくい」）。
+     ── 直す前の実測：43×21px。**押す所が44pxに足りていなかった**（全画面共通の問題）
+     ── 直しかた
+       ①字を 16px → 18px。★矢印は「‹」をやめて「←」にし、1.5倍で描く（★親方のご判断）。
+         「戻る」という言葉と矢印の向きが一目で合う形をえらんだ
+       ②padding で**押せる所だけ**を広げ、margin で同じぶん戻す。
+         こうすると**見た目の位置は1pxも動かず**、当たり判定だけ 44px 以上になる。
+         ★7か所ぜんぶ class="back" なので、ここ1行で全画面が直る（§6 CSSの使い回し） */
+  .navhead .back{font-size:18px;font-weight:800;color:var(--green-deep);background:none;
+    border:none;cursor:pointer;letter-spacing:.02em;
+    padding:12px 12px;margin:-12px -12px;min-height:44px;
+    display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
+  .navhead .back .ar{font-size:1.5em;line-height:1;font-weight:800;margin-top:-1px;}
+  /* ★v147 戻るボタンを大きくしたぶん、右の余白も広げて見出しを中央に戻す。
+     ★44px のままだと見出しが右へ12pxずれる（実測）。88px でほぼ中央に戻る。 */
+  .navhead .title{font-size:19px;font-weight:800;flex:1;text-align:center;margin-right:88px;letter-spacing:.03em;}
 
   /* ===== 固定タブバー ===== */
   .tabbar{display:flex;align-items:flex-end;background:#fff;flex-shrink:0;border-top:1px solid var(--line);
@@ -2245,7 +2259,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v145</span></div>
+          <div class="setrow">バージョン<span class="sv">v147</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2466,7 +2480,7 @@
        行き先が変わるので、ラベルも「ホーム」等ではなく「戻る」に統一する
        （「ホーム」と書いてあるのに田んぼ一覧へ戻ると、かえって混乱するため）。
        第2引数 label は互換のため残しているが使わない。 */
-    var b = back ? '<button class="back" onclick="goBack()">‹ 戻る</button>' : '';
+    var b = back ? '<button class="back" onclick="goBack()"><span class="ar">\u2190</span>戻る</button>' : '';
     var t = back ? '<span class="title">'+title+'</span>'
                  : '<span class="title" style="margin:0;text-align:left;padding-left:2px;">'+title+'</span>';
     return '<div class="navhead">'+b+t+'</div>';
@@ -2592,6 +2606,15 @@
     if(curScreen==='kusa'){
       if(typeof kusaSheetIdx!=='undefined' && kusaSheetIdx>=0){ kusaSheetClose(); return; }
       if(typeof kusaView!=='undefined' && kusaView==='fields'){ kusaBackToAreas(); return; }
+    }
+    /* ★★v147【不具合の直し】📖年度別記録も1画面の中に3段（年と地区 → 田んぼ → 1枚）
+       あるのに、ここへ足すのを忘れていた。そのため横に払うと**いきなりホームまで**
+       飛んでいた（★親方の実機でのご指摘）。
+       ★憲法§10-9「入れ子の画面は、戻るを全部の入口から試す。どれも goBack() を通る」。
+         ヘッダーの戻る・横に払う・下のタブ、どれもここを通るので1か所で直る。 */
+    if(curScreen==='nendo'){
+      if(typeof ndoView!=='undefined' && ndoView==='one'){ ndoBackToFields(); return; }
+      if(typeof ndoView!=='undefined' && ndoView==='fields'){ ndoBackToTop(); return; }
     }
     /* ★v90 田んぼ一覧も1画面の中に「タイル」と「その地区の田んぼ」があるので1段ずつ戻す。
        ヘッダーの戻るも横スワイプも下タブも、どれもここを通る（§10-9） */
@@ -4095,7 +4118,7 @@
     if(kusaView==='fields'){
       var n=kusaIdxOfArea(kusaCurArea).length;
       el.innerHTML='<div class="navhead">'
-        +'<button class="back" onclick="kusaBackToAreas()">‹ 地区</button>'
+        +'<button class="back" onclick="kusaBackToAreas()"><span class="ar">\u2190</span>地区</button>'
         +'<span class="title">'+kusaCurArea+'（'+n+'枚）</span></div>';
     }else{
       el.innerHTML=HEADERS['kusa']||'';
@@ -4427,9 +4450,14 @@
     out.sort(function(a,b){ return b.d - a.d; });
     return out;
   }
-  /* その年に記録のある年の一覧（新しい順）と件数 */
+  /* 年の一覧（新しい順）と件数。
+     ★★今年は、記録が0件でも必ず入れる（★親方のご指示「元日にきっちり切り替える」）。
+       入れないと、1月〜春先のまだ記録が無い時期に
+       「ndoYear は今年なのに、その年のチップが無い」＝どれも選ばれていない状態になる。 */
   function ndoYearList(){
-    var m={}, i, e, d, out=[], k;
+    var m={}, i, e, d, out=[], k, ty;
+    try{ ty=(new Date()).getFullYear(); }catch(_x){ ty=0; }
+    if(ty) m[ty]=0;
     for(i=0;i<ktLog.length;i++){
       e=ktLog[i]; if(!e) continue;
       d=kusaParseD(e.d); if(!d) continue;
@@ -4474,9 +4502,11 @@
     /* ★開くたびに必ずいちばん上から。前に見ていた地区が残っていると迷子になる
          （🌿草刈りの kusaEnter と同じ考え方） */
     ndoView='top'; ndoArea=''; ndoIdx=-1;
-    /* 年は「記録のあるいちばん新しい年」を最初に出す。無ければ今年 */
-    var ys = ndoYearList();
-    ndoYear = ys.length ? ys[0].y : (new Date()).getFullYear();
+    /* ★★最初に出す年は「今年」。元日にきっちり切り替わる（★親方のご指示）。
+       ★★🌿草刈り・📋工程表と同じ動きにそろえた（あちらも今年で決め打ち）。
+       ★1月〜春先は今年の記録がまだ0件なので、その時は
+         「去年をふりかえる」入口を画面に出す（ndoTopRender の中）。 */
+    try{ ndoYear = (new Date()).getFullYear(); }catch(e){ ndoYear = 0; }
     ndoRender();
   }
   function ndoRender(){
@@ -4496,12 +4526,12 @@
     var el=document.getElementById('hdr'); if(!el)return;
     if(ndoView==='fields'){
       el.innerHTML='<div class="navhead">'
-        +'<button class="back" onclick="ndoBackToTop()">‹ 年度別</button>'
+        +'<button class="back" onclick="ndoBackToTop()"><span class="ar">\u2190</span>年度別</button>'
         +'<span class="title">'+ndoArea+'（'+ndoYearName(ndoYear)+'）</span></div>';
     }else if(ndoView==='one'){
       var f=KT_FIELDS[ndoIdx];
       el.innerHTML='<div class="navhead">'
-        +'<button class="back" onclick="ndoBackToFields()">‹ '+ndoArea+'</button>'
+        +'<button class="back" onclick="ndoBackToFields()"><span class="ar">\u2190</span>'+ndoArea+'</button>'
         +'<span class="title">'+((f&&f.n)||'')+'</span></div>';
     }else{
       el.innerHTML=HEADERS['nendo']||'';
@@ -4519,7 +4549,10 @@
     var ys=ndoYearList(), h='', i, a, as, all=0;
     for(i=0;i<ys.length;i++) all+=ys[i].c;
 
-    /* 記録が1件も無いとき。★真っ白にしない */
+    /* ★ここは、ふつうは通らない道になった（v146）。
+       ndoYearList() が今年を必ず入れるので ys は必ず1つ以上ある。
+       ★★それでも消さない：端末の時計が壊れて年が取れなかったときの受け皿。
+         消すと、その端末で画面が真っ白になる。 */
     if(!ys.length){
       el.innerHTML='<div class="ndo-empty">まだ記録がありません。<br>'
         + '作業を記録すると、ここに年ごとに並びます。</div>';
@@ -4528,6 +4561,20 @@
     var cur = ndoYear ? ndoRecsCountOfYear(ndoYear) : all;
     h += '<div class="ndo-hero"><div class="nm">'+ndoYearName(ndoYear)+'</div>'
       +  '<div class="badge">記録 '+cur+'件 / 田んぼ '+KT_FIELDS.length+'枚</div></div>';
+
+    /* ★その年の記録がまだ0件のとき（1月〜春先）。
+       ★★真っ白にせず、去年へ行く道をその場に出す。年配のご家族が
+         「壊れた」と思ったり、年チップを探して迷ったりしないように。 */
+    if(ndoYear && cur===0){
+      var pv=0;
+      for(i=0;i<ys.length;i++){ if(ys[i].y<ndoYear && ys[i].c){ pv=ys[i].y; break; } }
+      h += '<div class="ndo-empty">'+ndoYear+'年の記録は、まだありません。<br>'
+        +  '作業を記録すると、ここに並びます。'
+        +  (pv ? ('<br><br><div class="ndo-chip" style="display:inline-flex;"'
+                 + ' onclick="ndoSetYear('+pv+')">'
+                 + '<div class="y">'+pv+'年をふりかえる ›</div></div>') : '')
+        +  '</div>';
+    }
 
     h += '<div class="ndo-lbl">📅 年をえらぶ</div><div class="ndo-chips">';
     for(i=0;i<ys.length;i++){
@@ -5057,7 +5104,7 @@
     if(ktvView==='fields'){
       var n=ktvIdsOf(ktvCur).length;
       el.innerHTML='<div class="navhead">'
-        +'<button class="back" onclick="ktvBack()">‹ '+(ktvMode==='crop'?'品種':'地区')+'</button>'
+        +'<button class="back" onclick="ktvBack()"><span class="ar">\u2190</span>'+(ktvMode==='crop'?'品種':'地区')+'</button>'
         +'<span class="title">'+ktvCur+'（'+n+'枚）</span></div>';
     }else if(typeof renderHeader==='function'){ renderHeader('koutei'); }
   }
@@ -7981,12 +8028,12 @@
     var el=document.getElementById('hdr'); if(!el)return;
     if(flPick){
       el.innerHTML='<div class="navhead">'
-        +'<button class="back" onclick="flBackToTiles()">\u2039 '+(flMode==='crop'?'\u54c1\u7a2e':'\u5730\u533a')+'</button>'
+        +'<button class="back" onclick="flBackToTiles()"><span class="ar">\u2190</span>'+(flMode==='crop'?'\u54c1\u7a2e':'\u5730\u533a')+'</button>'
         +'<span class="title">'+flPick+'\uff08'+flGroupIdx(flPick).length+'\u679a\uff09</span></div>';
     }else if(flCropEdit){
       /* ★v121 作付モードは、ヘッダーでもそれと分かるようにする */
       el.innerHTML='<div class="navhead">'
-        +'<button class="back" onclick="cropEditClose()">\u2039 \u623b\u308b</button>'
+        +'<button class="back" onclick="cropEditClose()"><span class="ar">\u2190</span>\u623b\u308b</button>'
         +'<span class="title">\ud83c\udf3e '+cropEditYear()+'\u5e74\u306e\u4f5c\u4ed8</span></div>';
     }else{
       el.innerHTML=HEADERS['fields']||'';
@@ -11651,7 +11698,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v145';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v147';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
