@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v150">
+<meta name="app-ver" content="v151">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1405,7 +1405,15 @@
   /* ===== v24 田んぼ選択シート(88枚対応・共通) ===== */
   #fpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:900;display:none;}
   #fpOv.on{display:block;}
-  #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:9%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  /* ★★v151 親方のご指示「草刈りと同じにして」（2026/08/11）
+     ── 直す前：top:9% で画面の上に9%の隙間があり、後ろの画面（ドローンの写真など）が
+        51px のぞいていた。さらに角丸 22px のせいで**上端の左右も32px 暗く欠けて**いた。
+     ── 直しかた：top を 0 にして画面の一番上から始め、角丸と影を外した。
+        これで 🌿草刈りの画面と同じ「端まで真っすぐ・隙間なし」の見た目になる。
+     ★左右いっぱいになるのは角丸を外したから（width:100% は前から）。
+     ★上に隙間が無くなるので、後ろの画面（← 戻る の帯）は完全に隠れる。
+       とじる道は「✕ とじる」と「‹ 地区へもどる」が中にあるので変わらない。 */
+  #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:0;background:var(--paper);border-radius:0;display:flex;flex-direction:column;overflow:hidden;}
   .fp-head{padding:13px 14px 6px;flex-shrink:0;}
   /* ★★v112 とじるは左上、見出しは真ん中（親方のご指示）★★
      アプリの画面ヘッダー（‹戻る が左・題が中央）と同じ並びにそろえた。
@@ -1438,7 +1446,9 @@
   /* v25.4 機能ピッカー(ボタン/タブをスクロールで選ぶ) */
   #bpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:905;display:none;}
   #bpOv.on{display:block;}
-  #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:14%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  /* ★★v151 #fpSheet と同じ形にそろえた（親方のご指示「当てはまる全ての箇所で」）。
+     top:14% → 0 ／ 角丸と影を外す。★同じ形のシートはこの2つだけ（grep 実測ずみ） */
+  #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:0;background:var(--paper);border-radius:0;display:flex;flex-direction:column;overflow:hidden;}
   .bp-head{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--line);}
   .bp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;color:#232821;}
   .bp-ttl .nm{flex:1;text-align:center;}
@@ -2259,7 +2269,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v150</span></div>
+          <div class="setrow">バージョン<span class="sv">v151</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -11680,7 +11690,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v150';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v151';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
