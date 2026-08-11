@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v152">
+<meta name="app-ver" content="v153">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1023,6 +1023,23 @@
     background:#fff;border:2px dashed #9DBBA6;border-radius:13px;padding:14px;cursor:pointer;}
   .kusa-close{width:100%;text-align:center;font-size:17px;font-weight:800;color:#5F5B4E;
     background:#EFEDE4;border-radius:999px;padding:15px;margin-top:12px;cursor:pointer;}
+  /* ★v153 🌿草刈り・田んぼの行を2段にする（日付の行にカード幅いっぱいをあげる）
+     ★なぜ .kusa-* を触らず新しい名前にしたか（HANDOVER §1⑰・§10-32⑤）
+       ①.kusa-row は954行と1087行の2か所で定義され、混ざって効いている
+       ②.kusa-row / .kusa-rn は **📋工程表でも使っている**（5298・5313・5323行）。
+         触ると工程表の農薬えらび・田んぼの✓まで崩れる
+       → 値だけ写して別名にした（v145 の .ndo-* と同じやり方）
+     ★なぜ日付を下におろすか
+       横に並べると置ける幅は187.4px。文は「8月8日…（3日前）」で191.4px。
+       いちばん長い「12月28日に刈りました（120日前）」は219.2px。
+       言葉を短くしても冬に必ず折れるので、幅を355pxにする側で直した */
+  .ksb-row{background:#fff;border:1.5px solid var(--line);border-radius:13px;
+    padding:12px 13px;margin-bottom:9px;}
+  .ksb-row.on{background:var(--green-soft);border-color:var(--green);}
+  .ksb-top{display:flex;align-items:center;gap:11px;}
+  .ksb-sub{font-size:12.5px;font-weight:700;color:#4A463C;margin-top:4px;
+    margin-left:55px;line-height:1.35;}
+  .ksb-sub.ok{color:var(--green-deep);}
   .kusa-empty{text-align:center;font-size:15px;font-weight:700;color:#4A463C;
     line-height:1.9;padding:24px 10px;}
   .ina-backauto{width:100%;margin-top:12px;background:#fff;border:2px solid var(--green);
@@ -1415,7 +1432,10 @@
   .ph-empty{text-align:center;color:#4A463C;font-size:14px;padding:22px 0;}
   .ph-bar{display:flex;align-items:center;gap:8px;background:var(--blue-soft);border:1.5px solid #6099BA;
     border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1A5A8A;margin-bottom:8px;}
-  .ph-bar .rf{margin-left:auto;font-weight:800;}
+  /* ★v153 「↻ 更新」の2文字が縦に割れていた。.ph-bar は flex で、.rf が縮んで
+     幅40pxになり中の文字が折り返していた。★.nb（inline-block）では直らない。
+     縮まない・折り返さない、の2つを明記する（左の文が1文字ぶん狭くなるだけ） */
+  .ph-bar .rf{margin-left:auto;font-weight:800;white-space:nowrap;flex-shrink:0;}
   .ph-lb{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(20,18,14,.9);z-index:950;display:none;align-items:center;justify-content:center;padding:14px;}
   .ph-lb.on{display:flex;}
   .ph-lb img{max-width:100%;max-height:78%;border-radius:12px;}
@@ -2102,7 +2122,7 @@
           <div class="sym" onclick="dgSym(this,'yellow')">🟡 葉が黄色い・白い</div>
           <div class="sym" onclick="dgSym(this,'bug')">🐛 虫がいる</div>
           <div class="sym" onclick="dgSym(this,'ear')">🌾 穂が白い・変</div>
-          <div class="sym" onclick="dgSym(this,'lodg')">🥀 株が倒れる・枯れる</div>
+          <div class="sym" onclick="dgSym(this,'lodg')">🥀 倒れる・枯れる</div>
           <div class="sym" onclick="dgSym(this,'weed')">🌿 雑草をしらべる</div>
         </div>
         <div id="dgList"></div>
@@ -2295,7 +2315,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v152</span></div>
+          <div class="setrow">バージョン<span class="sv">v153</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -4231,17 +4251,20 @@
       var i=ids[q], f=KT_FIELDS[i], last=kusaLast(f.n), on=!!kusaPick[i];
       var recs=kusaRecsOf(f.n), cn=recs.length;
       var sub = last
-        ? '<div class="s ok">✅ '+(last.getMonth()+1)+'月'+last.getDate()+'日に刈りました（'+kusaAgo(last)+'日前）</div>'
-        : '<div class="s">まだ記録がありません</div>';
-      h+='<div class="kusa-row'+(on?' on':'')+'">'
-       +   '<div class="kusa-ck'+(on?' on':'')+'" onclick="kusaToggle('+i+')">'+(on?'✓':'')+'</div>'
-       +   '<div class="kusa-rn" onclick="kusaToggle('+i+')">'
-       +     '<div class="n">'+f.n+'<span>'+f.a+'</span></div>'+sub
+        ? '<div class="ksb-sub ok">✅ '+(last.getMonth()+1)+'月'+last.getDate()+'日に刈りました（'+kusaAgo(last)+'日前）</div>'
+        : '<div class="ksb-sub">まだ記録がありません</div>';
+      h+='<div class="ksb-row'+(on?' on':'')+'">'
+       +   '<div class="ksb-top">'
+       +     '<div class="kusa-ck'+(on?' on':'')+'" onclick="kusaToggle('+i+')">'+(on?'✓':'')+'</div>'
+       +     '<div class="kusa-rn" onclick="kusaToggle('+i+')">'
+       +       '<div class="n">'+f.n+'<span>'+f.a+'</span></div>'
+       +     '</div>'
+       +     '<div class="kusa-cnt'+(cn?'':' zero')+'" onclick="kusaSheetOpen('+i+')">'
+       +       '<div class="k">記録 '+cn+'件</div>'
+       +       '<div class="g">'+(cn?'直す ›':'—')+'</div>'
+       +     '</div>'
        +   '</div>'
-       +   '<div class="kusa-cnt'+(cn?'':' zero')+'" onclick="kusaSheetOpen('+i+')">'
-       +     '<div class="k">記録 '+cn+'件</div>'
-       +     '<div class="g">'+(cn?'直す ›':'—')+'</div>'
-       +   '</div>'
+       +   sub
        + '</div>';
     }
     var n=kusaPickN();
@@ -4828,7 +4851,7 @@
     var anyHead=false; for(var q=0;q<arr.length;q++)if(arr[q].head){anyHead=true;break;}
     var h='<div class="kt-pcard"><div class="ti">🌼 出穂・収穫の予想</div>';
     h+='<div class="sb">'+(anyHead
-        ? '記録した田植え日から自動で計算。<b>早い順</b>にならべています。'
+        ? '記録した田植え日から自動で計算。<b>早い順</b>です。'
         : '<b>田植えを記録すると、ここに予想が出ます。</b><span class="nb">入力するものは</span><span class="nb">ありません。</span>')+'</div>';
     /* いちばん早い/遅い の札（田植え済みが2つ以上あるときだけ） */
     var heads=[]; for(var i=0;i<arr.length;i++)if(arr[i].head)heads.push(i);
@@ -11729,7 +11752,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v152';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v153';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
@@ -12205,6 +12228,12 @@
         if(d2.tlo!=null)why.push('<span class="nb">平均気温'+Math.round(tp.t)+'℃</span><span class="nb">（'+tp.src+'）が条件に合致</span>');
         if(d2.wet&&wet)why.push('<span class="nb">雨の予報</span>');
         if(warn[w].last)why.push('<span class="nb">去年うちの田んぼで発生</span>');
+        /* ★v153 理由が1つも無いときは「。田んぼの見回りを。」と句点から始まっていた。
+           気温の条件(tlo)が無く、雨の条件も無く、去年も出ていない病気・虫が
+           月に入っているだけで注意に出るため（ごま葉枯病・ニカメイチュウ・
+           コブノメイガの3つ）。理由が空なら「この時期に出やすい」と出す。
+           ★親方のご判断（2026/08/11）：赤い注意からは外さず、理由の文だけ直す */
+        if(!why.length)why.push('<span class="nb">この時期に出やすい'+(d2.kind==='虫'?'虫':'病気')+'です</span>');
         h+='<div class="yh-warn"><div class="t"><span class="nb">🔮 今週の注意：</span><span class="nb">'+d2.n+(warn[w].last?'（去年出た）':'')+'</span></div>'
           +'<div class="b">'+why.join('・')+'<span class="nb">。</span><span class="nb">田んぼの見回りを。</span><span class="nb">🔎見分け方は</span><span class="nb">下のカルテ式で</span><span class="nb">確認できます。</span></div></div>';
       }
