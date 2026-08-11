@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v151">
+<meta name="app-ver" content="v152">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -988,9 +988,15 @@
      ★1行目の 22px はそのまま残してある。env() が読めない古い端末は2行目だけを読み飛ばし、
        今までどおり 22px になる（＝壊れない）。★クラスは1つのまま（§10-15の二重定義を作らない）
      ★実測(v128)：一番下のボタンの下端830／画面852＝余白22px。ホームバー34pxに12px不足 */
+  /* ★★v152 伸びられる上限を 86% → 画面いっぱいまで広げた（親方のご指示・3つ揃える）。
+     ★★ここは「中身の量で高さが決まる引き出し」なので、記録が少ないときの見た目は今までどおり。
+     ★上限を 100% にせず「100% − 時計の帯」にしたのは、いちばん伸びたときに
+       上の見出しが iPhone の時計に隠れないため。env が読めない端末は 86% のまま（＝壊れない）。
+     ★上の角丸は残した。引き出しが低いときは角丸が見えるのが正しい形。 */
   .kusa-sheet{background:var(--paper);border-radius:20px 20px 0 0;padding:8px 16px 22px;
     padding-bottom:calc(22px + env(safe-area-inset-bottom));
-    max-height:86%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+    max-height:86%;max-height:calc(100% - env(safe-area-inset-top));
+    overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .kusa-grip{width:44px;height:5px;border-radius:99px;background:#D6D2C6;margin:4px auto 12px;}
   .kusa-sh{font-family:var(--mincho);font-size:20px;font-weight:800;text-align:center;margin-bottom:3px;}
   .kusa-sh2{font-size:13px;font-weight:700;color:#4A463C;text-align:center;margin-bottom:14px;}
@@ -1418,8 +1424,18 @@
   /* ===== v24 田んぼ選択シート(88枚対応・共通) ===== */
   #fpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:900;display:none;}
   #fpOv.on{display:block;}
-  #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:9%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  /* ★★v152 上の隙間をなくして画面いっぱいに出す（親方のご指示・cmp.png の案） */
+  #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:0;background:var(--paper);border-radius:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  /* ★★v152 画面いちばん上まで来るので、iPhoneの時計の帯に「✕とじる」が隠れないようにする。
+     ★★★ここは**隠れたら閉じられなくなる**所。隙間が無くなったぶん、
+        「暗い所を押して閉じる」道が消え、✕とじるが**唯一の出口**になったため。
+     ★だから「どちらに転んでも隠れない」書き方にした：
+        ・時計の帯が読める端末 … 13px + 帯の高さ（実機で約60px）
+        ・読めない端末       … 44px（押す所の最低の大きさと同じ）
+        ・max() も読めない古い端末 … 1行目の 13px が生きる（＝壊れない）
+       ★このとき上端はブラウザのUIの下なので、13px でも隠れない */
   .fp-head{padding:13px 14px 6px;flex-shrink:0;}
+  .fp-head{padding-top:max(44px, calc(13px + env(safe-area-inset-top)));}
   /* ★★v112 とじるは左上、見出しは真ん中（親方のご指示）★★
      アプリの画面ヘッダー（‹戻る が左・題が中央）と同じ並びにそろえた。
      ★中央にそろえるため、左のとじるボタンと同じ幅の空きを右に作る（.fp-pad）。
@@ -1451,8 +1467,11 @@
   /* v25.4 機能ピッカー(ボタン/タブをスクロールで選ぶ) */
   #bpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:905;display:none;}
   #bpOv.on{display:block;}
-  #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:14%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  /* ★★v152 田んぼをえらぶシートと同じく、上の隙間をなくして画面いっぱいに出す */
+  #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:0;background:var(--paper);border-radius:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  /* ★★v152 .fp-head とまったく同じ考え方（★ここも ✕とじるが唯一の出口になる） */
   .bp-head{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--line);}
+  .bp-head{padding-top:max(44px, calc(14px + env(safe-area-inset-top)));}
   .bp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;color:#232821;}
   .bp-ttl .nm{flex:1;text-align:center;}
   .bp-x{font-size:14px;color:#4A463C;padding:6px 8px;font-weight:800;
@@ -2276,7 +2295,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v151</span></div>
+          <div class="setrow">バージョン<span class="sv">v152</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -4347,7 +4366,12 @@
     + '<div class="kusa-sh2">'+y+'年 ／ '+recs.length+'回 刈りました</div>'
     + h + add
     + '<div class="kusa-close" onclick="kusaSheetCloseAndRefresh()">閉じる</div>';
-    ov.style.display='block';
+    ov.style.display='flex';   /* ★★v152【前からあった不具合の直し】ここは 'block' だった。
+       CSS の .kusa-ov{display:flex; justify-content:flex-end} を打ち消していたので、
+       「下から出る引き出し」が**画面の上に張り付いて**いた。
+       ★作付の側（cropSheetOpen）は 'flex' に直してあり、注記に「CSSと同じ値をはっきり入れる
+         （§5 v48の鉄則）」と書いてある。**草刈りだけ取り残されていた**（§0.5④）。
+       ★同じ型（CSSがflexなのにJSでblockを入れる）が他に無いか全数確認した。ここ1件だけ。 */
   }
   function kusaSheetCloseAndRefresh(){
     kusaSheetClose();
@@ -11705,7 +11729,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v151';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v152';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
