@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v148">
+<meta name="app-ver" content="v149">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2259,7 +2259,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v148</span></div>
+          <div class="setrow">バージョン<span class="sv">v149</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -5665,16 +5665,35 @@
   }
 
   /* --- 撮った写真を送る（date/field/who を一緒に保存） --- */
+  /* ★★v149 写真の「だれが」（親方が実機で見つけてくださった不具合）★★
+     ── 何が起きていたか
+       📄記録簿の「だれが 俊明」は whoLastGet()（名簿からえらんだ前回の人）。
+       写真の名前は phWho()（📱みんなと共有で手入力する端末の設定名）。
+       **この2つはつながっていなかった。** 橋は片方向にしか架かっておらず、
+       「だれが」の欄は空のとき phWho を借りるが（whoEffective・6183行）、
+       **写真の側は「だれが」を一度も見ていなかった。**
+       → 記録には「俊明」と出るのに、写真だけ「だれか」になった。
+     ★★日付の v148（'YYYY/MM/DD' と 'YYYY-MM-DD'）とまったく同じ型。
+       **同じ意味のものが2か所に別々に保存されていた。**（CLAUDE.md §10-29）
+     ── なぜこの直し方か
+       形は「今日ひとこと」の hitoSave（6276行）の丸写し。
+       **新しい仕組みは作らない。すでにアプリの中に在った形を写真にも当てるだけ。**
+     ── ★親方のご指示（2026/08/11）
+       **名前が無くても写真は送る。止めない。**
+       写真が家族に見られなくなるほうが、名前が「だれか」になることより困る。
+       ★あわせて phWhoAsk（手で打つ小窓）はここから呼ばなくなった。
+         年配のご家族に入力を求める場面が無くなる。
+         ★「✏️ 名前を決める」(2182行)からは今までどおり開ける（＝関数は生きている）。 */
   function phSend(file, dateStr, fieldName, memo){
-    var who=phWho();
-    if(!who){ who=phWhoAsk(); if(!who){ toast('名前を入れると、だれの写真かみんなに分かります'); } }
+    var who=(typeof whoEffective==='function'?(whoEffective().n||''):'')||phWho();
+    if(!who){ toast('名前を入れると、だれの写真かみんなに分かります'); }
     toast('📷 写真を送っています…');
     return phShrink(file).then(function(blob){
       var fd=new FormData();
       fd.append('file', blob, 'photo.jpg');
       fd.append('date', phYmd(dateStr)||ymd(new Date()));   /* ★v148 これから撮る分は必ずハイフンで保存 */
       fd.append('field', fieldName||'');
-      fd.append('who', phWho()||'');
+      fd.append('who', who||'');   /* ★v149 上で決めた who をそのまま使う（phWho の呼び直しをやめた） */
       fd.append('memo', memo||'');
       return fetch('/api/photo-upload',{method:'POST',body:fd,headers:phHeaders()});
     }).then(function(r){ return r.json(); })
@@ -11720,7 +11739,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v148';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v149';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
