@@ -348,19 +348,29 @@
   .ksasbtn{background:var(--ksas);color:#fff;border:none;border-radius:14px;padding:14px;
     font-size:17px;font-weight:800;text-align:center;cursor:pointer;letter-spacing:.02em;}
 
-  /* 田んぼ一覧 */
-  .rowcard{background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:14px 16px;
-    display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 2px 5px rgba(35,40,33,.05);}
-  .rowcard .nm{font-size:20px;font-weight:800;} .rowcard .ar{font-size:14px;font-weight:700;color:#6B6656;margin-top:3px;}
+  /* 田んぼ一覧
+     ★★v151 親方のご指示「🌾田んぼ一覧を、田んぼをえらぶシート（.fp-row）と同じ形に」。
+        値は 1425〜1430行の .fp-row から**そのまま写した**（枠1px・角丸12px・余白12px・間隔6px）。
+        ★使い回さず写したのは §6 の決まり（.kusa-* の二重定義の事故を繰り返さない）。
+        ★影は .fp-row に無いので消した。 */
+  .rowcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;
+    display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+  .rowcard .nm{font-size:16.5px;font-weight:800;} .rowcard .ar{font-size:11.5px;font-weight:700;color:#4A463C;margin-top:1px;}
+  /* ★v151 面積。.fp-row .fa2 と同じ形（数字と「a」を分け、「a」を小さくする） */
+  .rowcard .fa3{margin-left:8px;font-size:14.5px;font-weight:800;color:#6B6552;white-space:nowrap;flex-shrink:0;}
+  .rowcard .fa3 small{font-size:10px;color:#6E6A5C;}
   .badge{font-size:14px;font-weight:800;padding:6px 12px;border-radius:10px;color:#fff;white-space:nowrap;}
   .b-done{background:var(--green);} .b-doing{background:var(--blue);} .b-warn{background:var(--red);}
   .b-here{background:var(--gold);color:#fff;}
   /* ===== v20 田んぼ詳細(土メモ・今年まいたもの) ===== */
-  .fld-wrap{margin-bottom:9px;}
-  .fld-detail{display:none;background:#fff;border:1.5px solid var(--line);border-top:none;
-    border-radius:0 0 15px 15px;margin-top:-9px;padding:12px 16px 14px;box-shadow:0 2px 5px rgba(35,40,33,.05);}
+  /* ★v151 行がカードになったので、行と詳細で1枚のカードに見えるよう合わせた。
+     ★間隔は .fp-row の margin-bottom:6px と同じ値にした（行カードには余白を持たせず
+       .fld-wrap 側で持つ。持たせると開いたとき行と詳細の間に隙間ができる） */
+  .fld-wrap{margin-bottom:6px;}
+  .fld-detail{display:none;background:#fff;border:1px solid var(--line);border-top:none;
+    border-radius:0 0 12px 12px;margin-top:0;padding:12px;}
   .fld-detail.open{display:block;}
-  .fld-wrap.open .rowcard{border-radius:15px 15px 0 0;}
+  .fld-wrap.open .rowcard{border-radius:12px 12px 0 0;}
   .fld-soil-ttl{font-size:14px;font-weight:900;color:var(--green-deep);margin-bottom:6px;}
   .fld-soil-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px;}
   .fld-soil-tag{background:var(--green-soft);border:1.5px solid #6B9077;border-radius:999px;padding:6px 13px;
@@ -782,10 +792,13 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;cursor:pointer;}
 
   /* 文字サイズ切替 */
-  .screen.fs-big .tile .tx{font-size:16px;} .screen.fs-big .fld .v{font-size:20px;} .screen.fs-big .rowcard .nm{font-size:22px;}
+  /* ★v151 .rowcard .nm を 20px→16.5px にしたので、大きくする設定も同じだけ下げた（22→18）。
+     ★★消さなかった理由：消すと設定画面の「文字を大きく」が田んぼ一覧に効かなくなる。
+        いま動いているものを壊さない（§0.5⑪）。大きくしたいご家族はこれまでどおり大きくできる */
+  .screen.fs-big .tile .tx{font-size:16px;} .screen.fs-big .fld .v{font-size:20px;} .screen.fs-big .rowcard .nm{font-size:18px;}
   .screen.fs-big .save,.screen.fs-big .primary-btn{font-size:22px;} .screen.fs-big .transcript{font-size:20px;}
   .screen.fs-big .wide{font-size:18px;} .screen.fs-big .setrow{font-size:18px;}
-  .screen.fs-huge .tile .tx{font-size:17px;} .screen.fs-huge .fld .v{font-size:22px;} .screen.fs-huge .rowcard .nm{font-size:24px;}
+  .screen.fs-huge .tile .tx{font-size:17px;} .screen.fs-huge .fld .v{font-size:22px;} .screen.fs-huge .rowcard .nm{font-size:20px;}   /* ★v151 24→20 */
   .screen.fs-huge .save,.screen.fs-huge .primary-btn{font-size:24px;} .screen.fs-huge .transcript{font-size:22px;}
   .screen.fs-huge .wide{font-size:20px;} .screen.fs-huge .setrow{font-size:20px;}
 
@@ -1405,15 +1418,7 @@
   /* ===== v24 田んぼ選択シート(88枚対応・共通) ===== */
   #fpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:900;display:none;}
   #fpOv.on{display:block;}
-  /* ★★v151 親方のご指示「草刈りと同じにして」（2026/08/11）
-     ── 直す前：top:9% で画面の上に9%の隙間があり、後ろの画面（ドローンの写真など）が
-        51px のぞいていた。さらに角丸 22px のせいで**上端の左右も32px 暗く欠けて**いた。
-     ── 直しかた：top を 0 にして画面の一番上から始め、角丸と影を外した。
-        これで 🌿草刈りの画面と同じ「端まで真っすぐ・隙間なし」の見た目になる。
-     ★左右いっぱいになるのは角丸を外したから（width:100% は前から）。
-     ★上に隙間が無くなるので、後ろの画面（← 戻る の帯）は完全に隠れる。
-       とじる道は「✕ とじる」と「‹ 地区へもどる」が中にあるので変わらない。 */
-  #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:0;background:var(--paper);border-radius:0;display:flex;flex-direction:column;overflow:hidden;}
+  #fpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:9%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .fp-head{padding:13px 14px 6px;flex-shrink:0;}
   /* ★★v112 とじるは左上、見出しは真ん中（親方のご指示）★★
      アプリの画面ヘッダー（‹戻る が左・題が中央）と同じ並びにそろえた。
@@ -1446,9 +1451,7 @@
   /* v25.4 機能ピッカー(ボタン/タブをスクロールで選ぶ) */
   #bpOv{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,28,20,.45);z-index:905;display:none;}
   #bpOv.on{display:block;}
-  /* ★★v151 #fpSheet と同じ形にそろえた（親方のご指示「当てはまる全ての箇所で」）。
-     top:14% → 0 ／ 角丸と影を外す。★同じ形のシートはこの2つだけ（grep 実測ずみ） */
-  #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:0;background:var(--paper);border-radius:0;display:flex;flex-direction:column;overflow:hidden;}
+  #bpSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;bottom:0;top:14%;background:var(--paper);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
   .bp-head{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--line);}
   .bp-ttl{display:flex;align-items:center;font-size:17px;font-weight:800;color:#232821;}
   .bp-ttl .nm{flex:1;text-align:center;}
@@ -1504,15 +1507,19 @@
   .fl-chip{flex-shrink:0;font-size:12.5px;font-weight:800;padding:8px 12px;border-radius:99px;background:#fff;border:1.5px solid var(--line);white-space:nowrap;color:#4A463A;}
   .fl-chip.on{color:#fff;border-color:transparent;}
   .fl-chip .n2{opacity:.75;font-weight:600;margin-left:2px;}
-  .fl-grp{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden;}
-  .fl-gh{display:flex;align-items:center;padding:12px 14px;gap:8px;cursor:pointer;}
+  /* ★★v151 行が1枚ずつのカードになったので、外側の白い箱をやめて「透ける器」にした。
+     ★やめないと「白い箱の中に白いカード」になり、境目が見えなくなる（実測で確認）。
+     ★地区の見出し（📍池末 …）は、代わりに自分でカードになる。 */
+  .fl-grp{background:transparent;border:0;border-radius:0;margin-bottom:8px;overflow:visible;}
+  .fl-gh{display:flex;align-items:center;padding:12px 14px;gap:8px;cursor:pointer;
+    background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:6px;}
   .fl-gh .gn{font-size:16px;font-weight:800;}
   .fl-gh .gs{font-size:12px;color:#4A463C;margin-left:auto;}
   .fl-gh .gar{font-size:14px;color:#6E6A5C;transition:.15s;}
   .fl-grp.open .fl-gh .gar{transform:rotate(90deg);}
   .fl-gdots{display:flex;gap:3px;}
   .fl-gdots .d{width:8px;height:8px;border-radius:99px;}
-  .fl-glist{display:none;border-top:1px solid var(--line);}
+  .fl-glist{display:none;}   /* ★v151 上の区切り線は見出しがカードになったので不要 */
   .fl-grp.open .fl-glist{display:block;}
   .fl-info{font-size:13px;line-height:1.7;background:#FCFBF5;border:1px dashed #E0DCC8;border-radius:10px;padding:8px 11px;margin-bottom:8px;}
   .fl-info .k3{color:#4A463C;display:inline-block;min-width:74px;}
@@ -7882,15 +7889,19 @@
   function cropRowHtml(i){
     var f=KT_FIELDS[i], set=cropEditIsSet(f.n);
     var nm=String(f.n).replace(/'/g,"\\'");
+    /* ★★v151 通常の行と同じくカード型にした（同じ画面に2つの形が混ざらないように）。
+       ★「決めた」田んぼの薄い緑（#F4F9F5）はそのまま残す。
+       ★★★★間隔について：この行は .fld-wrap に包まれないので、余白を自分で持つ必要がある。
+         .fp-row と同じ 6px を margin-bottom で足す（忘れると行がぴったり重なって見える） */
     return '<div class="rowcard" onclick="cropSheetOpen(\''+nm+'\')"'
-      + ' style="border:0;border-radius:0;border-bottom:1px solid #9C927C;margin:0;box-shadow:none;'
+      + ' style="margin-bottom:6px;'
       + (set?'background:#F4F9F5;':'')+'">'
       + '<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;">'
       + '<span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
       + '<div style="min-width:0;"><div class="nm">'+f.n+'</div>'
       + '<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
       + (set?'<span class="crop-set">決めた</span>':'')
-      + '<span style="margin-left:8px;font-weight:800;color:#6B6552;font-size:14.5px;flex-shrink:0;">'+f.a+'</span>'
+      + '<span class="fa3">'+String(f.a).replace('a','')+'<small> a</small></span>'
       + '<span style="margin-left:6px;color:#8A8474;font-weight:800;flex-shrink:0;">›</span></div>';
   }
 
@@ -7982,13 +7993,17 @@
       var ned=naeEdited(f);
       nae='<span class="fl-rnae'+(ned?' ed':'')+'">🌱'+naeMai(f)+'枚'+(ned?'✏️':'')+'</span>';
     }
+    /* ★★v151 親方のご指示で、1行＝1枚のカードにした（田んぼをえらぶシートと同じ形）。
+       ★ここに書いてあった style="border:0;border-radius:0;border-bottom:...;margin:0;box-shadow:none"
+         が、.rowcard の角丸と枠を打ち消して「つながった罫線」にしていた。それを外しただけ。
+       ★面積は .fp-row と同じく、数字と「a」を分けて「a」を小さくする */
     return '<div class="fld-wrap" id="fw'+i+'">'
-      +'<div class="rowcard" onclick="fieldToggle('+i+')" style="border:0;border-radius:0;border-bottom:1px solid #9C927C;margin:0;box-shadow:none;">'
+      +'<div class="rowcard" onclick="fieldToggle('+i+')">'
       +'<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;"><span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
       +'<div style="min-width:0;"><div class="nm">'+f.n+(f.care?' <span style="font-size:10px;background:var(--red-soft);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:800;">注意</span>':'')+(f.memo?' <span style="font-size:10px;background:#F5EEDC;color:#B8912E;border-radius:5px;padding:1px 5px;font-weight:800;">メモ</span>':'')+'</div>'
       +'<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
       +nae
-      +'<span style="margin-left:8px;font-weight:800;color:#6B6552;font-size:14.5px;flex-shrink:0;">'+f.a+'</span></div>'
+      +'<span class="fa3">'+String(f.a).replace('a','')+'<small> a</small></span></div>'
       +flDetailHtml(i)+'</div>';
   }
   /* ★v90 ここから：田んぼ一覧の2段（地区(品種)のタイル → その中の田んぼ） =========== */
