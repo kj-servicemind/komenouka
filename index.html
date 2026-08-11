@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v149">
+<meta name="app-ver" content="v150">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2259,7 +2259,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v149</span></div>
+          <div class="setrow">バージョン<span class="sv">v150</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -5349,13 +5349,6 @@
     toast('↩ '+del+'枚の記録を取り消しました');
   }
 
-  /* ★v56 この表で付けた記録か？（他の画面が書いた中身が1つでも入っていたら false）
-     考え方：この表は、この表で付けたぶんしか外せない。
-     農薬・肥料・ひとこと・音声・ドローンの記録を、チェック外しの巻き添えで消さない。 */
-  function ktIsBoardOnly(e){
-    return !!e && e.src==='board' && !e.chem && !e.mass && !e.vol && !e.rate
-        && !e.yen && !e.hito && !e.work && !e.ckind;
-  }
   /* ★v56 出どころの名前を「文字だけ」で返す。
      toast は textContent なので、ktSrcLabel（ドローンで <img> を返す）は入れてはいけない。 */
   function ktSrcPlain(src){
@@ -5364,44 +5357,6 @@
   }
   /* ★v61 「なぜ外せないか」を出しておく行と、その文（トーストの置きかえ） */
   var ktWhyF=-1, ktWhyMsg='', ktWhyKi=-1;   /* ★v61.1 ktWhyKi＝原因になっている記録の台帳番号 */
-  /* 田んぼ行タップで済み⇔未を切替(この表で直接入力もできる) */
-  function ktToggleField(f){
-    var st=KT_STEPS[ktCurStep], fd=KT_FIELDS[f], dn=ktDoneFields(st.k), i;
-    if(ktWhyF===f){ ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1; ktOpenStep(ktCurStep,true); return; }  /* もう一度押したら閉じる */
-    ktWhyF=-1; ktWhyMsg=''; ktWhyKi=-1;
-    if(!dn[fd.n]){                                   /* 未 → 済み（v55までと同じ・1つも変えない） */
-      /* ★v74 ここは「その工程にその田んぼの記録が1件も無い」時だけ通るので
-         重複にはならないが、作れなかった時に嘘の「済みにしました」を出さないようにする */
-      if(wlAdd(st.k, fd.n, st.nm, 'board')) toast('✅ '+fd.n+' の「'+st.nm+'」を済みにしました');
-      ktOpenStep(ktCurStep,true); return;
-    }
-    var mine=[], others=[], othersKi=[];
-    for(i=0;i<ktLog.length;i++){ var e=ktLog[i];
-      if(!ktHitStep(e,st.k,fd.n))continue;   /* ★v81 今年ぶんだけ */
-      if(ktIsBoardOnly(e))mine.push(e); else { others.push(e); othersKi.push(i); } }
-    if(others.length){                               /* ★他の画面の記録が混ざっている＝1件も消さない */
-      /* ★v61 いつの・どの記録が原因かまで書く。理由も添える（突き放さない） */
-      var o=others[0];
-      ktWhyF=f; ktWhyKi=othersKi[0];      /* ★v61.1 その記録の台帳番号を覚える */
-      ktWhyMsg='⚠️ この ✅ は <b>'+krMd(o.d)+'「'+(o.work||o.text||st.nm)+'」</b>の記録から付いています'
-             +'（'+ktSrcPlain(o.src)+'）。<br>'
-             +'ここでは外せません。農薬や肥料の記録まで巻き添えで消さないためです。<br>'
-             +'<b>その記録を消すと、✅ も消えます。</b>'
-             +((others.length>1)?('<br>※この田んぼのこの工程には記録が '+others.length+'件 あります'):'');
-      ktOpenStep(ktCurStep,true);
-      return;
-    }
-    if(!mine.length){ toast('この ✅ のもとになる記録が見つかりません'); return; }
-    if(!confirm('「'+fd.n+'」の「'+st.nm+'」の ✅ を外しますか？\n\n'
-      +'この表で付けた記録 '+mine.length+'件 を消します。\n'
-      +'消すと家族の端末からも消え、元に戻せません。')) return;
-    for(i=ktLog.length-1;i>=0;i--){
-      var g=ktLog[i];
-      if(ktHitStep(g,st.k,fd.n) && ktIsBoardOnly(g)){ ktTombAdd(g); ktLog.splice(i,1); }   /* ★v81 今年ぶんだけ */
-    }
-    ktSave(); toast('✅ を外しました（'+mine.length+'件）');
-    ktOpenStep(ktCurStep,true);
-  }
 
   /* ---- 画面C:KSASへ記録(コピー&ジャンプ) ---- */
   /* v24.1 KSASログイン画面へ直行(スマホ版farming-m)。
@@ -6432,8 +6387,6 @@
   function naeAcTg(name){
     var ac=naeAcS(); ac.open[name]=!ac.open[name]; naeRender(true);
   }
-  /* 旧関数は他から呼ばれても落ちないよう残す（中身は新方式へ委譲しない・単なる保険） */
-  function naeToggleAc(el){ if(el&&el.parentNode) el.parentNode.classList.toggle('open'); }
   /* 手直しのシート（枚数を押した田んぼの下に出る） */
   function naeSheetHtml(fd){
     var i=KT_FIELDS.indexOf(fd);
@@ -7324,9 +7277,9 @@
          🌿草刈り(2か所)／📋工程表の「済みにする」／📋工程表で薬をえらばなかった時
        その結果、**JAに出す記録簿の作業欄だけが空**になっていた（§3.5 書類の正しさ）。
      ── なぜ「読む側」を1本にするのか（書く側を直さないのか）──
-       ktIsBoardOnly() が **!e.work** で「工程表だけの記録」を見分けており、
-       それが 📋工程表の「↩取り消す」(3777行)に使われている。
-       work に値を入れると、その記録は取り消せなくなる。
+       かつて ktIsBoardOnly() が **!e.work** で「工程表だけの記録」を見分けており、
+       work に値を入れると、その記録が取り消せなくなる関係にあった。
+       ★v150 追記：その ktIsBoardOnly() は呼ばれなくなったので削除した（この縛りはもう無い）。
        表示だけをそろえれば、**保存データを1文字も変えずに既存の記録もその場で直る**。 */
   function wlWork(e){ return (e && (e.work || e.text)) || ''; }
 
@@ -9516,16 +9469,6 @@
       if(el)el.textContent=TILE_DEFS[midTabs[i]].tx+' ›';
     }
   }
-  function cycleTab(i){
-    var cur=TILE_POOL.indexOf(midTabs[i]);
-    for(var step=1;step<=TILE_POOL.length;step++){
-      var cand=TILE_POOL[(cur+step)%TILE_POOL.length];
-      if(midTabs.indexOf(cand)<0){ midTabs[i]=cand; break; }
-    }
-    saveTabs(); renderTabBar(); renderTabRows(); highlightTab(curScreen);
-    renderHomeGrid(); renderSlotRows(); /* タブに入れた機能はホームのボタンから外れる */
-    toast('下の'+['左','真ん中','右'][i]+'のタブを「'+TILE_DEFS[midTabs[i]].tx+'」にしました');
-  }
   function resetTabs(){
     midTabs=TAB_DEFAULT.slice(); saveTabs(); renderTabBar(); renderTabRows(); highlightTab(curScreen);
     renderHomeGrid(); renderSlotRows();
@@ -10708,7 +10651,9 @@
      ── 直しかた（読む側の回避ではなく、書く側を1本にする・§0.5②）──
        記録を作る入口は wlAdd 1本にそろえてある（背骨）。ここを通す。
        出どころは 'cal'＝「📅カレンダーから」。**受け皿は KT_SRC に最初から在った**ので新設しない。
-       形は 📋工程表の ktToggleField（wlAdd(st.k, fd.n, st.nm,'board')）の丸写し（§10-15）。
+       形は wlAdd(工程キー, 田んぼ名, 工程名, 出どころ) の4つを渡すだけ（§10-15）。
+       ★v150 追記：もとは 📋工程表の ktToggleField を写した形だが、その関数は
+         呼ばれなくなったので v150 で削除した。ここの形そのものは変えていない。
      ★工程を勘で埋めない（§3.5・§10-13）
        予定の名前が候補10種(REC_WORKS)と**同じ言葉のときだけ**工程が決まる。
        手で打った「水見」などは **工程を空にする**。記録は残り、記録簿・KSASには出て、
@@ -11133,10 +11078,6 @@
       out.min[k]=(a.length>=2&&mn!==mx)?mn:null;
     }
     return out;
-  }
-  /* v22⑤:気象庁の元ページ(福岡県=筑後地方を含む)を開いて照合できるようにする */
-  function wxOpenJma(){
-    window.open('https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code='+WX_AREA,'_blank');
   }
   function fetchWeather(){
     if(!window.fetch){ applyWeather(); return; }
@@ -11739,7 +11680,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v149';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v150';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
