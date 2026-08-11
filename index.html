@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v147">
+<meta name="app-ver" content="v148">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2259,7 +2259,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v147</span></div>
+          <div class="setrow">バージョン<span class="sv">v148</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -5573,6 +5573,25 @@
   var PH_PASS_LS='gyotoku.phpass.v1'; /* 家族の合言葉(設定していれば) */
   var phItems=[], phByDate={}, phLoaded=false, phBusy=0, phErr='';
 
+  /* ★★v148【不具合の直し】写真の日付は必ず 'YYYY-MM-DD' に揃えてから使う。
+     ★何が起きていたか（親方の実機でご確認いただいた・2026/08/11）
+       7/27に撮った写真に、カレンダーの📷が付かなかった。写真は消えていない。
+       📄記録簿で「月日」を選ぶと recDateSel は 'YYYY/MM/DD'（スラッシュ）になり、
+       触らずに撮ると ymd() の 'YYYY-MM-DD'（ハイフン）になる。
+       カレンダー(renderCal)は ds='YYYY-MM-DD' だけを見ていたので、
+       スラッシュで保存された写真は**永久に一致しなかった。**
+     ★★送るときだけ直しても、すでにサーバーに入っている写真は救えない。
+       だから **読むときも必ずここを通す**（§0.5② 根本から・③ 出口を全数）。
+     ★recDateSel そのものは触らない。触ると📄記録簿と📋工程表の日付が一斉に動く（§0.5⑪）。
+     ★形が読めないものは作り変えずにそのまま返す（勝手な日付を作らない・§3.5）。 */
+  function phYmd(s){
+    if(!s)return '';
+    var t=String(s).replace(/^\s+|\s+$/g,'').replace(/\//g,'-');
+    var m=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(!m)return String(s);
+    return m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2);
+  }
+
   function phWho(){ try{ return localStorage.getItem(PH_WHO_LS)||''; }catch(e){ return ''; } }
   function phWhoSet(v){ try{ localStorage.setItem(PH_WHO_LS,v); }catch(e){} }
   function phWhoAsk(){
@@ -5599,7 +5618,8 @@
   }
   function phIndex(){
     phByDate={};
-    for(var i=0;i<phItems.length;i++){ var d=phItems[i].date; if(d)phByDate[d]=(phByDate[d]||0)+1; }
+    /* ★v148 スラッシュで保存ずみの写真も数えられるよう、必ず phYmd を通す */
+    for(var i=0;i<phItems.length;i++){ var d=phYmd(phItems[i].date); if(d)phByDate[d]=(phByDate[d]||0)+1; }
   }
   /* サーバーから一覧を取り直す */
   function phLoad(force){
@@ -5652,7 +5672,7 @@
     return phShrink(file).then(function(blob){
       var fd=new FormData();
       fd.append('file', blob, 'photo.jpg');
-      fd.append('date', dateStr||ymd(new Date()));
+      fd.append('date', phYmd(dateStr)||ymd(new Date()));   /* ★v148 これから撮る分は必ずハイフンで保存 */
       fd.append('field', fieldName||'');
       fd.append('who', phWho()||'');
       fd.append('memo', memo||'');
@@ -5707,7 +5727,9 @@
 
   /* --- カレンダー：その日の写真の帯 --- */
   function phDayStripHtml(ds){
-    var list=phItems.filter(function(x){ return x.date===ds; });
+    /* ★v148 両側を phYmd に通してから比べる（スラッシュで保存ずみの写真を救う） */
+    var dk=phYmd(ds);
+    var list=phItems.filter(function(x){ return phYmd(x.date)===dk; });
     var h='<div class="ph-take" onclick="document.getElementById(\'phCalIn\').click()">'
       +'<span class="ic">📷</span>この日の写真を撮る／えらぶ'
       +'<input id="phCalIn" type="file" accept="image/*" onchange="phPicked(event,\'@cal\',\'\')"></div>';
@@ -5735,7 +5757,7 @@
     }
     for(var i=0;i<phItems.length&&i<60;i++){
       var it=phItems[i];
-      var sub=(it.date||'')+(it.field?('・'+it.field):'');
+      var sub=phYmd(it.date)+(it.field?('・'+it.field):'');   /* ★v148 見た目もハイフンに揃える */
       h+='<div class="ph-card"><img src="'+it.thumb.replace('c_fill,w_300,h_300','c_fill,w_800,h_600')+'" alt="写真" onclick="phOpen(\''+it.big+'\',\''+
         (sub+' '+(it.who||'')).replace(/'/g,'')+'\')">'
         +'<div class="ph-meta"><span class="who">'+(it.who||'だれか')+'</span>'
@@ -11698,7 +11720,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v147';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v148';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
