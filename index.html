@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v157">
+<meta name="app-ver" content="v158">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1864,12 +1864,9 @@
         <div id="fieldsBody"><!-- 田んぼ88枚(JS) --></div>
         <div class="spacer"></div>
       </div>
-      <!-- ★v121 その田んぼの作付をえらぶシート。草刈りの記録シートとまったく同じ作り
-           （.kusa-ov / .kusa-sheet を使い回す・§6「同じCSSクラスを使い回す」）。
-           iOS対策で inset は使わず4辺を明示するのも草刈りと同じ -->
-      <div class="kusa-ov" id="cropOv" style="display:none;" onclick="cropSheetBg(event)">
-        <div class="kusa-sheet" id="cropSheet"></div>
-      </div>
+      <!-- ★★v158 #cropOv も、ここから **画面の直下（.tabbar の後ろ）** へ移しました。
+           ★理由は #kusaOv とまったく同じ（#body の中では iPhone で画面全体を覆えない）。
+           ★★ここに戻してはいけません。 -->
     </div>
 
     <!-- ===== ③ 作業を記録 ===== -->
@@ -2328,7 +2325,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v157</span></div>
+          <div class="setrow">バージョン<span class="sv">v158</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2431,10 +2428,18 @@
     <!-- ===== ★v67 草刈り（工程表とは別画面。順送りには入れない） ===== -->
     <div class="page" id="p-kusa">
       <div class="sc" id="kusaBody"></div>
-      <!-- ★v72 その田んぼの草刈り記録を出すシート。iOS対策で inset は使わず4辺を明示 -->
-      <div class="kusa-ov" id="kusaOv" style="display:none;" onclick="kusaSheetBg(event)">
-        <div class="kusa-sheet" id="kusaSheet"></div>
-      </div>
+      <!-- ★★v158 #kusaOv は、ここから **画面の直下（.tabbar の後ろ）** へ移しました。
+           ★★ここに戻してはいけません。理由：
+             この場所は #body（スクロールする箱・-webkit-overflow-scrolling:touch）の中です。
+             iPhone では **スクロールする箱の中に置いた position:fixed は、画面ではなく
+             その箱に貼りつきます**。そのため
+               ・上はヘッダーの下からしか覆えない → ヘッダー直下に明るい帯が出る
+               ・スクロールした分だけ位置がずれる → シートの上にも明るい帯が出る
+             （★2026/08/12 親方のスクショで、赤線2本のご指摘をいただいた形）
+           ★📱田んぼをえらぶ(fpOv) は fpEnsure() が document.body へ足しているので
+             最初からこの不具合が無い。**その形にそろえました**（§10-15 実績のある形を写す）。
+           ★★この不具合は **パソコンのブラウザでは再現しません**（Chromium では
+             fixed が正しく画面基準になるため）。直った確認は実機でしかできません。 -->
     </div>
 
     <!-- ===== 📖 年度別記録（★v144：入れ物だけ。中身は v145 で作る） =====
@@ -2505,6 +2510,23 @@
     <button class="tab" id="tabm1" onclick="goTab(1)"><span class="ic">📅</span>予定</button>
     <button class="tab" id="tabm2" onclick="goTab(2)"><span class="ic">🧪</span>農薬</button>
     <button class="tab" id="t-menu" onclick="goFromTab('set')"><span class="ic">⚙️</span>設定</button>
+  </div>
+  <!-- ★★v158 かぶせる箱は、ここ（#body の外・.tabbar の後ろ）に置くこと ★★
+       ── なぜここなのか（★動かす前に必ず読んでください）
+         ①#body の中に置くと、iPhone では「画面いっぱい」が **#body に貼りつく**。
+           ヘッダーが覆えず、スクロールした分だけずれて、上下に明るい帯が出る（v158で直した形）。
+         ②.tabbar より **後ろ** に置くと、下タブバーの上に重なる。
+           前に置くと、シートの「閉じる」がタブバーに潜り込む（実機のタブバーは 102.2px ある）。
+         ③#toast より **前** に置く。トースト(z-index:900)はシートの上に出るのが正しい
+           （★満杯の知らせより上に出さない仕組みは toast() の中にある・v122）。
+       ★📱田んぼをえらぶ(fpOv) は fpEnsure() が document.body へ足す形。狙いは同じ。
+       ★画面を移ったときは go() が閉じます（★v158で足した。箱が .page の外に出たので、
+         画面が隠れても自動では消えなくなったため）。 -->
+  <div class="kusa-ov" id="kusaOv" style="display:none;" onclick="kusaSheetBg(event)">
+    <div class="kusa-sheet" id="kusaSheet"></div>
+  </div>
+  <div class="kusa-ov" id="cropOv" style="display:none;" onclick="cropSheetBg(event)">
+    <div class="kusa-sheet" id="cropSheet"></div>
   </div>
   <div class="toast" id="toast"></div>
   <div class="ph-lb" id="phLb" onclick="phClose()">
@@ -2706,6 +2728,16 @@
     /* ★v40：切りかえる前に「今いる画面」を履歴へ。goBack から呼ばれた時は積まない */
     if(!_navSkip) navPush(curScreen,n);
     _navSkip=false;
+    /* ★★v158 画面を移るときは、かぶせる箱を必ず閉じる ★★
+       ── なぜ足したか
+         v157まで #kusaOv / #cropOv は .page の中にあったので、
+         画面が display:none になれば **一緒に消えていた**。
+         v158 で .page の外（画面の直下）へ出したため、**自分で閉じないと残る**。
+       ★これを忘れると「別の画面に草刈りのシートが出たまま」という、
+         いちばん分かりにくい不具合になる（§0.5⑬ 渡した瞬間どうなるかを通しで読む）。
+       ★閉じるだけの関数なので、開いていないときに呼んでも何も起きない（副作用なし）。 */
+    try{ if(typeof kusaSheetClose==='function')kusaSheetClose(); }catch(e){}
+    try{ if(typeof cropSheetClose==='function')cropSheetClose(); }catch(e){}
     curScreen=n;for(var k in pages){document.getElementById(pages[k]).classList.remove('on');}
     document.getElementById(pages[n]).classList.add('on');
     renderHeader(n);
@@ -11803,7 +11835,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v157';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v158';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
