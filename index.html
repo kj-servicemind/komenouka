@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v159">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="app-ver" content="v160">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -27,7 +27,10 @@
     --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
     --gothic:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","YuGothic",sans-serif;
   }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  /* ★★v160 touch-action:manipulation ＝ **ダブルタップの拡大だけ**をやめる（親方のご指示）。
+     押す・スクロール・横に払う は今までどおり効く。2本指のピンチは JS 側で止めている。 */
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;}
   body{font-family:var(--gothic);background:#D8D4C7;color:var(--ink);
     -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;
     padding:20px 12px 40px;min-height:100vh;}
@@ -2371,7 +2374,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v159</span></div>
+          <div class="setrow">バージョン<span class="sv">v160</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -8313,11 +8316,9 @@
         +(f.memo?'<div><span class="k3">📝 メモ</span>'+f.memo+'</div>':'')
         +(f.care?'<div><span class="k3">⚠️ 注意</span><span style="color:var(--red);font-weight:700;">'+f.care+'</span></div>':'')
         +'</div>';
-      /* 土のメモ */
-      h+='<div class="fld-soil-ttl">🌱 土のメモ</div><div class="fld-soil-tags">';
-      var tags=sd.tags||[];
-      for(var t=0;t<tags.length;t++){ h+='<span class="fld-soil-tag" onclick="soilTagRemove(\''+f.n+'\',\''+tags[t]+'\')">'+tags[t]+' ×</span>'; }
-      h+='<span class="fld-soil-tag add" onclick="soilTagAdd(\''+f.n+'\')">＋ 特徴を足す</span></div>';
+      /* 土のメモ ★★v160 タグの列は soilTagsHtml() が作る（描き直しと同じ道・下の注記） */
+      h+='<div class="fld-soil-ttl">🌱 土のメモ</div><div class="fld-soil-tags" id="fst'+i+'">'
+        +soilTagsHtml(f.n)+'</div>';
       h+='<textarea class="fld-soil-memo" placeholder="例）日当たり良い。梅雨に水がたまりやすい。" '
         +'onchange="soilMemoSet(\''+f.n+'\',this.value)">'+(sd.memo||'')+'</textarea>';
       /* 今年出た虫・病気 */
@@ -8360,13 +8361,35 @@
   }
   function soilMemoSet(field,v){ if(!soilData[field])soilData[field]={tags:[],memo:''};
     soilData[field].memo=v; soilStamp(field,'memo'); soilSave(); }
+  /* ★★v160 土のメモの「タグの列」を作る。ここ1本だけが作る（親方のご指示 2026/08/12）★★
+     ── v159 まで何が起きていたか（実ブラウザで再現ずみ）──
+       「＋ 特徴を足す」を押すと、**保存はできていた**（酸性ぎみ・中性…と入っていた）。
+       ところが **画面には1つも出なかった**。「土のメモを更新しました」とだけ出る＝嘘の成功報告。
+       原因：描き直しが flListDraw() を呼んでいたが、
+         ・📍地区を押して入った画面（flPick あり）は fieldsRender() が **#body に直に書いて return** する
+         ・その画面には **#flList という入れものが無い**
+         ・flListDraw() の1行目は `var el=document.getElementById('flList'); if(!el)return;`
+       → **黙って帰る**ので、何も起きない（憲法§10-19「黙って終わる出口を作らない」の型）。
+       ★親方はいつも地区から入られるので、**毎回これに当たっていた**。
+       ★同じ根で「×」で消しても画面から消えなかった（soilTagRemove も同じ道）。
+     ── なぜ「タグの列だけ」を描き直すのか（★flListDraw に戻さないこと）──
+       ①#fst◯ は **どちらの画面でも必ず作られる**ので、1本の道で両方直る（§0.5②）
+       ②画面ぜんたいを描き直さないので **スクロールが飛ばない**（§10-4⑦）
+       ③**書きかけのメモ（textarea）を消さない**。詳細ごと作り直すと消える恐れがあった
+       ④HTML を作る所が2つに増えない（§10-8「同じ意味の表を2つ作らない」） */
+  function soilTagsHtml(name){
+    var sd=soilData[name]||{tags:[],memo:''};
+    var tags=sd.tags||[], h='';
+    for(var t=0;t<tags.length;t++){ h+='<span class="fld-soil-tag" onclick="soilTagRemove(\''+name+'\',\''+tags[t]+'\')">'+tags[t]+' ×</span>'; }
+    h+='<span class="fld-soil-tag add" onclick="soilTagAdd(\''+name+'\')">＋ 特徴を足す</span>';
+    return h;
+  }
   function fieldsRerenderOpen(field){
-    /* タグ変更後、開いていた田んぼを開いたまま再描画 */
-    var openIdx=-1;
-    for(var i=0;i<KT_FIELDS.length;i++){ var w=document.getElementById('fw'+i); if(w&&w.classList.contains('open'))openIdx=i; }
-    flListDraw();
-    if(openIdx>=0){ var w=document.getElementById('fw'+openIdx),d=document.getElementById('fd'+openIdx);
-      if(w)w.classList.add('open'); if(d)d.classList.add('open'); }
+    /* ★v160 タグの列だけを描き直す（上の注記のとおり。flListDraw() は呼ばない） */
+    var idx=-1;
+    for(var i=0;i<KT_FIELDS.length;i++){ if(KT_FIELDS[i].n===field){ idx=i; break; } }
+    var el=(idx>=0)?document.getElementById('fst'+idx):null;
+    if(el)el.innerHTML=soilTagsHtml(field);
     toast('土のメモを更新しました');
   }
 
@@ -11888,7 +11911,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v159';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v160';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
@@ -12177,6 +12200,23 @@
      次にこのコードを読む人が「まだ使っている」と誤解する（§10-11） */
   try{ localStorage.removeItem('gyotoku.verRange.v1'); }catch(e){}
   try{ localStorage.removeItem('gyotoku.verTag.v1');   }catch(e){}
+
+  /* ★★v160 2本指のピンチ（つまむ・ひろげる）で拡大しないようにする（親方のご指示 2026/08/12）★★
+     ── なぜ meta の user-scalable=no だけでは足りないか ──
+       iPhone の Safari は、その指定を**わざと無視する**（iOS 10 以降）。
+       だから ここで iOS だけが出す合図（gesture◯◯）を断る。これが唯一の確実な手。
+     ── 拡大は3通りある。3つとも塞いである ──
+       ①2本指のピンチ … ここ（gesturestart / gesturechange / gestureend）
+       ②ダブルタップ   … CSS の `*{touch-action:manipulation}`（★v159までの画面ずれの原因）
+       ③meta の指定    … Android・ホーム画面から開いた時に効く
+     ★★止めるのは「拡大」だけ。押す・スクロール・横に払う には指1本触れていない。
+     ★文字が小さいときは ⚙設定の「文字の大きさ」で大きくできる（拡大の代わりが在る）。
+     ★戻すときは、この4行を消せば元どおり（§0.5⑫ 戻す道） */
+  try{
+    ['gesturestart','gesturechange','gestureend'].forEach(function(g){
+      document.addEventListener(g, function(e){ try{ e.preventDefault(); }catch(e2){} }, {passive:false});
+    });
+  }catch(e){}
   setTimeout(function(){ try{ devPing(); }catch(e){} }, 2000);
   setTimeout(function(){ try{ verCheck(true); }catch(e){} }, 3000);
   setInterval(function(){ try{ verCheck(); }catch(e){} }, 180000);
