@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v158">
+<meta name="app-ver" content="v159">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1011,6 +1011,47 @@
     max-height:86%;max-height:calc(100% - env(safe-area-inset-top));
     overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .kusa-grip{width:44px;height:5px;border-radius:99px;background:#D6D2C6;margin:4px auto 12px;}
+  /* ===== ★★v159 草刈り・作付のシートだけ「画面いっぱい」にする（親方のご指示 2026/08/12）=====
+     ── 何を直したか
+       親方のご指摘：「後ろの一覧が**薄く透けて見える**のをやめたい。
+       📱田んぼをえらぶ（ドローン散布などで出るもの）と**同じ形**にしたい」
+       → 下から半分だけ出る引き出し → **画面いっぱいのシート**にした。
+         後ろが1ミリも見えなくなるので、「薄い箇所」そのものが無くなる。
+     ── ★★なぜ `.kusa-sheet`（クラス）ではなく **id** で指定するのか（ここが大事）
+       `.kusa-sheet` は **3つ**で使い回している：
+         #kusaSheet（草刈りの記録）／#cropSheet（作付をえらぶ）／#lswSheet（保存場所の知らせ）
+       クラスを直すと **保存場所の知らせまで全画面**になってしまう。
+       知らせは「小さく出て、すぐ閉じる」ものなので、そのままが正しい。
+       → **id を2つだけ名指し**する。★`.kusa-sheet` 本体は1文字も触っていない。
+     ── 中身は v152 の #fpSheet（📱田んぼをえらぶ）をそのまま写した（§10-15 実績のある形）
+       top:0/bottom:0（画面いっぱい）／border-radius:0（角丸なし）／max-width:600px（中央寄せ）
+     ── ★★★「✕ とじる」が唯一の出口になる（v152 の #fpSheet と同じ事情）
+       画面いっぱいになると「暗い所を押して閉じる」道が消える。
+       だから ✕ とじるが iPhone の時計の帯に**絶対に隠れない**書き方にする（下の .kusa-fh）。 */
+  #kusaSheet,#cropSheet{
+    position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;
+    top:0;bottom:0;max-height:none;border-radius:0;padding:0 16px 22px;
+    padding-bottom:calc(22px + env(safe-area-inset-bottom));
+    overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  /* ★上の見出し（✕ とじる ／ 田んぼの名前）。#fpSheet の .fp-head / .fp-ttl を写したもの。
+     ★★padding-top の書き方は v152 の写し：
+        ・時計の帯が読める端末 … 13px + 帯の高さ
+        ・読めない端末       … 44px（押す所の最低の大きさ）
+        ・max() も読めない古い端末 … 1行目の 13px が生きる（＝壊れない） */
+  .kusa-fh{display:flex;align-items:center;margin:0 -16px 6px;padding:13px 14px 6px;}
+  .kusa-fh{padding-top:13px;}
+  .kusa-fh{padding-top:max(44px, calc(13px + env(safe-area-inset-top)));}
+  .kusa-fh .x{font-size:14px;color:#4A463C;padding:6px 8px;font-weight:800;
+    min-width:78px;min-height:44px;display:flex;align-items:center;}
+  /* ★★v159 min-height は 44px。#fpSheet の .fp-x は 40px だが、そこは写さなかった。
+     ★理由：ここは**唯一の出口**（下の「閉じる」を外したため）。
+       このアプリの押す所の最低は 44px（audit B5・B6 と同じ基準）。
+       ★★出口が1つの場所で 40px は、年配のご家族には押しにくい。
+     ★.fp-x（40px）は触っていない。あちらは「暗い所を押す」道が別に無いが、
+       田んぼの札が画面いっぱいに並ぶので、取り違えて閉じる事故が起きにくい。 */
+  .kusa-fh .nm{flex:1;text-align:center;font-size:17px;font-weight:800;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .kusa-fh .pad{min-width:78px;flex-shrink:0;}
   .kusa-sh{font-family:var(--mincho);font-size:20px;font-weight:800;text-align:center;margin-bottom:3px;}
   .kusa-sh2{font-size:13px;font-weight:700;color:#4A463C;text-align:center;margin-bottom:14px;}
   .kusa-drow{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);
@@ -1034,6 +1075,11 @@
   .kusa-edit .eb .o{background:var(--green);color:#fff;}
   .kusa-add{width:100%;text-align:center;font-size:15px;font-weight:800;color:var(--green);
     background:#fff;border:2px dashed #9DBBA6;border-radius:13px;padding:14px;cursor:pointer;}
+  /* ★★v159 この .kusa-close は、いま**どこからも使われていない**。
+     草刈りシートを画面いっぱいにしたとき、下の「閉じる」を外して
+     上の「✕ とじる」1つにまとめたため（出口を2つにしない）。
+     ★消さずに残してある理由：知らせ系（#lswSheet）で使いたくなる可能性があり、
+       消すと戻すのに手間がかかるだけで、残しても害が無いため（§10-31 消す版は危ない）。 */
   .kusa-close{width:100%;text-align:center;font-size:17px;font-weight:800;color:#5F5B4E;
     background:#EFEDE4;border-radius:999px;padding:15px;margin-top:12px;cursor:pointer;}
   /* ★v153 🌿草刈り・田んぼの行を2段にする（日付の行にカード幅いっぱいをあげる）
@@ -2325,7 +2371,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v158</span></div>
+          <div class="setrow">バージョン<span class="sv">v159</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -4430,11 +4476,18 @@
       add='<div class="kusa-add" onclick="kusaAddOpen()">＋ 刈った日をあとから足す</div>';
     }
     el.innerHTML=
-      '<div class="kusa-grip"></div>'
-    + '<div class="kusa-sh">'+f.n+' の草刈り</div>'
+    /* ★★v159 画面いっぱいになったので、上に「✕ とじる／田んぼの名前」を出す。
+       ★つまみ（.kusa-grip）は外した。あれは「下から引き出す」ことを表す印なので、
+         画面いっぱいの形では意味が合わない（📱田んぼをえらぶにも無い）。
+       ★見出しは2段だったのを1段にまとめた（上に田んぼの名前が出るので、
+         中の「◯◯ の草刈り」は重なる）。残したのは「2026年 ／ ◯回 刈りました」だけ。
+       ★下の「閉じる」も外した。出口は上の「✕ とじる」1つ（📱田んぼをえらぶと同じ）。
+         ★★出口を1つにしたので、✕ とじるが隠れたら閉じられなくなる。
+           .kusa-fh の padding-top（時計の帯よけ）は絶対に消さないこと。 */
+      '<div class="kusa-fh"><span class="x" onclick="kusaSheetCloseAndRefresh()">✕ とじる</span>'
+    +   '<span class="nm">🌿 '+f.n+'</span><span class="pad"></span></div>'
     + '<div class="kusa-sh2">'+y+'年 ／ '+recs.length+'回 刈りました</div>'
-    + h + add
-    + '<div class="kusa-close" onclick="kusaSheetCloseAndRefresh()">閉じる</div>';
+    + h + add;
     ov.style.display='flex';   /* ★★v152【前からあった不具合の直し】ここは 'block' だった。
        CSS の .kusa-ov{display:flex; justify-content:flex-end} を打ち消していたので、
        「下から出る引き出し」が**画面の上に張り付いて**いた。
@@ -7946,8 +7999,8 @@
     if(!ov||!sh)return;
     var y=cropEditYear(), now=cropAt(name,y), prev=cropAt(name,y-1);
     var list=CROP_CHOICES;
-    var h='<div class="kusa-grip"></div>'
-      + '<div class="kusa-sh">'+name+'</div>'
+    var h='<div class="kusa-fh"><span class="x" onclick="cropSheetClose()">✕ とじる</span>'
+      + '<span class="nm">🌾 '+name+'</span><span class="pad"></span></div>'
       + '<div class="kusa-sh2">'+y+'年の作付をえらんでください</div>';
     for(var i=0;i<list.length;i++){
       var v=list[i], on=(now===v);
@@ -11835,7 +11888,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v158';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v159';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
