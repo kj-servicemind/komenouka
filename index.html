@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v153">
+<meta name="app-ver" content="v154">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2095,7 +2095,7 @@
         <div class="fld" onclick="pestPickField()"><div class="lb">📍 どの田んぼ?（押して選べます）</div><div class="v"><span id="pestFieldV"></span><span class="chv">›</span></div></div>
         <div class="fld" onclick="pestWaterAsk()"><div class="lb">まく水の量（10aあたり・押して変更）</div><div class="v"><span id="pestWaterV">100</span> L<span class="chv">›</span></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;">ふつうの散布のめやす。国の基準は60〜150L</div></div>
         <div class="fld"><div class="lb">希釈倍率(自動)</div><div class="v"><span id="pestBai">1000</span>倍</div></div>
-        <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big" id="pestWater">—</span> L<br>入れる農薬の量:<span class="big" id="pestChem">—</span> mL<br><span id="pestCalcNote" style="font-size:13px;color:#8A6A2E;">田んぼと倍率から計算します</span></div>
+        <div class="calcbox">🤖 自動で計算しました<br>必要な水の量:<span class="big" id="pestWater">—</span> L<br>入れる農薬の量:<span class="big" id="pestChem">—</span> mL<br><span id="pestCalcNote" style="font-size:13px;color:#8A6A2E;white-space:pre-line;">田んぼと倍率から計算します</span></div>
         <div class="fld"><div class="lb">💴 農薬代（円・任意）</div><div class="v"><input id="pestYen" type="number" inputmode="numeric" placeholder="例）1800" style="border:none;background:none;font-size:17px;font-weight:800;width:100%;outline:none;" enterkeyhint="done"></div><div style="font-size:12px;color:var(--green);font-weight:800;margin-top:3px;"><span class="nb">入れると</span><span class="nb">生産原価の</span><span class="nb">「農業薬剤費」に</span><span class="nb">自動で入ります</span><span class="nb">（空欄でもOK）</span></div></div>
         <div id="mbBox"><!-- 📋 この農薬をまいた記録(JS)。国のDBボタンもこの中 --></div>
         <div class="save" onclick="pestRecord()">✅ この内容で記録する</div>
@@ -2230,7 +2230,7 @@
     <!-- ===== ⑩ みんなと共有 ===== -->
     <div class="page" id="p-team">
       <div class="sc">
-        <div class="ph-bar">📷 写真はこのアプリで家族全員に共有されます<span class="rf" onclick="phLoad(true)">↻ 更新</span></div>
+        <div class="ph-bar">📷 写真は家族全員に共有されます<span class="rf" onclick="phLoad(true)">↻ 更新</span></div>
         <div class="ph-take" onclick="document.getElementById('phTeamIn').click()">
           <span class="ic">📷</span>写真を撮る／えらぶ（今日の分）
           <input id="phTeamIn" type="file" accept="image/*" onchange="phPicked(event,'@rec','@rec')">
@@ -2315,7 +2315,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v153</span></div>
+          <div class="setrow">バージョン<span class="sv">v154</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -4231,10 +4231,10 @@
     +   '<div class="badge" id="kusaCount">'+y+'年 '+done+' / '+KT_FIELDS.length+' 枚</div></div>'
     + '<div class="kusa-lbl">📍 地区をえらぶ（押すだけ）</div>'
     + '<div class="kusa-grid">'+h+'</div>'
-    + '<div class="kusa-note">💡 草刈りは一年に何度もやる作業なので、'
-    +   '<b><span class="nb">米づくり工程表の</span><span class="nb">順番や進み具合には</span><span class="nb">入れていません</span></b><span class="nb">。</span><span class="nb">ここだけで数えます。</span><br>'
-    +   '<span class="nb">📝作業を記録・</span><span class="nb">🎤話して記録で</span>'+'<span class="nb">「草刈り」をえらんでも、</span><span class="nb">ここに出ます。</span><br>'
-    +   '数字は<b>'+y+'年ぶん</b>です。年が変わると数え直します。</div>'
+    /* ★v154 6行170px → 4行122px。年の数え直しは「◯年ぶん」で足りる */
+    + '<div class="kusa-note">💡 草刈りは何度もやる作業なので、'
+    +   '<b>工程表の進み具合には入れず</b>、ここだけで数えています。<br>'
+    +   '📝作業を記録・🎤話して記録の「草刈り」も、ここに出ます（<b>'+y+'年ぶん</b>）。</div>'
     + '<div class="spacer"></div>';
   }
 
@@ -4275,14 +4275,15 @@
     }
     bar+='<div class="kusa-bar">'
        +   '<div class="kusa-btn'+(n?'':' off')+'" onclick="kusaSavePicked()">'
-       +     (n?('✅ '+n+'枚を「刈った」で記録する'):'刈った田んぼにチェックを入れてください')
+       /* ★v154 すぐ上の見出しと同じ文言だった。作業名は見出しにあるので短くする */
+       +     (n?('✅ '+n+'枚を「刈った」で記録する'):'田んぼにチェックを入れてください')
        +   '</div></div>';
     el.innerHTML=
       '<div class="kusa-lbl">刈った田んぼにチェックを入れてください</div>'
     + h
-    + '<div class="kusa-note">💡 <b>1枚だけの日も、地区まるごとの日も手順は同じ</b>です。'
-    +   'チェックを入れて、下の緑のボタンを1回押すだけ。<br>'
-    +   '押し間違えたときは、右の<b>「記録 ○件」</b>から1件ずつ消せます。</div>'
+    /* ★v154 5行146px → 2行74px。半端な行（「け。」「せます。」）が消える */
+    + '<div class="kusa-note">💡 チェックを入れて、下の緑のボタンを押すだけ。<br>'
+    +   'まちがえたら<b>「記録 ○件」</b>から消せます。</div>'
     + bar;
   }
   /* ---- まとめて記録 ---- */
@@ -4939,10 +4940,11 @@
       for(var z=0;z<arr.length;z++){ if(arr[z].tp&&(!_fromTp||arr[z].tp<_fromTp))_fromTp=arr[z].tp; }
       try{ h+=inaSrcCardHTML(_fromTp); }catch(_e){}
     }
-    h+='<div class="kt-pnote">※ 気温の積み上げから計算した目安です。<b><span class="nb">未定・大豆は</span><span class="nb">入っていません</span></b>。'
-      +(anyHead?'<br>※ <b>積算温度</b>は、田植えの日から<b><span class="nb">毎日の平均気温を</span><span class="nb">たし算した合計</span></b>です。稲はこの合計で穂を出します。'
-                +'<br>※ <b>品種を押す</b>と、出穂を実際に見た日を入れられます。入れると、そこから先はもっと正確になります（任意）。'
-                +'<br>※ 積算温度は<b>目安</b>です。最後は<b><span class="nb">籾の色と水分</span><span class="nb">（25%前後）</span></b>でお決めください。':'<br><span class="nb">※ 分からないことは</span><span class="nb">「分からない」と</span><span class="nb">出します。</span><span class="nb">あてずっぽうの</span><span class="nb">日付は出しません。</span>')
+    /* ★v154 9行216px → 4行96px。4つの※を2つにまとめ、半端な行（「意）。」）を消した */
+    h+='<div class="kt-pnote">'
+      +(anyHead?'※ <b>積算温度</b>（田植えからの平均気温の合計）で計算した目安です。未定・大豆は除きます。'
+                +'<br>※ <b>品種を押す</b>と出穂を見た日を入れられます。最後は<b><span class="nb">籾の色と水分</span><span class="nb">（25%前後）</span></b>でお決めください。':'※ 気温の積み上げから計算した目安です。未定・大豆は入っていません。'
+                +'<br><span class="nb">※ 分からないことは</span><span class="nb">「分からない」と</span><span class="nb">出します。</span><span class="nb">あてずっぽうの</span><span class="nb">日付は出しません。</span>')
       +'</div></div>';
     return h;
   }
@@ -5038,13 +5040,15 @@
     if(!(inaState&&inaState.variety&&inaState.transplant&&INA_VMAP[inaState.variety]))return '';
     var nm=INA_VMAP[inaState.variety].n.replace(/（[^）]*）/,'');
     if(inaState.auto===false){
-      return '<div class="kt-basis">⑤〜⑨の日は <b>'+nm+'（手で入れた品種・田植え日）</b>'
-        +'をもとにした予想です。</div>';
+      /* ★v154 品種名の長さで折れ方が変わるので、名前と説明を .nb で分けた。
+         これで「にじのきらめき」のような長い名前でも、意味の切れ目でしか折れない */
+      return '<div class="kt-basis">⑤〜⑨の日は <span class="nb"><b>'+nm+'</b></span>'
+        +'<span class="nb">（手で入れた品種・田植え日）の予想です。</span></div>';
     }
     var p=inaAutoPick();
     if(p&&p.crop)nm=p.crop;
-    return '<div class="kt-basis">⑤〜⑨の日は <b>'+nm+'（いちばん早く出穂する田）</b>'
-      +'を基準にした予想です。</div>';
+    return '<div class="kt-basis">⑤〜⑨の日は <span class="nb"><b>'+nm+'</b></span>'
+      +'<span class="nb">（いちばん早い田）の予想です。</span></div>';
   }
   function ktRenderBoard(){
     var el=document.getElementById('ktViewBoard'); if(!el)return;
@@ -5359,7 +5363,9 @@
     }
     /* ★v85 薬をえらんでいれば、押すボタンにその名前を出す（何が記録されるか押す前に分かる） */
     var btx;
-    if(!n)btx=st.nm+'をした田んぼにチェックを入れてください';
+    /* ★v154 段名が長い7段で2行(70px)になり、短い2段(51px)と高さが揃わなかった。
+       段名を外すと9段すべて51pxで揃う。作業名はすぐ上の見出しに出ている */
+    if(!n)btx='田んぼにチェックを入れてください';
     else if(ktvChem)btx='✅ '+n+'枚を「'+ktvChem+'」でまいたと記録する';
     else btx='✅ '+n+'枚を「'+st.nm+'済み」にする';
     bar+='<div class="kusa-bar">'
@@ -5367,9 +5373,9 @@
        +   '</div></div>';
     return '<div class="kusa-lbl">'+st.nm+'をした田んぼにチェックを入れてください</div>'
       + h
-      + '<div class="kusa-note">💡 <b>1枚だけの日も、地区まるごとの日も手順は同じ</b>です。'
-      +   'チェックを入れて、下の緑のボタンを1回押すだけ。<br>'
-      +   '<b>済んだ田んぼは、ここでは外せません。</b>まちがえたら「✅ 済み」を押すと理由と行き先が出ます。</div>'
+      /* ★v154 ①（草刈り）と同じ言い方にそろえた。5行146px → 3行98px */
+      + '<div class="kusa-note">💡 チェックを入れて、下の緑のボタンを押すだけ。<br>'
+      +   '<b>済んだ田んぼは外せません。</b>まちがえたら「✅ 済み」を押してください。</div>'
       + ktvChemHtml()
       + bar;
   }
@@ -8820,9 +8826,11 @@
       if(area<=0){ note.textContent='田んぼを選ぶと計算します'; }
       else if(bai<=0){
         /* ★v49：倍率が分からないときは薬の量を出さない（勝手に1000倍にしない） */
-        note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L　／　希釈倍率が分からないので、入れる農薬の量は出せません。ラベルで倍率を確かめてください。';
+        note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L\n希釈倍率が分からないので、入れる農薬の量は出せません。ラベルで倍率を確かめてください。';
       }
-      else { note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L　／　'+water+'L ×1000 ÷'+bai+'倍 ＝ '+chem+'mL'; }
+      /* ★v154 「／」で1行に押し込むと「＝ 161mL」だけが次の行に落ちる。式の切れ目で改行する
+         （改行を効かせるため #pestCalcNote に white-space:pre-line を入れてある） */
+      else { note.textContent=area+'a ÷10 ×'+pestWater+'L ＝ '+water+'L\n'+water+'L ×1000 ÷'+bai+'倍 ＝ '+chem+'mL'; }
     }
   }
   function pestEnter(){
@@ -11752,7 +11760,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v153';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v154';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
