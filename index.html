@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v154">
+<meta name="app-ver" content="v157">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -200,6 +200,19 @@
   .t-teal{border-color:#569E9E;} .t-teal .tx{color:var(--teal);}
   .t-green2{border-color:#6B9077;} .t-green2 .tx{color:var(--green);}
   .t-gray{border-color:#9C927C;} .t-gray .tx{color:#6B6656;}
+  /* ★★v156 黒のタイル（📊生産原価・📖年度別記録の2つだけ。親方のご指示 2026/08/12）
+     ── なぜ新しいクラスを作ったか（★ここを読まずに直すと、別のボタンまで黒くなる）──
+       v155まで 📊生産原価は `t-red`、📖年度別記録は `t-purple` を使っていたが、
+       この2つは **他のボタンと共有** だった：
+         t-red    … 🔬AI病害虫診断（diag）と共有
+         t-purple … 🌾田んぼ・苗箱（fields）と共有
+       そのまま t-red / t-purple を黒にすると、**頼まれていない2つまで黒くなる**。
+       → 共有をやめ、専用のクラスを新しく作って cost / nendo だけに当てる。
+       ★既存の .t-red / .t-purple は **1文字も触っていない**（§10-15・§0.5⑪）。
+     ── 色（親方のご判断：A案＝純黒）──
+       白(#FFFFFF)に対する読みやすさ 21.00：このアプリで最大。年配のご家族に最も読みやすい。
+       ★枠と文字を同じ #000000 にそろえてある（他のタイルも枠と文字は同系色の作り）。 */
+  .t-black{border-color:#000000;} .t-black .tx{color:#000000;}
   .tile .ic img{width:44px;height:44px;border-radius:10px;display:block;}
 
   /* ===== v2.4 ホーム:今日のやること(TODO)===== */
@@ -2315,7 +2328,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v154</span></div>
+          <div class="setrow">バージョン<span class="sv">v157</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2796,7 +2809,7 @@
     '②':{do:'田植え。株間・植付株数を守る。',water:'植え付け後は浅水で活着を促す。',fert:'基肥を施用。',pest:'ジャンボタニシの食害に注意。',tip:'浅植え・浅水で活着を早める。'},
     '③':{do:'分げつを確保する時期。',water:'浅水〜間断で分げつを促す。',fert:'必要なら分げつ肥。',pest:'イネミズゾウムシ等に注意。',tip:'水温を上げて分げつを増やす。'},
     '④':{do:'有効茎が確保できたら中干し(5〜7日)。',water:'落水して土を乾かし、無効分げつを抑える。',fert:'中干し中は追肥を控える。',pest:'紋枯病の発生前チェック。',tip:'中干しのやりすぎに注意。ひび割れ程度で。'},
-    '⑤':{do:'中干しを終え、間断灌漑へ。',water:'<span class="nb">穂ができ始める</span><span class="nb">大事な時期。</span><span class="nb">落水させすぎない。</span>',fert:'<span class="nb">穂肥のタイミング。</span><span class="nb">幼穂の長さ</span><span class="nb">(1〜2mm)で判断。</span>',pest:'いもち病・カメムシの発生前チェック。',tip:'<span class="nb">カメムシ対策は</span><span class="nb">出穂10日前までに</span><span class="nb">畦畔の草刈り。</span>'},
+    '⑤':{do:'中干しを終え、間断灌漑へ。',water:'<span class="nb">穂ができ始める</span><span class="nb">大事な時期。</span><span class="nb">落水させすぎない。</span>',fert:'<span class="nb">穂肥は幼穂の長さ</span><span class="nb">2〜5mm</span><span class="nb">（出穂20〜18日前）が</span><span class="nb">県の基準です。</span>',pest:'いもち病・カメムシの発生前チェック。',tip:'<span class="nb">カメムシ対策は</span><span class="nb">出穂10日前までに</span><span class="nb">畦畔の草刈り。</span>'},
     '⑥':{do:'出穂期。開花・受粉の大切な時期。',water:'深水気味にして穂を守る。',fert:'原則追肥はしない。',pest:'穂いもち・カメムシに最警戒。',tip:'高温なら深水で高温障害を防ぐ。'},
     '⑦':{do:'登熟期。籾を充実させる。',water:'間断灌漑。落水は早すぎない。',fert:'施肥はしない。',pest:'カメムシ・トビイロウンカに注意。',tip:'早期落水は胴割れ・品質低下のもと。'},
     '⑧':{do:'刈取適期の見極めと収穫・乾燥。',water:'収穫直前まで間断灌水。',fert:'—',pest:'刈り遅れによる胴割れに注意。',tip:'<span class="nb">出穂後およそ40日・</span><span class="nb">積算約1000℃が目安。</span><span class="nb">籾水分25%前後で</span><span class="nb">刈取。</span>'}
@@ -4117,7 +4130,7 @@
       seen[a].all++;
       if(kusaLast(KT_FIELDS[i].n))seen[a].done++;
     }
-    return out;
+    return areaSortObj(out);   /* ★v157 あいうえお順（中身は触らない・並べる順だけ） */
   }
   function kusaIdxOfArea(a){
     var out=[];
@@ -4542,7 +4555,7 @@
       n = ndoRecsOf(KT_FIELDS[i].n, y, '').length;
       seen[a].c += n;
     }
-    return out;
+    return areaSortObj(out);   /* ★v157 あいうえお順（記録件数の数え方は触らない） */
   }
   /* その工程の、いちばん新しい記録の日にち（recs は新しい順） */
   function ndoLastOf(recs, stepK){
@@ -5133,7 +5146,9 @@
       m[key].all++; if(dn[f.n])m[key].done++;
     }
     var out=[]; for(var q=0;q<order.length;q++)out.push(m[order[q]]);
-    return out;
+    /* ★★v157 「📍地区」のときだけ あいうえお順にする。
+       ★「🌾品種」のときは今までどおり（並びの意味が違う。品種は五十音で探すものではない）。 */
+    return (ktvMode==='area')?areaSortObj(out):out;
   }
   function ktvIdsOf(name){
     var out=[];
@@ -5454,6 +5469,34 @@
     return arr.sort(function(x,y){
       var r=areaYomi(x).localeCompare(areaYomi(y),'ja');
       return r!==0?r:String(x).localeCompare(String(y),'ja');
+    });
+  }
+  /* ===== ★★v157 地区の「箱」をあいうえお順に並べる（親方のご指示 2026/08/12）=====
+     ── 何が食い違っていたか（★親方のスクショ4枚から・実測）
+       同じ地区の一覧なのに、画面によって並び順が3通りあった。
+         📱田んぼをえらぶ … あいうえお順（areaSort を使っている）
+         🌾田んぼ・苗箱   … あいうえお順（areaSort を使っている）
+         🌿草刈り／📋工程表／📖年度別記録 … **取り込んだ順**（並べ替えを1度も呼んでいない）
+       ★取り込んだ順は「西 吉田 島崎 池松 …」＝**誰にも予測できない順**。
+         ご家族が地区を探すとき、毎回ぜんぶ目で追うことになる。
+     ── なぜ areaSort をそのまま使わないか（★ここが大事）
+       `areaSort` が並べるのは **地区名の文字列だけの配列**。
+       いっぽう草刈り・工程表・年度別記録が持っているのは
+       `{n:地区名, all:枚数, done:済み枚数}` `{n:…, all:…, c:記録件数}` という**箱**なので、
+       同じ関数には食わせられない（食わせると全部 'んん' 扱いで並ばない）。
+       ★★既存の `areaSort` は **1文字も触っていない**。いま正しく動いている2画面を守るため。
+     ── 読みがな
+       `AREA_YOMI`（v32から・28地区）をそのまま使う。★28地区**すべて登録ずみ**を照合した
+       （未登録0件）。**新しく読みを考えたものは1つも無い。**
+     ── ★★中身には一切さわらない。枚数も、済み数も、記録件数も、1つも変わらない。
+       変えるのは**並べる順だけ**。開くときは `a.n`（地区名）を渡す作りなので、
+       順番が変わっても開く先は変わらない（★呼び出し元3か所すべてで確認ずみ）。 */
+  function areaSortObj(arr){
+    if(!(arr instanceof Array))return arr;
+    return arr.sort(function(x,y){
+      var xn=(x&&x.n)?String(x.n):'', yn=(y&&y.n)?String(y.n):'';
+      var r=areaYomi(xn).localeCompare(areaYomi(yn),'ja');
+      return r!==0?r:xn.localeCompare(yn,'ja');
     });
   }
   /* あいうえお順で先頭の地区の1枚目 = 初期選択 */
@@ -9308,7 +9351,7 @@
     fields:{cls:'t-purple',ic:'🌾', tx:'田んぼ・苗箱'},   /* ★v97 マップの無い画面なので、名前を中身に合わせた */
     team: {cls:'t-orange',ic:'👥', tx:'みんなと共有'},
     cal:  {cls:'t-blue',  ic:'📅', tx:'カレンダー'},
-    cost: {cls:'t-red',   ic:'📊', tx:'生産原価'},
+    cost: {cls:'t-black', ic:'📊', tx:'生産原価'},   /* ★v156 t-red→t-black（親方のご指示） */
     hiryo:{cls:'t-green2',ic:'🌾', tx:'肥料の栄養'},
     kikai:{cls:'t-teal',  ic:'🚜', tx:'機械の維持費'},
     kyoka:{cls:'t-gold',  ic:'📜', tx:'去年の今ごろ'},
@@ -9316,7 +9359,7 @@
     set:  {cls:'t-gray',  ic:'⚙️', tx:'設定'},
     koutei:{cls:'koutei', ic:'📋', tx:'米づくり工程表'},
     kusa: {cls:'t-green2',ic:'🌿', tx:'草刈り'},         /* ★v67 */
-    nendo:{cls:'t-purple', ic:'📖', tx:'年度別記録'}      /* ★v144 */
+    nendo:{cls:'t-black', ic:'📖', tx:'年度別記録'}      /* ★v144 ／ ★v156 t-purple→t-black */
   };
   /* v25.4:設定は下タブに固定になったのでボタン/タブの候補からは外す(重複させない)。 */
   /* ★v144 'kyoka'（去年の今ごろ）をホームのボタン候補から外した。画面も記録も消していない。
@@ -11760,7 +11803,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v154';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v157';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
