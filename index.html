@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v162">
+<meta name="app-ver" content="v163">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1878,6 +1878,13 @@
     .dev-btn{font-size:19px;font-weight:700;text-align:center;padding:17px 12px;margin-top:10px;border-radius:14px;border:1px solid #D9D2C2;background:#FBF8F0;min-height:56px;box-sizing:border-box;}
     .dev-btn-del{color:#A32B2B;border-color:#A32B2B;background:#FFF6F6;}
     .dev-btn-gh{color:#6E6A5C;background:#fff;}
+
+    /* ★★v163 キーボードの🎤の道あんない ★★ */
+    .kbtip{display:none;background:#FFF7E0;border:2px solid #C8A43C;border-radius:14px;
+      padding:14px 14px;margin:10px 0 4px;}
+    .kbtip.on{display:block;}
+    .kbtip-t{font-size:20px;font-weight:700;line-height:1.5;color:#5A4A12;}
+    .kbtip-b{font-size:15px;line-height:1.7;color:#5A4A12;margin-top:8px;}
 </style>
 </head>
 <body>
@@ -1990,8 +1997,17 @@
     <!-- ===== ④ 話して記録 ===== -->
     <div class="page" id="p-voice">
       <div class="sc">
-        <div class="micbig" id="mic" onclick="toggleRec()">🎤</div>
+        <div class="micbig" id="mic" onclick="vmMic()">🎤</div>
         <div class="miclabel" id="miclabel">押して話す(手が汚れててもOK)</div>
+        <!-- ★★v163 キーボードの🎤で話す道あんない ★★
+             ホーム画面に入れたアプリの中では、ブラウザの聞き取りが動かない
+             （Appleの作りで、そうなっている）。iPhone のキーボードに付いている
+             🎤 なら、ホーム画面のアプリでも必ず動く。 -->
+        <div class="kbtip" id="kbTip">
+          <div class="kbtip-t">⌨️ キーボードの <b>🎤</b> を押して、話してください</div>
+          <div class="kbtip-b">キーボードの<b>いちばん下の列</b>・左のほうにあります<br>
+            話し終わったら、下の「<b>この文で振り分ける</b>」を押してください</div>
+        </div>
         <div class="cheat">
           <div class="ct">🗒 こんなふうに話せばOK（カンペ）</div>
           <div class="ex"><b>「西3に</b> スタークルを <b>1000倍で</b> まいた」</div>
@@ -1999,13 +2015,15 @@
           <div class="ex"><b>「松延121の</b> 化成を <b>20キロ</b> まいた」</div>
           <div class="cn"><span class="nb">田んぼ名 → した作業 →</span><span class="nb">（農薬・肥料と量）の順が</span><span class="nb">聞き取りやすいです。</span></div>
         </div>
-        <div class="vmanual" onclick="vmToggle()">⌨️ うまく聞き取れない時は「手で入力」</div>
+        <div class="vmanual" onclick="vmToggle()">⌨️ 指で打ちたい時も、ここから</div>
         <div class="vmanual-box" id="vmBox">
           <input class="vin" id="vmIn" type="text" placeholder="例：西3 スタークル散布 1000倍" enterkeyhint="done">
           <div class="vgo" onclick="vmParse()">↓ この文で振り分ける</div>
         </div>
         <div class="transcript" id="tr">ここに話した言葉が出ます</div>
-        <div class="safari-tip" id="safaritip">⚠️ うまく聞き取れない時は、Safariでこのページを開くと安定します。</div>
+        <!-- ★v163 キーボードの🎤に切りかえたので、Safariを勧める注意書きは出さない
+             （ホーム画面のアプリのままで動くようになったため。要素は残す＝他から参照されている） -->
+        <div class="safari-tip" id="safaritip" style="display:none;">⚠️ うまく聞き取れない時は、Safariでこのページを開くと安定します。</div>
         <div class="parsed" id="parsed" style="display:none;"></div>
 
         <!-- ===== 写真:撮って、みんなに共有 ===== -->
@@ -2398,7 +2416,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v162</span></div>
+          <div class="setrow">バージョン<span class="sv">v163</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -7225,6 +7243,27 @@
     };
     return r;
   }
+  /* ★★v163 いちばん大事な直し ★★
+     ── なぜ作りを変えたか
+       v161 で「勝手に止まって再起動しつづける」を直したが、**それでも文字が入らなかった**。
+       調べると、**ホーム画面に入れたアプリの中では、ブラウザの聞き取りそのものが動かない**
+       （Appleの作り。API はあるので「使える」と判定されるが、何も起きない）。
+       親方はホーム画面のアイコンから使っておられるので、これに当たっていた。
+     ── どう直したか
+       iPhone の**キーボードに付いている 🎤**（Apple の音声入力）に切りかえた。
+       これはホーム画面のアプリでも Safari でも必ず動く。無料。聞き取りの精度も上。
+     ★大きな🎤ボタンを押す → 文字の欄が開いてキーボードが出る → キーボードの🎤で話す */
+  function vmMic(){
+    var box=document.getElementById('vmBox'), inp=document.getElementById('vmIn'),
+        tip=document.getElementById('kbTip'), lbl=document.getElementById('miclabel');
+    if(box) box.classList.add('on');
+    if(tip) tip.classList.add('on');
+    if(lbl) lbl.textContent='キーボードの 🎤 で話してください';
+    /* ★iPhone は「指で押した流れの中」でしかキーボードを出せない。
+       間をあけると出ないので、その場ですぐ focus する（setTimeout を挟まない）。 */
+    if(inp){ try{ inp.focus(); }catch(e){} }
+    try{ if(box) box.scrollIntoView({block:'center'}); }catch(e){}
+  }
   function toggleRec(){ recState?stopRec():startRec(); }
   function startRec(){
     var mic=document.getElementById('mic'),lbl=document.getElementById('miclabel'),tr=document.getElementById('tr');
@@ -12027,7 +12066,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v162';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v163';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
