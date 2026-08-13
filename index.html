@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v160">
+<meta name="app-ver" content="v161">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2374,7 +2374,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v160</span></div>
+          <div class="setrow">バージョン<span class="sv">v161</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -7155,6 +7155,9 @@
   /* ===== 本物の音声認識(Web Speech API) ===== */
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var recog=null, recState=false, fullText='', demoTimer;
+  /* ★v161 から回り（声が入らないまま止まっては再開）を数える。
+     700ms間隔なので 25回 ≒ 20秒。それを過ぎたら自分から止める */
+  var recIdle=0, recTimer=null, RECIDLE_MAX=25;
   function initRecog(){
     if(!SR) return null;
     var r=new SR(); r.lang='ja-JP'; r.continuous=true; r.interimResults=true;
@@ -7165,17 +7168,44 @@
         if(e.results[i].isFinal){finalt+=t;} else {interim+=t;}
       }
       if(finalt) fullText+=finalt;
-      document.getElementById('tr').innerHTML='「'+fullText+'<span class="live">'+interim+'</span>」';
+      /* ★v161 声が入ったら、から回りの数え直し */
+      if(finalt||interim) recIdle=0;
+      /* ★v161 画面を離れたあとに結果が届くことがある。無い所へ書くと画面が真っ白になる */
+      var tr=document.getElementById('tr');
+      if(tr) tr.innerHTML='「'+fullText+'<span class="live">'+interim+'</span>」';
     };
-    r.onerror=function(ev){ document.getElementById('safaritip').style.display='block'; };
-    r.onend=function(){ if(recState){ try{r.start();}catch(e){} } };
+    r.onerror=function(ev){
+      /* ★v161 「声がなかった」だけなら知らせない。ふつうに起きることなので */
+      var k=(ev&&ev.error)?ev.error:'';
+      if(k==='no-speech'||k==='aborted') return;
+      var tip=document.getElementById('safaritip'); if(tip) tip.style.display='block';
+    };
+    /* ★★v161 いちばん大事な直し ★★
+       iPhone の Safari は continuous が効かず、**数秒で勝手に止まる**。
+       v160 まではその場ですぐ start し直していたので、
+       **1秒に4回のペースでマイクを起動し続け**、文字は入らないまま
+       2分ほどで画面が真っ白になった（家族の実機で発生・偽マイクで再現ずみ）。
+       → ①少し間をあけて再開する ②声が入らないまま続いたら自分から止める */
+    r.onend=function(){
+      if(!recState) return;
+      recIdle++;
+      if(recIdle>RECIDLE_MAX){
+        stopRec();
+        var lb=document.getElementById('miclabel');
+        if(lb) lb.textContent='聞き取れませんでした。もう一度押してください';
+        return;
+      }
+      recTimer=setTimeout(function(){
+        if(recState){ try{r.start();}catch(e){} }
+      }, 700);
+    };
     return r;
   }
   function toggleRec(){ recState?stopRec():startRec(); }
   function startRec(){
     var mic=document.getElementById('mic'),lbl=document.getElementById('miclabel'),tr=document.getElementById('tr');
     recState=true;mic.classList.add('rec');lbl.textContent='聞き取り中…もう一度押すと止まる';
-    fullText='';tr.innerHTML='「';document.getElementById('parsed').style.display='none';document.getElementById('vsave').style.display='none';
+    fullText='';recIdle=0;tr.innerHTML='「';document.getElementById('parsed').style.display='none';document.getElementById('vsave').style.display='none';
     if(SR){
       if(!recog)recog=initRecog();
       try{recog.start();}catch(e){}
@@ -7189,6 +7219,8 @@
     if(!recState)return;
     var mic=document.getElementById('mic'),lbl=document.getElementById('miclabel');
     recState=false;mic.classList.remove('rec');lbl.textContent='押して話す(手が汚れててもOK)';
+    /* ★v161 待ちに入っている再開を取り消す（止めたのに再開しては困る） */
+    if(recTimer){ clearTimeout(recTimer); recTimer=null; }
     if(SR&&recog){try{recog.stop();}catch(e){}} if(demoTimer){clearInterval(demoTimer);}
     if(fullText.trim()){ parseText(fullText); }
   }
@@ -11911,7 +11943,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v160';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v161';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
