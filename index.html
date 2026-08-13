@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v161">
+<meta name="app-ver" content="v162">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1867,6 +1867,17 @@
      🚩 `.wx .sep` は --line を**背景**に使う唯一の場所なので、
         先に #E7E3D8 で固定した（値で grep して数え、確かめた・§10-15）。 */
   
+
+    /* ★★v162 端末の小窓 ★★ */
+    .dev-ov{display:none;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.38);z-index:9000;}
+    .dev-ov.on{display:flex;align-items:flex-end;}
+    .dev-box{background:#fff;width:100%;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px rgba(0,0,0,.18);}
+    .dev-box-t{font-size:21px;font-weight:700;margin-bottom:4px;}
+    .dev-box-s{font-size:15px;color:#6E6A5C;margin-bottom:14px;}
+    /* ★押す所は 56px（iPhone の目安 44px より大きく・年配の指で押しやすく） */
+    .dev-btn{font-size:19px;font-weight:700;text-align:center;padding:17px 12px;margin-top:10px;border-radius:14px;border:1px solid #D9D2C2;background:#FBF8F0;min-height:56px;box-sizing:border-box;}
+    .dev-btn-del{color:#A32B2B;border-color:#A32B2B;background:#FFF6F6;}
+    .dev-btn-gh{color:#6E6A5C;background:#fff;}
 </style>
 </head>
 <body>
@@ -1874,7 +1885,20 @@
 <div class="phone"><div class="screen">
   <div class="statusbar"><span id="clock">10:00</span><span>◦◦◦ ᯤ ▮</span></div>
   <div class="hdr" id="hdr"></div>
-  <div class="body" id="body">
+  
+    <!-- ★★v162 端末の小窓（かぶせる箱）★★
+         ★.page の外に置く。中に置くと画面を移った時に一緒に消え、
+           開いたままの箱が次の画面に残る（v158 で同じ型の不具合が出た）。 -->
+    <div id="devOv" class="dev-ov" onclick="devOvBg(event)">
+      <div class="dev-box">
+        <div class="dev-box-t" id="devBoxT">端末</div>
+        <div class="dev-box-s" id="devBoxS"></div>
+        <div class="dev-btn" onclick="devNameFromBox()">✏️ 名前をつける</div>
+        <div class="dev-btn dev-btn-del" onclick="devDelFromBox()">🗑 この端末を一覧から消す</div>
+        <div class="dev-btn dev-btn-gh" onclick="devClose()">やめる</div>
+      </div>
+    </div>
+<div class="body" id="body">
 
     <!-- ===== ① ホーム ===== -->
     <div class="page on" id="p-home">
@@ -2374,7 +2398,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v161</span></div>
+          <div class="setrow">バージョン<span class="sv">v162</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -9972,8 +9996,15 @@
       nm:(cur&&typeof cur.nm==='string')?cur.nm:'',      /* ★名前は消さずに必ず引き継ぐ */
       v:devVer(),
       at:((at>0)?at:((cur&&typeof cur.at==='number'&&cur.at>0)?cur.at:now)),
+      /* ★v162【新】lt＝**最後にひらいた時刻**。at（その日はじめて触った時刻）とは別に持つ。
+         at をそのまま時刻で出すと、朝6時にひらいて夕方まで使っても「6:00」と出て嘘になる
+         （v136 で時刻表示をやめた理由がこれ）。lt なら いつ出しても正しい。 */
+      lt:((at>0)?now:((cur&&typeof cur.lt==='number'&&cur.lt>0)?cur.lt:now)),
+      /* ★v162 自分がひらいたら「一覧から消した印」は外す。
+         ＝片づけた端末も、その人がまた使えば戻ってくる（気づけなくなると困るので） */
+      del:0,
       n:devRecN(),
-      _m:{nm:(m.nm||0), v:now, at:((at>0)?now:(m.at||now)), n:now}
+      _m:{nm:(m.nm||0), v:now, at:((at>0)?now:(m.at||now)), lt:now, del:now, n:now}
     };
     try{ lsSet(DEV_LS, JSON.stringify(o)); }catch(e){}
     return o;
@@ -9981,6 +10012,47 @@
   /* ★名前を付ける。★自分以外の端末にも付けられる（遠方のご家族に代わって親方が付けるため）。
      ★触るのは nm と _m.nm だけ。v／at／n には指1本触れない（本人が数えているものなので）。
      ★中身が変わらないときは書かない（決まり①：むだにサーバーへ書かない） */
+  /* ★★v162 端末の小窓 ★★ */
+  var devPick=null;                                   /* いま開いている端末の札 */
+  function devOpen(id){
+    var o=devLoad(), cur=o[id];
+    if(!cur||typeof cur!=='object'||(cur instanceof Array))return;
+    devPick=id;
+    var nm=(typeof cur.nm==='string'&&cur.nm)?cur.nm:'', me=(id===devId());
+    var t=document.getElementById('devBoxT'), sb=document.getElementById('devBoxS'),
+        ov=document.getElementById('devOv');
+    if(t) t.textContent=(nm||'名前のない端末')+(me?'（この端末）':'');
+    if(sb) sb.textContent=devWhen(cur.at, cur.lt)+'・記録 '
+                          +((typeof cur.n==='number'&&cur.n>0)?cur.n:0)+'件・'
+                          +((typeof cur.v==='string'&&cur.v)?cur.v:'—');
+    if(ov) ov.classList.add('on');
+  }
+  function devClose(){
+    var ov=document.getElementById('devOv'); if(ov) ov.classList.remove('on');
+    devPick=null;
+  }
+  function devOvBg(ev){ if(ev&&ev.target&&ev.target.id==='devOv') devClose(); }
+  function devNameFromBox(){ var id=devPick; devClose(); if(id) devName(id); }
+  /* ★一覧から消す。
+     ★★ただ消すだけでは、家族の端末が古い一覧を送り返して**勝手に戻ってくる**
+        （v63「家族の記録が消える」と同じ型）。
+        → 値は残したまま **del＝消した時刻** を立てる。_m.del で新しいほうが勝つ。
+        → その人がまたひらけば devPut が del:0 にするので、ちゃんと戻ってくる。 */
+  function devDelFromBox(){
+    var id=devPick; if(!id){ devClose(); return; }
+    var o=devLoad(), cur=o[id];
+    if(!cur||typeof cur!=='object'||(cur instanceof Array)){ devClose(); return; }
+    var nm=(typeof cur.nm==='string'&&cur.nm)?cur.nm:'この端末';
+    var ok=false;
+    try{ ok=confirm(nm+'を一覧から消します。\nその人がまたアプリをひらくと、また出てきます。'); }catch(e){ ok=false; }
+    if(!ok){ devClose(); return; }
+    var now=Date.now(), mm=devMarks(cur);
+    mm.del=now; cur.del=now; cur._m=mm; o[id]=cur;
+    try{ lsSet(DEV_LS, JSON.stringify(o)); }catch(e){}
+    devClose();
+    try{ devRender(); }catch(e){}
+    try{ toast('「'+nm+'」を一覧から消しました'); }catch(e){}
+  }
   function devName(id){
     var o=devLoad(), cur=o[id];
     if(!cur||typeof cur!=='object'||(cur instanceof Array))return;
@@ -10073,18 +10145,30 @@
      ★時刻は出さない。at は「その日はじめて触った時刻」なので、
        時刻まで出すと そのあと何時間使っていても同じ時刻が出て **嘘になる**（§3.5）。
      ★日まで（きょう／きのう／◯月◯日）なら、いつでも正しい。 */
-  function devWhen(t){
-    if(typeof t!=='number'||!(t>0))return 'まだ使われていません';
-    var d=new Date(t);
+  /* ★v162 lt（最後にひらいた時刻）があれば **時刻まで**出す。
+     lt がまだ無い古い端末は、これまで通り日だけ（嘘にならない範囲にとどめる）。 */
+  function devWhen(t, lt){
+    var use=(typeof lt==='number'&&lt>0)?lt:t;
+    if(typeof use!=='number'||!(use>0))return 'まだ使われていません';
+    var d=new Date(use), has=(typeof lt==='number'&&lt>0);
+    var hm=has?(' '+d.getHours()+':'+('0'+d.getMinutes()).slice(-2)):'';
+    var tail=has?(hm+' に ひらいた'):' 使っていた';
     var t0=new Date(); t0.setHours(0,0,0,0);
-    if(d.getTime()>=t0.getTime())return 'きょう 使っていた';
-    if(d.getTime()>=t0.getTime()-86400000)return 'きのう 使っていた';
-    return (d.getMonth()+1)+'月'+d.getDate()+'日 に使っていた';
+    if(d.getTime()>=t0.getTime())return 'きょう'+tail;
+    if(d.getTime()>=t0.getTime()-86400000)return 'きのう'+tail;
+    return (d.getMonth()+1)+'月'+d.getDate()+'日'+(has?(hm+' に ひらいた'):' に使っていた');
   }
   function devRender(){
     var card=document.getElementById('devCard'); if(!card)return;
     var o=devLoad(), me=devId(), ks=[], k;
-    for(k in o){ if(Object.prototype.hasOwnProperty.call(o,k)&&o[k]&&typeof o[k]==='object'&&!(o[k] instanceof Array))ks.push(k); }
+    for(k in o){ if(Object.prototype.hasOwnProperty.call(o,k)&&o[k]&&typeof o[k]==='object'&&!(o[k] instanceof Array)){
+      /* ★v162 一覧から消した端末は出さない。
+         ただし **消したあとに その人がひらいていれば戻す**（del より at が新しい）。
+         ＝片づけた端末も、また使われれば気づける */
+      var _e=o[k], _d=(typeof _e.del==='number')?_e.del:0;
+      if(_d>0 && !((typeof _e.at==='number'&&_e.at>_d)||(typeof _e.lt==='number'&&_e.lt>_d))) continue;
+      ks.push(k);
+    } }
     ks.sort(function(a,b){ return a<b?-1:(a>b?1:0); });   /* ★決まり④ 札の文字列順＝初めてひらいた順 */
     var hd=document.getElementById('devHead');
     if(hd)hd.textContent='\ud83d\udcf1 家族の端末（'+ks.length+'台）';
@@ -10098,9 +10182,9 @@
       var nm=(typeof e.nm==='string'&&e.nm)?e.nm:'';
       /* ★名前があればそれを出す。無ければ端末番号＋「名前をつける」の札（押せると分かるように） */
       var ttl=nm?devEsc(nm):('端末'+(DEV_NO[i]||('('+(i+1)+')'))+' <span class="dev-tag">名前をつける</span>');
-      out+='<div class="setrow" onclick="devName(\''+devEsc(ks[i])+'\')"><div><div>'+ttl
+      out+='<div class="setrow" onclick="devOpen(\''+devEsc(ks[i])+'\')"><div><div>'+ttl
         +(mine?' <span class="dev-me">この端末</span>':'')+'</div>'
-        +'<div class="dev-sub">'+devWhen(e.at)+'・記録 '+cnt+'件</div></div>'
+        +'<div class="dev-sub">'+devWhen(e.at, e.lt)+'・記録 '+cnt+'件</div></div>'
         +'<span class="sv'+(old?' dev-old':'')+'">'+(old?'\u26a0\ufe0f ':'')+devEsc(v||'—')+' ›</span></div>';
     }
     card.innerHTML=out;
@@ -11943,7 +12027,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v161';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v162';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
