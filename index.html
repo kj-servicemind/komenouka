@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v164">
+<meta name="app-ver" content="v165">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1869,8 +1869,10 @@
   
 
     /* ★★v162 端末の小窓 ★★ */
-    .dev-ov{display:none;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.38);z-index:9000;}
-    .dev-ov.on{display:flex;align-items:flex-end;}
+    .dev-ov{display:none;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.38);
+      z-index:60;                 /* ★v165 kusaOv・cropOv と同じ高さにそろえる（9000 は高すぎた） */
+      pointer-events:none;}       /* ★v165 閉じている時は指を通す（念のための二重の守り） */
+    .dev-ov.on{display:flex;align-items:flex-end;pointer-events:auto;}
     .dev-box{background:#fff;width:100%;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px rgba(0,0,0,.18);}
     .dev-box-t{font-size:21px;font-weight:700;margin-bottom:4px;}
     .dev-box-s{font-size:15px;color:#6E6A5C;margin-bottom:14px;}
@@ -1893,18 +1895,6 @@
   <div class="statusbar"><span id="clock">10:00</span><span>◦◦◦ ᯤ ▮</span></div>
   <div class="hdr" id="hdr"></div>
   
-    <!-- ★★v162 端末の小窓（かぶせる箱）★★
-         ★.page の外に置く。中に置くと画面を移った時に一緒に消え、
-           開いたままの箱が次の画面に残る（v158 で同じ型の不具合が出た）。 -->
-    <div id="devOv" class="dev-ov" onclick="devOvBg(event)">
-      <div class="dev-box">
-        <div class="dev-box-t" id="devBoxT">端末</div>
-        <div class="dev-box-s" id="devBoxS"></div>
-        <div class="dev-btn" onclick="devNameFromBox()">✏️ 名前をつける</div>
-        <div class="dev-btn dev-btn-del" onclick="devDelFromBox()">🗑 この端末を一覧から消す</div>
-        <div class="dev-btn dev-btn-gh" onclick="devClose()">やめる</div>
-      </div>
-    </div>
 <div class="body" id="body">
 
     <!-- ===== ① ホーム ===== -->
@@ -2416,7 +2406,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v164</span></div>
+          <div class="setrow">バージョン<span class="sv">v165</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2613,7 +2603,23 @@
        ★📱田んぼをえらぶ(fpOv) は fpEnsure() が document.body へ足す形。狙いは同じ。
        ★画面を移ったときは go() が閉じます（★v158で足した。箱が .page の外に出たので、
          画面が隠れても自動では消えなくなったため）。 -->
-  <div class="kusa-ov" id="kusaOv" style="display:none;" onclick="kusaSheetBg(event)">
+      <!-- ★★v165 ここへ動かした（v162 では hdr と body の間に置いていた）★★
+         ── なぜ動かしたか
+           このアプリの「かぶせる箱」は kusaOv・cropOv・toast・phLb がぜんぶ
+           **タブバーより後ろ**に並んでいる。v162 でこれ1つだけ前に置き、
+           しかも z を 9000（既存は60）にしたため、
+           **実機で下のタブが、どの画面でも押せなくなった**（親方のご報告 2026/08/14）。
+           → 並びも z も、既存のものに合わせる。 -->
+    <div id="devOv" class="dev-ov" onclick="devOvBg(event)">
+      <div class="dev-box">
+        <div class="dev-box-t" id="devBoxT">端末</div>
+        <div class="dev-box-s" id="devBoxS"></div>
+        <div class="dev-btn" onclick="devNameFromBox()">✏️ 名前をつける</div>
+        <div class="dev-btn dev-btn-del" onclick="devDelFromBox()">🗑 この端末を一覧から消す</div>
+        <div class="dev-btn dev-btn-gh" onclick="devClose()">やめる</div>
+      </div>
+    </div>
+<div class="kusa-ov" id="kusaOv" style="display:none;" onclick="kusaSheetBg(event)">
     <div class="kusa-sheet" id="kusaSheet"></div>
   </div>
   <div class="kusa-ov" id="cropOv" style="display:none;" onclick="cropSheetBg(event)">
@@ -12079,7 +12085,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v164';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v165';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
