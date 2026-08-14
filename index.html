@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v163">
+<meta name="app-ver" content="v164">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2416,7 +2416,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v163</span></div>
+          <div class="setrow">バージョン<span class="sv">v164</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -10029,7 +10029,7 @@
     }
     return m;
   }
-  function devPut(at){
+  function devPut(at, opened){
     var o=devLoad(), id=devId(), now=Date.now(), cur=o[id], m=devMarks(cur);
     o[id]={
       nm:(cur&&typeof cur.nm==='string')?cur.nm:'',      /* ★名前は消さずに必ず引き継ぐ */
@@ -10038,12 +10038,17 @@
       /* ★v162【新】lt＝**最後にひらいた時刻**。at（その日はじめて触った時刻）とは別に持つ。
          at をそのまま時刻で出すと、朝6時にひらいて夕方まで使っても「6:00」と出て嘘になる
          （v136 で時刻表示をやめた理由がこれ）。lt なら いつ出しても正しい。 */
-      lt:((at>0)?now:((cur&&typeof cur.lt==='number'&&cur.lt>0)?cur.lt:now)),
+      /* ★v164 lt は「**ひらくたび**に」新しくする。
+         v163 では at>0（＝その日はじめて／日が変わった時）のときしか新しくせず、
+         朝ひらいた時刻のまま止まってしまった（親方の実機で発覚・6:43 のまま9時台）。
+         ★記録を足しただけ(devBump)では動かさない。「ひらいた時刻」の意味を守るため。 */
+      lt:(opened?now:((cur&&typeof cur.lt==='number'&&cur.lt>0)?cur.lt:now)),
       /* ★v162 自分がひらいたら「一覧から消した印」は外す。
          ＝片づけた端末も、その人がまた使えば戻ってくる（気づけなくなると困るので） */
       del:0,
       n:devRecN(),
-      _m:{nm:(m.nm||0), v:now, at:((at>0)?now:(m.at||now)), lt:now, del:now, n:now}
+      _m:{nm:(m.nm||0), v:now, at:((at>0)?now:(m.at||now)),
+          lt:(opened?now:(m.lt||now)), del:now, n:now}
     };
     try{ lsSet(DEV_LS, JSON.stringify(o)); }catch(e){}
     return o;
@@ -10163,12 +10168,20 @@
     try{ pinged=!!sessionStorage.getItem('gyotoku.devPinged'); }catch(e){}
 
     /* ★書かなくてよい唯一の場合＝「ただの読み込み直し・版も同じ・日も同じ」 */
-    if(pinged && !stale && !newDay) return false;
+    /* ★★v164 ここが「時刻が止まって見えた」もう一つの原因。
+       v136 から「同じ日・同じ版・読み込み直しだけ」なら**何も書かずに帰って**いた。
+       時刻を出すようになった以上、ひらいた事実は毎回書く必要がある。
+       → at（その日はじめて触った時刻）は据え置きのまま、lt だけ新しくして帰る。 */
+    if(pinged && !stale && !newDay){
+      try{ devPut(0, true); }catch(e){}
+      try{ devRender(); }catch(e){}
+      return false;
+    }
 
     try{ sessionStorage.setItem('gyotoku.devPinged','1'); }catch(e){}
     /* ★at を動かすのは「はじめてひらいた時」と「日が変わった時」だけ。
        版が上がっただけの読み込み直しでは動かさない（0を渡す＝据え置き） */
-    devPut((!pinged || newDay) ? Date.now() : 0);
+    devPut((!pinged || newDay) ? Date.now() : 0, true);   /* ★v164 ひらいた時 */
     try{ devRender(); }catch(e){}
     return true;
   }
@@ -10176,7 +10189,7 @@
   function devBump(){
     var n=devRecN()+1;
     try{ lsSet(DEVREC_LS,String(n)); }catch(e){}
-    devPut(0);
+    devPut(0, false);   /* ★v164 記録を足しただけ。ひらいた時刻は動かさない */
     try{ devRender(); }catch(e){}
   }
   function devEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -12066,7 +12079,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v163';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v164';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
