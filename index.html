@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v167s">
+<meta name="app-ver" content="v167">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2382,7 +2382,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v167s(診断)</span></div>
+          <div class="setrow">バージョン<span class="sv">v167</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2778,57 +2778,7 @@
     go(to);
   }
   /* 下のタブから開く時は履歴をまっさらにしてから移動 */
-  /* ★★★診断版だけの仕掛け（v167s）★★★
-     下のタブが押せない件を切り分けるためのもの。
-     ・指がタブに触れたか（touchstart）
-     ・押したことになったか（click）
-     ・go() が走ったか
-     ・そのあと画面が変わったか
-     を、画面のまん中に大きく出す。**次の版では消す。** */
-  function zzSay(msg){
-    try{
-      var d=document.getElementById('zzDiag');
-      if(!d){
-        d=document.createElement('div'); d.id='zzDiag';
-        d.style.cssText='position:fixed;left:8px;right:8px;top:90px;z-index:99999;'
-          +'background:#fffbe6;border:3px solid #A32B2B;border-radius:12px;padding:12px;'
-          +'font-size:17px;line-height:1.6;color:#2b2b2b;white-space:pre-wrap;pointer-events:none;';
-        document.body.appendChild(d);
-      }
-      var t=new Date();
-      d.textContent=('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2)+':'
-        +('0'+t.getSeconds()).slice(-2)+'\n'+msg;
-    }catch(e){}
-  }
-  function zzWatchTabs(){
-    try{
-      var tabs=document.querySelectorAll('.tab');
-      for(var i=0;i<tabs.length;i++){
-        (function(el){
-          el.addEventListener('touchstart', function(ev){
-            var r=el.getBoundingClientRect();
-            var x=(ev.touches&&ev.touches[0])?ev.touches[0].clientX:0;
-            var y=(ev.touches&&ev.touches[0])?ev.touches[0].clientY:0;
-            var top=document.elementFromPoint(x,y);
-            var nm=top?((top.id?'#'+top.id:'')+(top.className?'.'+String(top.className).slice(0,22):top.tagName)):'なし';
-            zzSay('① 指がふれた：'+el.innerText.replace(/\s+/g,'')
-              +'\n　その場所にある物：'+nm
-              +'\n　タブの位置 上'+Math.round(r.top)+' 高さ'+Math.round(r.height)
-              +'\n　画面の高さ'+window.innerHeight);
-          }, {passive:true});
-          el.addEventListener('click', function(){
-            zzSay('② 押されました：'+el.innerText.replace(/\s+/g,''));
-          });
-        })(tabs[i]);
-      }
-      zzSay('診断版です。下のタブを押してみてください。\n（このお知らせは指を通すので、下は普通に押せます）');
-    }catch(e){}
-  }
-  function goFromTab(n){
-    zzSay('③ go('+n+') を始めます');
-    navClear(); _navSkip=true; go(n);
-    setTimeout(function(){ zzSay('④ 終わりました。いまの画面＝'+curScreen); }, 300);
-  }
+  function goFromTab(n){ navClear(); _navSkip=true; go(n); }
 
   function go(n){
     if(n==='ksas'){ openKsas('ログイン画面が開きます(IDは保存できます)'); return; } /* v24:ワンタップでKSASへ */
@@ -10124,8 +10074,15 @@
       return x.getFullYear()===y.getFullYear() && x.getMonth()===y.getMonth() && x.getDate()===y.getDate();
     }catch(e){ return false; }
   }
-  try{ setTimeout(zzWatchTabs, 3000); }catch(e){}   /* ★診断版だけ */
-  function devPing(){
+  /* ★★v167 opened＝「アプリを本当にひらいた時」だけ true。
+     ── なぜ分けたか（★親方の実機で、下のタブが押せなくなった原因）
+       _verTapGo が **指が画面に触れるたびに** devPing を呼んでいる。
+       v164/v166 でここを「毎回 lt を書いて devRender で描き直す」ようにしたため、
+       **指が触れた瞬間にボタンが作り直され、指を離しても「押した」と見なされなく**なった。
+       （診断版で、①指がふれた は出るのに ②押されました が一度も出なかった）
+       → 指が触れただけの時は、v161 までと同じく**何も書かない・描き直さない**。
+         時刻(lt)を新しくするのは、起動した時と、しまい込みから戻った時だけ。 */
+  function devPing(opened){
     var cur=null;
     try{ cur=devLoad()[devId()]; }catch(e){ cur=null; }
     if(cur && (typeof cur!=='object' || (cur instanceof Array))) cur=null;
@@ -10138,9 +10095,11 @@
     try{ pinged=!!sessionStorage.getItem('gyotoku.devPinged'); }catch(e){}
 
     /* ★書かなくてよい唯一の場合＝「ただの読み込み直し・版も同じ・日も同じ」 */
-    /* ★v166 ここを素通りすると、朝ひらいた時刻のまま止まる。
-       at（その日はじめて触った時刻）は据え置きのまま、lt だけ新しくして帰る。 */
     if(pinged && !stale && !newDay){
+      /* ★★v167 指が触れただけの時は、**何もしないで帰る**。
+         ここで書いたり描き直したりすると、下のタブが押せなくなる。 */
+      if(!opened) return false;
+      /* ★ひらいた時だけ、at は据え置きのまま lt（最後にひらいた時刻）を新しくする */
       try{ devPut(0, true); }catch(e){}
       try{ devRender(); }catch(e){}
       return false;
@@ -12053,7 +12012,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v167s';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v167';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
@@ -12359,10 +12318,10 @@
       document.addEventListener(g, function(e){ try{ e.preventDefault(); }catch(e2){} }, {passive:false});
     });
   }catch(e){}
-  setTimeout(function(){ try{ devPing(); }catch(e){} }, 2000);
+  setTimeout(function(){ try{ devPing(true); }catch(e){} }, 2000);   /* ★v167 起動した時 */
   setTimeout(function(){ try{ verCheck(true); }catch(e){} }, 3000);
   setInterval(function(){ try{ verCheck(); }catch(e){} }, 180000);
-  try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ verCheck(); }catch(e){} } }); }catch(e){}
+  try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ verCheck(); }catch(e){} try{ devPing(true); }catch(e6){}  /* ★v167 戻ってきた＝ひらいた */ } }); }catch(e){}
   /* ★しまい込まれた画面から戻るときは visibilitychange が出ないことがある */
   try{ window.addEventListener('pageshow',function(){ try{ verCheck(); }catch(e){} }); }catch(e){}
   /* ★★これが本体。指が触れている＝画面が点いていて、アプリが動いている。
@@ -12373,14 +12332,14 @@
     var _verTapGo=function(){
       try{ verCheck(); }catch(e){}
       /* ★v136 「最後に使った日」も、ここで見る。
-         devPing は中で「日が変わっていなければ何もしない」ので、
-         連打されても書き込みは **1日1回**しか起きない（＝上限の心配がない） */
-      try{ devPing(); }catch(e){}
+         ★★v167 指が触れただけ＝false を渡す。**時刻は新しくしない・描き直さない**。
+           ここで描き直すと、押した判定が消えて下のタブが効かなくなる。 */
+      try{ devPing(false); }catch(e){}
     };
     document.addEventListener('touchstart', _verTapGo, {capture:true, passive:true});
     document.addEventListener('mousedown',  _verTapGo, {capture:true, passive:true});
   }catch(e){
-    try{ document.addEventListener('touchstart', function(){ try{ verCheck(); }catch(e2){} try{ devPing(); }catch(e4){} }, true); }catch(e3){}
+    try{ document.addEventListener('touchstart', function(){ try{ verCheck(); }catch(e2){} try{ devPing(false); }catch(e4){} }, true); }catch(e3){}
   }
   /* 入れかわった直後だけ、小さく知らせる（黙って変わると壊れたと思われるため） */
   try{
