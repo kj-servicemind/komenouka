@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v165">
+<meta name="app-ver" content="v167s">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1868,25 +1868,13 @@
         先に #E7E3D8 で固定した（値で grep して数え、確かめた・§10-15）。 */
   
 
-    /* ★★v162 端末の小窓 ★★ */
-    .dev-ov{display:none;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.38);
-      z-index:60;                 /* ★v165 kusaOv・cropOv と同じ高さにそろえる（9000 は高すぎた） */
-      pointer-events:none;}       /* ★v165 閉じている時は指を通す（念のための二重の守り） */
-    .dev-ov.on{display:flex;align-items:flex-end;pointer-events:auto;}
-    .dev-box{background:#fff;width:100%;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px rgba(0,0,0,.18);}
-    .dev-box-t{font-size:21px;font-weight:700;margin-bottom:4px;}
-    .dev-box-s{font-size:15px;color:#6E6A5C;margin-bottom:14px;}
-    /* ★押す所は 56px（iPhone の目安 44px より大きく・年配の指で押しやすく） */
-    .dev-btn{font-size:19px;font-weight:700;text-align:center;padding:17px 12px;margin-top:10px;border-radius:14px;border:1px solid #D9D2C2;background:#FBF8F0;min-height:56px;box-sizing:border-box;}
-    .dev-btn-del{color:#A32B2B;border-color:#A32B2B;background:#FFF6F6;}
-    .dev-btn-gh{color:#6E6A5C;background:#fff;}
-
-    /* ★★v163 キーボードの🎤の道あんない ★★ */
-    .kbtip{display:none;background:#FFF7E0;border:2px solid #C8A43C;border-radius:14px;
-      padding:14px 14px;margin:10px 0 4px;}
-    .kbtip.on{display:block;}
-    .kbtip-t{font-size:20px;font-weight:700;line-height:1.5;color:#5A4A12;}
-    .kbtip-b{font-size:15px;line-height:1.7;color:#5A4A12;margin-top:8px;}
+    /* ★★v166 「消す」の札。行の中に置くだけ＝**新しい重なりは作らない** ★★
+       （v162 でかぶせる箱を作り、置き場所を誤って下のタブが押せなくなった） */
+    .dev-del{font-size:16px;font-weight:700;color:#A32B2B;border:1px solid #A32B2B;
+      background:#FFF6F6;border-radius:10px;margin-left:8px;white-space:nowrap;
+      /* ★押す所は 46px 以上（iPhone の目安 44px より大きく・年配の指で押しやすく） */
+      display:inline-flex;align-items:center;justify-content:center;
+      min-height:46px;min-width:62px;box-sizing:border-box;padding:0 12px;}
 </style>
 </head>
 <body>
@@ -1894,8 +1882,7 @@
 <div class="phone"><div class="screen">
   <div class="statusbar"><span id="clock">10:00</span><span>◦◦◦ ᯤ ▮</span></div>
   <div class="hdr" id="hdr"></div>
-  
-<div class="body" id="body">
+  <div class="body" id="body">
 
     <!-- ===== ① ホーム ===== -->
     <div class="page on" id="p-home">
@@ -1987,17 +1974,8 @@
     <!-- ===== ④ 話して記録 ===== -->
     <div class="page" id="p-voice">
       <div class="sc">
-        <div class="micbig" id="mic" onclick="vmMic()">🎤</div>
+        <div class="micbig" id="mic" onclick="toggleRec()">🎤</div>
         <div class="miclabel" id="miclabel">押して話す(手が汚れててもOK)</div>
-        <!-- ★★v163 キーボードの🎤で話す道あんない ★★
-             ホーム画面に入れたアプリの中では、ブラウザの聞き取りが動かない
-             （Appleの作りで、そうなっている）。iPhone のキーボードに付いている
-             🎤 なら、ホーム画面のアプリでも必ず動く。 -->
-        <div class="kbtip" id="kbTip">
-          <div class="kbtip-t">⌨️ キーボードの <b>🎤</b> を押して、話してください</div>
-          <div class="kbtip-b">キーボードの<b>いちばん下の列</b>・左のほうにあります<br>
-            話し終わったら、下の「<b>この文で振り分ける</b>」を押してください</div>
-        </div>
         <div class="cheat">
           <div class="ct">🗒 こんなふうに話せばOK（カンペ）</div>
           <div class="ex"><b>「西3に</b> スタークルを <b>1000倍で</b> まいた」</div>
@@ -2005,15 +1983,13 @@
           <div class="ex"><b>「松延121の</b> 化成を <b>20キロ</b> まいた」</div>
           <div class="cn"><span class="nb">田んぼ名 → した作業 →</span><span class="nb">（農薬・肥料と量）の順が</span><span class="nb">聞き取りやすいです。</span></div>
         </div>
-        <div class="vmanual" onclick="vmToggle()">⌨️ 指で打ちたい時も、ここから</div>
+        <div class="vmanual" onclick="vmToggle()">⌨️ うまく聞き取れない時は「手で入力」</div>
         <div class="vmanual-box" id="vmBox">
           <input class="vin" id="vmIn" type="text" placeholder="例：西3 スタークル散布 1000倍" enterkeyhint="done">
           <div class="vgo" onclick="vmParse()">↓ この文で振り分ける</div>
         </div>
         <div class="transcript" id="tr">ここに話した言葉が出ます</div>
-        <!-- ★v163 キーボードの🎤に切りかえたので、Safariを勧める注意書きは出さない
-             （ホーム画面のアプリのままで動くようになったため。要素は残す＝他から参照されている） -->
-        <div class="safari-tip" id="safaritip" style="display:none;">⚠️ うまく聞き取れない時は、Safariでこのページを開くと安定します。</div>
+        <div class="safari-tip" id="safaritip">⚠️ うまく聞き取れない時は、Safariでこのページを開くと安定します。</div>
         <div class="parsed" id="parsed" style="display:none;"></div>
 
         <!-- ===== 写真:撮って、みんなに共有 ===== -->
@@ -2406,7 +2382,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v165</span></div>
+          <div class="setrow">バージョン<span class="sv">v167s(診断)</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2603,23 +2579,7 @@
        ★📱田んぼをえらぶ(fpOv) は fpEnsure() が document.body へ足す形。狙いは同じ。
        ★画面を移ったときは go() が閉じます（★v158で足した。箱が .page の外に出たので、
          画面が隠れても自動では消えなくなったため）。 -->
-      <!-- ★★v165 ここへ動かした（v162 では hdr と body の間に置いていた）★★
-         ── なぜ動かしたか
-           このアプリの「かぶせる箱」は kusaOv・cropOv・toast・phLb がぜんぶ
-           **タブバーより後ろ**に並んでいる。v162 でこれ1つだけ前に置き、
-           しかも z を 9000（既存は60）にしたため、
-           **実機で下のタブが、どの画面でも押せなくなった**（親方のご報告 2026/08/14）。
-           → 並びも z も、既存のものに合わせる。 -->
-    <div id="devOv" class="dev-ov" onclick="devOvBg(event)">
-      <div class="dev-box">
-        <div class="dev-box-t" id="devBoxT">端末</div>
-        <div class="dev-box-s" id="devBoxS"></div>
-        <div class="dev-btn" onclick="devNameFromBox()">✏️ 名前をつける</div>
-        <div class="dev-btn dev-btn-del" onclick="devDelFromBox()">🗑 この端末を一覧から消す</div>
-        <div class="dev-btn dev-btn-gh" onclick="devClose()">やめる</div>
-      </div>
-    </div>
-<div class="kusa-ov" id="kusaOv" style="display:none;" onclick="kusaSheetBg(event)">
+  <div class="kusa-ov" id="kusaOv" style="display:none;" onclick="kusaSheetBg(event)">
     <div class="kusa-sheet" id="kusaSheet"></div>
   </div>
   <div class="kusa-ov" id="cropOv" style="display:none;" onclick="cropSheetBg(event)">
@@ -2818,7 +2778,57 @@
     go(to);
   }
   /* 下のタブから開く時は履歴をまっさらにしてから移動 */
-  function goFromTab(n){ navClear(); _navSkip=true; go(n); }
+  /* ★★★診断版だけの仕掛け（v167s）★★★
+     下のタブが押せない件を切り分けるためのもの。
+     ・指がタブに触れたか（touchstart）
+     ・押したことになったか（click）
+     ・go() が走ったか
+     ・そのあと画面が変わったか
+     を、画面のまん中に大きく出す。**次の版では消す。** */
+  function zzSay(msg){
+    try{
+      var d=document.getElementById('zzDiag');
+      if(!d){
+        d=document.createElement('div'); d.id='zzDiag';
+        d.style.cssText='position:fixed;left:8px;right:8px;top:90px;z-index:99999;'
+          +'background:#fffbe6;border:3px solid #A32B2B;border-radius:12px;padding:12px;'
+          +'font-size:17px;line-height:1.6;color:#2b2b2b;white-space:pre-wrap;pointer-events:none;';
+        document.body.appendChild(d);
+      }
+      var t=new Date();
+      d.textContent=('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2)+':'
+        +('0'+t.getSeconds()).slice(-2)+'\n'+msg;
+    }catch(e){}
+  }
+  function zzWatchTabs(){
+    try{
+      var tabs=document.querySelectorAll('.tab');
+      for(var i=0;i<tabs.length;i++){
+        (function(el){
+          el.addEventListener('touchstart', function(ev){
+            var r=el.getBoundingClientRect();
+            var x=(ev.touches&&ev.touches[0])?ev.touches[0].clientX:0;
+            var y=(ev.touches&&ev.touches[0])?ev.touches[0].clientY:0;
+            var top=document.elementFromPoint(x,y);
+            var nm=top?((top.id?'#'+top.id:'')+(top.className?'.'+String(top.className).slice(0,22):top.tagName)):'なし';
+            zzSay('① 指がふれた：'+el.innerText.replace(/\s+/g,'')
+              +'\n　その場所にある物：'+nm
+              +'\n　タブの位置 上'+Math.round(r.top)+' 高さ'+Math.round(r.height)
+              +'\n　画面の高さ'+window.innerHeight);
+          }, {passive:true});
+          el.addEventListener('click', function(){
+            zzSay('② 押されました：'+el.innerText.replace(/\s+/g,''));
+          });
+        })(tabs[i]);
+      }
+      zzSay('診断版です。下のタブを押してみてください。\n（このお知らせは指を通すので、下は普通に押せます）');
+    }catch(e){}
+  }
+  function goFromTab(n){
+    zzSay('③ go('+n+') を始めます');
+    navClear(); _navSkip=true; go(n);
+    setTimeout(function(){ zzSay('④ 終わりました。いまの画面＝'+curScreen); }, 300);
+  }
 
   function go(n){
     if(n==='ksas'){ openKsas('ログイン画面が開きます(IDは保存できます)'); return; } /* v24:ワンタップでKSASへ */
@@ -7249,27 +7259,6 @@
     };
     return r;
   }
-  /* ★★v163 いちばん大事な直し ★★
-     ── なぜ作りを変えたか
-       v161 で「勝手に止まって再起動しつづける」を直したが、**それでも文字が入らなかった**。
-       調べると、**ホーム画面に入れたアプリの中では、ブラウザの聞き取りそのものが動かない**
-       （Appleの作り。API はあるので「使える」と判定されるが、何も起きない）。
-       親方はホーム画面のアイコンから使っておられるので、これに当たっていた。
-     ── どう直したか
-       iPhone の**キーボードに付いている 🎤**（Apple の音声入力）に切りかえた。
-       これはホーム画面のアプリでも Safari でも必ず動く。無料。聞き取りの精度も上。
-     ★大きな🎤ボタンを押す → 文字の欄が開いてキーボードが出る → キーボードの🎤で話す */
-  function vmMic(){
-    var box=document.getElementById('vmBox'), inp=document.getElementById('vmIn'),
-        tip=document.getElementById('kbTip'), lbl=document.getElementById('miclabel');
-    if(box) box.classList.add('on');
-    if(tip) tip.classList.add('on');
-    if(lbl) lbl.textContent='キーボードの 🎤 で話してください';
-    /* ★iPhone は「指で押した流れの中」でしかキーボードを出せない。
-       間をあけると出ないので、その場ですぐ focus する（setTimeout を挟まない）。 */
-    if(inp){ try{ inp.focus(); }catch(e){} }
-    try{ if(box) box.scrollIntoView({block:'center'}); }catch(e){}
-  }
   function toggleRec(){ recState?stopRec():startRec(); }
   function startRec(){
     var mic=document.getElementById('mic'),lbl=document.getElementById('miclabel'),tr=document.getElementById('tr');
@@ -10041,20 +10030,16 @@
       nm:(cur&&typeof cur.nm==='string')?cur.nm:'',      /* ★名前は消さずに必ず引き継ぐ */
       v:devVer(),
       at:((at>0)?at:((cur&&typeof cur.at==='number'&&cur.at>0)?cur.at:now)),
-      /* ★v162【新】lt＝**最後にひらいた時刻**。at（その日はじめて触った時刻）とは別に持つ。
-         at をそのまま時刻で出すと、朝6時にひらいて夕方まで使っても「6:00」と出て嘘になる
-         （v136 で時刻表示をやめた理由がこれ）。lt なら いつ出しても正しい。 */
-      /* ★v164 lt は「**ひらくたび**に」新しくする。
-         v163 では at>0（＝その日はじめて／日が変わった時）のときしか新しくせず、
-         朝ひらいた時刻のまま止まってしまった（親方の実機で発覚・6:43 のまま9時台）。
-         ★記録を足しただけ(devBump)では動かさない。「ひらいた時刻」の意味を守るため。 */
+      /* ★v166 lt＝最後にひらいた時刻。at（その日はじめて触った時刻）とは別に持つ。
+         at をそのまま時刻で出すと、朝ひらいて夕方まで使っても朝の時刻が出て嘘になる
+         （v136 で時刻表示をやめた理由）。lt なら いつ出しても正しい。
+         ★ひらいた時(opened)だけ新しくする。記録を足しただけでは動かさない。 */
       lt:(opened?now:((cur&&typeof cur.lt==='number'&&cur.lt>0)?cur.lt:now)),
-      /* ★v162 自分がひらいたら「一覧から消した印」は外す。
-         ＝片づけた端末も、その人がまた使えば戻ってくる（気づけなくなると困るので） */
-      del:0,
+      /* ★v166 一覧から消した印。ひらけば 0 に戻る＝また使えば一覧に戻ってくる */
+      del:(opened?0:((cur&&typeof cur.del==='number')?cur.del:0)),
       n:devRecN(),
       _m:{nm:(m.nm||0), v:now, at:((at>0)?now:(m.at||now)),
-          lt:(opened?now:(m.lt||now)), del:now, n:now}
+          lt:(opened?now:(m.lt||now)), del:(opened?now:(m.del||0)), n:now}
     };
     try{ lsSet(DEV_LS, JSON.stringify(o)); }catch(e){}
     return o;
@@ -10062,44 +10047,22 @@
   /* ★名前を付ける。★自分以外の端末にも付けられる（遠方のご家族に代わって親方が付けるため）。
      ★触るのは nm と _m.nm だけ。v／at／n には指1本触れない（本人が数えているものなので）。
      ★中身が変わらないときは書かない（決まり①：むだにサーバーへ書かない） */
-  /* ★★v162 端末の小窓 ★★ */
-  var devPick=null;                                   /* いま開いている端末の札 */
-  function devOpen(id){
+  /* ★★v166 端末を一覧から消す ★★
+     ★★ただ消すだけでは、家族の端末が古い一覧を送り返して**勝手に戻ってくる**
+        （v63「家族の記録が消える」と同じ型。実際に親方の端末で12台に戻った）。
+        → 値は残したまま **del＝消した時刻** を立てる。_m.del で新しいほうが勝つので
+          サーバーにも家族にも「消した」が伝わる。
+        → その人がまたひらけば devPut が del を 0 に戻すので、ちゃんと一覧に戻る。 */
+  function devDel(id){
     var o=devLoad(), cur=o[id];
     if(!cur||typeof cur!=='object'||(cur instanceof Array))return;
-    devPick=id;
-    var nm=(typeof cur.nm==='string'&&cur.nm)?cur.nm:'', me=(id===devId());
-    var t=document.getElementById('devBoxT'), sb=document.getElementById('devBoxS'),
-        ov=document.getElementById('devOv');
-    if(t) t.textContent=(nm||'名前のない端末')+(me?'（この端末）':'');
-    if(sb) sb.textContent=devWhen(cur.at, cur.lt)+'・記録 '
-                          +((typeof cur.n==='number'&&cur.n>0)?cur.n:0)+'件・'
-                          +((typeof cur.v==='string'&&cur.v)?cur.v:'—');
-    if(ov) ov.classList.add('on');
-  }
-  function devClose(){
-    var ov=document.getElementById('devOv'); if(ov) ov.classList.remove('on');
-    devPick=null;
-  }
-  function devOvBg(ev){ if(ev&&ev.target&&ev.target.id==='devOv') devClose(); }
-  function devNameFromBox(){ var id=devPick; devClose(); if(id) devName(id); }
-  /* ★一覧から消す。
-     ★★ただ消すだけでは、家族の端末が古い一覧を送り返して**勝手に戻ってくる**
-        （v63「家族の記録が消える」と同じ型）。
-        → 値は残したまま **del＝消した時刻** を立てる。_m.del で新しいほうが勝つ。
-        → その人がまたひらけば devPut が del:0 にするので、ちゃんと戻ってくる。 */
-  function devDelFromBox(){
-    var id=devPick; if(!id){ devClose(); return; }
-    var o=devLoad(), cur=o[id];
-    if(!cur||typeof cur!=='object'||(cur instanceof Array)){ devClose(); return; }
     var nm=(typeof cur.nm==='string'&&cur.nm)?cur.nm:'この端末';
     var ok=false;
-    try{ ok=confirm(nm+'を一覧から消します。\nその人がまたアプリをひらくと、また出てきます。'); }catch(e){ ok=false; }
-    if(!ok){ devClose(); return; }
+    try{ ok=confirm(nm+'を一覧から消しますか？\nその人がまたアプリをひらくと、また出てきます。'); }catch(e){ ok=false; }
+    if(!ok)return;
     var now=Date.now(), mm=devMarks(cur);
     mm.del=now; cur.del=now; cur._m=mm; o[id]=cur;
     try{ lsSet(DEV_LS, JSON.stringify(o)); }catch(e){}
-    devClose();
     try{ devRender(); }catch(e){}
     try{ toast('「'+nm+'」を一覧から消しました'); }catch(e){}
   }
@@ -10161,6 +10124,7 @@
       return x.getFullYear()===y.getFullYear() && x.getMonth()===y.getMonth() && x.getDate()===y.getDate();
     }catch(e){ return false; }
   }
+  try{ setTimeout(zzWatchTabs, 3000); }catch(e){}   /* ★診断版だけ */
   function devPing(){
     var cur=null;
     try{ cur=devLoad()[devId()]; }catch(e){ cur=null; }
@@ -10174,10 +10138,8 @@
     try{ pinged=!!sessionStorage.getItem('gyotoku.devPinged'); }catch(e){}
 
     /* ★書かなくてよい唯一の場合＝「ただの読み込み直し・版も同じ・日も同じ」 */
-    /* ★★v164 ここが「時刻が止まって見えた」もう一つの原因。
-       v136 から「同じ日・同じ版・読み込み直しだけ」なら**何も書かずに帰って**いた。
-       時刻を出すようになった以上、ひらいた事実は毎回書く必要がある。
-       → at（その日はじめて触った時刻）は据え置きのまま、lt だけ新しくして帰る。 */
+    /* ★v166 ここを素通りすると、朝ひらいた時刻のまま止まる。
+       at（その日はじめて触った時刻）は据え置きのまま、lt だけ新しくして帰る。 */
     if(pinged && !stale && !newDay){
       try{ devPut(0, true); }catch(e){}
       try{ devRender(); }catch(e){}
@@ -10187,7 +10149,7 @@
     try{ sessionStorage.setItem('gyotoku.devPinged','1'); }catch(e){}
     /* ★at を動かすのは「はじめてひらいた時」と「日が変わった時」だけ。
        版が上がっただけの読み込み直しでは動かさない（0を渡す＝据え置き） */
-    devPut((!pinged || newDay) ? Date.now() : 0, true);   /* ★v164 ひらいた時 */
+    devPut((!pinged || newDay) ? Date.now() : 0, true);   /* ★v166 ひらいた時 */
     try{ devRender(); }catch(e){}
     return true;
   }
@@ -10195,7 +10157,7 @@
   function devBump(){
     var n=devRecN()+1;
     try{ lsSet(DEVREC_LS,String(n)); }catch(e){}
-    devPut(0, false);   /* ★v164 記録を足しただけ。ひらいた時刻は動かさない */
+    devPut(0, false);   /* ★v166 記録を足しただけ。ひらいた時刻は動かさない */
     try{ devRender(); }catch(e){}
   }
   function devEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -10203,8 +10165,8 @@
      ★時刻は出さない。at は「その日はじめて触った時刻」なので、
        時刻まで出すと そのあと何時間使っていても同じ時刻が出て **嘘になる**（§3.5）。
      ★日まで（きょう／きのう／◯月◯日）なら、いつでも正しい。 */
-  /* ★v162 lt（最後にひらいた時刻）があれば **時刻まで**出す。
-     lt がまだ無い古い端末は、これまで通り日だけ（嘘にならない範囲にとどめる）。 */
+  /* ★v166 lt（最後にひらいた時刻）があれば時刻まで出す。
+     まだ lt を持たない古い端末は、これまで通り日だけ（嘘にならない範囲にとどめる）。 */
   function devWhen(t, lt){
     var use=(typeof lt==='number'&&lt>0)?lt:t;
     if(typeof use!=='number'||!(use>0))return 'まだ使われていません';
@@ -10220,8 +10182,8 @@
     var card=document.getElementById('devCard'); if(!card)return;
     var o=devLoad(), me=devId(), ks=[], k;
     for(k in o){ if(Object.prototype.hasOwnProperty.call(o,k)&&o[k]&&typeof o[k]==='object'&&!(o[k] instanceof Array)){
-      /* ★v162 一覧から消した端末は出さない。
-         ただし **消したあとに その人がひらいていれば戻す**（del より at が新しい）。
+      /* ★v166 一覧から消した端末は出さない。
+         ただし**消したあとに その人がひらいていれば戻す**（del より新しく使っている）。
          ＝片づけた端末も、また使われれば気づける */
       var _e=o[k], _d=(typeof _e.del==='number')?_e.del:0;
       if(_d>0 && !((typeof _e.at==='number'&&_e.at>_d)||(typeof _e.lt==='number'&&_e.lt>_d))) continue;
@@ -10240,10 +10202,16 @@
       var nm=(typeof e.nm==='string'&&e.nm)?e.nm:'';
       /* ★名前があればそれを出す。無ければ端末番号＋「名前をつける」の札（押せると分かるように） */
       var ttl=nm?devEsc(nm):('端末'+(DEV_NO[i]||('('+(i+1)+')'))+' <span class="dev-tag">名前をつける</span>');
-      out+='<div class="setrow" onclick="devOpen(\''+devEsc(ks[i])+'\')"><div><div>'+ttl
+      out+='<div class="setrow" onclick="devName(\''+devEsc(ks[i])+'\')"><div><div>'+ttl
         +(mine?' <span class="dev-me">この端末</span>':'')+'</div>'
         +'<div class="dev-sub">'+devWhen(e.at, e.lt)+'・記録 '+cnt+'件</div></div>'
-        +'<span class="sv'+(old?' dev-old':'')+'">'+(old?'\u26a0\ufe0f ':'')+devEsc(v||'—')+' ›</span></div>';
+        +'<span class="sv'+(old?' dev-old':'')+'">'+(old?'\u26a0\ufe0f ':'')+devEsc(v||'—')
+        /* ★v166 「消す」は行の中に置く。**かぶせる箱は作らない**。
+           v162 で箱を作ったとき、置き場所を誤って下のタブが押せなくなった。
+           ここは既存の setrow の中だけで完結させる（新しい重なりを作らない）。 */
+        /* ★v166 この端末には出さない（消しても、ひらいた時点で戻るので意味がない） */
+        +'</span>'+(mine?'':'<span class="dev-del" onclick="event.stopPropagation();devDel(\''
+          +devEsc(ks[i])+'\')">消す</span>')+'</div>';
     }
     card.innerHTML=out;
   }
@@ -12085,7 +12053,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v165';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v167s';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
