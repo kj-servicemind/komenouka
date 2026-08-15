@@ -27,6 +27,71 @@
 */
 const TOMB_KEY = "gyotoku.tomb.v1";
 
+/* ★★v168 リセットの門番（★親方のご指示・2026/08/15）★★
+   ── 何が起きていたか（親方の実機の「データの出来事」で確定した）
+     テスト端末が 00:58 に「リセットの合図で364件消しました」と出した**直後**、
+     同じ 00:58 に「家族から届きました：作業の記録 184件」と出ていた。
+     消えたはずのものが、その場で戻ってきていた。
+
+     原因は3つが噛み合っていた：
+       ①ここ(sync-put)の合流は**足し算**。1台が184件送れば、サーバーは184件に戻る
+       ②端末の syncFlush は、**サーバーを読まずに送る**（閉じる時は読む時間が無いため）。
+         リセットの合図を見る前に、古い184件が飛ぶ
+       ③端末側 v95 の直し「サーバーに無い鍵は送り忘れとみなして送り直す」が、
+         **リセットで空にしたのか事故で消えたのかを区別できない**
+
+     → 家族の端末は、**開く必要すらない。閉じられただけで全部戻る。**
+
+   ── なぜ端末ではなくここを直すか（§0.5②「書く側を1本にする」）
+     送る側は家族5人ぶんある。入口はここ1つ。
+     ★さらに大事なこと：**まだ新しい版が届いていない端末にも効く。**
+     端末を直す案だと、家族全員に版が行き渡るまで（数日ずれる・§0.5⑪②）穴が空く。
+
+   ── ★★期限は付けない（★親方のご指示・2026/08/15）★★
+     はじめ「3日で切れる」形にした。**これは設計の誤りだった。**
+     こちらが「家族5人が数日で全員開く」と勝手に前提を置いていたが、
+     親方に**「普段は1〜2台しか使わない。3日以内に5台開くのは不可能」**とご指摘いただいた。
+     期限で切ると、4日目に久しぶりに開いた端末が古い記録を送り返し、**また全部戻る。**
+     リセットも復元もめったにやらない作業なので、**確実に止め続けるほうを採る。**
+
+   ── ★バックアップから復元したくなったら（期限が無いぶん、ここが要る）
+     エポックが立っている限り、リセットより前に書かれた記録は入らない。
+     復元の前に、**サーバーのエポックを消す**こと：
+       Cloudflare の KV(GYOTOKU_KV) から  d:gyotoku.resetEpoch.v1  を削除する
+     消せば門番は何もしなくなる（下の「es == null」の道に入る）。
+     ★端末側の localStorage にも同じ鍵が残るので、そちらも消さないと合図が立て直る。
+   ── ★この門番が守らないもの（できないことを正直に書く・§0.5⑯1）
+     ・箱型（オブジェクト）のデータ … 1件ずつの「書かれた時刻」で選り分ける形になっていない。
+       稲作先生・肥料の目標・土のメモなどは**素通りする**
+     ・時刻を持たない古い記録（id が 'w'+ミリ秒 の形でないもの）… 0 として扱うので落ちる
+       （★これはリセットの意図どおり。端末側 _recTime とまったく同じ規則） */
+const EPOCH_KEY = "gyotoku.resetEpoch.v1";
+
+/* 記録が「いつ書かれたか」。★端末側 _recTime とまったく同じ規則にそろえる。
+   時刻をでっちあげない。読めなければ 0（＝いちばん古い）。 */
+function recTime(it) {
+  if (!it || typeof it !== "object" || (it instanceof Array)) return 0;
+  const m = parseInt(it._m, 10);
+  if (m > 0) return m;
+  const id = (it.id == null) ? "" : String(it.id);
+  const g = id.match(/(\d{12,})/);
+  return g ? parseInt(g[1], 10) : 0;
+}
+
+/* リセットより前に書かれた記録を、届いた値から落とす。
+   ★配列だけを相手にする。それ以外は何もしないで、そのまま返す（素通り）。 */
+function gateValue(valueStr, epoch) {
+  let N = null;
+  try { N = JSON.parse(valueStr); } catch (e) { return valueStr; }
+  if (!(N instanceof Array)) return valueStr;      /* 箱型・その他は触らない */
+  const out = [];
+  for (let i = 0; i < N.length; i++) {
+    if (recTime(N[i]) > epoch) out.push(N[i]);
+  }
+  if (out.length === N.length) return valueStr;    /* 1件も落ちない＝作り直さない */
+  try { return JSON.stringify(out); } catch (e) { return valueStr; }
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
   if (request.method !== "POST") return json({ ok: false, error: "POST only" }, 405);
@@ -47,12 +112,35 @@ export async function onRequest(context) {
   if (typeof value !== "string") return json({ ok: false, error: "value must be string" }, 400);
   if (value.length > 2000000) return json({ ok: false, error: "too big" }, 413);
 
+  /* ★★v168 合流の**前に**門番を通す。
+     ここより下（合流の規則）は一行も変えていない。
+     ★エポックが無い／読めない／3日を過ぎている／エポック自身の書き込み → 何もしない。
+       つまり**ふだんの動きは v167 までとまったく同じ**。 */
+  let gated = 0;
+  let useValue = value;
+  if (key !== EPOCH_KEY) {
+    try {
+      const es = await env.GYOTOKU_KV.get("d:" + EPOCH_KEY);
+      if (es != null) {
+        let ep = 0;
+        try { const eo = JSON.parse(es); ep = (eo && eo.t) ? eo.t : 0; } catch (e) { ep = 0; }
+        const now = Date.now();
+        /* ★期限は無い（ずっと効く）。ただし時計が先に進んでいる端末を守るため、
+           エポックが未来を指しているときだけは効かせない。 */
+        if (ep > 0 && ep <= now) {
+          const g = gateValue(value, ep);
+          if (g !== value) { gated = 1; useValue = g; }
+        }
+      }
+    } catch (e) { useValue = value; gated = 0; }   /* ★何かあれば素通り＝前と同じ動き */
+  }
+
   /* ★v63 上書きではなく合流。読めない・合わせられない時は、届いた値をそのまま書く */
-  let toWrite = value;
+  let toWrite = useValue;
   let merged = false;
   try {
     const old = await env.GYOTOKU_KV.get("d:" + key);
-    if (old != null && old !== value) {
+    if (old != null && old !== useValue) {
       let tomb = null;
       if (key !== TOMB_KEY) {
         try {
@@ -60,13 +148,13 @@ export async function onRequest(context) {
           if (t != null) tomb = JSON.parse(t);
         } catch (e) { tomb = null; }
       }
-      const m = mergeValue(old, value, key, tomb);
+      const m = mergeValue(old, useValue, key, tomb);
       if (m != null && m.length <= 8000000) { toWrite = m; merged = true; }
     }
-  } catch (e) { toWrite = value; merged = false; }
+  } catch (e) { toWrite = useValue; merged = false; }
 
   await env.GYOTOKU_KV.put("d:" + key, toWrite);
-  return json({ ok: true, merged: merged });
+  return json({ ok: true, merged: merged, gated: gated });
 }
 
 /* ===== 合流（端末側 _mergeVal と同じ規則。ここだけで完結させる） ===== */
