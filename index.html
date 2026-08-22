@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v167">
+<meta name="app-ver" content="v168">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -2382,7 +2382,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v167</span></div>
+          <div class="setrow">バージョン<span class="sv">v168</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -3515,7 +3515,6 @@
     {n:'大津 (3)', a:'30.03a', crop:'つやおとめ', last:'つやおとめ', area:'大津', addr:'', comb:'カッタ', memo:'', care:''},
     {n:'大津 (4)', a:'9.81a', crop:'つやおとめ', last:'つやおとめ', area:'大津', addr:'', comb:'カッタ', memo:'', care:''},
     {n:'山隈', a:'36.86a', crop:'ひのひかり', last:'大豆', area:'山隈', addr:'', comb:'カッタ', memo:'60株で90枚', care:''},
-    {n:'田中 (1)', a:'74.12a', crop:'にこまる', last:'', area:'田中', addr:'', comb:'カッタ', memo:'', care:''},
     {n:'松尾 (2)', a:'20.18a', crop:'にこまる', last:'にこまる', area:'松尾', addr:'', comb:'カッタ', memo:'', care:''},
     {n:'田中404', a:'29.35a', crop:'にこまる', last:'にこまる', area:'田中', addr:'', comb:'カッタ', memo:'', care:''},
     {n:'豊田 (1)', a:'11.22a', crop:'にこまる', last:'にこまる', area:'豊田', addr:'', comb:'カッタ', memo:'', care:''},
@@ -12012,7 +12011,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v167';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v168';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
