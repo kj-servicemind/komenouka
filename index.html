@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v169">
+<meta name="app-ver" content="v170">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1909,11 +1909,6 @@
   .hv-vh .ic{font-size:19px;}
   .hv-vh .ct{margin-left:auto;font-size:14px;font-weight:900;}
   .hv-empty{font-size:14px;font-weight:700;color:#4A463C;text-align:center;padding:10px 0 12px;}
-  .hv-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:8px;cursor:pointer;}
-  .hv-card .h{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-  .hv-card .no{background:var(--green-soft);border-radius:6px;padding:3px 9px;font-size:12.5px;font-weight:900;color:var(--green-deep);flex-shrink:0;}
-  .hv-card .d{font-size:15px;font-weight:900;color:var(--ink);}
-  .hv-card .ed{margin-left:auto;font-size:13px;font-weight:800;color:#4A463C;flex-shrink:0;}
   .hv-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
   .hv-grid.g3{grid-template-columns:1.2fr 1fr .8fr;}
   .hv-grid .f{background:#F4F2EC;border-radius:8px;padding:7px 9px;min-width:0;}
@@ -1948,6 +1943,42 @@
   .hv-cancel{text-align:center;font-size:15px;font-weight:800;color:#4A463C;padding:14px 0 6px;cursor:pointer;}
   .hv-del{text-align:center;font-size:15px;font-weight:800;color:#B23B2E;background:#fff;border:1.5px solid #CA7F6F;
     border-radius:999px;padding:12px 0;margin-top:14px;cursor:pointer;}
+  /* ===== ★★v170 1回1行の一覧（工程表・年度別記録で共通）＋年度別記録の収穫後の管理 =====
+     ★§0.5⑱ 見栄え：日付・kg は1行、kg は右端そろえ、メモは黄色い帯で押さずに読める */
+  .hv-list{background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:8px;}
+  .hv-row{padding:10px 12px;border-top:1px solid #EDE9DF;text-align:left;}   /* ★左寄せをはっきり書く（外の箱の寄せに左右されないため） */
+  .hv-row:first-child{border-top:none;}
+  .hv-row.tap{cursor:pointer;}
+  .hv-row .r1{display:flex;align-items:center;gap:8px;white-space:nowrap;}
+  .hv-row .n{background:var(--green-soft);color:var(--green-deep);border-radius:6px;font-size:12px;font-weight:900;
+    padding:3px 0;min-width:40px;text-align:center;flex-shrink:0;}
+  .hv-row .d{font-size:15px;font-weight:900;color:var(--ink);}
+  .hv-row .k{margin-left:auto;font-size:15.5px;font-weight:900;color:var(--ink);}
+  .hv-row .ed{font-size:12.5px;font-weight:800;color:#4A463C;flex-shrink:0;}
+  .hv-row .x{font-size:13px;font-weight:800;color:#3E3A30;margin:4px 0 0 48px;}
+  .hv-row .hv-memo{   /* ★v170 名前を hv-memo にした：アプリに既に .memo（中央寄せの横並び・198行）があり、ぶつかって真ん中寄せになっていた */
+    margin:6px 0 0 48px;background:#FFF8E6;border-left:4px solid #D9A54A;border-radius:6px;
+    padding:7px 10px;font-size:14px;font-weight:800;color:var(--ink);line-height:1.55;word-break:break-all;}
+  .hv-more{text-align:center;padding:12px 0;font-size:14.5px;font-weight:900;color:var(--green-deep);
+    background:var(--green-soft);border-top:1px solid #EDE9DF;cursor:pointer;}
+  .hv-more:first-child{border-top:none;border-bottom:1px solid #EDE9DF;}
+  .hv-flt{display:flex;gap:7px;margin:12px 0 2px;}
+  .hv-flt .fb{flex:1;text-align:center;padding:11px 4px;border-radius:999px;font-size:13.5px;font-weight:900;
+    background:#fff;border:1.5px solid var(--line);color:var(--ink);cursor:pointer;white-space:nowrap;}
+  .hv-flt .fb.on{background:var(--green);border-color:var(--green);color:#fff;}
+  .ndo-hvt tr{cursor:pointer;}
+  .ndo-hvt td.go,.ndo-hvt th.go{width:22px;padding-left:0;color:#4A463C;font-size:17px;}
+  .ndo-hvhint{font-size:12.5px;font-weight:700;color:#3E3A30;padding:9px 12px;background:#FAF8F2;border-top:1px solid #EDE9DF;}
+  .ndo-hvro{font-size:12.5px;font-weight:800;color:#3E3A30;text-align:center;margin:12px 0 6px;}
+  .ndo-yrow{display:flex;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:13px;
+    padding:12px 13px;margin-bottom:8px;cursor:pointer;}
+  .ndo-yrow .y{font-family:var(--mincho);font-size:18px;font-weight:800;min-width:96px;color:var(--ink);}
+  .ndo-yrow .kv{flex:1;display:grid;grid-template-columns:auto 1fr;column-gap:12px;row-gap:3px;align-items:baseline;}
+  .ndo-yrow .kv span{font-size:13px;font-weight:800;color:#3E3A30;}
+  .ndo-yrow .kv b{font-size:16px;font-weight:900;text-align:right;color:var(--ink);}
+  .ndo-yrow .kv b.zan{color:#7A5412;} .ndo-yrow .kv b.fin{color:var(--green);} .ndo-yrow .kv b.over{color:var(--red);}
+  .ndo-yrow .kv .ln{grid-column:1/-1;border-top:1px dashed #C9C5B6;margin:2px 0;}
+  .ndo-yrow .ar{font-size:18px;color:#4A463C;margin-left:10px;}
 </style>
 </head>
 <body>
@@ -2455,7 +2486,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v169</span></div>
+          <div class="setrow">バージョン<span class="sv">v170</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2840,6 +2871,7 @@
     if(curScreen==='nendo'){
       if(typeof ndoView!=='undefined' && ndoView==='one'){ ndoBackToFields(); return; }
       if(typeof ndoView!=='undefined' && ndoView==='fields'){ ndoBackToTop(); return; }
+      if(typeof ndoView!=='undefined' && ndoView==='hv'){ ndoBackToTop(); return; }   /* ★v170 籾摺り・出荷 → 年の画面 */
     }
     /* ★v90 田んぼ一覧も1画面の中に「タイル」と「その地区の田んぼ」があるので1段ずつ戻す。
        ヘッダーの戻るも横スワイプも下タブも、どれもここを通る（§10-9） */
@@ -4660,7 +4692,7 @@
 
   /* いま見ている場所。開くたびに nendoEnter() で必ず作り直す */
   var ndoYear = 0;        /* 0 = ぜんぶの年 */
-  var ndoView = 'top';    /* 'top'（年と地区）/ 'fields'（田んぼ）/ 'one'（1枚） */
+  var ndoView = 'top';    /* 'top'（年と地区）/ 'fields'（田んぼ）/ 'one'（1枚）/ 'hv'（★v170 籾摺り・出荷） */
   var ndoArea = '';
   var ndoIdx  = -1;       /* KT_FIELDS の番号 */
 
@@ -4763,6 +4795,7 @@
   function ndoRender(){
     ndoHdr();
     if(ndoView==='one')        ndoOneRender();
+    else if(ndoView==='hv')     ndoHvRender();   /* ★v170 */
     else if(ndoView==='fields') ndoFieldsRender();
     else                        ndoTopRender();
     /* ★「📜 去年の今ごろ」の入口は、いちばん上の画面のときだけ出す（§8-4①）。
@@ -4784,16 +4817,97 @@
       el.innerHTML='<div class="navhead">'
         +'<button class="back" onclick="ndoBackToFields()"><span class="ar">\u2190</span>'+ndoArea+'</button>'
         +'<span class="title">'+((f&&f.n)||'')+'</span></div>';
+    }else if(ndoView==='hv'){   /* ★v170 品種の籾摺り・出荷 */
+      el.innerHTML='<div class="navhead">'
+        +'<button class="back" onclick="ndoBackToTop()"><span class="ar">\u2190</span>'+ndoYearName(ndoYear)+'</button>'
+        +'<span class="title">'+hvEsc(ndoHvCrop)+'</span></div>';   /* ★年産は左の「← 2026年」と表に出ているので書かない（カッコで2行に折れた・⑱で目視） */
     }else{
       el.innerHTML=HEADERS['nendo']||'';
     }
   }
   function ndoSetYear(y){ ndoYear=y; ndoRender(); }
   function ndoOpenArea(a){ ndoArea=a; ndoView='fields'; ndoRender(); }
-  function ndoBackToTop(){ ndoView='top'; ndoArea=''; ndoIdx=-1; ndoRender(); }
+  function ndoBackToTop(){ ndoView='top'; ndoArea=''; ndoIdx=-1; ndoHvCrop=''; ndoRender(); }
   function ndoOpenField(i){ ndoIdx=i; ndoView='one'; ndoRender(); }
   function ndoBackToFields(){ ndoView='fields'; ndoIdx=-1; ndoRender(); }
 
+
+  /* ================= ★★v170 収穫後の管理（籾摺り・出荷）を年度別記録で見る =================
+     親方のご指示（2026/09/26）：「来年も見返したい」「メモをすぐ確認したい」
+     ★工程表は「今の年産」しか出さないので、ここが無いと去年産は**どこからも見えなくなる**。
+     ★ここは**見るだけ**。記録・直す・消すは工程表の1か所（入口を1つにして迷わない）。
+     ★年は「作業の年」ではなく「何年産か」（hvYear と同じ物差し）。2026年を選ぶ＝2026年産。 */
+  var ndoHvYear=0, ndoHvCrop='', ndoHvCrops=[], ndoHvMemo=false, ndoHvMore={mo:false, sh:false};
+  function ndoHvYears(recs){
+    var m={}, o=[], i; for(i=0;i<recs.length;i++){ var y=recs[i].y; if(typeof y==='number'&&!m[y]){ m[y]=1; o.push(y); } }
+    o.sort(function(a,b){ return b-a; }); return o;
+  }
+  function ndoHvBlockHTML(){
+    var recs; try{ recs=hvLoad(); }catch(e){ return ''; }
+    if(!recs.length)return '';
+    var h='', i, s;
+    if(ndoYear){
+      var y=ndoYear, cs=hvCrops(recs,y), list=[];
+      for(i=0;i<cs.length;i++){ s=hvSum(recs,y,cs[i]); if(s.n)list.push({c:cs[i],s:s}); }   /* ★その年産に記録がある品種だけ */
+      if(!list.length)return '';
+      ndoHvCrops=[]; var TM=0, TS=0, TN=0;
+      h+='<div class="ndo-lbl">🌾 '+y+'年産 収穫後の管理</div>'
+        +'<div class="hv-tot ndo-hvt"><div class="hv-th"><span>📊 品種別の合計</span><span class="u">単位 kg</span></div>'
+        +'<table><tr><th>品種</th><th>籾摺り</th><th>出荷</th><th>残り</th><th class="go"></th></tr>';
+      for(i=0;i<list.length;i++){
+        s=list[i].s; ndoHvCrops.push(list[i].c); TM+=s.mo; TS+=s.sh; TN+=s.n;
+        h+='<tr onclick="ndoOpenHv('+y+','+i+')"><td>'+hvEsc(list[i].c)+'</td><td>'+hvKg(s.mo)+'</td>'
+          +'<td'+(s.sh?'':' class="zero"')+'>'+hvKg(s.sh)+'</td>'+hvZanCell(s)+'<td class="go">›</td></tr>';
+      }
+      if(list.length>1)h+='<tr class="sum"><td>合計</td><td>'+hvKg(TM)+'</td><td>'+hvKg(TS)+'</td>'+hvZanCell({mo:TM,sh:TS,n:TN})+'<td class="go"></td></tr>';
+      h+='</table><div class="ndo-hvhint">品種を押すと、回ごとの記録とメモが見られます</div></div>';
+    }else{
+      var ys=ndoHvYears(recs);
+      h+='<div class="ndo-lbl">🌾 年産ごとの収穫後の管理（kg）</div>';
+      for(i=0;i<ys.length;i++){
+        var mo=0, sh=0, n=0;
+        for(var q=0;q<recs.length;q++){ if(recs[q].y!==ys[i])continue; n++; if(recs[q].k==='mo')mo+=(+recs[q].kg||0); else sh+=(+recs[q].kg||0); }
+        var z=mo-sh, zc=(z<0?'over':(z===0&&sh>0?'fin':'zan')), zt=(z===0&&sh>0)?'0 ✅':hvKg(z);
+        h+='<div class="ndo-yrow" onclick="ndoSetYear('+ys[i]+')"><div class="y">'+ys[i]+'年産</div>'
+          +'<div class="kv"><span>籾摺り</span><b>'+hvKg(mo)+'</b><span>出荷</span><b>'+hvKg(sh)+'</b>'
+          +'<i class="ln"></i><span>残り</span><b class="'+zc+'">'+zt+'</b></div><div class="ar">›</div></div>';
+      }
+    }
+    return h;
+  }
+  function ndoOpenHv(y,i){
+    var c=ndoHvCrops[i]; if(!c)return;
+    ndoHvYear=y; ndoHvCrop=c; ndoHvMemo=false; ndoHvMore={mo:false, sh:false};
+    ndoView='hv'; ndoRender();
+  }
+  function ndoHvFilter(on){ ndoHvMemo=!!on; ndoRender(); }
+  function ndoHvToggle(k){ ndoHvMore[k]=!ndoHvMore[k]; var b=document.getElementById('body'), t=b?b.scrollTop:0; ndoHvRender(); if(b)b.scrollTop=t; }
+  function ndoHvRender(){
+    var el=document.getElementById('ndoBody'); if(!el)return;
+    var recs=hvLoad(), y=ndoHvYear, c=ndoHvCrop, s=hvSum(recs,y,c), i, k, h='';
+    if(!s.n){ el.innerHTML='<div class="ndo-empty">'+y+'年産の '+hvEsc(c)+' の記録はありません。</div>'; return; }
+    h+='<div class="hv-tot ndo-hvt" style="margin-top:12px;"><table><tr><th>'+y+'年産</th><th>籾摺り</th><th>出荷</th><th>残り</th></tr>'
+      +'<tr class="sel"><td>'+hvEsc(c)+'</td><td>'+hvKg(s.mo)+'</td><td'+(s.sh?'':' class="zero"')+'>'+hvKg(s.sh)+'</td>'+hvZanCell(s)+'</tr></table></div>';
+    var L={mo:hvListOf(recs,y,c,'mo'), sh:hvListOf(recs,y,c,'sh')}, mc=0;
+    for(k in L){ for(i=0;i<L[k].length;i++)if(L[k][i].memo)mc++; }
+    h+='<div class="hv-flt"><div class="fb'+(ndoHvMemo?'':' on')+'" onclick="ndoHvFilter(false)">ぜんぶ（'+s.n+'回）</div>'
+      +'<div class="fb'+(ndoHvMemo?' on':'')+'" onclick="ndoHvFilter(true)">📝 メモがある回だけ（'+mc+'回）</div></div>';
+    var ks=['mo','sh'];
+    for(var q=0;q<2;q++){
+      k=ks[q]; var list=L[k], nm=(k==='mo')?'籾摺り':'出荷', ic=(k==='mo')?'🏭':'🚚';
+      h+='<div class="hv-vh"><span class="ic">'+ic+'</span><span class="t">'+nm+'</span><span class="ct">'+list.length+'回</span></div>';
+      var rows=[]; for(i=0;i<list.length;i++){ if(ndoHvMemo&&!list[i].memo)continue; rows.push([list[i],i+1]); }   /* ★回の番号は元のまま */
+      if(!rows.length){ h+='<div class="hv-empty">'+(ndoHvMemo?'メモがある回はありません':'記録がありません')+'</div>'; continue; }
+      var lim=(!ndoHvMemo&&rows.length>HV_SHOW&&!ndoHvMore[k])?HV_SHOW:rows.length;
+      h+='<div class="hv-list">';
+      for(i=0;i<lim;i++)h+=hvRowHTML(rows[i][0],rows[i][1],k,false);
+      if(!ndoHvMemo&&rows.length>HV_SHOW)h+='<div class="hv-more" onclick="ndoHvToggle(\''+k+'\')">'
+        +(ndoHvMore[k]?'▲ 最初の'+HV_SHOW+'回だけにする':'▼ 残り'+(rows.length-HV_SHOW)+'回を見る')+'</div>';
+      h+='</div>';
+    }
+    h+='<div class="ndo-hvro">'+(y===hvYear()?'※ここは見るだけです。直すときは 📋工程表 から':'※前の年産は見るだけです')+'</div>';
+    el.innerHTML=h;
+  }
   /* ================= ① 年と地区 ================= */
   function ndoTopRender(){
     var el=document.getElementById('ndoBody'); if(!el)return;
@@ -4835,6 +4949,7 @@
     h += '<div class="ndo-chip'+(ndoYear===0?' on':'')+'" onclick="ndoSetYear(0)">'
       +    '<div class="y">ぜんぶ</div><div class="c">'+all+'件</div></div>';
     h += '</div>';
+    h += ndoHvBlockHTML();   /* ★v170 収穫後の管理（その年産／ぜんぶなら年産ごと） */
 
     h += '<div class="ndo-lbl">📍 地区をえらぶ</div><div class="ndo-grid">';
     as = ndoAreaList(ndoYear);
@@ -5382,33 +5497,44 @@
     h+='</div>';
     return h;
   }
+  /* ★★v170 1回1行に変えた（親方のご質問「10回以上することもある」）。
+     大きな札のままだと、15回で画面が札15枚ぶん長くなる。
+     ★工程表は「最新の5回」だけ出し、上の「前の◯回を見る」で残りを開く（直すのは新しい回が多いため）。
+     ★メモは黄色い帯でそのまま読める（押さずに見える）。 */
+  var HV_SHOW=5;
+  var hvExp={mo:false, sh:false};   /* 工程表で「前の回」を開いているか */
+  function hvDateShort(s){ var d=hvDate(s); if(!d)return '日付なし'; return (d.getMonth()+1)+'/'+d.getDate()+'（'+['日','月','火','水','木','金','土'][d.getDay()]+'）'; }
+  /* 1回ぶんの行。edit=true なら押すと直せる（工程表）。false は見るだけ（年度別記録） */
+  function hvRowHTML(r,no,k,edit){
+    var x='';
+    if(k==='sh')x=hvEsc(r.dest||'—')+(r.dn?'（'+hvEsc(r.dn)+'）':'')+' ／ '+(r.gr?hvEsc(r.gr):'等級 —');
+    return '<div class="hv-row'+(edit?' tap':'')+'"'+(edit?' onclick="hvEditOpen(\''+hvEsc(r.id)+'\')"':'')+'>'
+      +'<div class="r1"><span class="n">'+no+'回</span><span class="d">'+hvDateShort(r.d)+'</span>'
+      +'<span class="k">'+hvKg(r.kg)+'kg</span>'+(edit?'<span class="ed">直す ›</span>':'')+'</div>'
+      +(x?'<div class="x">'+x+'</div>':'')
+      +(r.memo?'<div class="hv-memo">📝 '+hvEsc(r.memo)+'</div>':'')
+      +'</div>';
+  }
   function hvSecHTML(k,list){
-    var nm=(k==='mo')?'籾摺り':'出荷', ic=(k==='mo')?'🏭':'🚚';
+    var nm=(k==='mo')?'籾摺り':'出荷', ic=(k==='mo')?'🏭':'🚚', i;
     var h='<div class="hv-vh"><span class="ic">'+ic+'</span><span class="t">'+hvEsc(hvSel)+' — '+nm+'</span><span class="ct">'+list.length+'回</span></div>';
-    if(!list.length)h+='<div class="hv-empty">まだ記録がありません</div>';
-    for(var i=0;i<list.length;i++){
-      var r=list[i], g='';
-      if(k==='mo'){
-        g='<div class="hv-grid"><div class="f"><div class="fl">数量</div><div class="fv">'+hvKg(r.kg)+'kg</div></div>'
-         +'<div class="f"><div class="fl">メモ</div><div class="fv'+(r.memo?'':' em')+'">'+(r.memo?hvEsc(r.memo):'—')+'</div></div></div>';
-      }else{
-        var dst=hvEsc(r.dest||'—')+(r.dn?'<div class="dn">'+hvEsc(r.dn)+'</div>':'');
-        g='<div class="hv-grid g3"><div class="f"><div class="fl">出荷先</div><div class="fv">'+dst+'</div></div>'
-         +'<div class="f"><div class="fl">数量</div><div class="fv">'+hvKg(r.kg)+'kg</div></div>'
-         +'<div class="f"><div class="fl">等級</div><div class="fv'+(r.gr?'':' em')+'">'+(r.gr?hvEsc(r.gr):'—')+'</div></div>'
-         +(r.memo?'<div class="f full"><div class="fl">メモ</div><div class="fv">'+hvEsc(r.memo)+'</div></div>':'')
-         +'</div>';
-      }
-      h+='<div class="hv-card" onclick="hvEditOpen(\''+hvEsc(r.id)+'\')">'
-        +'<div class="h"><span class="no">'+(i+1)+'回目</span><span class="d">'+hvDateLbl(r.d)+'</span><span class="ed">直す ›</span></div>'
-        +g+'</div>';
+    if(!list.length){ h+='<div class="hv-empty">まだ記録がありません</div>'; }
+    else{
+      var st=0, many=list.length>HV_SHOW;
+      if(many&&!hvExp[k])st=list.length-HV_SHOW;
+      h+='<div class="hv-list">';
+      if(many)h+='<div class="hv-more" onclick="hvToggle(\''+k+'\')">'
+        +(hvExp[k]?'▼ 最新の'+HV_SHOW+'回だけにする':'▲ 前の'+st+'回を見る')+'</div>';
+      for(i=st;i<list.length;i++)h+=hvRowHTML(list[i],i+1,k,true);
+      h+='</div>';
     }
     h+='<div class="hv-add" onclick="hvAddOpen(\''+k+'\')">＋ '+(list.length+1)+'回目を記録する</div>';
     return h;
   }
+  function hvToggle(k){ hvExp[k]=!hvExp[k]; ktRenderBoard(); }
   function hvPick(i){
     var c=hvCropList[i]; if(!c)return;
-    hvSel=c; try{ sessionStorage.setItem('gyotoku.hvSel',c); }catch(e){}
+    hvSel=c; hvExp={mo:false, sh:false}; try{ sessionStorage.setItem('gyotoku.hvSel',c); }catch(e){}
     ktRenderBoard();
   }
   /* ---- 入力シート ---- */
@@ -12346,7 +12472,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v169';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v170';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
