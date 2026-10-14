@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- ★v54 版の名前。ファイルの先頭に置くのは、先頭1KBだけ読んで確かめられるようにするため。
      JS内の APP_VER と必ず同じ値にすること（版を上げるときは2か所） -->
-<meta name="app-ver" content="v170">
+<meta name="app-ver" content="v172">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="行徳農園">
@@ -1970,6 +1970,99 @@
   .ndo-hvt td.go,.ndo-hvt th.go{width:22px;padding-left:0;color:#4A463C;font-size:17px;}
   .ndo-hvhint{font-size:12.5px;font-weight:700;color:#3E3A30;padding:9px 12px;background:#FAF8F2;border-top:1px solid #EDE9DF;}
   .ndo-hvro{font-size:12.5px;font-weight:800;color:#3E3A30;text-align:center;margin:12px 0 6px;}
+
+  /* ===== ★★v171 田んぼの名前・面積を直す／消す（mockup_v171・mock171b）=====
+     ★名前は fle-（field edit）でそろえた。アプリに同じ名前が1つも無いことを数えてから付けた
+       （v170 の .memo の教訓：短い名前はぶつかる） */
+  .fle-edbtn{display:flex;align-items:center;justify-content:center;min-height:50px;margin:2px 0 12px;
+    background:var(--green-deep);color:#fff;border-radius:12px;font-size:16.5px;font-weight:900;cursor:pointer;}
+  .rowcard .fle-badge{display:inline-block;font-size:11.5px;font-weight:900;white-space:nowrap;background:#FBF0E0;color:#8A4300;
+    border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:1px;}
+  .rowcard.fle-hl{border-color:var(--green);border-width:2.5px;background:#F6FAF6;}
+  .fle-goneent{display:flex;align-items:center;justify-content:center;min-height:50px;margin:14px 0 4px;background:#fff;
+    border:2px solid var(--line);border-radius:13px;font-size:15.5px;font-weight:900;color:#3E3A30;cursor:pointer;}
+  .fle-lead{background:#FCFBF5;border:1px dashed #D6D0B8;border-radius:11px;padding:10px 12px;font-size:14px;font-weight:800;
+    line-height:1.65;margin-bottom:12px;color:var(--ink);}
+  .fle-gone{background:#fff;border:1.5px dashed #A79F8A;border-radius:14px;padding:11px 12px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .fle-gone .tx{flex:1;min-width:0;}
+  .fle-gone .nm{font-size:18px;font-weight:900;color:#3E3A30;}
+  .fle-gone .sm{font-size:12.5px;font-weight:800;color:#3E3A30;margin-top:2px;line-height:1.5;}
+  .fle-gone .bk{flex-shrink:0;background:var(--green-deep);color:#fff;border-radius:11px;padding:0 13px;min-height:48px;
+    display:flex;align-items:center;font-size:15px;font-weight:900;white-space:nowrap;cursor:pointer;}
+  .fle-gtag{display:inline-block;font-size:11px;font-weight:900;white-space:nowrap;background:#F0EEE6;color:#4A463C;
+    border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px;font-family:var(--gothic,inherit);}
+  /* 直す画面の中身（箱は #kusaSheet と同じ・画面いっぱい） */
+  #fldSheet{position:absolute;left:50%;transform:translateX(-50%);width:100%;max-width:600px;
+    top:0;bottom:0;max-height:none;border-radius:0;padding:0 16px 22px;
+    padding-bottom:calc(22px + env(safe-area-inset-bottom));
+    overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -8px 30px rgba(0,0,0,.25);}
+  .fle-now{background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:10px 12px;margin:4px 0 12px;}
+  .fle-now .t{font-size:12.5px;font-weight:900;color:#3E3A30;}
+  .fle-now .v{font-size:18px;font-weight:900;margin-top:2px;color:var(--ink);word-break:break-all;}
+  .fle-now .v small{font-size:13px;font-weight:800;color:#3E3A30;margin-left:6px;white-space:nowrap;}
+  .fle-fl{font-size:15.5px;font-weight:900;margin:12px 2px 6px;color:var(--ink);}
+  .fle-fl small{font-size:12px;font-weight:800;color:#3E3A30;margin-left:4px;}
+  .fle-inp{width:100%;background:#fff;border:2.5px solid var(--green-deep);border-radius:12px;padding:11px 12px;
+    font-size:21px;font-weight:900;color:var(--ink);font-family:inherit;-webkit-appearance:none;appearance:none;}
+  .fle-inp.err{border-color:#B3261E;background:#FFF9F8;}
+  .fle-arow{display:flex;align-items:center;gap:8px;}
+  .fle-arow .fle-inp{flex:1;text-align:right;min-width:0;}
+  .fle-arow .u{font-size:21px;font-weight:900;color:var(--ink);}
+  .fle-arow .sq{font-size:13px;font-weight:800;color:#3E3A30;white-space:nowrap;min-width:64px;}
+  .fle-em{margin-top:6px;background:#FCEBEA;color:#B3261E;border-radius:9px;padding:7px 10px;font-size:13.5px;font-weight:900;line-height:1.5;}
+  .fle-chg{margin-top:14px;background:#FBF4E4;border:1.5px solid #D9B66A;border-radius:12px;padding:10px 12px;}
+  .fle-chg .t{font-size:13.5px;font-weight:900;color:#7A5412;margin-bottom:5px;}
+  .fle-chg .r{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;font-size:14.5px;font-weight:900;padding:3px 0;color:var(--ink);}
+  .fle-chg .r .k{min-width:44px;font-size:13px;color:#3E3A30;}
+  .fle-chg .r .o{color:#6E6A5C;text-decoration:line-through;font-weight:800;}
+  .fle-chg .r .to{color:#7A5412;}
+  .fle-chg .s{font-size:12px;font-weight:800;color:#5A4520;margin-top:3px;line-height:1.5;}
+  .fle-keep{margin-top:12px;background:var(--green-soft);border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:800;line-height:1.65;color:var(--green-deep);}
+  .fle-keep b{font-weight:900;}
+  .fle-btns{display:flex;gap:8px;margin-top:14px;}
+  .fle-ok{flex:2;background:var(--green);color:#fff;border-radius:13px;min-height:54px;display:flex;align-items:center;justify-content:center;
+    font-size:18px;font-weight:900;cursor:pointer;text-align:center;}
+  .fle-ok.off{background:#E4E0D6;color:#4A463C;border:2px dashed #9C927C;}   /* ★押せない状態も字は読める濃さ（比4.5以上） */
+  .fle-ok.red{background:#B3261E;}
+  .fle-no{flex:1;background:#fff;color:var(--ink);border:2px solid var(--line);border-radius:13px;min-height:54px;display:flex;align-items:center;
+    justify-content:center;font-size:16px;font-weight:900;cursor:pointer;}
+  .fle-reset{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:8px;font-size:13.5px;font-weight:900;color:var(--green-deep);
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:center;}
+  .fle-sep{border-top:1.5px dashed #CFC8B2;margin:18px 0 0;}
+  .fle-del{display:flex;align-items:center;justify-content:center;min-height:50px;margin-top:16px;background:#fff;color:#B3261E;
+    border:2px solid #B3261E;border-radius:13px;font-size:16px;font-weight:900;cursor:pointer;}
+  .fle-ct{font-family:var(--mincho);font-size:20px;font-weight:800;text-align:center;margin:10px 0 12px;color:var(--ink);}
+  .fle-bx{background:#FCFBF5;border:1px solid #DDD7C4;border-radius:12px;padding:8px 12px;}
+  .fle-bx .r{display:grid;grid-template-columns:52px 1fr;gap:6px;padding:7px 0;border-top:1px dashed #DDD7C4;align-items:baseline;}
+  .fle-bx .r:first-child{border-top:none;}
+  .fle-bx .r .k{font-size:13px;font-weight:900;color:#3E3A30;}
+  .fle-bx .r .v{font-size:16.5px;font-weight:900;line-height:1.45;color:var(--ink);word-break:break-all;}
+  .fle-bx .r .v .o{color:#6E6A5C;font-weight:800;}
+  .fle-bx .r .v .ar{color:#7A5412;margin:0 4px;}
+  .fle-cs{font-size:13.5px;font-weight:800;color:#3E3A30;margin-top:10px;line-height:1.65;}
+  .fle-big{font-size:22px;font-weight:900;text-align:center;padding:4px 0 2px;color:var(--ink);word-break:break-all;}
+  .fle-big small{display:block;font-size:13.5px;font-weight:800;color:#3E3A30;margin-top:3px;}
+  .fle-warn{background:#FCEBEA;color:#B3261E;border-radius:10px;padding:9px 11px;font-size:14px;font-weight:900;line-height:1.6;margin-top:12px;}
+  .fle-okbox{background:var(--green-soft);color:var(--green-deep);border-radius:10px;padding:9px 11px;font-size:14px;font-weight:900;line-height:1.65;margin-top:8px;}
+  /* ===== ★v172 田んぼを足す・地区の名前を直す（mock171b ⑥⑦⑧⑨⑪）===== */
+  .fle-sub2{display:flex;gap:8px;margin:14px 0 4px;}
+  .fle-sub2 .b{flex:1;display:flex;align-items:center;justify-content:center;min-height:58px;background:#fff;border:2px solid var(--green-deep);
+    color:var(--green-deep);border-radius:13px;padding:8px 4px;font-size:15.5px;font-weight:900;text-align:center;line-height:1.3;cursor:pointer;}
+  .fle-sub2 .b.add{background:var(--green-deep);color:#fff;}
+  .fle-newarea{display:flex;align-items:center;justify-content:center;min-height:52px;margin:14px 0 0;background:var(--green-deep);color:#fff;
+    border-radius:13px;font-size:16px;font-weight:900;cursor:pointer;text-align:center;}
+  .fle-newarea+.fle-goneent{margin-top:8px;}
+  .fle-ro{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;font-size:19px;font-weight:900;
+    display:flex;align-items:center;gap:8px;color:var(--ink);}
+  .fle-ro small{font-size:12.5px;font-weight:800;color:#3E3A30;margin-left:auto;white-space:nowrap;}
+  .fle-hint{font-size:12.5px;font-weight:800;color:#3E3A30;margin:5px 2px 0;line-height:1.55;}
+  .fle-chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .fle-chip{background:#fff;border:2px solid var(--line);border-radius:999px;padding:0 13px;min-height:44px;font-size:15px;font-weight:900;
+    white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--ink);cursor:pointer;}
+  .fle-chip .d{width:10px;height:10px;border-radius:99px;flex-shrink:0;}
+  .fle-chip.on{background:var(--green-deep);border-color:var(--green-deep);color:#fff;}
+  .fle-chip.on::before{content:"✓";}
+  .rowcard .fle-badge.nw{background:#E6F0FA;color:#1D4F86;}
   .ndo-yrow{display:flex;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:13px;
     padding:12px 13px;margin-bottom:8px;cursor:pointer;}
   .ndo-yrow .y{font-family:var(--mincho);font-size:18px;font-weight:800;min-width:96px;color:var(--ink);}
@@ -2486,7 +2579,7 @@
         <div class="sethead">ℹ️ このアプリについて</div>
         <div class="setcard">
           <div class="setrow">料金<span class="sv">ずっと無料(課金なし)</span></div>
-          <div class="setrow">バージョン<span class="sv">v170</span></div>
+          <div class="setrow">バージョン<span class="sv">v172</span></div>
           <!-- ★v69 バージョンのすぐ下が、探すときに一番わかりやすい。
                v68ではKSASの欄に入れてしまい、親方が見つけられなかった。 -->
           <div class="setrow" onclick="verNow()">今すぐ最新にする<span class="sv" id="verNowV">確かめる ›</span></div>
@@ -2693,6 +2786,10 @@
   <div class="kusa-ov" id="hvOv" style="display:none;" onclick="hvSheetBg(event)">
     <div class="kusa-sheet" id="hvSheet"></div>
   </div>
+  <!-- ★v171 田んぼの名前・面積を直す（草刈り・作付・籾摺りと同じ箱の形。go() で必ず閉じる） -->
+  <div class="kusa-ov" id="fldOv" style="display:none;" onclick="fldSheetBg(event)">
+    <div class="kusa-sheet" id="fldSheet"></div>
+  </div>
   <div class="toast" id="toast"></div>
   <div class="ph-lb" id="phLb" onclick="phClose()">
     <span class="x">✕ とじる</span>
@@ -2879,6 +2976,7 @@
       /* ★v121 作付を決めている時は、シート → 中の一覧 → モード の順に1段ずつ戻す。
          ヘッダーの戻るも横スワイプも下タブも、どれもここを通る（§10-9） */
       if(typeof cropPickField!=='undefined' && cropPickField){ cropSheetClose(); return; }
+      if(typeof flGone!=='undefined' && flGone){ flGoneClose(); return; }   /* ★v171 消した田んぼ → 地区の一覧 */
       if(typeof flPick!=='undefined' && flPick){ flBackToTiles(); return; }
       if(typeof flCropEdit!=='undefined' && flCropEdit){ cropEditClose(); return; }
     }
@@ -2905,6 +3003,8 @@
     try{ if(typeof kusaSheetClose==='function')kusaSheetClose(); }catch(e){}
     try{ if(typeof cropSheetClose==='function')cropSheetClose(); }catch(e){}
     try{ if(typeof hvSheetClose==='function')hvSheetClose(); }catch(e){}   /* ★v169 籾摺り・出荷 */
+    try{ if(typeof fldSheetClose==='function')fldSheetClose(); }catch(e){}   /* ★v171 田んぼを直す */
+    try{ fldJust=''; flGone=false; }catch(e){}   /* ★v171 緑の枠・消した田んぼの一覧は、画面を出たら解く */
     curScreen=n;for(var k in pages){document.getElementById(pages[k]).classList.remove('on');}
     document.getElementById(pages[n]).classList.add('on');
     renderHeader(n);
@@ -3754,13 +3854,14 @@
   /* ★ここが要。KT_FIELDS を「今年の姿」に入れ直す。読む側33か所は1行も変えていない */
   function cropApply(){
     var B=cropBaseYear();
-    for(var i=0;i<KT_FIELDS.length;i++){
-      var n=KT_FIELDS[i].n, c=cropAt(n,B), p=cropAt(n,B-1);
+    var KA=(typeof KT_ALL!=='undefined'&&KT_ALL&&KT_ALL.length)?KT_ALL:KT_FIELDS;   /* ★v171 消した田んぼも入れ直す */
+    for(var i=0;i<KA.length;i++){
+      var n=KA[i].n, c=cropAt(n,B), p=cropAt(n,B-1);
       /* ★v121 決まっていない田んぼは '未定' にする。'' のままだと NAE_EXC に無いので
          **稲として数えられ、苗箱の必要枚数が水増しされる**。'未定' はもともと
          KT_FIELDS に20枚入っているアプリの言葉なので、しぼりこみ・色分けもそのまま効く */
-      KT_FIELDS[i].crop=(c==null)?'未定':c;
-      KT_FIELDS[i].last=(p==null)?'':p;   /* 去年は「無ければ出さない」作りなので '' のまま */
+      KA[i].crop=(c==null)?'未定':c;
+      KA[i].last=(p==null)?'':p;   /* 去年は「無ければ出さない」作りなので '' のまま */
     }
   }
   /* 1枚ぶんの作付を決める（★v121の画面から呼ぶ）。時刻は田んぼごとに押す */
@@ -3794,6 +3895,572 @@
 
   /* ★起動時に1回。KT_FIELDS を読む所より必ず先に走らせる（§5 var の巻き上げ事故を避ける） */
   (function(){ cropSeedInit(); cropLoad(); cropApply(); })();
+
+  /* =====================================================================
+     ★★v171 田んぼの名前・面積を直す／田んぼを消す（親方のご指示 2026/10/14・mockup_v171／mock171b）
+     ★★v172 田んぼを足す・新しい地区に足す・地区の名前を直す（mock171b ⑥〜⑨・⑪）
+       同じ帳面 gyotoku.fldedit.v1 に、行の種類を2つ足しただけ（★鍵は増やしていない）
+         足した田んぼ … {id:'add:中の名前', k:'add', n, a, crop, area:中の地区名, ct:作った時刻, who, _m}
+                        ★id が名前なので、家族2台が同時に同じ名前を足しても1枚にまとまる
+                        ★中の名前は足したときの名前のまま。あとで直すのは 'f:' の行（v171 と同じ道）
+         地区の名前   … {id:'ar:中の地区名', k:'ar', ar:中の地区名, dn:見える地区名, yomi:よみがな, _m}
+                        ★地区名も記録や田んぼに書き換えない。見える地区名＝adn(中の地区名)
+                        ★よみがなは areaYomi() が読む＝あいうえお順の5画面が一度にそろう
+     ── しくみ（★記録は1件も書き換えない）
+       田んぼは「中の名前（KT_FIELDS[i].n）」で、作業の記録・土のメモ・作付・苗の手直し・
+       出穂の日・草刈り・写真・予定…と結びついている（.field 33か所・f.n 49か所）。
+       記録を新しい名前へ書き換えると、家族のスマホやサーバーに残る古い名前の記録が
+       同期（足し算）で戻ってきて、別の田んぼとして出てくる（v48.2 の型）。
+       → **中の名前は元のまま**。上に「直した帳面」をかぶせて、見える名前・面積・消した印だけを変える。
+     ── 保存　gyotoku.fldedit.v1（配列・家族と共有）
+       1件＝{id:'f:中の名前', n:中の名前, dn:見える名前, a:面積('18.20a'), del:消したか, dd:消した日, who:だれが, _m:時刻}
+         dn・a が '' なら「元のまま」。
+       ★1枚につき1件。id＋_m の配列なので、家族との合流は既存の規則（id ごと・新しい _m が勝つ）。
+       ★「最初の登録に戻す」「消したのを戻す」も _m を新しくするだけ。tombAdd は使わない
+         （id の削除印を付けると、直した版まで本体ごと消える・v48.2）。
+     ── 画面に名前を出す所は、すべて fdn(中の名前) を通す（★全数 grep・HANDOVER に一覧）
+     ── 面積は KT_FIELDS[i].a を入れ替える＝苗箱・合計面積・地区の合計・肥料の反あたりに自動で効く
+         （苗を手で直した田んぼ（✏️）は、手で直した枚数のまま＝naeov は名前で持つので触らない）
+     ── 消した田んぼは KT_FIELDS から外す（＝田んぼ一覧・苗箱・工程表・草刈り・田んぼをえらぶ から消える）。
+         KT_ALL には残す（📖年度別記録・📄記録簿で、過去の記録を見失わないため）
+     ── 家族から届いたときは _syncApply が読み込み直す（location.reload）ので、起動時の1回で足りる。
+         ★直す画面を開いている間は読み込み直さない（_syncApply に1行足した）
+     ===================================================================== */
+  var FLD_LS='gyotoku.fldedit.v1';
+  var KT_ALL=KT_FIELDS.slice();   /* 消した田んぼも含む全部（並びは取り込んだ順のまま） */
+  var KT_BASE={};                 /* 中の名前 → 最初の登録（面積） */
+  (function(){ for(var i=0;i<KT_ALL.length;i++)KT_BASE[KT_ALL[i].n]={a:KT_ALL[i].a}; })();
+  var FLD_ED={};                  /* 中の名前 → 帳面の1件（いちばん新しいもの） */
+  function fldLoadAll(){
+    var a; try{ a=JSON.parse(localStorage.getItem(FLD_LS)||'[]'); }catch(e){ a=[]; }
+    if(!(a instanceof Array))return [];
+    var o=[]; for(var i=0;i<a.length;i++){ var r=a[i]; if(r&&typeof r==='object'&&typeof r.id==='string')o.push(r); }
+    return o;
+  }
+  var AR_ED={};                   /* ★v172 中の地区名 → 地区の行（見える地区名・よみがな） */
+  var FLD_ADD={};                 /* ★v172 中の名前 → 足した田んぼの行 */
+  function fldBadName(v){ return !v||typeof v!=='string'||v.length>30||/[<>"'`\\&]/.test(v); }
+  function fldEdBuild(){
+    FLD_ED={}; AR_ED={}; var a=fldLoadAll(), i, r, cur, adds={};
+    /* ①足した田んぼ（id ごとにいちばん新しい行） */
+    for(i=0;i<a.length;i++){ r=a[i];
+      if(r.id.indexOf('add:')!==0||r.k!=='add')continue;
+      if(fldBadName(r.n)||fldBadName(r.area)||!fldAOk(r.a))continue;   /* ★おかしな行は読み飛ばす */
+      cur=adds[r.id]; if(!cur||(+r._m||0)>=(+cur._m||0))adds[r.id]=r; }
+    var al=[]; for(var k in adds)if(adds.hasOwnProperty(k))al.push(adds[k]);
+    al.sort(function(x,y){ return ((+x.ct||0)-(+y.ct||0))||(x.id<y.id?-1:(x.id>y.id?1:0)); });   /* ★どの端末でも同じ並び */
+    for(i=0;i<al.length;i++){ r=al[i];
+      if(KT_BASE.hasOwnProperty(r.n)&&!FLD_ADD[r.n])continue;   /* ★取り込んだ田んぼと同じ名前は足さない */
+      FLD_ADD[r.n]=r;
+      if(fldAllIdx(r.n)<0){
+        KT_ALL.push({n:r.n, a:r.a, crop:(typeof r.crop==='string'&&r.crop)?r.crop:'未定', last:'', area:r.area, addr:'', comb:'', memo:'', care:''});
+        KT_BASE[r.n]={a:r.a};
+        try{ CROP_SEED[r.n]={c:(r.crop&&r.crop!=='未定')?r.crop:'', l:''}; }catch(e){}
+      }
+    }
+    /* ②名前・面積・消した印（v171） */
+    for(i=0;i<a.length;i++){ r=a[i]; if(r.id.indexOf('f:')!==0||typeof r.n!=='string'||!KT_BASE.hasOwnProperty(r.n))continue;
+      if(r.dn&&fldBadName(r.dn))continue;   /* ★記号の入った名前は画面に出さない（HTML を壊すため） */
+      cur=FLD_ED[r.n]; if(!cur||(+r._m||0)>=(+cur._m||0))FLD_ED[r.n]=r; }
+    /* ③地区の名前・よみがな */
+    for(i=0;i<a.length;i++){ r=a[i]; if(r.id.indexOf('ar:')!==0||fldBadName(r.ar))continue;
+      if(r.dn&&fldBadName(r.dn))continue;   /* ★記号の入った地区名は使わない */
+      if(r.yomi&&!/^[\u3041-\u3096\u30fc]+$/.test(r.yomi))continue;   /* ★よみがなは ひらがなだけ */
+      cur=AR_ED[r.ar]; if(!cur||(+r._m||0)>=(+cur._m||0))AR_ED[r.ar]=r; }
+  }
+  function fldAOk(s){ return typeof s==='string'&&/^\d{1,3}(\.\d{1,2})?a$/.test(s)&&parseFloat(s)>0; }
+  /* ★v172 見える地区名。画面に地区の名前を出す所は、必ずここを通す（地区でない文字はそのまま返る） */
+  function adn(a){ var r=AR_ED[a]; return (r&&typeof r.dn==='string'&&r.dn)?r.dn:String(a==null?'':a); }
+  function fldArEdited(a){ var r=AR_ED[a]; return !!(r&&r.dn&&r.dn!==a); }
+  /* ★見える名前。画面に田んぼの名前を出す所は、必ずここを通す */
+  function fdn(n){ var r=FLD_ED[n]; return (r&&typeof r.dn==='string'&&r.dn)?r.dn:String(n==null?'':n); }
+  function fldGone(n){ var r=FLD_ED[n]; return !!(r&&r.del===true); }
+  function fldEdited(n){ var r=FLD_ED[n]; if(!r||!KT_BASE[n])return false;
+    return !!((r.dn&&r.dn!==n)||(fldAOk(r.a)&&r.a!==KT_BASE[n].a)); }
+  function fldApply(){
+    var i,f,r;
+    try{ cropApply(); }catch(e){}   /* ★v172 足した田んぼの作付も入れる（cropApply は KT_ALL を回る） */
+    for(i=0;i<KT_ALL.length;i++){ f=KT_ALL[i]; r=FLD_ED[f.n];
+      f.a=(r&&fldAOk(r.a))?r.a:KT_BASE[f.n].a; }
+    KT_FIELDS.length=0;   /* ★配列そのものは作り直さない（同じ入れ物を読んでいる所がずれないように） */
+    for(i=0;i<KT_ALL.length;i++)if(!fldGone(KT_ALL[i].n))KT_FIELDS.push(KT_ALL[i]);
+  }
+  (function(){ fldEdBuild(); fldApply(); })();
+  function fldAllIdx(n){ for(var i=0;i<KT_ALL.length;i++)if(KT_ALL[i].n===n)return i; return -1; }
+  function fldPut(n,patch){
+    var r0=null, a0=fldLoadAll(), i;
+    for(i=0;i<a0.length;i++)if(a0[i].id==='f:'+n&&(!r0||(+a0[i]._m||0)>=(+r0._m||0)))r0=a0[i];
+    var base={id:'f:'+n, n:n, dn:(r0&&r0.dn)||'', a:(r0&&r0.a)||'', del:!!(r0&&r0.del===true), dd:(r0&&r0.dd)||'', who:(r0&&r0.who)||''};
+    return fldPutRow('f:'+n, base, patch);
+  }
+  /* ★v172 帳面の1行を書く（同じ id の古い行は置きかえる）。base＝今の中身、patch＝変える所 */
+  function fldPutRow(id,base,patch){
+    var a=fldLoadAll(), r=null, o=[], i, k;
+    for(i=0;i<a.length;i++){ if(a[i].id===id){ if(!r||(+a[i]._m||0)>=(+r._m||0))r=a[i]; } else o.push(a[i]); }
+    var nr={}; for(k in base)if(base.hasOwnProperty(k))nr[k]=base[k];
+    for(k in patch)if(patch.hasOwnProperty(k))nr[k]=patch[k];
+    nr._m=Math.max(Date.now(), ((r&&+r._m)||0)+1);
+    o.push(nr);
+    var ok=false; try{ ok=lsSet(FLD_LS,JSON.stringify(o)); }catch(e){ ok=false; }
+    try{ if(typeof syncSoon==='function')syncSoon(); }catch(e){}
+    fldEdBuild(); fldApply();
+    try{ kusaPick={}; }catch(e){}   /* ★番号で持っている「えらんだ田んぼ」は、並びが変わるので空にする */
+    try{ ktvPick={}; }catch(e){}
+    return ok;
+  }
+  /* 検索・音声で使う「名前のかぎ」（空白を無視）。見える名前と中の名前の両方で見つかるようにする */
+  function fldNorm(s){ return String(s==null?'':s).replace(/[\s　]/g,''); }
+  function fldKeys(n){ var a=fldNorm(fdn(n)), b=fldNorm(n); return (a===b)?[a]:[a,b]; }
+  function fldHit(n,q){ if(!q)return true; var ks=fldKeys(n); for(var i=0;i<ks.length;i++)if(ks[i].indexOf(q)>=0)return true; return false; }
+  function fldEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function fldWho(){ try{ return (typeof whoEffective==='function'&&whoEffective().n)||''; }catch(e){ return ''; } }
+  function fldToday(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  /* 名前のまちがい。'' ならOK */
+  function fldNameErr(n,v){
+    if(!v)return '名前が空っぽです。<br>名前を入れてください。';
+    if(v.length>20)return '名前は20文字までにしてください。';
+    if(/[<>"'`\\&]/.test(v))return '記号（&lt; &gt; " \' ` \\ &amp;）は使えません。';
+    var k=fldNorm(v);
+    for(var i=0;i<KT_ALL.length;i++){ var m=KT_ALL[i].n; if(m===n)continue;
+      if(fldNorm(fdn(m))===k||fldNorm(m)===k)
+        return '「'+fldEsc(v)+'」は'+(fldGone(m)?'消した田んぼに':'もう')+'あります。<br>ちがう名前にしてください。';
+    }
+    return '';
+  }
+  /* 面積の読み取り（全角・「a」付きもOK）。だめなら null */
+  function fldAParse(s){
+    s=String(s==null?'':s).replace(/[０-９]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); })
+      .replace(/[．。]/g,'.').replace(/[aａＡA\s　]/g,'');
+    if(!/^\d{1,3}(\.\d{1,2})?$/.test(s)&&!/^\d{0,3}\.\d{1,2}$/.test(s))return null;
+    var v=parseFloat(s); if(!(v>=0.01&&v<=999.99))return null;
+    return Math.round(v*100)/100;
+  }
+  function fldAStr(v){ return v.toFixed(2)+'a'; }
+  function fldSqm(v){ return Math.round(v*100).toLocaleString(); }
+  /* これまでの作業の記録の件数（★数えるだけ。書き換えない） */
+  function fldRecCount(n){ var c=0; try{ for(var i=0;i<ktLog.length;i++){ var e=ktLog[i]; if(e&&e.field===n)c++; } }catch(e){} return c; }
+  /* 苗箱：その面積なら何枚か（手で直した田んぼは、手で直した枚数のまま） */
+  function fldNaeOf(f,aStr){
+    if(typeof naeMaiAuto!=='function'||NAE_EXC.indexOf(f.crop)>=0)return null;
+    if(naeEdited(f))return {v:naeMai(f), ed:true};
+    return {v:naeMaiAuto({n:f.n, a:aStr, crop:f.crop}), ed:false};
+  }
+
+  /* ---------------- 直す画面（全画面のシート・草刈りと同じ箱） ---------------- */
+  var fldS=null;      /* {n, nm, a, step:'edit'|'conf'|'del'} */
+  var fldJust='';     /* いま直した田んぼ（一覧で緑の枠にする・画面を出たら消える） */
+  function fldSheetOpen(i){
+    var f=KT_FIELDS[i]; if(!f)return;
+    fldS={n:f.n, nm:fdn(f.n), a:(parseFloat(f.a)||0).toFixed(2), step:'edit'};
+    fldSheetRender(true);
+  }
+  function fldSheetClose(){ fldS=null; var ov=document.getElementById('fldOv'); if(ov)ov.style.display='none'; }
+  function fldSheetBg(ev){ var t=ev&&ev.target; if(t&&t.id==='fldOv')fldSheetClose(); }
+  function fldGrab(){
+    if(!fldS)return;
+    var a=document.getElementById('fldNm'), b=document.getElementById('fldA');
+    if(a)fldS.nm=a.value; if(b)fldS.a=b.value;
+  }
+  /* いま打っている中身を調べる（画面は描き直さない＝打っている字が消えない） */
+  function fldCheck(){
+    var s=fldS, f=fieldByName(s.n)||KT_ALL[fldAllIdx(s.n)];
+    var nm=String(s.nm||'').replace(/^[\s　]+|[\s　]+$/g,'');
+    var ne=fldNameErr(s.n,nm), av=fldAParse(s.a);
+    var ae=(av==null)?'面積は 0.01〜999.99a の<span class="nb">数字で入れてください。</span>':'';
+    var curA=parseFloat(f.a)||0, newA=(av==null)?curA:av;
+    var chN=(nm!==fdn(s.n)), chA=(av!=null&&Math.abs(av-curA)>0.0001);
+    var n0=fldNaeOf(f,f.a), n1=fldNaeOf(f,fldAStr(newA));
+    return {f:f, nm:nm, ne:ne, ae:ae, av:av, chN:chN, chA:chA, n0:n0, n1:n1, ok:(!ne&&!ae&&(chN||chA))};
+  }
+  function fldChgHtml(c){
+    if(c.ne||c.ae||!(c.chN||c.chA))return '';
+    var h='<div class="fle-chg"><div class="t">⚠️ 直すと、ここが変わります</div>';
+    if(c.chN)h+='<div class="r"><span class="k">名前</span><span class="o">'+fldEsc(fdn(c.f.n))+'</span><span class="to">→</span><span class="nv">'+fldEsc(c.nm)+'</span></div>';
+    if(c.chA)h+='<div class="r"><span class="k">面積</span><span class="o">'+c.f.a+'</span><span class="to">→</span><span class="nv">'+fldAStr(c.av)+'</span></div>';
+    if(c.chA&&c.n0&&!c.n0.ed&&c.n1&&c.n1.v!==c.n0.v)
+      h+='<div class="r"><span class="k">苗箱</span><span class="o">'+c.n0.v+'枚</span><span class="to">→</span><span class="nv">'+c.n1.v+'枚</span></div>';
+    if(c.chA&&c.n0&&c.n0.ed)h+='<div class="s">苗箱は手で直した枚数（'+c.n0.v+'枚）のままです</div>';
+    else if(c.chA&&c.n0)h+='<div class="s">苗箱は面積から自動で計算し直します</div>';
+    return h+'</div>';
+  }
+  function fldLive(){
+    if(!fldS||fldS.step!=='edit')return;
+    fldGrab(); var c=fldCheck(), el;
+    el=document.getElementById('fldNm'); if(el)el.classList.toggle('err',!!c.ne);
+    el=document.getElementById('fldA');  if(el)el.classList.toggle('err',!!c.ae);
+    el=document.getElementById('fldNmE'); if(el){ el.innerHTML=c.ne; el.style.display=c.ne?'':'none'; }
+    el=document.getElementById('fldAE');  if(el){ el.innerHTML=c.ae; el.style.display=c.ae?'':'none'; }
+    el=document.getElementById('fldSq');  if(el)el.textContent=(c.av!=null)?('約'+fldSqm(c.av)+'㎡'):'';
+    el=document.getElementById('fldChg'); if(el)el.innerHTML=fldChgHtml(c);
+    el=document.getElementById('fldOk');  if(el)el.classList.toggle('off',!c.ok);
+  }
+  function fldSheetRender(top){
+    var ov=document.getElementById('fldOv'), el=document.getElementById('fldSheet');
+    if(!ov||!el)return;
+    if(!fldS){ ov.style.display='none'; return; }
+    if(fldS.mode==='add'||fldS.mode==='ar'){   /* ★v172 足す／地区を直す */
+      el.innerHTML='<div class="kusa-fh"><span class="x" onclick="fldSheetClose()">✕ とじる</span>'
+        +'<span class="nm">'+(fldS.mode==='add'?'＋ 田んぼを足す':'✏️ 地区を直す')+'</span><span class="pad"></span></div>'
+        +(fldS.mode==='add'?fldAddHtml():fldArHtml());
+      ov.style.display='flex';
+      if(top)el.scrollTop=0;
+      return;
+    }
+    var s=fldS, f=fieldByName(s.n)||KT_ALL[fldAllIdx(s.n)], h='';
+    if(!f){ fldSheetClose(); return; }
+    var base=KT_BASE[s.n]||{a:f.a};
+    h+='<div class="kusa-fh"><span class="x" onclick="fldSheetClose()">✕ とじる</span>'
+      +'<span class="nm">'+(s.step==='del'?'🗑 田んぼを消す':'✏️ 田んぼを直す')+'</span><span class="pad"></span></div>';
+    if(s.step==='edit'){
+      var c=fldCheck();
+      h+='<div class="fle-now"><div class="t">いまの登録</div><div class="v">'+fldEsc(fdn(s.n))
+        +'<small>'+f.a+' ・ '+fldEsc(f.crop||'未定')+'</small></div></div>';
+      h+='<div class="fle-fl">🏷️ 田んぼの名前</div>'
+        +'<input class="fle-inp'+(c.ne?' err':'')+'" id="fldNm" type="text" maxlength="30" value="'+fldEsc(s.nm)+'" oninput="fldLive()" autocomplete="off">'
+        +'<div class="fle-em" id="fldNmE"'+(c.ne?'':' style="display:none;"')+'>'+c.ne+'</div>';
+      h+='<div class="fle-fl">📐 面積<small>（KSASや地図の数字）</small></div>'
+        +'<div class="fle-arow"><input class="fle-inp'+(c.ae?' err':'')+'" id="fldA" type="text" inputmode="decimal" value="'+fldEsc(s.a)+'" oninput="fldLive()" autocomplete="off">'
+        +'<span class="u">a</span><span class="sq" id="fldSq">'+((c.av!=null)?('約'+fldSqm(c.av)+'㎡'):'')+'</span></div>'
+        +'<div class="fle-em" id="fldAE"'+(c.ae?'':' style="display:none;"')+'>'+c.ae+'</div>';
+      h+='<div id="fldChg">'+fldChgHtml(c)+'</div>';
+      h+='<div class="fle-keep">📚 <b>これまでの記録はそのまま</b>新しい名前で見られます（作業の記録・土のメモ・作付・虫と病気・年度別記録）。家族のスマホも同じ名前に変わります。</div>';
+      h+='<div class="fle-btns"><div class="fle-no" onclick="fldSheetClose()">やめる</div>'
+        +'<div class="fle-ok'+(c.ok?'':' off')+'" id="fldOk" onclick="fldAsk()">✅ 直す</div></div>';
+      if(fldEdited(s.n))h+='<div class="fle-reset" onclick="fldResetAsk()">↩ 最初の登録（'+fldEsc(s.n)+'・'+base.a+'）に戻す</div>';
+      h+='<div class="fle-sep"></div><div class="fle-del" onclick="fldDelAsk()">🗑 この田んぼを消す</div>';
+    }else if(s.step==='conf'){
+      var c2=s.c;
+      h+='<div class="fle-ct">'+(s.reset?'最初の登録に戻しますか？':'この内容で直しますか？')+'</div><div class="fle-bx">';
+      if(c2.chN)h+='<div class="r"><span class="k">名前</span><span class="v"><span class="o">'+fldEsc(fdn(s.n))+'</span><span class="ar">→</span><br>'+fldEsc(c2.nm)+'</span></div>';
+      if(c2.chA)h+='<div class="r"><span class="k">面積</span><span class="v"><span class="o">'+f.a+'</span><span class="ar">→</span>'+fldAStr(c2.av)+'</span></div>';
+      if(c2.chA&&c2.n0&&!c2.n0.ed&&c2.n1&&c2.n1.v!==c2.n0.v)
+        h+='<div class="r"><span class="k">苗箱</span><span class="v"><span class="o">'+c2.n0.v+'枚</span><span class="ar">→</span>'+c2.n1.v+'枚</span></div>';
+      h+='</div>';
+      var rc=fldRecCount(s.n);
+      h+='<div class="fle-cs">'+(rc?('これまでの作業の記録 <b>'+rc+'件</b> も、そのまま新しい名前で見られます。'):'記録はそのまま残ります。')+'家族のスマホも同じに変わります。</div>';
+      h+='<div class="fle-btns"><div class="fle-no" onclick="fldBack()">やめる</div>'
+        +'<div class="fle-ok" id="fldYes" onclick="fldCommit()">はい、'+(s.reset?'戻す':'直す')+'</div></div>';
+    }else if(s.step==='del'){
+      var nz=fldNaeOf(f,f.a), rc2=fldRecCount(s.n);
+      h+='<div class="fle-ct">この田んぼを消しますか？</div>'
+        +'<div class="fle-big">'+fldEsc(fdn(s.n))+'<small>'+f.a+' ・ '+fldEsc(f.crop||'未定')+(nz?(' ・ 苗'+nz.v+'枚'):'')+'</small></div>'
+        +'<div class="fle-warn">田んぼ一覧・苗箱・工程表・草刈り・田んぼをえらぶ から外れます。家族のスマホからも外れます。</div>'
+        +'<div class="fle-okbox">📚 '+(rc2?('これまでの記録 <b>'+rc2+'件</b> は消えません。'):'記録は消えません。')
+        +'年度別記録・記録簿では、そのまま見られます。<br>↩ あとから「消した田んぼ」で戻せます。</div>';
+      h+='<div class="fle-btns"><div class="fle-no" onclick="fldBack()">やめる</div>'
+        +'<div class="fle-ok red" id="fldDelYes" onclick="fldDelCommit()">🗑 消す</div></div>';
+    }
+    el.innerHTML=h;
+    ov.style.display='flex';   /* ★.kusa-ov と同じ flex をはっきり入れる（v152 の教訓） */
+    if(top)el.scrollTop=0;
+  }
+  function fldAsk(){
+    if(!fldS)return; fldGrab(); var c=fldCheck();
+    if(!c.ok){ fldLive(); return; }   /* ★押せない状態のときは何もしない（赤で理由が出ている） */
+    fldS.c=c; fldS.reset=false; fldS.step='conf'; fldSheetRender(true);
+  }
+  function fldResetAsk(){
+    if(!fldS)return; fldGrab();
+    var f=fieldByName(fldS.n), base=KT_BASE[fldS.n];
+    var av=parseFloat(base.a)||0, curA=parseFloat(f.a)||0;
+    var c={f:f, nm:fldS.n, chN:(fdn(fldS.n)!==fldS.n), chA:Math.abs(av-curA)>0.0001, av:av,
+           n0:fldNaeOf(f,f.a), n1:fldNaeOf(f,base.a)};
+    fldS.c=c; fldS.reset=true; fldS.step='conf'; fldSheetRender(true);
+  }
+  function fldDelAsk(){
+    if(!fldS)return; fldGrab();
+    if(KT_FIELDS.length<=3){ toast('田んぼが少ないため、これ以上は消せません'); return; }
+    fldS.step='del'; fldSheetRender(true);
+  }
+  function fldBack(){ if(!fldS)return; fldS.step='edit'; fldSheetRender(true); }
+  function fldCommit(){
+    if(!fldS||fldS.step!=='conf')return;
+    var s=fldS, n=s.n, ok;
+    if(s.reset){ ok=fldPut(n,{dn:'', a:''}); }
+    else{
+      var c=fldCheck();   /* ★たしかめの間に家族の分が届いても、もう一度調べてから書く */
+      if(c.ne||c.ae){ fldS.step='edit'; fldSheetRender(true); return; }
+      var base=KT_BASE[n].a, aS=fldAStr(c.av);
+      ok=fldPut(n,{dn:(c.nm===n?'':c.nm), a:((parseFloat(base)||0).toFixed(2)+'a'===aS?'':aS)});
+    }
+    fldSheetClose();
+    fldJust=n;
+    try{ fieldsRender(); }catch(e){}
+    fldScrollTo(n);
+    toast(ok?('✅ 「'+fdn(n)+'」に'+(s.reset?'戻しました':'直しました')):'⚠️ 保存できませんでした（保存場所がいっぱいかもしれません）');
+  }
+  function fldDelCommit(){
+    if(!fldS||fldS.step!=='del')return;
+    var n=fldS.n, nm=fdn(n);
+    var ok=fldPut(n,{del:true, dd:fldToday(), who:fldWho()});
+    fldSheetClose();
+    if(typeof flPick!=='undefined'&&flPick&&!flGroupIdx(flPick).length)flPick='';   /* ★その地区が空になったらタイルへ */
+    try{ fieldsRender(); }catch(e){}
+    toast(ok?('🗑 「'+nm+'」を消しました（記録は残っています）'):'⚠️ 保存できませんでした（保存場所がいっぱいかもしれません）');
+  }
+  function fldScrollTo(n){
+    try{ var i=KT_FIELDS.indexOf(fieldByName(n)); var el=document.getElementById('fw'+i), b=document.getElementById('body');
+      if(el&&b){ var r=el.getBoundingClientRect(), br=b.getBoundingClientRect();
+        if(r.top<br.top+60||r.bottom>br.bottom-80)b.scrollTop+=(r.top-br.top-90); } }catch(e){}
+  }
+
+  /* ---------------- 消した田んぼ（地区の一覧の下 → 一覧 → 戻す） ---------------- */
+  var flGone=false;
+  function fldGoneList(){ var o=[]; for(var i=0;i<KT_ALL.length;i++)if(fldGone(KT_ALL[i].n))o.push(i); return o; }
+  function fldGoneEntry(){
+    var g=fldGoneList(); if(!g.length)return '';   /* ★1枚も消していないときは出さない */
+    return '<div class="fle-goneent" onclick="flGoneOpen()">🗑 消した田んぼ（'+g.length+'枚）</div>';
+  }
+  function flGoneOpen(){ flGone=true; fieldsRender(); var b=document.getElementById('body'); if(b)b.scrollTop=0; }
+  function flGoneClose(){ flGone=false; fieldsRender(); var b=document.getElementById('body'); if(b)b.scrollTop=0; }
+  function fldGoneHtml(){
+    var g=fldGoneList(), h='<div class="fle-lead">消した田んぼは、ここに残っています。<b>記録は消えていません。</b>戻すと、元の地区・名前・面積で一覧に出ます。</div>';
+    if(!g.length)h+='<div class="fle-lead" style="text-align:center;">消した田んぼはありません</div>';
+    for(var i=0;i<g.length;i++){
+      var f=KT_ALL[g[i]], r=FLD_ED[f.n]||{}, d=String(r.dd||'').split('-');
+      var dl=(d.length===3)?((+d[1])+'/'+(+d[2])+' に消した'):'消した';
+      h+='<div class="fle-gone"><div class="tx"><div class="nm">'+fldEsc(fdn(f.n))+'</div>'
+        +'<div class="sm">'+fldEsc(adn(f.area||''))+'・'+f.a+'・'+fldEsc(f.crop||'未定')+'<br>'+dl+(r.who?'（'+fldEsc(r.who)+'）':'')+'</div></div>'
+        +'<div class="bk" onclick="fldRestore('+g[i]+')">↩ 戻す</div></div>';
+    }
+    return h+'<div class="spacer"></div>';
+  }
+  function fldRestore(ai){
+    var f=KT_ALL[ai]; if(!f||!fldGone(f.n))return;
+    var ok=fldPut(f.n,{del:false, dd:'', who:''});
+    if(!fldGoneList().length)flGone=false;
+    try{ fieldsRender(); }catch(e){}
+    toast(ok?('✅ 「'+fdn(f.n)+'」を'+(f.area?adn(f.area):'一覧')+'に戻しました'):'⚠️ 保存できませんでした（保存場所がいっぱいかもしれません）');
+  }
+  /* ★v171 年度別記録・記録簿で、消した田んぼに付ける札 */
+  function fldGoneTag(n){ return fldGone(n)?'<span class="fle-gtag">🗑消した田んぼ</span>':''; }
+
+  /* =====================================================================
+     ★★v172 田んぼを足す／新しい地区に足す／地区の名前を直す（mock171b ⑥〜⑨・⑪）
+     ===================================================================== */
+  function fldAreaKeys(){   /* いま一覧に出ている地区（中の地区名） */
+    var o=[], i, a; for(i=0;i<KT_FIELDS.length;i++){ a=KT_FIELDS[i].area||'その他'; if(o.indexOf(a)<0)o.push(a); } return o;
+  }
+  function fldAreaAll(){    /* 消した田んぼの地区・地区の行も含む全部（名前の重なりを調べる用） */
+    var o=[], i, a; for(i=0;i<KT_ALL.length;i++){ a=KT_ALL[i].area||'その他'; if(o.indexOf(a)<0)o.push(a); }
+    for(var k in AR_ED)if(AR_ED.hasOwnProperty(k)&&o.indexOf(k)<0)o.push(k);
+    return o;
+  }
+  function fldAreaErr(key,v){
+    if(!v)return '地区の名前が空っぽです。<br>名前を入れてください。';
+    if(v.length>10)return '地区の名前は10文字までにしてください。';
+    if(/[<>"'`\\&]/.test(v))return '記号（&lt; &gt; " \' ` \\ &amp;）は使えません。';
+    var k=fldNorm(v), as=fldAreaAll();
+    for(var i=0;i<as.length;i++){ if(as[i]===key)continue;
+      if(fldNorm(adn(as[i]))===k||fldNorm(as[i])===k)return '「'+fldEsc(v)+'」という地区はもうあります。<br>ちがう名前にしてください。'; }
+    return '';
+  }
+  function fldYomiErr(v){
+    if(!v)return 'よみがなを入れてください（ひらがな）。';
+    if(v.length>20)return 'よみがなは20文字までにしてください。';
+    if(!/^[ぁ-ゖー]+$/.test(v))return 'よみがなは<span class="nb">ひらがなで入れてください。</span>';
+    return '';
+  }
+  function fldTrim(v){ return String(v==null?'':v).replace(/^[\s　]+|[\s　]+$/g,''); }
+  /* あいうえお順で、その地区の1つ前の地区（ならびの説明用）。yomi を渡すと、その読みのときの前 */
+  function fldAreaPrev(key,yomi){
+    var as=fldAreaKeys(); if(as.indexOf(key)<0)as.push(key);
+    var Y=function(a){ return (a===key&&yomi)?yomi:areaYomi(a); };
+    as.sort(function(x,y){ var r=Y(x).localeCompare(Y(y),'ja'); return r!==0?r:String(x).localeCompare(String(y),'ja'); });
+    var i=as.indexOf(key); return (i>0)?as[i-1]:'';
+  }
+  /* 地区の中の田んぼの名前から「次の番号」を考える（池松 1〜7 → 池松 8） */
+  function fldNextName(area){
+    var ns=[], i, m, pre={}, best='', bc=0, mx=0;
+    for(i=0;i<KT_ALL.length;i++)if((KT_ALL[i].area||'その他')===area)ns.push(fdn(KT_ALL[i].n));
+    for(i=0;i<ns.length;i++){ m=/^(.*?)(\d+)$/.exec(ns[i]); if(!m)continue;
+      var p=m[1]; pre[p]=(pre[p]||0)+1; if(pre[p]>bc||(pre[p]===bc&&p.length>best.length)){ bc=pre[p]; best=p; } }
+    var cand, n;
+    if(bc){ for(i=0;i<ns.length;i++){ m=/^(.*?)(\d+)$/.exec(ns[i]); if(m&&m[1]===best&&+m[2]>mx)mx=+m[2]; } n=mx+1; }
+    else { best=adn(area)+' '; n=ns.length+1; }
+    for(var t=0;t<50;t++){ cand=best+n; if(!fldNameErr(null,cand))return cand; n++; }
+    return '';
+  }
+  function fldAreaCrop(area){   /* その地区でいちばん多い品種（足すときの初めの選択） */
+    var c={}, i, f, best='未定', bc=0;
+    for(i=0;i<KT_FIELDS.length;i++){ f=KT_FIELDS[i]; if((f.area||'その他')!==area||!f.crop||f.crop==='未定')continue;
+      c[f.crop]=(c[f.crop]||0)+1; if(c[f.crop]>bc){ bc=c[f.crop]; best=f.crop; } }
+    return best;
+  }
+  /* 地区の中のいちばん下（⑥）と、地区の一覧のいちばん下（⑪） */
+  function fldAreaBtns(area){
+    var q=String(area).replace(/'/g,"\\'");
+    return '<div class="fle-sub2"><div class="b add" onclick="fldAddOpen(\''+q+'\')">＋ 田んぼを<br>足す</div>'
+      +'<div class="b" onclick="fldArOpen(\''+q+'\')">✏️ 地区の<br>名前を直す</div></div>';
+  }
+  function fldTilesFoot(){
+    var h='';
+    if(typeof flMode==='undefined'||flMode==='area')h+='<div class="fle-newarea" onclick="fldAddOpen(null)">＋ 新しい地区に田んぼを足す</div>';
+    return h+fldGoneEntry();
+  }
+  /* ---- 足す ---- */
+  function fldAddOpen(area){
+    var nw=(area==null); fldTouched={};
+    fldS={mode:'add', nw:nw, area:nw?'':area, an:'', ay:'', nm:nw?'':fldNextName(area), a:'',
+          crop:nw?'未定':fldAreaCrop(area), step:'edit'};
+    fldSheetRender(true);
+  }
+  function fldAddGrab(){
+    if(!fldS)return; var g=function(id){ var e=document.getElementById(id); return e?e.value:null; }, v;
+    v=g('fldAn'); if(v!=null)fldS.an=v; v=g('fldAy'); if(v!=null)fldS.ay=v;
+    v=g('fldNm'); if(v!=null)fldS.nm=v; v=g('fldA'); if(v!=null)fldS.a=v;
+  }
+  function fldAddCheck(){
+    var s=fldS, an=fldTrim(s.an), ay=fldTrim(s.ay).replace(/[\s　]/g,''), nm=fldTrim(s.nm);
+    var ane=s.nw?fldAreaErr(null,an):'', aye=s.nw?fldYomiErr(ay):'';
+    var ne=fldNameErr(null,nm), av=fldAParse(s.a);
+    var ae=(av==null)?(fldTrim(s.a)?'面積は 0.01〜999.99a の<span class="nb">数字で入れてください。</span>':'面積を入れてください。'):'';
+    var key=s.nw?an:s.area, cnt=0, i;
+    if(!s.nw)for(i=0;i<KT_FIELDS.length;i++)if((KT_FIELDS[i].area||'その他')===key)cnt++;
+    var nae=(av!=null&&typeof naeMaiAuto==='function'&&NAE_EXC.indexOf(s.crop)<0)?naeMaiAuto({n:'', a:fldAStr(av), crop:s.crop}):null;
+    return {an:an, ay:ay, nm:nm, ane:ane, aye:aye, ne:ne, ae:ae, av:av, key:key, cnt:cnt, nae:nae,
+            ok:(!ane&&!aye&&!ne&&!ae)};
+  }
+  function fldAddChgHtml(c){
+    if(!c.ok)return '';
+    var h='<div class="fle-chg"><div class="t">⚠️ 足すと、ここが変わります</div>';
+    if(fldS.nw)h+='<div class="r"><span class="k">地区</span><span class="nv">新しい地区「'+fldEsc(c.an)+'」ができます</span></div>';
+    else h+='<div class="r"><span class="k">'+fldEsc(adn(c.key))+'</span><span class="o">'+c.cnt+'枚</span><span class="to">→</span><span class="nv">'+(c.cnt+1)+'枚</span></div>';
+    if(c.nae!=null)h+='<div class="r"><span class="k">苗箱</span><span class="nv">＋'+c.nae+'枚</span><span class="s" style="margin:0;">（面積から自動）</span></div>';
+    return h+'</div>';
+  }
+  function fldAddLive(){
+    if(!fldS||fldS.mode!=='add')return;
+    fldAddGrab(); var c=fldAddCheck(), el;
+    var pairs=[['fldAn','fldAnE',c.ane],['fldAy','fldAyE',c.aye],['fldNm','fldNmE',c.ne],['fldA','fldAE',c.ae]];
+    for(var i=0;i<pairs.length;i++){
+      var showE=!!pairs[i][2]&&fldShown(pairs[i][0]);
+      el=document.getElementById(pairs[i][0]); if(el)el.classList.toggle('err',showE);
+      el=document.getElementById(pairs[i][1]); if(el){ el.innerHTML=pairs[i][2]; el.style.display=showE?'':'none'; }
+    }
+    el=document.getElementById('fldSq');  if(el)el.textContent=(c.av!=null)?('約'+fldSqm(c.av)+'㎡'):'';
+    el=document.getElementById('fldChg'); if(el)el.innerHTML=fldAddChgHtml(c);
+    el=document.getElementById('fldOk');  if(el)el.classList.toggle('off',!c.ok);
+  }
+  /* ★まだ何も打っていない欄には、赤い理由を出さない（開いた瞬間に赤だらけにしない） */
+  var fldTouched={};
+  function fldShown(id){ return !!fldTouched[id]; }
+  function fldTouch(id){ fldTouched[id]=1; }
+  function fldAddCrop(i){ if(!fldS)return; fldAddGrab(); fldS.crop=CROP_CHOICES[i]; fldSheetRender(false); }
+  function fldAddHtml(){
+    var s=fldS, c=fldAddCheck(), h='', i;
+    var ip=function(id,cls,val,extra){ var se=!!(fldShown(id)&&extra.err);
+      return '<input class="fle-inp'+(se?' err':'')+(cls?' '+cls:'')+'" id="'+id+'" type="text" value="'+fldEsc(val)+'" '
+        +'oninput="fldTouch(\''+id+'\');fldAddLive()" autocomplete="off"'+(extra.attr||'')+'>'
+        +(extra.after||'')
+        +(extra.noem?'':('<div class="fle-em" id="'+id+'E"'+(se?'':' style="display:none;"')+'>'+extra.err+'</div>')); };
+    if(s.nw){
+      h+='<div class="fle-fl" style="margin-top:4px;">📍 新しい地区の名前</div>'+ip('fldAn','',s.an,{err:c.ane, attr:' maxlength="20" placeholder="例）上池松"'});
+      h+='<div class="fle-fl">🔤 よみがな<small>（ならべる順に使います）</small></div>'+ip('fldAy','',s.ay,{err:c.aye, attr:' maxlength="30" placeholder="例）かみいけまつ"'});
+    }else{
+      var tot=0; for(i=0;i<KT_FIELDS.length;i++)if((KT_FIELDS[i].area||'その他')===s.area)tot++;
+      h+='<div class="fle-fl" style="margin-top:4px;">📍 地区</div><div class="fle-ro">'+fldEsc(adn(s.area))+'<small>いま'+tot+'枚</small></div>';
+    }
+    h+='<div class="fle-fl">🏷️ 田んぼの名前</div>'+ip('fldNm','',s.nm,{err:c.ne, attr:' maxlength="30"'+(s.nw?' placeholder="例）上池松 1"':'')});
+    if(!s.nw&&s.nm)h+='<div class="fle-hint">「'+fldEsc(adn(s.area))+'」の次の番号を先に入れています。そのままでも、書きかえてもOK</div>';
+    h+='<div class="fle-fl">📐 面積<small>（KSASや地図の数字）</small></div>'
+      +'<div class="fle-arow">'+ip('fldA','',s.a,{err:'', noem:true, attr:' inputmode="decimal" placeholder="0.00"'})
+      +'<span class="u">a</span><span class="sq" id="fldSq">'+((c.av!=null)?('約'+fldSqm(c.av)+'㎡'):'')+'</span></div>'
+      +'<div class="fle-em" id="fldAE"'+((fldShown('fldA')&&c.ae)?'':' style="display:none;"')+'>'+c.ae+'</div>';
+    h+='<div class="fle-fl">🌾 '+cropThisYear()+'年の品種</div><div class="fle-chips">';
+    for(i=0;i<CROP_CHOICES.length;i++){ var cc=CROP_CHOICES[i];
+      h+='<div class="fle-chip'+(s.crop===cc?' on':'')+'" onclick="fldAddCrop('+i+')"><span class="d" style="background:'+cropColor(cc==='未定'?null:cc)+'"></span>'+cc+'</div>'; }
+    h+='</div>';
+    h+='<div id="fldChg">'+fldAddChgHtml(c)+'</div>';
+    h+='<div class="fle-btns"><div class="fle-no" onclick="fldSheetClose()">やめる</div>'
+      +'<div class="fle-ok'+(c.ok?'':' off')+'" id="fldOk" onclick="fldAddCommit()">✅ 足す</div></div>';
+    return h;
+  }
+  function fldAddCommit(){
+    if(!fldS||fldS.mode!=='add')return;
+    fldAddGrab(); var c=fldAddCheck();
+    if(!c.ok){ fldTouch('fldAn'); fldTouch('fldAy'); fldTouch('fldNm'); fldTouch('fldA'); fldAddLive(); return; }   /* ★押せない時は理由を全部出す */
+    var s=fldS, ok=true, now=Date.now();
+    if(s.nw) ok=fldPutRow('ar:'+c.key, {id:'ar:'+c.key, k:'ar', ar:c.key, dn:'', yomi:c.ay}, {}) && ok;
+    ok=fldPutRow('add:'+c.nm, {id:'add:'+c.nm, k:'add', n:c.nm, a:fldAStr(c.av), crop:s.crop, area:c.key, ct:now, who:fldWho()}, {}) && ok;
+    /* ★今年の作付をもう決めている年なら、その年の作付にも入れる（入れないと「未定」に見える） */
+    try{ var ty=cropThisYear(); if(s.crop!=='未定'&&ty!==CROP_BASE&&cropYearBox(ty))cropSet(c.nm, ty, s.crop); }catch(e){}
+    try{ fldApply(); }catch(e){}
+    fldSheetClose();
+    fldJust=c.nm;
+    try{ if(typeof flGone!=='undefined')flGone=false; if(typeof flModeSet==='function'&&flMode!=='area'){ flMode='area'; } flPick=c.key; fieldsRender(); }catch(e){}
+    fldScrollTo(c.nm);
+    toast(ok?('✅ 「'+c.nm+'」を足しました'):'⚠️ 保存できませんでした（保存場所がいっぱいかもしれません）');
+  }
+  /* 足した田んぼか（30日のあいだ「🆕足した」の札を出す） */
+  function fldIsNew(n){ var r=FLD_ADD[n]; return !!(r&&(Date.now()-(+r.ct||0))<30*24*3600*1000); }
+  /* ---- 地区の名前を直す（⑦） ---- */
+  function fldArOpen(area){
+    var y=areaYomi(area); if(y==='んん')y='';
+    fldS={mode:'ar', area:area, an:adn(area), ay:y, step:'edit'};
+    fldSheetRender(true);
+  }
+  function fldArCheck(){
+    var s=fldS, an=fldTrim(s.an), ay=fldTrim(s.ay).replace(/[\s　]/g,'');
+    var ane=fldAreaErr(s.area,an), aye=fldYomiErr(ay);
+    var chN=(an!==adn(s.area)), chY=(ay!==areaYomi(s.area));
+    var p0=fldAreaPrev(s.area,''), p1=(aye?p0:fldAreaPrev(s.area,ay));
+    return {an:an, ay:ay, ane:ane, aye:aye, chN:chN, chY:chY, p0:p0, p1:p1, ok:(!ane&&!aye&&(chN||chY))};
+  }
+  function fldArChgHtml(c){
+    if(c.ane||c.aye||!(c.chN||c.chY))return '';
+    var h='<div class="fle-chg"><div class="t">⚠️ 直すと、ここが変わります</div>';
+    if(c.chN)h+='<div class="r"><span class="k">地区</span><span class="o">'+fldEsc(adn(fldS.area))+'</span><span class="to">→</span><span class="nv">'+fldEsc(c.an)+'</span></div>';
+    var pl=function(p){ return p?(fldEsc(adn(p))+'の次'):'いちばん上'; };
+    if(c.p0!==c.p1)h+='<div class="r"><span class="k">ならび</span><span class="nv">'+pl(c.p0)+' → '+pl(c.p1)+'へ</span></div>';
+    else h+='<div class="r"><span class="k">ならび</span><span class="nv">変わりません</span></div>';
+    return h+'<div class="s">草刈り・工程表・年度別記録・田んぼをえらぶ の地区も、同じ名前に変わります</div></div>';
+  }
+  function fldArLive(){
+    if(!fldS||fldS.mode!=='ar')return;
+    var a=document.getElementById('fldAn'), b=document.getElementById('fldAy');
+    if(a)fldS.an=a.value; if(b)fldS.ay=b.value;
+    var c=fldArCheck(), el;
+    el=document.getElementById('fldAn'); if(el)el.classList.toggle('err',!!c.ane);
+    el=document.getElementById('fldAy'); if(el)el.classList.toggle('err',!!c.aye);
+    el=document.getElementById('fldAnE'); if(el){ el.innerHTML=c.ane; el.style.display=c.ane?'':'none'; }
+    el=document.getElementById('fldAyE'); if(el){ el.innerHTML=c.aye; el.style.display=c.aye?'':'none'; }
+    el=document.getElementById('fldChg'); if(el)el.innerHTML=fldArChgHtml(c);
+    el=document.getElementById('fldOk');  if(el)el.classList.toggle('off',!c.ok);
+  }
+  function fldArHtml(){
+    var s=fldS, c=fldArCheck(), cnt=0, sa=0, i;
+    for(i=0;i<KT_FIELDS.length;i++)if((KT_FIELDS[i].area||'その他')===s.area){ cnt++; sa+=parseFloat(KT_FIELDS[i].a)||0; }
+    var h='<div class="fle-now"><div class="t">いまの地区</div><div class="v">'+fldEsc(adn(s.area))+'<small>'+cnt+'枚・'+sa.toFixed(0)+'a</small></div></div>';
+    h+='<div class="fle-fl">📍 地区の名前</div>'
+      +'<input class="fle-inp'+(c.ane?' err':'')+'" id="fldAn" type="text" maxlength="20" value="'+fldEsc(s.an)+'" oninput="fldArLive()" autocomplete="off">'
+      +'<div class="fle-em" id="fldAnE"'+(c.ane?'':' style="display:none;"')+'>'+c.ane+'</div>';
+    h+='<div class="fle-fl">🔤 よみがな<small>（ならべる順に使います）</small></div>'
+      +'<input class="fle-inp'+(c.aye?' err':'')+'" id="fldAy" type="text" maxlength="30" value="'+fldEsc(s.ay)+'" oninput="fldArLive()" autocomplete="off">'
+      +'<div class="fle-em" id="fldAyE"'+(c.aye?'':' style="display:none;"')+'>'+c.aye+'</div>';
+    h+='<div id="fldChg">'+fldArChgHtml(c)+'</div>';
+    h+='<div class="fle-keep">🏷️ <b>田んぼの名前は変わりません</b>（「'+fldEsc(fldArSample(s.area))+'」は「'+fldEsc(fldArSample(s.area))+'」のまま）。田んぼの名前も変えたいときは、田んぼを押して1枚ずつ直します。</div>';
+    h+='<div class="fle-btns"><div class="fle-no" onclick="fldSheetClose()">やめる</div>'
+      +'<div class="fle-ok'+(c.ok?'':' off')+'" id="fldOk" onclick="fldArCommit(false)">✅ 直す</div></div>';
+    if(fldArEdited(s.area))h+='<div class="fle-reset" onclick="fldArCommit(true)">↩ 最初の地区名（'+fldEsc(s.area)+'）に戻す</div>';
+    return h;
+  }
+  function fldArSample(area){ for(var i=0;i<KT_FIELDS.length;i++)if((KT_FIELDS[i].area||'その他')===area)return fdn(KT_FIELDS[i].n); return ''; }
+  function fldArCommit(reset){
+    if(!fldS||fldS.mode!=='ar')return;
+    var s=fldS, key=s.area, r=AR_ED[key]||{}, ok;
+    if(reset){
+      /* ★取り込んだ地区は読みも元へ。足した地区は読みを残す（消すと並べられなくなる） */
+      ok=fldPutRow('ar:'+key, {id:'ar:'+key, k:'ar', ar:key, dn:'', yomi:(AREA_YOMI[key]?'':(r.yomi||''))}, {});
+    }else{
+      var c=fldArCheck(); if(!c.ok){ fldArLive(); return; }
+      ok=fldPutRow('ar:'+key, {id:'ar:'+key, k:'ar', ar:key,
+        dn:(c.an===key?'':c.an), yomi:((AREA_YOMI[key]&&c.ay===AREA_YOMI[key])?'':c.ay)}, {});
+    }
+    fldSheetClose();
+    try{ fldEdBuild(); fieldsRender(); }catch(e){}
+    toast(ok?('✅ 地区を「'+adn(key)+'」に'+(reset?'戻しました':'直しました')):'⚠️ 保存できませんでした（保存場所がいっぱいかもしれません）');
+  }
 
   var FIELD_BADGE={here:{c:'b-here',t:'📍今ここ'},done:{c:'b-done',t:'✅済み'},doing:{c:'b-doing',t:'💧作業中'},warn:{c:'b-warn',t:'⚠️注意'}};
   /* 土のメモ（田んぼ別）localStorage */
@@ -4386,7 +5053,7 @@
       var n=kusaIdxOfArea(kusaCurArea).length;
       el.innerHTML='<div class="navhead">'
         +'<button class="back" onclick="kusaBackToAreas()"><span class="ar">\u2190</span>地区</button>'
-        +'<span class="title">'+kusaCurArea+'（'+n+'枚）</span></div>';
+        +'<span class="title">'+adn(kusaCurArea)+'（'+n+'枚）</span></div>';
     }else{
       el.innerHTML=HEADERS['kusa']||'';
     }
@@ -4432,7 +5099,7 @@
     for(var k=0;k<as.length;k++){
       var a=as[k], full=(a.done>=a.all);
       h+='<div class="kusa-tile'+(full?' done':'')+'" onclick="kusaOpenArea(\''+a.n+'\')">'
-       +   '<div class="a">'+a.n+'</div>'
+       +   '<div class="a">'+adn(a.n)+'</div>'
        +   '<div class="c">'+a.all+'枚</div>'
        +   tileDonePill(a.done,a.all)
        + '</div>';
@@ -4468,7 +5135,7 @@
        +   '<div class="ksb-top">'
        +     '<div class="kusa-ck'+(on?' on':'')+'" onclick="kusaToggle('+i+')">'+(on?'✓':'')+'</div>'
        +     '<div class="kusa-rn" onclick="kusaToggle('+i+')">'
-       +       '<div class="n">'+f.n+'<span>'+f.a+'</span></div>'
+       +       '<div class="n">'+fdn(f.n)+'<span>'+f.a+'</span></div>'
        +     '</div>'
        +     '<div class="kusa-cnt'+(cn?'':' zero')+'" onclick="kusaSheetOpen('+i+')">'
        +       '<div class="k">記録 '+cn+'件</div>'
@@ -4605,7 +5272,7 @@
          ★★出口を1つにしたので、✕ とじるが隠れたら閉じられなくなる。
            .kusa-fh の padding-top（時計の帯よけ）は絶対に消さないこと。 */
       '<div class="kusa-fh"><span class="x" onclick="kusaSheetCloseAndRefresh()">✕ とじる</span>'
-    +   '<span class="nm">🌿 '+f.n+'</span><span class="pad"></span></div>'
+    +   '<span class="nm">🌿 '+fdn(f.n)+'</span><span class="pad"></span></div>'
     + '<div class="kusa-sh2">'+y+'年 ／ '+recs.length+'回 刈りました</div>'
     + h + add;
     ov.style.display='flex';   /* ★★v152【前からあった不具合の直し】ここは 'block' だった。
@@ -4626,7 +5293,7 @@
     if(id&&id.charAt(0)!=='n'){ for(var k=0;k<recs.length;k++)if(recs[k].e.id===id)r=recs[k]; }
     if(!r)r=recs[q];
     if(!r){ toast('その記録が見つかりませんでした'); kusaSheetRender(); return; }
-    if(!confirm(f.n+' の\n'+(r.d.getMonth()+1)+'月'+r.d.getDate()+'日の草刈りの記録を消しますか？\n\nこの1件だけを消します。'))return;
+    if(!confirm(fdn(f.n)+' の\n'+(r.d.getMonth()+1)+'月'+r.d.getDate()+'日の草刈りの記録を消しますか？\n\nこの1件だけを消します。'))return;
     for(var i=ktLog.length-1;i>=0;i--){
       if(ktLog[i]===r.e){ ktTombAdd(ktLog[i]); ktLog.splice(i,1); break; }
     }
@@ -4694,7 +5361,7 @@
   var ndoYear = 0;        /* 0 = ぜんぶの年 */
   var ndoView = 'top';    /* 'top'（年と地区）/ 'fields'（田んぼ）/ 'one'（1枚）/ 'hv'（★v170 籾摺り・出荷） */
   var ndoArea = '';
-  var ndoIdx  = -1;       /* KT_FIELDS の番号 */
+  var ndoIdx  = -1;       /* KT_ALL の番号（★v171 消した田んぼも含む全部の並び） */
 
   /* 工程ごとの色（§8-4②で親方が承認した色）。
      ★KT_STEPS に無い step（ひとこと furikaeri など）は灰色にする */
@@ -4753,11 +5420,12 @@
   /* 地区ごとの件数（その年） */
   function ndoAreaList(y){
     var out=[], seen={}, i, a, n;
-    for(i=0;i<KT_FIELDS.length;i++){
-      a = KT_FIELDS[i].area || 'その他';
+    for(i=0;i<KT_ALL.length;i++){   /* ★v171 消した田んぼの記録も数える（枚数には入れない） */
+      a = KT_ALL[i].area || 'その他';
+      n = ndoRecsOf(KT_ALL[i].n, y, '').length;
+      if(fldGone(KT_ALL[i].n) && !n) continue;
       if(!seen[a]){ seen[a]={n:a, all:0, c:0}; out.push(seen[a]); }
-      seen[a].all++;
-      n = ndoRecsOf(KT_FIELDS[i].n, y, '').length;
+      if(!fldGone(KT_ALL[i].n)) seen[a].all++;
       seen[a].c += n;
     }
     return areaSortObj(out);   /* ★v157 あいうえお順（記録件数の数え方は触らない） */
@@ -4811,12 +5479,12 @@
     if(ndoView==='fields'){
       el.innerHTML='<div class="navhead">'
         +'<button class="back" onclick="ndoBackToTop()"><span class="ar">\u2190</span>年度別</button>'
-        +'<span class="title">'+ndoArea+'（'+ndoYearName(ndoYear)+'）</span></div>';
+        +'<span class="title">'+adn(ndoArea)+'（'+ndoYearName(ndoYear)+'）</span></div>';
     }else if(ndoView==='one'){
-      var f=KT_FIELDS[ndoIdx];
+      var f=KT_ALL[ndoIdx];
       el.innerHTML='<div class="navhead">'
-        +'<button class="back" onclick="ndoBackToFields()"><span class="ar">\u2190</span>'+ndoArea+'</button>'
-        +'<span class="title">'+((f&&f.n)||'')+'</span></div>';
+        +'<button class="back" onclick="ndoBackToFields()"><span class="ar">\u2190</span>'+adn(ndoArea)+'</button>'
+        +'<span class="title">'+(f?fdn(f.n):'')+'</span></div>';
     }else if(ndoView==='hv'){   /* ★v170 品種の籾摺り・出荷 */
       el.innerHTML='<div class="navhead">'
         +'<button class="back" onclick="ndoBackToTop()"><span class="ar">\u2190</span>'+ndoYearName(ndoYear)+'</button>'
@@ -4956,7 +5624,7 @@
     for(i=0;i<as.length;i++){
       a = as[i];
       h += '<div class="ndo-tile" onclick="ndoOpenArea('+ktQ(a.n)+')">'
-        +    '<div class="a">'+a.n+'</div>'
+        +    '<div class="a">'+adn(a.n)+'</div>'
         +    '<div class="c">'+a.all+'枚</div>'
         +    '<div class="p'+(a.c?'':' zero')+'">'+(a.c?('記録 '+a.c+'件'):'記録 なし')+'</div>'
         +  '</div>';
@@ -4978,15 +5646,18 @@
   function ndoFieldsRender(){
     var el=document.getElementById('ndoBody'); if(!el)return;
     var ids=[], i, h='';
-    for(i=0;i<KT_FIELDS.length;i++) if((KT_FIELDS[i].area||'その他')===ndoArea) ids.push(i);
+    for(i=0;i<KT_ALL.length;i++) if((KT_ALL[i].area||'その他')===ndoArea){   /* ★v171 番号は KT_ALL の番号 */
+      if(fldGone(KT_ALL[i].n) && !ndoRecsOf(KT_ALL[i].n, ndoYear, '').length) continue;   /* 消した田んぼは記録がある年だけ */
+      ids.push(i);
+    }
 
-    h += '<div class="ndo-lbl">'+ndoArea+'（'+ids.length+'枚）・'+ndoYearName(ndoYear)+'</div>';
+    h += '<div class="ndo-lbl">'+adn(ndoArea)+'（'+ids.length+'枚）・'+ndoYearName(ndoYear)+'</div>';
     for(i=0;i<ids.length;i++) h += ndoRowHtml(ids[i]);
     h += ndoLegendHtml();
     el.innerHTML = h;
   }
   function ndoRowHtml(i){
-    var f=KT_FIELDS[i], recs=ndoRecsOf(f.n, ndoYear, ''), h='';
+    var f=KT_ALL[i], recs=ndoRecsOf(f.n, ndoYear, ''), h='';   /* ★v171 */
     var taue=ndoLastOf(recs,'taue'), kari=ndoLastOf(recs,'inekari');
     var ks=ndoCountOf(recs,'kusakari');
     var sum='', warn='';
@@ -5011,7 +5682,7 @@
     }
     h += '<div class="ndo-row" onclick="ndoOpenField('+i+')">'
       +    '<div class="ndo-top">'
-      +      '<div class="ndo-nm">'+f.n+'<span>'+(f.a||'')+'</span></div>'
+      +      '<div class="ndo-nm">'+fdn(f.n)+fldGoneTag(f.n)+'<span>'+(f.a||'')+'</span></div>'
       +      '<div class="ndo-cnt'+(recs.length?'':' zero')+'">'
       +        '<div class="k">記録 '+recs.length+'件</div>'
       +        '<div class="g">'+(recs.length?'ひらく ›':'—')+'</div>'
@@ -5053,10 +5724,10 @@
   /* ================= ③ その1枚・その年の記録ぜんぶ ================= */
   function ndoOneRender(){
     var el=document.getElementById('ndoBody'); if(!el)return;
-    var f=KT_FIELDS[ndoIdx]; if(!f){ ndoBackToFields(); return; }
+    var f=KT_ALL[ndoIdx]; if(!f){ ndoBackToFields(); return; }
     var recs=ndoRecsOf(f.n, ndoYear, ''), h='', i, r;
 
-    h += '<div class="ndo-hero"><div class="nm">'+f.n+'</div>'
+    h += '<div class="ndo-hero"><div class="nm">'+fdn(f.n)+fldGoneTag(f.n)+'</div>'
       +  '<div class="badge">'+ndoYearName(ndoYear)+' ・ 記録 '+recs.length+'件</div></div>';
     h += '<div class="ndo-sum" style="text-align:center;">'
       +  (f.a||'') + (f.crop?(' ・ '+f.crop):'') + '</div>';
@@ -5740,7 +6411,7 @@
       var n=ktvIdsOf(ktvCur).length;
       el.innerHTML='<div class="navhead">'
         +'<button class="back" onclick="ktvBack()"><span class="ar">\u2190</span>'+(ktvMode==='crop'?'品種':'地区')+'</button>'
-        +'<span class="title">'+ktvCur+'（'+n+'枚）</span></div>';
+        +'<span class="title">'+adn(ktvCur)+'（'+n+'枚）</span></div>';
     }else if(typeof renderHeader==='function'){ renderHeader('koutei'); }
   }
   function ktvOpen(name){
@@ -5770,7 +6441,7 @@
     for(var q=0;q<gs.length;q++){
       var g=gs[q], full=(g.done>=g.all);
       h+='<div class="kusa-tile'+(full?' done':'')+'" onclick="ktvOpen(\''+g.n.replace(/'/g,"\\'")+'\')">'
-       +   '<div class="a">'+g.n+'</div>'
+       +   '<div class="a">'+adn(g.n)+'</div>'
        +   '<div class="c">'+g.all+'枚</div>'
        +   tileDonePill(g.done,g.all)
        + '</div>';
@@ -5794,7 +6465,7 @@
         +'<span class="edit dchg">計算する ›</span></div>';
     }
     out+='<div class="kusa-note">💡 <b>稲をつくる '+RC+'枚ぶん</b><span class="nb">です</span><span class="nb">（大豆・未定は</span><span class="nb">出しません）。</span><br>'
-      +  '🎤や'+droneMini(18)+'で「'+KT_FIELDS[2].n+' '+st.nm+'やった」' + '<span class="nb">と記録しても、</span><span class="nb">ここは自動で✅に変わります。</span></div>';
+      +  '🎤や'+droneMini(18)+'で「'+fdn((KT_FIELDS[2]||KT_FIELDS[0]||{n:''}).n)+' '+st.nm+'やった」' + '<span class="nb">と記録しても、</span><span class="nb">ここは自動で✅に変わります。</span></div>';
     /* 稲作先生の栽培アドバイス（この工程に対応するステージの中身） */
     var d=(st.dtl&&INA_DETAIL[st.dtl])?INA_DETAIL[st.dtl]:null;
     if(d){
@@ -5905,7 +6576,7 @@
       var i=ids[q], f=KT_FIELDS[i], isDone=!!dn[f.n], on=!!ktvPick[i];
       if(isDone){
         h+='<div class="kusa-row done" onclick="ktvWhy('+i+')">'
-         +   '<div class="kusa-rn"><div class="n">'+f.n+'<span>'+f.a+'</span></div>'
+         +   '<div class="kusa-rn"><div class="n">'+fdn(f.n)+'<span>'+f.a+'</span></div>'
          +     '<div class="s ok">✅ 「'+st.nm+'」は済みです</div></div>'
          +   '<div class="kusa-cnt ok"><div class="k">✅ 済み</div><div class="g">なぜ ›</div></div>'
          + '</div>';
@@ -5917,7 +6588,7 @@
         h+='<div class="kusa-row'+(on?' on':'')+'">'
          +   '<div class="kusa-ck'+(on?' on':'')+'" onclick="ktvToggle('+i+')">'+(on?'✓':'')+'</div>'
          +   '<div class="kusa-rn" onclick="ktvToggle('+i+')">'
-         +     '<div class="n">'+f.n+'<span>'+f.a+'</span></div>'
+         +     '<div class="n">'+fdn(f.n)+'<span>'+f.a+'</span></div>'
          +     '<div class="s">まだ記録がありません</div>'
          +   '</div>'
          + '</div>';
@@ -6016,7 +6687,9 @@
      漢字は文字コード順だと「西→にし」の位置に来ないため、地区28件に読みを持たせる。
      KT_FIELDS 自体は並べ替えない(取込順のまま=他機能への影響ゼロ)。 */
   var AREA_YOMI={'たるみ':'たるみ','マミーズ':'まみいず','乙隈':'おとくま','花立':'はなたて','椛島':'かばしま','吉田':'よしだ','古賀':'こが','高田':'たかた','国分':'こくぶ','山隈':'やまくま','寺松':'てらまつ','松延':'まつのぶ','松尾':'まつお','松本':'まつもと','須戸折':'すどおり','吹上':'ふきあげ','西':'にし','大津':'おおつ','棚町':'たなまち','池松':'いけまつ','池末':'いけすえ','中村':'なかむら','田村':'たむら','田中':'たなか','島崎':'しまざき','苗田':'なえた','豊田':'とよだ','立石':'たていし'};
-  function areaYomi(a){ return (a&&AREA_YOMI[a])?AREA_YOMI[a]:(a||'んん'); }
+  function areaYomi(a){
+    try{ var r=(typeof AR_ED!=='undefined')?AR_ED[a]:null; if(r&&typeof r.yomi==='string'&&r.yomi)return r.yomi; }catch(e){}   /* ★v172 */
+    return (a&&AREA_YOMI[a])?AREA_YOMI[a]:(a||'んん'); }
   function areaSort(arr){
     return arr.sort(function(x,y){
       var r=areaYomi(x).localeCompare(areaYomi(y),'ja');
@@ -6081,7 +6754,7 @@
     var el=document.getElementById('fpHead'); if(!el)return;
     if(fpArea){
       el.innerHTML='<div class="fp-ttl"><span class="fp-bk" onclick="fpBackToAreas()">‹ 地区へもどる</span>'
-        +'📍 '+fpArea+'（'+fpAreaFields(fpArea).length+'枚）'
+        +'📍 '+adn(fpArea)+'（'+fpAreaFields(fpArea).length+'枚）'
         +'<span class="fp-x" onclick="fpClose()">✕ とじる</span></div>'
         +'<div class="fp-hint">👆 押すと、その田んぼに決まります</div>';
     }else{
@@ -6116,15 +6789,14 @@
   function fpRowHtml(f){
     return '<div class="fp-row'+(f.n===fpCur?' cur':'')+'" onclick="fpPick(\''+f.n+'\')">'
       +'<div class="cdot" style="background:'+cropColor(f.crop)+'"></div>'
-      +'<div><div class="fn2">'+f.n+'</div><div class="fc2">'+(f.crop||'未定')+(f.care?'・⚠️注意あり':'')+'</div></div>'
+      +'<div><div class="fn2">'+fdn(f.n)+'</div><div class="fc2">'+(f.crop||'未定')+(f.care?'・⚠️注意あり':'')+'</div></div>'
       +'<div class="fa2">'+f.a.replace('a','')+'<small> a</small></div></div>';
   }
   function fpMatch(q){
     q=(q||'').replace(/[\s　]/g,'');
     var out=[];
     for(var i=0;i<KT_FIELDS.length;i++){
-      var key=KT_FIELDS[i].n.replace(/[\s　]/g,'');
-      if(!q||key.indexOf(q)>=0)out.push(KT_FIELDS[i]);
+      if(fldHit(KT_FIELDS[i].n,q))out.push(KT_FIELDS[i]);   /* ★v171 見える名前でも見つかる */
     }
     return out;
   }
@@ -6134,7 +6806,7 @@
     for(var r=0;r<rec.length;r++){
       var f=fieldByName(rec[r]); if(!f)continue;
       h+='<div class="fp-chip" onclick="fpPick(\''+f.n+'\')">'
-       +   '<div class="a">'+f.n+'</div><div class="c">'+f.a+'</div></div>';
+       +   '<div class="a">'+fdn(f.n)+'</div><div class="c">'+f.a+'</div></div>';
       k++;
     }
     if(!k)return '';
@@ -6153,7 +6825,7 @@
     var h='';
     for(i=0;i<order.length;i++){
       h+='<div class="kusa-tile" onclick="fpOpenArea(\''+order[i]+'\')">'
-       +   '<div class="a">'+order[i]+'</div><div class="c">'+gs[order[i]]+'枚</div></div>';
+       +   '<div class="a">'+adn(order[i])+'</div><div class="c">'+gs[order[i]]+'枚</div></div>';
     }
     return fpRecentHtml()+'<div class="fp-gh">📍 地区をえらぶ（押すだけ）</div>'
       +'<div class="kusa-grid">'+h+'</div><div class="spacer"></div>';
@@ -6377,7 +7049,7 @@
     for(var i=0;i<list.length;i++){
       var it=list[i];
       s+='<img class="ph-th" src="'+it.thumb+'" alt="写真" onclick="phOpen(\''+it.big+'\',\''+
-        ((it.field?it.field+' / ':'')+(it.who||'')).replace(/'/g,'')+'\')">';
+        ((it.field?fdn(it.field)+' / ':'')+(it.who||'')).replace(/'/g,'')+'\')">';
     }
     s+='</div>';
     return h+s+'<div class="ph-note">📷 '+list.length+'枚（押すと大きく見られます）</div>';
@@ -6396,7 +7068,7 @@
     }
     for(var i=0;i<phItems.length&&i<60;i++){
       var it=phItems[i];
-      var sub=phYmd(it.date)+(it.field?('・'+it.field):'');   /* ★v148 見た目もハイフンに揃える */
+      var sub=phYmd(it.date)+(it.field?('・'+fdn(it.field)):'');   /* ★v148 見た目もハイフンに揃える */
       h+='<div class="ph-card"><img src="'+it.thumb.replace('c_fill,w_300,h_300','c_fill,w_800,h_600')+'" alt="写真" onclick="phOpen(\''+it.big+'\',\''+
         (sub+' '+(it.who||'')).replace(/'/g,'')+'\')">'
         +'<div class="ph-meta"><span class="who">'+(it.who||'だれか')+'</span>'
@@ -6413,7 +7085,7 @@
     var st=KT_STEPS[ktCurStep], dn=ktDoneFields(st.k);
     var t=inaFmt(new Date())+' '+st.nm+'\n';
     var done=[], rest=[];
-    for(var f=0;f<KT_FIELDS.length;f++){var fd=KT_FIELDS[f];(dn[fd.n]?done:rest).push(fd.n+'（'+fd.a+'）');}
+    for(var f=0;f<KT_FIELDS.length;f++){var fd=KT_FIELDS[f];(dn[fd.n]?done:rest).push(fdn(fd.n)+'（'+fd.a+'）');}
     if(done.length)t+='実施：'+done.join('・')+'\n';
     if(rest.length)t+='未実施：'+rest.join('・')+'\n';
     t+='記録：行徳農園アプリ';
@@ -7055,7 +7727,7 @@
   /* 手直しのシート（枚数を押した田んぼの下に出る） */
   function naeSheetHtml(fd){
     var i=KT_FIELDS.indexOf(fd);
-    return '<div class="nae-sheet" id="naeSheet" onclick="event.stopPropagation()"><div class="ti">'+fd.n+' の苗箱</div>'
+    return '<div class="nae-sheet" id="naeSheet" onclick="event.stopPropagation()"><div class="ti">'+fdn(fd.n)+' の苗箱</div>'
       +'<div class="row"><div class="pm" onclick="naePM('+i+',-1)">−</div>'
       +'<div class="val">'+naeMai(fd)+'<span>枚</span></div>'
       +'<div class="pm" onclick="naePM('+i+',1)">＋</div></div>'
@@ -7067,7 +7739,7 @@
   function naeRowHtml(fd, sub){
     var i=KT_FIELDS.indexOf(fd), ed=naeEdited(fd);
     var h='<div class="nae-fl'+(ed?' edited':'')+'" onclick="naeEdit('+i+')" style="cursor:pointer;">'
-      +'<div class="nm">'+fd.n+'<small>'+(sub||'')+'</small></div>'
+      +'<div class="nm">'+fdn(fd.n)+'<small>'+(sub||'')+'</small></div>'
       +(ed?'<span class="pen">✏️手直し</span>':'')
       +'<div class="ar">'+naeArea(fd).toFixed(2)+'a</div>'
       +'<div class="mai tap">'+naeMai(fd)+'<span>枚</span></div></div>';
@@ -7108,11 +7780,11 @@
       var opn=!!ac.open[ks[i]]||hasSheet;
       h+='<div class="nae-ac'+(opn?' open':'')+'">'
         +'<div class="nae-ach" onclick="naeAcTg(\''+ks[i].replace(/'/g,"\\'")+'\')">'
-        +'<div class="an">'+ks[i]+'<span class="nae-chip">稲'+arr.length+'枚</span></div>'
+        +'<div class="an">'+adn(ks[i])+'<span class="nae-chip">稲'+arr.length+'枚</span></div>'
         +'<div class="am">'+naeComma(sum)+'<span>枚</span></div></div>'
         +'<div class="nae-acb">';
       for(j2=0;j2<arr.length;j2++){
-        h+=naeRowHtml(arr[j2], (s.view==='crop')?(arr[j2].area||''):(arr[j2].crop||''));
+        h+=naeRowHtml(arr[j2], (s.view==='crop')?adn(arr[j2].area||''):(arr[j2].crop||''));
       }
       h+='</div></div>';
     }
@@ -7219,7 +7891,7 @@
     tx+= s.kabu+'株植え／予備'+s.yobi+'%\n';
     tx+='合計 '+t.sum+'枚（稲 '+t.n+'枚ぶん・'+t.area.toFixed(2)+'a）\n\n';
     var sorted=r.slice().sort(function(a,b){return naeArea(b)-naeArea(a);});
-    for(i=0;i<sorted.length;i++) tx+=sorted[i].n+'　'+naeArea(sorted[i]).toFixed(2)+'a　'+naeMai(sorted[i])+'枚'+(naeEdited(sorted[i])?'（手直し）':'')+'\n';
+    for(i=0;i<sorted.length;i++) tx+=fdn(sorted[i].n)+'　'+naeArea(sorted[i]).toFixed(2)+'a　'+naeMai(sorted[i])+'枚'+(naeEdited(sorted[i])?'（手直し）':'')+'\n';
     var fxn=t.fx||0;
     if(fxn)tx+='\n※（手直し）は自動計算から手で直した枚数（'+fxn+'枚の田んぼ）\n';
     return tx;
@@ -7299,7 +7971,8 @@
       ['whoSheet',     whoClose],                 /* だれが（作業を記録） */
       ['hitoWhoSheet', whoClose],                 /* だれが（振り返り） */
       ['memSheet',     memClose],                 /* 名簿の1人ぶん */
-      ['hvOv',         hvSheetClose]              /* ★v169 籾摺り・出荷 */
+      ['hvOv',         hvSheetClose],             /* ★v169 籾摺り・出荷 */
+      ['fldOv',        fldSheetClose]             /* ★v171 田んぼを直す */
     ], i, el, open;
     for(i=0;i<L.length;i++){
       el=document.getElementById(L[i][0]); if(!el) continue;
@@ -7589,7 +8262,7 @@
       if(!wlAdd(dstep, droneField, 'ドローン散布'+(dChem?('（'+dChem+'）'):''), 'drone', dex)) return;   /* ★v74 */
       if(dyEl)dyEl.value='';
       /* ★v85 工程が決まらなかったときに「工程表にも反映」と書いてはいけない（文言はいちばん軽い嘘のつき方・§3.5） */
-      toast('✅ 保存しました('+droneField+(dyen>0?('・農薬代'+dyen.toLocaleString()+'円は生産原価へ'):'')
+      toast('✅ 保存しました('+fdn(droneField)+(dyen>0?('・農薬代'+dyen.toLocaleString()+'円は生産原価へ'):'')
             +'・みんなに共有'+(dstep?'・工程表にも反映':'・どの工程かは決めていません')+')'); /* v24.2:カレンダーへ飛ばさずこの画面に留まる */
       return;
     }
@@ -7895,8 +8568,12 @@
     var tz=t.replace(/[\s　（）()]/g,'');
     var bestF=null,bestLen=0;
     for(var i=0;i<KT_FIELDS.length;i++){
-      var key=KT_FIELDS[i].n.replace(/[\s　（）()]/g,'');
-      if(key && tz.indexOf(key)>=0 && key.length>bestLen){ bestF=KT_FIELDS[i].n; bestLen=key.length; }
+      /* ★v171 見える名前（直した名前）と中の名前の両方で照合する。台帳に入れるのは中の名前 */
+      var keys=[fdn(KT_FIELDS[i].n), KT_FIELDS[i].n];
+      for(var kq=0;kq<keys.length;kq++){
+        var key=String(keys[kq]).replace(/[\s　（）()]/g,'');
+        if(key && tz.indexOf(key)>=0 && key.length>bestLen){ bestF=KT_FIELDS[i].n; bestLen=key.length; }
+      }
     }
     if(bestF)r.field=bestF;
     /* ② 農薬：辞書と照合(長い名前を先に見て最長一致) */
@@ -7926,7 +8603,7 @@
     var miss=[];
     if(!r.field)miss.push('田んぼ'); if(!r.chem&&!r.mass)miss.push('農薬・肥料');
     var html2='<div class="lb2">🗣 あなたが話した言葉</div><div class="heardtx">「'+t+'」</div>';
-    html2+=ngSlot('📍','どこで（田んぼ）', r.field?(r.field):null, '聞き取れませんでした');
+    html2+=ngSlot('📍','どこで（田んぼ）', r.field?fdn(r.field):null, '聞き取れませんでした');
     html2+=ngSlot('🧪','なにを（農薬・肥料）', r.chem||(r.mass?'肥料':null), '「薬」だけでは分かりません');
     html2+=ngSlot('💧','どのくらいに薄めて', r.rate?(r.rate+'倍'):null, '倍率が聞き取れません');
     html2+=ngSlot('🚿','どれだけの量', volTxt, '量が聞き取れません');
@@ -8084,7 +8761,7 @@
     if(histFoldOpen){ h='▴ しぼりこみをとじる'; }
     else if(act){
       var a=[];
-      if(histField)a.push('📍 '+histField);            /* 田んぼ名は台帳の値。人が打った文字は入らない */
+      if(histField)a.push('📍 '+fdn(histField));            /* 田んぼ名は台帳の値。人が打った文字は入らない */
       if(histFilter!=='all')a.push(histKindLabel(histFilter));
       h=a.join('　')+'<span class="clr" onclick="event.stopPropagation();histClearAll()">✕ ぜんぶ</span>';
     }else{
@@ -8126,7 +8803,7 @@
   function histFieldRender(){
     var el=document.getElementById('histFieldBar'); if(!el)return;
     if(histField){
-      el.innerHTML='<span class="hist-fld on" onclick="histFieldPick()">📍 '+histField+' ▾</span>'+
+      el.innerHTML='<span class="hist-fld on" onclick="histFieldPick()">📍 '+fdn(histField)+' ▾</span>'+
                    '<span class="hist-fld clr" onclick="histFieldClear()">✕ ぜんぶの田んぼ</span>';
     }else{
       el.innerHTML='<span class="hist-fld" onclick="histFieldPick()">📍 田んぼでしぼる ▾</span>';
@@ -8154,7 +8831,7 @@
     var items=histVisible();
     var box=document.getElementById('histBody'); if(!box)return;
     if(!items.length){
-      var msg = histField ? ('「'+histField+'」の記録はまだありません。') : '<span class="nb">まだ記録が</span><span class="nb">ありません。</span><span class="nb">🎤話して記録や</span><span class="nb">🚜機械の維持費に</span><span class="nb">入れると、</span><span class="nb">ここに新しい順で</span><span class="nb">並びます。</span>';
+      var msg = histField ? ('「'+fdn(histField)+'」の記録はまだありません。') : '<span class="nb">まだ記録が</span><span class="nb">ありません。</span><span class="nb">🎤話して記録や</span><span class="nb">🚜機械の維持費に</span><span class="nb">入れると、</span><span class="nb">ここに新しい順で</span><span class="nb">並びます。</span>';
       box.innerHTML='<div class="hist-empty">'+msg+'</div>'; return;
     }
     var h='', curDay='';
@@ -8174,7 +8851,7 @@
          ★📍を付けるのは田んぼの記録だけ。📣ひとこと(人の名前)と
            🚜機械(機械の名前)には付けない（田んぼではないため）。 */
       var meta = (x.hito || x.ki<0) ? x.where
-               : ('📍 '+x.where+(x.sub?'　'+x.sub:''));
+               : ('📍 '+fdn(x.where)+(x.sub?'　'+x.sub:''));
       h+='<div class="hist-row'+(x.hito?' hito':'')+(x.star?' star':'')+(opd?' opd':'')+'" onclick="histRowTap('+i+')">'
          +'<span class="hist-ic">'+x.ic+'</span>'+
            '<span class="hist-main"><span class="hist-title">'+x.title+'</span>'+
@@ -8289,7 +8966,7 @@
     for(var o=0;o<order.length;o++){
       var name=order[o], rows=byField[name].slice();
       rows.sort(function(a,b){return ((a.e.d||'')<(b.e.d||''))?-1:1;});
-      html2+='<div class="krtit">🌾 '+name+'</div>';
+      html2+='<div class="krtit">🌾 '+fdn(name)+fldGoneTag(name)+'</div>';
       html2+='<div class="krtbl"><table><tr><th>月日</th><th>作業</th><th>農薬・肥料</th><th>倍率</th><th>量</th><th>直す</th></tr>';
       for(var rr=0;rr<rows.length;rr++){
         var e2=rows[rr].e, ix=rows[rr].idx;
@@ -8337,7 +9014,7 @@
     set('krEd',krDateToInput(e.d)); set('krEw',e.work||''); set('krEc',e.chem||'');
     set('krEr',e.rate||''); set('krEv',e.vol||''); set('krEm',e.mass||'');
     var t=document.getElementById('krEditTitle');
-    if(t)t.textContent='✏️ '+(e.field||'')+' '+krMdY(e.d)+' の記録を直す';
+    if(t)t.textContent='✏️ '+fdn(e.field||'')+' '+krMdY(e.d)+' の記録を直す';
     /* ★v36.3：以前は scrollIntoView({block:'center'}) だったが、iOSでは
        固定ヘッダーごとページ全体を動かして戻るボタンが画面外へ出ることがある。
        中のスクロール容器だけを動かす共通関数に統一した */
@@ -8363,7 +9040,7 @@
   }
   function krDel(idx){
     var e=ktLog[idx]; if(!e)return;
-    if(!confirm('本当に消しますか？\n'+krMdY(e.d)+' '+(e.field||'')+' '+(e.work||e.text||''))) return;
+    if(!confirm('本当に消しますか？\n'+krMdY(e.d)+' '+fdn(e.field||'')+' '+(e.work||e.text||''))) return;
     ktTombAdd(e); ktLog.splice(idx,1); ktSave();
     krEditCancel();
     krokuRender();
@@ -8397,7 +9074,7 @@
     for(var i=0;i<ktLog.length;i++){ var e=ktLog[i]; if(e.hito)continue;   /* ★v94 ひとことは出さない（表と同じ） */
       var f=e.field||'（不明）'; (byField[f]=byField[f]||[]).push(e); }
     for(var f in byField){
-      lines.push(''); lines.push('◆'+f);
+      lines.push(''); lines.push('◆'+fdn(f));
       var rows=byField[f].slice().sort(function(a,b){return (a.d||'')<(b.d||'')?-1:1;});
       for(var r=0;r<rows.length;r++){
         var e2=rows[r], vol=e2.vol?(e2.vol+'L'):(e2.mass?(e2.mass+'kg'):'');
@@ -8424,6 +9101,7 @@
      ============================================================ */
   function fieldsEnter(){ soilLoad(); ktLoad();
     flPick='';          /* ★v90 開くたびに必ずタイルから。前に開いた地区が残ると迷子になる（§10-9） */
+    flGone=false;       /* ★v171 同じ理由で、消した田んぼの一覧も解く */
     flCropEdit=false; cropSheetClose();   /* ★v121 作付モードも必ず解く（同じ理由） */
     fieldsRender(); }
   function fieldMaterials(field){
@@ -8579,7 +9257,7 @@
       + (set?'background:#F4F9F5;':'')+'">'
       + '<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;">'
       + '<span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
-      + '<div style="min-width:0;"><div class="nm">'+f.n+'</div>'
+      + '<div style="min-width:0;"><div class="nm">'+fdn(f.n)+'</div>'
       + '<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
       + (set?'<span class="crop-set">決めた</span>':'')
       + '<span class="fa3">'+String(f.a).replace('a','')+'<small> a</small></span>'
@@ -8606,7 +9284,7 @@
   function flFiltered(){
     var q=flQ.replace(/[\s　]/g,''), out=[];
     for(var i=0;i<KT_FIELDS.length;i++){ var f=KT_FIELDS[i];
-      if(q && f.n.replace(/[\s　]/g,'').indexOf(q)<0)continue;
+      if(q && !fldHit(f.n,q))continue;   /* ★v171 見える名前でも見つかる */
       if(flCrop && (f.crop||'未定')!==flCrop)continue;
       out.push(i);
     }
@@ -8618,11 +9296,16 @@
     flHdr();
     var ent=document.querySelector('#p-fields .nae-entry');
     /* ★v121 作付を決めている間は、苗箱の入口を隠す（1画面1機能） */
-    if(ent)ent.style.display=(flPick||flCropEdit)?'none':'';
+    if(ent)ent.style.display=(flPick||flCropEdit||flGone)?'none':'';
+    if(flGone){   /* ★v171 消した田んぼの一覧 */
+      body.innerHTML=fldGoneHtml(); return;
+    }
     if(flPick){
       var arr=flGroupIdx(flPick), hh='<div class="fl-grp open"><div class="fl-glist">';
       for(var z=0;z<arr.length;z++)hh+=flRowHtml(arr[z]);
-      body.innerHTML=hh+'</div></div>'+(flCropEdit?cropEditFoot():'')+'<div class="spacer"></div>';
+      body.innerHTML=hh+'</div></div>'+(flCropEdit?cropEditFoot():'')
+        +((!flCropEdit&&flMode==='area')?fldAreaBtns(flPick):'')   /* ★v172 ⑥ 田んぼを足す・地区の名前を直す */
+        +'<div class="spacer"></div>';
       return;
     }
     /* ★v121 作付を決めるモード：要約・検索・品種チップは出さない（1画面1機能） */
@@ -8679,10 +9362,10 @@
          が、.rowcard の角丸と枠を打ち消して「つながった罫線」にしていた。それを外しただけ。
        ★面積は .fp-row と同じく、数字と「a」を分けて「a」を小さくする */
     return '<div class="fld-wrap" id="fw'+i+'">'
-      +'<div class="rowcard" onclick="fieldToggle('+i+')">'
+      +'<div class="rowcard'+(fldJust===f.n?' fle-hl':'')+'" onclick="fieldToggle('+i+')">'
       +'<div style="display:flex;align-items:center;gap:9px;flex:1;min-width:0;"><span style="width:10px;height:10px;border-radius:99px;flex-shrink:0;background:'+cropColor(f.crop)+'"></span>'
-      +'<div style="min-width:0;"><div class="nm">'+f.n+(f.care?' <span style="font-size:10px;background:var(--red-soft);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:800;">注意</span>':'')+(f.memo?' <span style="font-size:10px;background:#F5EEDC;color:#B8912E;border-radius:5px;padding:1px 5px;font-weight:800;">メモ</span>':'')+'</div>'
-      +'<div class="ar">'+(f.crop||'未定')+'</div></div></div>'
+      +'<div style="min-width:0;"><div class="nm">'+fdn(f.n)+(f.care?' <span style="font-size:10px;background:var(--red-soft);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:800;">注意</span>':'')+(f.memo?' <span style="font-size:10px;background:#F5EEDC;color:#B8912E;border-radius:5px;padding:1px 5px;font-weight:800;">メモ</span>':'')+'</div>'
+      +'<div class="ar">'+(f.crop||'未定')+(fldIsNew(f.n)?'<span class="fle-badge nw">🆕足した</span>':(fldEdited(f.n)?'<span class="fle-badge">✏️直した</span>':''))+'</div></div></div>'
       +nae
       +'<span class="fa3">'+String(f.a).replace('a','')+'<small> a</small></span></div>'
       +flDetailHtml(i)+'</div>';
@@ -8716,7 +9399,7 @@
       var pill=ns.n ? '<div class="fl-nae">\ud83c\udf31\u82d7 '+naeComma(ns.sum)+'\u679a'+(ns.edited?' \u270f\ufe0f':'')+'</div>'
                     : '<div class="fl-nae none">\u82d7 \u2014</div>';
       h+='<div class="kusa-tile" onclick="flOpenPick(\''+String(k2).replace(/'/g,"\\'")+'\')">'
-       +   '<div class="a">'+k2+'</div>'
+       +   '<div class="a">'+adn(k2)+'</div>'
        +   '<div class="c">'+arr.length+'\u679a\u30fb'+sumA.toFixed(0)+'a</div>'+pill
        + '</div>';
     }
@@ -8726,10 +9409,14 @@
   /* ヘッダーの差し替え。中に入っているときは「‹ 地区」と名前を出す（草刈りとまったく同じ） */
   function flHdr(){
     var el=document.getElementById('hdr'); if(!el)return;
-    if(flPick){
+    if(flGone){   /* ★v171 */
+      el.innerHTML='<div class="navhead">'
+        +'<button class="back" onclick="flGoneClose()"><span class="ar">\u2190</span>\u5730\u533a</button>'
+        +'<span class="title" style="white-space:nowrap;">消した田んぼ</span></div>';
+    }else if(flPick){
       el.innerHTML='<div class="navhead">'
         +'<button class="back" onclick="flBackToTiles()"><span class="ar">\u2190</span>'+(flMode==='crop'?'\u54c1\u7a2e':'\u5730\u533a')+'</button>'
-        +'<span class="title">'+flPick+'\uff08'+flGroupIdx(flPick).length+'\u679a\uff09</span></div>';
+        +'<span class="title">'+adn(flPick)+'\uff08'+flGroupIdx(flPick).length+'\u679a\uff09</span></div>';
     }else if(flCropEdit){
       /* ★v121 作付モードは、ヘッダーでもそれと分かるようにする */
       el.innerHTML='<div class="navhead">'
@@ -8754,7 +9441,7 @@
     /* ★v90 しぼりこんでいない「地区別／品種別」はタイルで出す。
        🔍名前でさがす・📐広い順・品種チップは地区をまたぐので、今までどおりの一覧のまま */
     if(!flQ.replace(/[\s\u3000]/g,'') && flCrop===null && (flMode==='area'||flMode==='crop')){
-      el.innerHTML=flTilesHtml(); return;
+      el.innerHTML=flTilesHtml()+fldTilesFoot(); return;   /* ★v172 ⑪ 新しい地区に足す＋消した田んぼ */   /* ★v171 消した田んぼの入口（0枚なら出ない） */
     }
     var idxs=flFiltered(), h='';
     var autoOpen=(flQ.replace(/[\s　]/g,'')!==''||flCrop!==null);
@@ -8783,7 +9470,7 @@
                     : '<span class="fl-nae none">苗 —</span>';   /* 未定・大豆だけの地区 */
         }
         h+='<div class="fl-grp'+(op?' open':'')+'"><div class="fl-gh" onclick="flGrpToggle(\''+k2+'\')">'
-          +'<span class="gn">'+(flMode==='area'?'📍 ':'')+k2+'</span><div class="fl-gdots">'+dh+'</div>'+nb
+          +'<span class="gn">'+(flMode==='area'?'📍 ':'')+adn(k2)+'</span><div class="fl-gdots">'+dh+'</div>'+nb
           +'<span class="gs">'+arr.length+'枚・'+sumA.toFixed(0)+'a</span><span class="gar">›</span></div>'
           +'<div class="fl-glist">';
         for(var r=0;r<arr.length;r++)h+=flRowHtml(arr[r]);
@@ -8813,6 +9500,8 @@
         +(f.memo?'<div><span class="k3">📝 メモ</span>'+f.memo+'</div>':'')
         +(f.care?'<div><span class="k3">⚠️ 注意</span><span style="color:var(--red);font-weight:700;">'+f.care+'</span></div>':'')
         +'</div>';
+      /* ★v171 名前・面積を直す（親方のご指示 2026/10/14・mockup_v171 ①） */
+      h+='<div class="fle-edbtn" onclick="fldSheetOpen('+i+')">✏️ 名前・面積を直す</div>';
       /* 土のメモ ★★v160 タグの列は soilTagsHtml() が作る（描き直しと同じ道・下の注記） */
       h+='<div class="fld-soil-ttl">🌱 土のメモ</div><div class="fld-soil-tags" id="fst'+i+'">'
         +soilTagsHtml(f.n)+'</div>';
@@ -9057,7 +9746,7 @@
     /* ★v52 肥料は作業台帳(ktLog)を読むようになったので、開くたび最新を読み直す */
     if(typeof ktLoad==='function') ktLoad();
     hyYear=hyThisYear();          /* ★v50 画面を開いたら必ず今年から見せる */
-    var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=hyField;
+    var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=fdn(hyField);
     var ft=document.getElementById('hyFertName'); if(ft)ft.textContent=hyFert;
     if(typeof hyUnitSync==='function') hyUnitSync();   /* ★v60 入れかたの表示をそろえる */
     hyRender();
@@ -9081,12 +9770,12 @@
          記録は有る。数えられていないだけ。ここを直さないと札と文が食い違う */
       if(t.n+t.p+t.k<=0){
         note.innerHTML=(t.uc>0)
-          ? ('📗 '+hyField+' に'+yLab+'あげた栄養：まだ数えられていません（下をご覧ください）')
+          ? ('📗 '+fdn(hyField)+' に'+yLab+'あげた栄養：まだ数えられていません（下をご覧ください）')
           : ('<span class="nb">'+yLab+'の記録は</span><span class="nb">まだありません。</span>'
              +'<span class="nb">下から肥料を選んで</span><span class="nb">量を入れると、</span>'
              +'<span class="nb">栄養が自動で計算されます。</span>');
       }
-      else{ note.innerHTML='📗 '+hyField+' に'+yLab+'あげた栄養：窒素 '+hyR1(t.n)+'kg・りん酸 '+hyR1(t.p)+'kg・カリ '+hyR1(t.k)+'kg'; }
+      else{ note.innerHTML='📗 '+fdn(hyField)+' に'+yLab+'あげた栄養：窒素 '+hyR1(t.n)+'kg・りん酸 '+hyR1(t.p)+'kg・カリ '+hyR1(t.k)+'kg'; }
     }
     /* ★v59 出口① 成分の分からない肥料を、件数・kg・名前まで正直に出す */
     var unk=document.getElementById('hyUnk');
@@ -9190,15 +9879,15 @@
     box.style.display='block';
     if(!ar){
       box.classList.add('warn');
-      box.innerHTML='⚠️ '+hyField+' は面積が分からないので、<b>合計 '+hyR1(v)+'kg</b> として記録します';
+      box.innerHTML='⚠️ '+fdn(hyField)+' は面積が分からないので、<b>合計 '+hyR1(v)+'kg</b> として記録します';
       return;
     }
     box.classList.remove('warn');
     if(hyUnit==='tan'){
-      box.innerHTML='📗 '+hyField+'（'+ar+'a）に <b>'+hyR1(v)+'kg／反</b>'
+      box.innerHTML='📗 '+fdn(hyField)+'（'+ar+'a）に <b>'+hyR1(v)+'kg／反</b>'
         +'<br>　→ 記録するのは <b>合計 '+hyR1(hyToTotalKg(v))+'kg</b> です';
     }else{
-      box.innerHTML='📗 '+hyField+'（'+ar+'a）に <b>合計 '+hyR1(v)+'kg</b>'
+      box.innerHTML='📗 '+fdn(hyField)+'（'+ar+'a）に <b>合計 '+hyR1(v)+'kg</b>'
         +'<br>　→ 反あたりでは <b>'+hyR1(v/(ar/10))+'kg／反</b> です';
     }
   }
@@ -9225,7 +9914,7 @@
     var backToNow=(hyYear!==hyThisYear());
     hyYear=hyThisYear();
     hyRender();
-    toast(hyField+' に '+hyFert+' '+kg+'kg を記録しました'+(backToNow?'（今年に切りかえました）':''));
+    toast(fdn(hyField)+' に '+hyFert+' '+kg+'kg を記録しました'+(backToNow?'（今年に切りかえました）':''));
   }
   /* ★v52 hyLocalIdx() は廃止した（肥料台帳をやめたため。名前はここに残す＝次の人が
      「消えた関数」を探して同じものを作り直さないように）。
@@ -9264,11 +9953,11 @@
   }
   function hyPickField(){
     fieldSheetOpen(function(n){ hyField=n;
-      var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=n;
+      var fn=document.getElementById('hyFieldName'); if(fn)fn.textContent=fdn(n);
       /* ★v60 田んぼが変わると面積も変わる。kg／反 のまま面積の無い田んぼへ移ると
          推測で計算することになるので、合計kgへ戻す。変換の表示も作り直す */
       hyUnitSync();
-      hyRender(); toast('田んぼ：'+n); }, hyField);
+      hyRender(); toast('田んぼ：'+fdn(n)); }, hyField);
   }
   /* 入れかたのボタンと変換の表示を、いまの田んぼに合わせて作り直す */
   function hyUnitSync(){
@@ -9439,11 +10128,11 @@
   function pestFieldShow(){
     var v=document.getElementById('pestFieldV'); if(!v)return;
     var f=(typeof fieldByName==='function')?fieldByName(pestField):null;
-    v.textContent=pestField+(f?(' '+f.a+'・'+(f.crop||'未定')):'');
+    v.textContent=fdn(pestField)+(f?(' '+f.a+'・'+(f.crop||'未定')):'');
   }
   function pestPickField(){
     if(typeof fieldSheetOpen!=='function'){ return; }
-    fieldSheetOpen(function(n){ pestField=n; pestFieldShow(); pestCalc(); toast('田んぼ：'+n); }, pestField);
+    fieldSheetOpen(function(n){ pestField=n; pestFieldShow(); pestCalc(); toast('田んぼ：'+fdn(n)); }, pestField);
   }
   function pestWaterAsk(){
     var v=prompt('10aあたりに、まく水の量（L）を入れてください。\nふつうの散布は100Lくらい（国の基準は60〜150L）。', pestWater);
@@ -9540,7 +10229,7 @@
       h+='<div class="kk-list">';
       for(var k=0;k<order.length;k++){
         var g=byF[order[k]];
-        h+='<div class="kk-row"><span class="kk-f">'+memEsc(order[k])+'</span>'
+        h+='<div class="kk-row"><span class="kk-f">'+memEsc(fdn(order[k]))+'</span>'
           +'<span class="kk-n">'+g.n+'回</span>'
           +'<span class="kk-d">'+memEsc(g.ds.join('・'))+'</span></div>';
       }
@@ -9798,7 +10487,7 @@
           if(srcs&&srcs.length){
             h+='<div class="cost-brkbtn" id="cbb_'+sub.auto+'" data-n="'+srcs.length+'" onclick="costBreak(\''+sub.auto+'\')">🔎 内訳を見る（'+srcs.length+'件）</div>';
             var bh=''; for(var s2=0;s2<srcs.length;s2++){ var r=srcs[s2];
-              bh+='<div class="cb-row"><span class="cb-d">'+krMd(r.d)+'</span><span class="cb-w">'+r.where+'</span><span class="cb-nm">'+r.name+'</span><span class="cb-y">'+kiYen(r.yen)+'</span></div>'; }
+              bh+='<div class="cb-row"><span class="cb-d">'+krMd(r.d)+'</span><span class="cb-w">'+fdn(r.where)+'</span><span class="cb-nm">'+r.name+'</span><span class="cb-y">'+kiYen(r.yen)+'</span></div>'; }
             h+='<div class="cost-break" id="cbrk_'+sub.auto+'">'+bh+'</div>';
           }
         }
@@ -10642,7 +11331,7 @@
      ⚠️ sync-list.js は鍵を50個までしか読まない。
         固定13個＋帳面ぶん ＝ 2026年で14個／2050年で38個／**2062年で50個**。
         その頃「古い年は同期から外す」判断が要る（HANDOVER に明記） */
-  var SYNC_FIXED=['gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.heads.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1','gyotoku.harvest.v1',DEV_LS,TOMB_LS];   /* ★v169 籾摺り・出荷＝16→17個（上限50） */   /* ★v141 出穂を見た日を追加＝15→16個（上限50） */
+  var SYNC_FIXED=['gyotoku.plans.v1','gyotoku.soil.v1','gyotoku.kyoka.v1','gyotoku.hassei.v1','gyotoku.hiryo.v1','gyotoku.kikai.v1','gyotoku.cost.v1','gyotoku.inasaku.v1','gyotoku.heads.v1','gyotoku.hygoal.v1','gyotoku.naeov.v1','gyotoku.members.v1','gyotoku.crop.v1','gyotoku.harvest.v1','gyotoku.fldedit.v1',DEV_LS,TOMB_LS];   /* ★v171 田んぼの直し＝17→18個（上限50） */   /* ★v169 籾摺り・出荷＝16→17個（上限50） */   /* ★v141 出穂を見た日を追加＝15→16個（上限50） */
   var SYNC_KEYS=[], SYNC_SET={}, SYNC_READ_KEYS=[];
   function syncKeysBuild(){
     var ks=[], seen={}, i, a=[];
@@ -11287,6 +11976,7 @@
            'gyotoku.naeov.v1':'苗箱の手直し',   /* ★v130 ここだけ日本語の名前が無かった */
            'gyotoku.devs.v1':'家族の端末',   /* ★v131 */
            'gyotoku.harvest.v1':'籾摺り・出荷',   /* ★v169 */
+           'gyotoku.fldedit.v1':'田んぼの名前・面積',   /* ★v171 */
            'gyotoku.tomb.v1':'消した印'};  /* ★v120 作付を追加 */
     /* ★v123 作業の記録は年ごとの帳面になった。'gyotoku.worklog.2026.v1' → '作業の記録(2026年)' */
     var _y=/^gyotoku\.worklog\.([0-9][0-9][0-9][0-9])\.v1$/.exec(k);
@@ -11303,6 +11993,8 @@
     if(document.getElementById('naeSheet'))return;
     /* ★v169 籾摺り・出荷を入力している間は読み込み直さない（入れた数字が消えるため） */
     try{ var _hv=document.getElementById('hvOv'); if(_hv&&_hv.style.display&&_hv.style.display!=='none')return; }catch(e){}
+    /* ★v171 田んぼを直している間も読み込み直さない（打った名前・面積が消えるため） */
+    try{ var _fo=document.getElementById('fldOv'); if(_fo&&_fo.style.display&&_fo.style.display!=='none')return; }catch(e){}
     var last=0; try{ last=parseInt(sessionStorage.getItem('gyotoku.sync.reloadedAt')||'0',10); }catch(e){}
     var now=Date.now(); if(now-last<6000)return;
     try{ sessionStorage.setItem('gyotoku.sync.reloadedAt',String(now)); }catch(e){}
@@ -11429,7 +12121,7 @@
     }
     box.innerHTML=list.map(function(p){
       return '<div class="titem'+(p.done?' done':'')+'" onclick="todoTap(\''+p.id+'\')">'
-        +'<span class="cb"></span><span class="tt">'+planTitle(p)+'</span><span class="fldnm">'+(p.field||'')+'</span></div>';
+        +'<span class="cb"></span><span class="tt">'+planTitle(p)+'</span><span class="fldnm">'+fdn(p.field||'')+'</span></div>';
     }).join('');
   }
   /* ★★v114 「○ 実績にする」を、作業台帳につなぐ ★★
@@ -11523,7 +12215,7 @@
     var hits=[];
     for(var i=0;i<ktLog.length;i++){
       var e=ktLog[i];
-      var hay=[e.text,e.work,e.chem,e.field].join(' ');
+      var hay=[e.text,e.work,e.chem,e.field,fdn(e.field||'')].join(' ');   /* ★v171 直した名前でも探せる */
       if(hay.indexOf(q)>=0) hits.push(e);
     }
     hits.sort(function(a,b){return a.d<b.d?1:-1;});
@@ -11531,7 +12223,7 @@
     var h='';
     for(var j=0;j<hits.length && j<40;j++){ var e=hits[j];
       var label=e.text||((e.work||'')+(e.chem?(' '+e.chem):''));
-      h+='<div class="cal-sitem"><span class="cal-sd">'+e.d+'</span><span class="cal-sf">'+(e.field||'')+'</span>'
+      h+='<div class="cal-sitem"><span class="cal-sd">'+e.d+'</span><span class="cal-sf">'+fdn(e.field||'')+'</span>'
         +'<span style="margin-left:8px;">'+label+'</span></div>';
     }
     res.innerHTML=h;
@@ -11598,7 +12290,7 @@
     }
     box.innerHTML=head+list.map(function(p){
       return '<div class="daycard"><div><div class="nm">'+(p.done?'✅ ':'(予定)')+planTitle(p)+'</div>'
-        +'<div class="fi">'+(p.field||'')+(p.who?'|担当:'+p.who:'')+'</div>'
+        +'<div class="fi">'+fdn(p.field||'')+(p.who?'|担当:'+p.who:'')+'</div>'
         +'<div style="margin-top:5px;"><span class="rowbtn mod" style="margin-left:0;" onclick="planEdit(\''+p.id+'\')">✏️ 直す</span><span class="rowbtn del" onclick="planDel(\''+p.id+'\')">🗑 消す</span></div></div>'
         +'<button class="actbtn '+(p.done?'a-undo':'a-do')+'" onclick="todoTap(\''+p.id+'\')">'+(p.done?'予定に戻す':'○ 実績にする')+'</button></div>';
     }).join('');
@@ -11630,7 +12322,7 @@
     var p3=calSel.split('-');
     var t=document.getElementById('planFormTitle');
     if(t)t.textContent='📝 '+parseInt(p3[1],10)+'月'+parseInt(p3[2],10)+'日 の予定を書く';
-    var fv=document.getElementById('planFieldV'); if(fv)fv.textContent=planField;
+    var fv=document.getElementById('planFieldV'); if(fv)fv.textContent=fdn(planField);
     var ti=document.getElementById('planTitleIn'); if(ti)ti.value='';
     /* ★★v110 ここが v109 のバグ ★★
        v109は、この1行を planFormToggle ではなく calPick（日を替えたとき）に入れてしまい、
@@ -11653,7 +12345,7 @@
   }
   function planFieldPick(){
     fieldSheetOpen(function(n){ planField=n;
-      var fv=document.getElementById('planFieldV'); if(fv)fv.textContent=n; }, planField);
+      var fv=document.getElementById('planFieldV'); if(fv)fv.textContent=fdn(n); }, planField);
   }
   /* ★★v109 よくある作業の候補（📝作業を記録と同じ REC_WORKS を使い回す）★★
      ★描き直すのは「候補の列」だけ。打っている欄には触らない
@@ -12472,7 +13164,7 @@
      ・★2回続けて同じ変化が見えたときだけ入れかわる（指紋が揺れても読み込み直しを連発しない）
      ・書きかけの文があるときは入れかわらない（打ったものを消さない）
      ・3分に1回までしか入れかわらない（万一のときも繰り返しにならない） */
-  var APP_VER='v170';                        /* この版の名前。版を上げるたびにここも上げる */
+  var APP_VER='v172';                        /* この版の名前。版を上げるたびにここも上げる */
   var VER_FLAG='gyotoku.verDone.v1';        /* 入れかわった直後の目印 */
   var VER_RELOADED='gyotoku.verAt.v1';      /* 最後に入れかわった時刻 */
   var _verLast=0, _verBusy=0;               /* ★v58 札は時刻で持つ（上の同期と同じ理由） */
@@ -12875,7 +13567,7 @@
     }
     /* ★v88 他の画面と同じ「田んぼの行」にそろえた（14pxの細い文字だと見落とす） */
     h+='<div class="fld startrow" onclick="dgPickField()"><div class="lb">出た田んぼ?（押して変更）</div>'
-     +   '<div class="v"><span>'+dgField+'</span><span class="chv">›</span></div></div>';
+     +   '<div class="v"><span>'+fdn(dgField)+'</span><span class="chv">›</span></div></div>';
     h+='<div class="dg-rec" onclick="dgHasAdd(\''+d.n+'\')">🐛 この田んぼで出たと記録する</div>';
     return h+'</div>';
   }
@@ -12897,7 +13589,7 @@
     hasLog.push({id:'g'+Date.now()+'_'+Math.floor(Math.random()*10000),
                  d:inaFmtFull(new Date()), f:dgField, name:name, _m:Date.now()});
     hasSave(); dgHist(); yhRender();
-    toast('🐛 '+dgField+' に「'+name+'」を記録しました（🌱土メモ・📖教科書・🔮予報にもつながります）');
+    toast('🐛 '+fdn(dgField)+' に「'+name+'」を記録しました（🌱土メモ・📖教科書・🔮予報にもつながります）');
   }
   function dgHist(){
     var box=document.getElementById('dgHist'); if(!box)return;
@@ -13053,7 +13745,7 @@
         for(var i=0;i<rows.length&&i<20;i++){
           var e=rows[i].e;
           past+='<div class="kyo-row"><span class="kyo-d">'+e.d.slice(5).replace('/','/')+'</span>'
-            +'<span>'+kyoLabel(e)+'</span><span class="kyo-f">'+(e.field||'')+'</span>'
+            +'<span>'+kyoLabel(e)+'</span><span class="kyo-f">'+fdn(e.field||'')+'</span>'
             +'<span class="kyo-star'+(e.star?' on':'')+'" onclick="kyoStar('+rows[i]._i+')">'
             +'<span class="k">'+(e.star?'★':'☆')+'</span><span class="t">'+(e.star?'残した':'残す')+'</span></span></div>';
         }
@@ -13107,7 +13799,7 @@
     var ar=hyFieldArea(hyField);
     if(!ar){ card.innerHTML=''; return; }
     var t=hyTotals(hyField), k10=ar/10;
-    card.innerHTML='<div class="hyg-t" onclick="hyGoalEdit()"><span class="nb">🎯 目標まであとどれだけ？</span><span class="nb">（'+hyField+' '+ar+'a・</span><span class="nb">押して目標変更）</span></div>'
+    card.innerHTML='<div class="hyg-t" onclick="hyGoalEdit()"><span class="nb">🎯 目標まであとどれだけ？</span><span class="nb">（'+fdn(hyField)+' '+ar+'a・</span><span class="nb">押して目標変更）</span></div>'
       +hyGoalRow('窒素 N',t.n,hyGoal.n*k10)
       +hyGoalRow('りん酸 P',t.p,hyGoal.p*k10)
       +hyGoalRow('カリ K',t.k,hyGoal.k*k10)
@@ -13124,10 +13816,10 @@
   function recFieldShow(){
     var v=document.getElementById('recFieldV'); if(!v)return;
     var f=fieldByName(recField), sub=f?(' '+f.a+'・'+(f.crop||'未定')):'';
-    v.textContent=recField+sub;
+    v.textContent=fdn(recField)+sub;
   }
   function recPickField(){
-    fieldSheetOpen(function(n){ recField=n; recFieldShow(); toast('田んぼ：'+n); }, recField);
+    fieldSheetOpen(function(n){ recField=n; recFieldShow(); toast('田んぼ：'+fdn(n)); }, recField);
   }
 
   /* ===== ドローン散布：日付・田んぼを作業記録と同じ方式で選べるように ===== */
@@ -13143,10 +13835,10 @@
   function droneFieldShow(){
     var v=document.getElementById('droneFieldV'); if(!v)return;
     var f=fieldByName(droneField), sub=f?(' '+f.a+'・'+(f.crop||'未定')):'';
-    v.textContent=droneField+sub;
+    v.textContent=fdn(droneField)+sub;
   }
   function dronePickField(){
-    fieldSheetOpen(function(n){ droneField=n; droneFieldShow(); toast('田んぼ：'+n); }, droneField);
+    fieldSheetOpen(function(n){ droneField=n; droneFieldShow(); toast('田んぼ：'+fdn(n)); }, droneField);
   }
   /* 画面を開くたびに日付・田んぼの表示を最新化 */
   function droneEnter(){
